@@ -10,10 +10,10 @@ The simulation models are stored on databases (MYSQL for example). This makes <b
 
 
 <p align="center">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/eic.jpg"        height="180" width="180">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/hps.jpg"        height="180" width="180">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/htcc.jpg"       height="180" width="180">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/dvcs_event.jpg" height="180" width="180">
+<img src="https://github.com/gemc/gemc.github.io/blob/master/img/eic.jpg"        height="170" width="170">
+<img src="https://github.com/gemc/gemc.github.io/blob/master/img/hps.jpg"        height="170" width="170">
+<img src="https://github.com/gemc/gemc.github.io/blob/master/img/htcc.jpg"       height="170" width="170">
+<img src="https://github.com/gemc/gemc.github.io/blob/master/img/dvcs_event.jpg" height="170" width="170">
 </p>
 <i> examples of experiments using gemc. From left to right: Electron Ion Collider beamline; Heavy Photon Search; Cherenkov light focusing in a High Threshold Cherenkov Counter; a DVCS event in the CLAS12 Central detector at Jefferson Lab</i>
 
