@@ -1,0 +1,494 @@
+Future of gemc:
+
+- hybrid banks
+- physics details choices (disable some physics, etc)
+- culling options combobox
+- clone viewer
+- add viewer with specific detectors
+- move timewindow to general generator tab - make all other the same
+- bring output structure out of gemc
+- bring options out of gemc
+- bring graph out of gemc
+- bring splash screen out of gemc
+- "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
+- remove obsolete cpp materials
+
+7/24/15
+- added rayleigh property in materials api and material factory
+
+7/15/15
+- fixed processName routine, sometimes the trk->GetCreatorProcess() is null
+- added warning suppressor for compiling on Mac
+- added gemc version on the log
+
+6/10/15
+- fixed mysql material query, it was not getting the optical info
+
+6/4/15
+- added process name and material name in the Hit class
+- saving process and material names in the Hit class from SensitiveDetector.cc
+
+6/2/15
+- fix: setting run number at each event instead of only with message log
+
+5/28/15
+- added unsmeared and smeard tdc for clas12 ftof
+
+5/26/15
+- improved log for LUND format
+- added runWeights class. This class reads a text file with two columns: run and weight
+  The class contain a map<int, int> which contains the number of events for each run number.
+  The number of events is randomized based on the number of events desired by the user and the weight table.
+- improved ftof digitization routines
+
+5/20/15
+- added active fields in the option map so they are written in the output (as simulation conditions)
+
+5/15/15
+- setting hadronic physics list to "none" by default. User can enable them in the gcard or
+  command line. This way one can choose to run w/o hadronic physics.
+
+5/13/15
+- Daria's' changes to cnd hit process routine
+- fixed bug that wrote summary particle evio bank multiple times
+- writing summary particle evio bank only if SAVE_ALL_MOTHER is set to 1
+
+5/11/15
+- committed previous changes in material API
+- ported latest cnd hit process routine
+- suppressing compiler warning (from clhep) with -Wno-absolute-value
+
+4/21/15
+- added scintillation in the material definition, both in API and in the gemc core.
+  The number of photons emitted has two component (fast and slow) and is proportional two:
+
+       A e^(-t/tfast) + B e ^(-t/tslow)
+
+  where A and B are the fast and slow component respectively and are dependent on wavelength,
+  and tfast and tslow are the fast and slow time constant (valid for all wavelengths).
+
+  The following quantities can now be specified in the material API, and will be read by gemc.
+
+   * fastcomponent: vector (wavelength)
+   * slowcomponent: vector (wavelength)
+   * scintillationyield: number of photons / MeV
+   * resolutionscale: scale to control the resolution (multiplies sqrt(N))
+   * fasttimeconstant: fast time constant
+   * slowtimeconstant: slow time constant
+   * yieldratio: relative strength of the fast component
+
+
+4/17/15
+- ftof time smearing
+
+
+4/14/15
+- fixed energy sharing calculation on bst routine
+
+4/10/15
+- added ND3 and deuterium gas materials
+
+
+4/8/15
+- Added template for calibration constants
+- FTOF digitization: retrieving and using constants:
+  > status
+  > effective velocity
+  > attenuation length
+  > de/dx
+  > time walk correction
+  > minimum ionizing calibration peak
+
+3/26/15
+- removed obsolete cpp materials, defined in SVT
+
+2/18/15
+- fixed bug that prevented material creation from isotopes
+- fixed bug that duplicated materials when verbodity was high
+- added instructions on how to add the perl module for DBD in yosemite
+
+2/11/15
+- fixed bug that caused gemc to ask for graphic display even in batch mode.
+
+2/9/15
+- removed gl.h no longer needed
+
+2/5/15
+- Added generic trapozoid constructor (2.2 as well)
+
+2/4/15
+- lowercasing cnd hitprocess (2.2 as well)
+
+2/3/15
+- fixed font size in both devel and 2.2 so that icons titles fit well in the GUI in Linux
+(2.2 as well)
+
+1/29/15
+
+gemc 2.2 released!
+
+1/28/15
+- added utility function to convert vector<int> to vector<double>. Used in g4signal
+- added local positions, vertex and mother vertex info in GUI display
+- defaulted mother vertex position in case SAVE_ALL_MOTHERS is not set
+
+1/27/15
+- fixed instance where Trk and Original Trk was not displaying correctly in the GUI
+- improved signal screen bounds
+- refreshing hit list in signals when beamOn() is issued
+
+1/26/15
+- included rich hitprocess in the map register
+- setting GUI vtx values to options value
+- removed parent widget from momControls and vtxControl, unnecessary
+
+1/23/15
+- setting GUI momentum values to options value
+
+1/20/15
+- added slices in the 3 dimensions in the camera gui:
+  axis plane + cutaway activation button. All units are mm
+- added inverse checkbutton for the axis direction of the slices
+- fixed unit order for theta angles in the luminosity tab
+- fixed luminosity particle smearing.
+
+12/9/14
+- camera now is the default choice for slider moves
+- introducing "explode" factor - combobox
+
+12/5/14
+- default initial position of windows can now be set with options
+- by default both windows are now next to each other
+
+12/1/14
+- changed particle vertex sliders into LineEdit
+- spread in the guis now also for luminosity beams
+
+11/18/14
+- Added QTimer to be able to stop cylcing events
+- Moved number of events on gui top - removed from runControl tab
+- Increased memory storage for opengl tracks
+- changed particle momemtnum sliders into LineEdit
+
+11/17/14
+- added run and cycle and quit button on top of interface
+
+11/14/14
+- run control replaced by generator control
+- icons changed accordingly
+- beam on, quit, beam every 2 sec, n. of events will now be present at top.
+- added ecs process routine, EC with strip
+- fixed doubled initialization of isotopes
+
+11/13/14
+- icons change. The gui will change as well. This is work in progress,
+  the gemc usability is limited until GUI work is complete.
+
+11/11/14
+- removed obsolete changelog_2.0
+- removed dependency from webkit
+
+
+11/6/14
+- Changed Headers/QtWidgets to QtWidgets - now Mac and Linux installations match
+
+11/3/14
+- running EXEC_MACRO before running events
+
+10/29/14
+- Fixed bug in uniform field constructor: was using wrong constructor.
+
+10/27/14
+- Fixed header for missing G4BestUnit 
+
+
+10/22/14
+- Development version will be 2.2
+- Adapted code for qt5: QtGui >> QtWidgets
+- Using CLHEP namespace for constants and units
+- Removing G4UnitsTable.hh since using CLHEP namespace - except where G4BestUnit needed
+- Notice: new compilation flags will give lot of variable shadowing warning due to CLHEP units
+  Be patient, all these will be fixed in time
+- Physics list ported to geant4 v 10
+
+
+gemc 2.1 released
+
+10/21/14
+- simplified left buttons code
+- version changed to 2.1
+- lowercasing hit process routines
+
+9/22/14
+- Added run time log output for gemc: total time - and just events time (w/o initialization)
+
+9/17/14
+- Added bco and adc in the svt digitization
+
+
+9/15/14
+- fixed G4PVReplica bug on number of dimensions
+
+9/10/14
+- Step by step true information can now be written out with ALLRAWS option.
+  ALLRAWS is a string containing one or more sensitive detector (element in the list separated by a comma).
+  For example  -ALLRAWS="dc, ec"  will write out all steps for dc and ec detectors.
+- Fixed a major bug when a vector is not cleared every event, causing huge file size
+- Fix a minor bug when read beamPol from wrong position
+
+
+8/18/14
+- Preferring z position for solenoid field, adding else statement provides minor speed up.
+- Setting MAX_FIELD_STEP to zero by default.
+
+8/15/14
+- Fixed  -BEAM_P="show_all" option
+
+8/14/14
+- Fixed more units in the EVIO/TXT output
+
+8/13/14
+- Returning generated particles variables in default G4 units (MeV and mm)
+
+8/1/14
+- Removed condition on number of steps. New geant4 navigation seems to take care of this. gemc is faster now!
+- Improved log in SteppingAction
+- Made Hall dimension and MAX_STEPS consistent at 20m by default. Users can always modify this with options.
+
+7/29/14
+- Fixed issue that may occur when material properties are not defined
+- Added standard isotopes LD2 and Helium3 gas for all material factories
+
+7/28/14
+- Fixed precision issue on material composition
+
+7/25/14
+- Fixed log message for bank IO, typo in help for external generator
+
+7/15/14
+- Fixed issue affecting multiples hits on the same sensitive detector
+- Fixed issue that ignored digitized type for double type variables
+
+7/10/14
+- Fixed issue that may shows on Linux when multiples materials are defined with similar names (erase items from material map now down outside map loop)
+
+7/9/14
+- Fixed Initialization of mini_stagger_shift into hit process routine constructor
+- Changed gemc version string to 2.0
+
+7/7/14
+- Added PCAL process routine
+- Fixed generated particle summary tags and numes
+- Fixed NSTRIPS ec variable being defined in the wrong place
+
+6/18/14
+- fixed dipole map reading typo
+
+6/17/14
+- Added nphe in summary output. Notice: this is before any digitization.
+
+
+6/16/14
+- Fixed bug: lundUserDefined vector was not emptied each event
+
+6/13/14
+- Completed port of magnetic field
+- progress bar for dipole and cylindrical maps
+- optimization of map reading routines.
+- fixed typo in kilogauss unit
+- removed old magnetic field class as the port is complete
+- reading ascii magnetic field maps with fscanf instead of C++ cin. This is about four times faster
+- field load message enable even with 0 verbosity
+
+6/12/14
+- added dc lowercased - bank variable with better names
+- adding G4StepLimiter to make the user step size effective
+- added kilogauss unit
+- ported phi-segmented field map (for clas12 torus)
+- better field log (include correct units)
+- added progress bar indicator for magnetic field loading
+- note: implementation not completed - committing anyway.
+
+6/11/14
+- removed unnecessary variables in bst hit process
+- fixed lowercased ec process name
+
+
+6/10/14
+- removed ec material, now in ec package
+- added ec hit process routined, lowercased from 1.8
+- better log loading bank definitions
+- fixed instance of bank loading when definition file in custom directory
+
+6/9/14
+- LUND event format: the following names has been changed for the LUND format. Users can keep the
+   original LUND meaning or assign custom meaning:
+
+   var1 - User defined. In LUND this was: Target Polarization
+   var2 - User defined. In LUND this was: Number of nucleons in the target
+   var3 - User defined. In LUND this was: Number of protons in the target
+   var4 - User defined. In LUND this was: Bjorken x
+   var5 - User defined. In LUND this was: Fraction of energy loss
+   var6 - User defined. In LUND this was: W square
+   var7 - User defined. In LUND this was: Q square
+   var8 - User defined. In LUND this was: Energy loss
+
+- Do not exit if bank or hit definition TEXT files are not found.
+- Added these 8 variables in header bank for gemc internal generator
+- fixed inconsistency in header infos for LUND format
+
+6/6/14
+- added htcc hitprocess (lowercased)
+- signal now displaying photon wavelength versus timing
+
+6/5/14
+- overloaded << for sensitiveID object
+- calling integrateRaw by default, but writing the true info bank only if INTEGRATEDRAW is
+  true for a given detector
+- HTCC renamed to htcc
+
+6/4/14
+- isMirror changed to buildMirrors - for border surface we need all physical volumes to be built first.
+- removed goptions argument from MDetectorConstruction method as it is a class member
+- added arrayToString to perl utilities
+- Mirrors detector name changed to "mirror"
+
+6/3/14
+- FTM lowercased to ftm
+- Added mirrors perl interface
+- Added mirrors factories to gemc
+- Material factory cosmetics to make both mirrors and factory more consistent
+- Added verbosity flag for mirrors
+- scons inc path organized by packages in SConstruct
+
+6/2/14
+- Maurik Holtrop:
+  - Fix up the STEER_BEAM option. The BEAM_P and BEAM_V were no longer propagated when using an StdHep file.
+  - Fixed name mismatch in HPS hit process routines.
+
+5/30/14
+- added "-h" option that does the same thing as "-h"
+- fixed integrateRaw to match variables name changes
+
+
+5/28/14
+- added Trimspaces to vector<string> functions
+- run_conditions: get_systems() now returns a map<string, string> : name, factory
+- bank scheme changed as requested from Hall-B software group
+  Reason: makes it more readable by 3rd party software.
+  I'm opposed to this, I think we should be driven by human readability instead of 3rd party software
+  from:
+    Mother (tag, 0)
+     daughter (tag, daughter id)
+       vars (tag + daughter id, variable id)
+  to:
+   Mother (tag, 0)
+    daughter (tag + daughter id, 0)
+    vars (tag + daughter id, variable id)
+
+   hit number now changed num from 0 to 99
+
+- Fixed multiple writing of the generated particle bank
+- Names of average quantities in the true info output changed from <v> to avg_v
+- Times font changed to Times-Roman. This doesn't help Maverick screen log whining yet.
+- Better log in case argument not recognized OR file not found
+
+
+5/27/14
+- added utility function get_strings_except(string, string) to get a vector<string> from a string,
+  ignoring matches to second argument.
+- removed sensitiveDetectorFactories no more needed
+- Loading of the banks is now independent of sensitive detectors. Getting close to use gbank as stand-alone
+- IO bank text API changed: removed variation from filename
+- NOTE: This commit does not compile, work is not completed.
+
+5/23/14
+- Initialization of header bank infos
+- Removed extra debug comment
+
+5/22/14
+- Fixed instances of flux bank being put inside existing detector bank
+- Added utility to retrieve generated particle infos from a string
+
+5/14/14
+Revision: 1912
+- Skipping loading bank definitions from file if it's the flux bank
+- Fixed wrong return code for VOLTAGETIME_ID
+- Fixed bst hit process assignment
+- number correction in bst hit process (todo: make it external parameter)
+- Better code comments
+- Removed confusing ":" in run condtions map key
+
+5/13/14
+- Added warnings for malformed materials
+
+5/12/14
+- Added bst hit process to 2.0
+
+5/8/14
+- Fixed warning: no need to print unit warning when a number is zero
+- GEMC will now try to load detector TEXT factories in GEMC_DATA_DIR in addition to current directory
+
+5/6/14
+- Material factory: removing map item by key instead of iterator (which caused problems on some compiler).
+
+
+5/2/14
+- Improved log for cases when the variation is changed within the API scripts
+  to build several variations at the same time
+- Fixed bug that checked the existance of materials
+
+5/1/14
+- Added optical properties in gemc
+
+
+4/29/14
+Revision: 1871
+- Changes to geometry service api
+- Renamed LUND header names
+- Added optical properties in the API
+
+4/23/2014
+Revision: 1866
+- Added Total Edep, Fastest time, to generated particle information in both EVIO and TXT output factories
+- Added stat, number of volumes hit / detector,  to generated particle information in both EVIO and TXT output factories
+
+
+4/22/2014
+Revision: 1864
+
+- Added original track information to hit: now one can track which original track was responsible
+  for hits!
+ This must be activated with  SAVE_ALL_MOTHERS, and INTEGRATEDRAW must contain
+ the name of the sensitive detector of interest.
+
+
+4/15/2014
+Revision: 1843
+
+- solid pictures resized for better desplayed
+- Reorganized detector information window. Added material, type and dimensions, sensitivity.
+- Materials: if the material file is not found, it's ok - it may be a pre-defined G4 material.
+- default variation is main
+- add check for physics list name
+- add LIV and PEN for EM, add FTFP_BERT_HP for hadron
+
+
+4/2/2014
+- Removing obsolete MATERIALSDB option.
+- Added TEXT factory
+- Adding materials initialization in buildmaterials for CPP, MYSQL, TEXT and GDML factories.
+- Do not open factory connection if no detector needs it
+- Fixed help
+
+
+4/1/2014
+
+- Changed elements, nelements to components, ncomponents
+- Added simple materials from MYSQL factory in addition to the CPP factory:
+  1. molecular. Example:
+     H2O->AddElement(H, natoms=2);
+         H2O->AddElement(O, natoms=1);
+  2. by mass fraction. Example:
+         Gas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2);
+- Air > G4_AIR as default Air material
