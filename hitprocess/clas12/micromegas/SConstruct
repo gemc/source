@@ -1,0 +1,8 @@
+
+env = Environment(tools=['default'])
+
+sources = Split("""example.cc fmt_strip.cc bmt_strip.cc ftm_strip.cc""")
+Target  = 'example'
+
+env.Program(source = sources, target = Target)
+
