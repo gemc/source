@@ -48,5 +48,8 @@ Any change in the model is reflected immediately in the databses, and can be tes
 * <a href="gemc.jlab.org"> gemc home page </a>
 
 
+### Running Reconstruction
+
+* <a href="http://clasweb.jlab.org/clas12offline/docs/software/html/reconstruction/introduction.html"> CLAS 12 Offline software </a>
 
 
