@@ -45,7 +45,7 @@ Any change in the model is reflected immediately in the databses, and can be tes
 ========
 
 ### Documentation:
-* <a href="gemc.jlab.org"> gemc home page </a>
+* <a href="http://gemc.jlab.org"> gemc home page </a>
 
 ========
 
