@@ -48,6 +48,11 @@ Any change in the model is reflected immediately in the databses, and can be tes
 * <a href="gemc.jlab.org"> gemc home page </a>
 
 
+### Contributing to gemc
+Join the gemc collaboration to contribute to the <a href="gemc.github.io">development of gemc</a>!
+
+
+
 <br>
 
 
