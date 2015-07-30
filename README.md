@@ -51,7 +51,7 @@ Any change in the model is reflected immediately in the databses, and can be tes
 
 
 ### Contributing to gemc
-Join the gemc collaboration to contribute to the <a href="gemc.github.io">development of gemc</a>!
+Join the gemc collaboration to contribute to the <a href="http://gemc.github.io">development of gemc</a>!
 
 
 ========
