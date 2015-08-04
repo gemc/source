@@ -6,7 +6,7 @@ env = init_environment("qt5 geant4 clhep evio xercesc ccdb")
 
 # env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
 # env.Replace(CXX = "/usr/bin/clang++")
-#env.Append(CXXFLAGS='-Wno-shorten-64-to-32')
+env.Append(CXXFLAGS='-std=c++11')
 #env.Append(CXXFLAGS='-Wno-sign-conversion')
 
 # added because clhep is still behind clang (5/2015)

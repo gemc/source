@@ -142,7 +142,7 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	if(IL>=np[0] || IT>=np[1]) return;
 	
 	// no interpolation
-	if(interpolation == "none")
+	if(interpolation == MapInterpolation::none)
 	{
 		if(symmetry == "dipole-x") Bfield[0] = B1_2D[IL][IT];
 		if(symmetry == "dipole-y") Bfield[1] = B1_2D[IL][IT];

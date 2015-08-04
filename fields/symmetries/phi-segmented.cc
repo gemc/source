@@ -1,3 +1,4 @@
+//#include "GEMCConfig.h"
 // gemc headers
 #include "asciiField.h"
 #include "utils.h"
@@ -191,7 +192,6 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 	double tC = 0;  // transverse
 	double lC = 0;  // longitudinal
 	
-	double aLC;            	///< phi local  to the first segment
 	unsigned aI, tI, lI;  	///< indexes of the vector map
 
 	
@@ -202,8 +202,9 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 	lC = x[2];                          ///< Z
 
 	// Rotating the point to within the map limit
-	int segment = 1;
-	aLC = aC;
+	int segment = 0;
+
+	double aLC = aC;            	///< phi local  to the first segment
 	while (aLC/deg > 30)
 	{
 		aLC -= 60*deg;
@@ -212,6 +213,7 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 
 	// need the delta phi from the local coordinate, so we can rotate the field back to the original point
 	double dphi = aC - aLC;
+
 
 	// for the map index we need the absolute value
 	double aaLC = fabs(aLC);
@@ -229,25 +231,30 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 	// outside map, returning no field
 	if(aI >= np[0] || tI >= np[1] || lI >= np[2]) return;
 
-
 	// positive on the right side of the segment
 	int sign = (aLC >= 0 ? 1 : -1);
 
-
 	// no interpolation
-	if(interpolation == "none")
+	if(interpolation == MapInterpolation::none)
 	{
 		// Field at local point
 		mfield[0] = B1_3D[aI][tI][lI];
 		mfield[1] = B2_3D[aI][tI][lI];
 		mfield[2] = B3_3D[aI][tI][lI];
-
 		
+                //if( fabs( cos(dphi/rad) - segment_cos.at(segment) ) > 1.0e-10  || fabs( sin(dphi/rad) - segment_sin.at(segment) ) > 1.0e-10 ) {
+                //   std::cout << segment << " : " << dphi/deg << std::endl;
+                //   std::cout <<  segment_cos.at(segment) << "  vs  " << cos(dphi/rad) << "\n";
+                //   std::cout <<  segment_sin.at(segment) << "  vs  " << sin(dphi/rad) << "\n";
+                //}
+                double cos_dphi = segment_cos.at(segment);//cos(dphi/rad);
+                double sin_dphi = segment_sin.at(segment);//sin(dphi/rad);
 		// Rotating the field back to original point
-		Bfield[0] =  sign*mfield[0] * cos(dphi/rad) - mfield[1] * sin(dphi/rad);
-		Bfield[1] =  sign*mfield[0] * sin(dphi/rad) + mfield[1] * cos(dphi/rad);
+		Bfield[0] =  sign*mfield[0] * cos_dphi - mfield[1] * sin_dphi;
+		Bfield[1] =  sign*mfield[0] * sin_dphi + mfield[1] * cos_dphi;
 		Bfield[2] =  sign*mfield[2];
 		
+#ifdef GEMC_PRINT_DEBUG
 		if(verbosity>3 && FIRST_ONLY != 99)
 		{
 			
@@ -283,6 +290,7 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 
 			cout << endl;
 		}
+#endif
 	}
 }
 

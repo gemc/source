@@ -149,7 +149,7 @@ gfield asciiField::loadField(string file, goptions opts)
 						/// selecting "interpolation" nodes. 
 						if(ee.tagName().toStdString() == "interpolation")   
 						{
-							gf.map->interpolation = assignAttribute(ee, "type", "none");
+							gf.map->interpolation = gMappedField::MapInterpolation::none;//assignAttribute(ee, "type", "none");
 						}
 						nn = nn.nextSibling();
 					}
@@ -200,17 +200,45 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 	cout << "  > Loading field map from " << map->identifier << " with symmetry: " << map->symmetry << endl;
 
 	// dipole field
-	if(map->symmetry == "dipole-x" || map->symmetry == "dipole-y" || map->symmetry == "dipole-z")
+	if( map->symmetry == "dipole-x" )
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::x;
 		loadFieldMap_Dipole(map, v);
+        } 
+        else if( map->symmetry == "dipole-y" )
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::y;
+		loadFieldMap_Dipole(map, v);
+        }
+        else if( map->symmetry == "dipole-z" )
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::z;
+		loadFieldMap_Dipole(map, v);
+        }
 
 	// cylindrical field
-	if(map->symmetry == "cylindrical-x" || map->symmetry == "cylindrical-y" || map->symmetry == "cylindrical-z")
+	if( map->symmetry == "cylindrical-x")
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::x;
 		loadFieldMap_Cylindrical(map, v);
+        }
+        else if( map->symmetry == "cylindrical-y" )
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::y;
+		loadFieldMap_Cylindrical(map, v);
+        }
+        else if( map->symmetry == "cylindrical-z" )
+        {
+                map->symmetryAxis = gMappedField::SymmetryAxis::z;
+		loadFieldMap_Cylindrical(map, v);
+        }
 
-	// phi-segmented field
+        // phi-segmented field
 
-	if(map->symmetry == "phi-segmented")
-		loadFieldMap_phiSegmented(map, v);
+        if( map->symmetry == "phi-segmented")
+        {
+           loadFieldMap_phiSegmented(map, v);
+        }
 }
 
 

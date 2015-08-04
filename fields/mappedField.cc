@@ -14,17 +14,21 @@ void gMappedField::GetFieldValue( const double point[3], double *Bfield) const
 	
 	Bfield[0] = Bfield[1] = Bfield[2] = 0;
 
-	// dipole field
-	if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
-		GetFieldValue_Dipole(Point, Bfield, FIRST_ONLY);
+        if(!(this->func_ptr_GetFieldValue)) SetFunctionPointer();
 
-	// phi-symmetric cylindrical field
-	if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
-		GetFieldValue_Cylindrical(Point, Bfield, FIRST_ONLY);
-	
-	// phi-segmented
-	if(symmetry == "phi-segmented")
-		GetFieldValue_phiSegmented(Point, Bfield, FIRST_ONLY);
+        (this->*func_ptr_GetFieldValue)(Point, Bfield, FIRST_ONLY);
+
+	//// dipole field
+	//if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
+	//	GetFieldValue_Dipole(Point, Bfield, FIRST_ONLY);
+
+	//// phi-symmetric cylindrical field
+	//if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
+	//	GetFieldValue_Cylindrical(Point, Bfield, FIRST_ONLY);
+	//
+	//// phi-segmented
+	//if(symmetry == "phi-segmented")
+	//	GetFieldValue_phiSegmented(Point, Bfield, FIRST_ONLY);
 	
 	if(verbosity == 99)
 		FIRST_ONLY = 99;
@@ -35,9 +39,8 @@ void gMappedField::GetFieldValue( const double point[3], double *Bfield) const
 
 
 
-gcoord gMappedField::getCoordinateWithSpeed(int speed)
+const gcoord& gMappedField::getCoordinateWithSpeed(int speed)
 {
-	gcoord dummy("na", 0, 0, 0, "na", 0);
 	
 	for(unsigned int i=0; i<coordinates.size(); i++)
 		if(coordinates[i].speed == speed) return coordinates[i];
@@ -113,10 +116,40 @@ void gMappedField::initializeMap()
 		cellSize[1] = (getCoordinateWithName("transverse").max   - startMap[1]) / (np[1] - 1);
 		cellSize[2] = (getCoordinateWithName("longitudinal").max - startMap[2]) / (np[2] - 1);
 	}
+
+
+	// dipole field
+	if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_Dipole;
+
+	// phi-symmetric cylindrical field
+	if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_Cylindrical;
+	
+	// phi-segmented
+	if(symmetry == "phi-segmented")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_phiSegmented;
+	
 	
 }
 
+void gMappedField::SetFunctionPointer() const {
 
+	func_ptr_GetFieldValue = &gMappedField::GetFieldValue_Dipole;
+
+	// dipole field
+	if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_Dipole;
+
+	// phi-symmetric cylindrical field
+	if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_Cylindrical;
+	
+	// phi-segmented
+	if(symmetry == "phi-segmented")
+		func_ptr_GetFieldValue = &gMappedField::GetFieldValue_phiSegmented;
+	
+}
 
 
 

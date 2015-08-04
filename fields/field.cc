@@ -153,7 +153,7 @@ ostream &operator<<(ostream &stream, gfield gf)
 			cout << "    - Coordinate:         " << gf.map->coordinates[i];
 		
 		cout << "    - Map Field Unit:     " << gf.map->unit << endl;
-		cout << "    - Map Interpolation:  " << gf.map->interpolation << endl;
+		cout << "    - Map Interpolation:  " << endl;//gf.map->interpolation << endl;
 
 		cout << "    - map origin:         x=" << gf.map->mapOrigin[0]
 			 << "mm, y=" << gf.map->mapOrigin[1]

@@ -119,28 +119,38 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 {
 	double LC  = 0;    // longitudinal
 	double TC  = 0;    // transverse
-	double phi = 0;    // phi angle
+	//double phi = 0;    // phi angle
+        double cos_phi =  1.0;
+        double sin_phi =  0.0;
 		
 	// map plane is in ZX, phi on X axis
-	if(symmetry == "cylindrical-z") 
+	if( symmetryAxis == SymmetryAxis::z ) 
 	{
 		LC  = x[2];
 		TC  = sqrt(x[0]*x[0] + x[1]*x[1]);
-		phi = G4ThreeVector(x[0], x[1], x[2]).phi();
+		//phi = G4ThreeVector(x[0], x[1], x[2]).phi();
+                cos_phi = x[0]/TC;
+                sin_phi = x[1]/TC;
 	}
 	// map plane is in XY, phi on Y axis
-	else if(symmetry == "cylindrical-x")
-	{
+        //else if(symmetry == "cylindrical-x")
+        else if( symmetryAxis == SymmetryAxis::x ) 
+        {
 		LC  = x[0];
 		TC  = sqrt(x[1]*x[1] + x[2]*x[2]);
-		phi = G4ThreeVector(x[2], x[0], x[1]).phi();
+		//phi = G4ThreeVector(x[2], x[0], x[1]).phi();
+                cos_phi = x[2]/TC;
+                sin_phi = x[0]/TC;
 	}
 	// map plane is in XZ, phi on Z axis
-	else if(symmetry == "cylindrical-y")
+	//else if(symmetry == "cylindrical-y")
+        else if( symmetryAxis == SymmetryAxis::y ) 
 	{
 		LC  = x[1];
 		TC  = sqrt(x[0]*x[0] + x[2]*x[2]);
-		phi = G4ThreeVector(x[1], x[2], x[0]).phi();
+		//phi = G4ThreeVector(x[1], x[2], x[0]).phi();
+                cos_phi = x[1]/TC;
+                sin_phi = x[2]/TC;
 	}
 
 	// map indexes, bottom of the cell
@@ -153,27 +163,28 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 
 	// outside map, returning no field
 	if(IT>=np[0] || IL>=np[1]) return;
+
 	
 	// no interpolation
-	if(interpolation == "none")
+	if(interpolation == MapInterpolation::none)
 	{
-		if(symmetry == "cylindrical-z") 
+		if(symmetryAxis == SymmetryAxis::z) 
 		{
-			Bfield[0] = B1_2D[IT][IL] * cos(phi);
-			Bfield[1] = B1_2D[IT][IL] * sin(phi);
+			Bfield[0] = B1_2D[IT][IL] * cos_phi;
+			Bfield[1] = B1_2D[IT][IL] * sin_phi;
 			Bfield[2] = B2_2D[IT][IL];
-		}
-		else if(symmetry == "cylindrical-x")
-		{
+                }
+                else if(symmetryAxis == SymmetryAxis::x) 
+                {
 			Bfield[0] = B2_2D[IT][IL];
-			Bfield[1] = B1_2D[IT][IL] * cos(phi);
-			Bfield[2] = B1_2D[IT][IL] * sin(phi);
+			Bfield[1] = B1_2D[IT][IL] * cos_phi;
+			Bfield[2] = B1_2D[IT][IL] * sin_phi;
 		}
-		else if(symmetry == "cylindrical-y")
+                else if(symmetryAxis == SymmetryAxis::y) 
 		{
 			Bfield[1] = B2_2D[IT][IL];
-			Bfield[0] = B1_2D[IT][IL] * sin(phi);
-			Bfield[2] = B1_2D[IT][IL] * cos(phi);
+			Bfield[0] = B1_2D[IT][IL] * sin_phi;
+			Bfield[2] = B1_2D[IT][IL] * cos_phi;
 		}
 	}
 
@@ -182,6 +193,7 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 	// so we can output units as well
 	if(verbosity>3 && FIRST_ONLY != 99)
 	{
+           double phi = 0;
 		cout << "  > Track position in magnetic field: "
 			 << "("  << (x[0] + mapOrigin[0])/cm << ", "
 			         << (x[1] + mapOrigin[1])/cm << ", "
