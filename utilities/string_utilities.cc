@@ -10,6 +10,13 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+vector<string> get_info(string input, string chars)
+{
+	string stripped = replaceCharWithChars(input, chars, " ");
+	
+	return get_strings(stripped);
+}
+
 vector<string> get_info(string input)
 {
 	

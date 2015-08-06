@@ -445,7 +445,7 @@ void MPrimaryGeneratorAction::setBeam()
 		// Primary Beam
 		
 		// Getting particle name,  momentum from option value
-		values       = get_info(gemcOpt->optMap["BEAM_P"].args);
+		values       = get_info(gemcOpt->optMap["BEAM_P"].args, string(",\""));
 		string pname = TrimSpaces(values[0]);
 		
 		if(values.size() == 4)

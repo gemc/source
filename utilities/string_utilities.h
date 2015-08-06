@@ -139,7 +139,8 @@ vector<string> get_strings_except(string, string);  ///< returns a vector of str
 vector<string> get_strings(string);                 ///< returns a vector of strings from a stringstream, space is delimiter
 vector<string> get_strings(string, string);         ///< returns a vector of strings from a stringstream, second string is delimiter
 void print_vstring(vector<string>);                 ///< prints each element of a string vector
-vector<string> get_info(string);                    ///< get information from strings such as "5*GeV, 2*deg, 10*deg"
+vector<string> get_info(string);                    ///< get information from strings such as "5*GeV, 2*deg, 10*deg", parses out parenthesis, commas, quotes
+vector<string> get_info(string, string);            ///< get information from strings such as "5*GeV, 2*deg, 10*deg", parses out strings in second argument
 string get_variation(string);                       ///< parse variation name from string
 bool is_main_variation(string);                     ///< returns 1 if the string "main:" is found on the input
 

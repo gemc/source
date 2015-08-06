@@ -1,2 +1,17 @@
 .sconsign.dblite
+*.o
+gui/src/moc_camera_control.cc
+gui/src/moc_detector_editor.cc
+gui/src/moc_detector_tree.cc
+gui/src/moc_g4dialog.cc
+gui/src/moc_gemc_MainGui.cc
+gui/src/moc_gsignal.cc
+gui/src/moc_infos.cc
+gui/src/moc_physicsListGui.cc
+gui/src/runControl/moc_momControls.cc
+gui/src/runControl/moc_primaryTab.cc
+gui/src/runControl/moc_run_control.cc
+gui/src/runControl/moc_vtxControls.cc
+lib/
+gemc
 
