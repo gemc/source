@@ -6,6 +6,29 @@
 // gemc headers
 #include "pcal_hitprocess.h"
 
+static pcConstants initializePCConstants(int runno)
+{
+	pcConstants pcc;
+	pcc.runNo = 0;
+	
+	pcc.attlen              = 3760.;  // Attenuation Length (mm)
+	pcc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	pcc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
+	pcc.PE_yld              = 11.5 ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	pcc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
+	return pcc;
+}
+
+
+void pcal_HitProcess::initWithRunNumber(int runno)
+{
+	if(pcc.runNo != runno)
+	{
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		pcc = initializePCConstants(runno);
+		pcc.runNo = runno;
+	}
+}
 map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -20,9 +43,6 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	HCname = "PCAL Hit Process";
 	
-	// Attenuation Length (mm)
-	double attlen=3760.;
-	
 	// Get scintillator volume x dimension (mm)
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
 	
@@ -31,20 +51,22 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// Get Total Energy deposited
 	double Etota = 0;
+	double Ttota = 0;
 	double latt = 0;
 	vector<G4double> Edep = aHit->GetEdep();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
-		if(attlen>0)
+		if(pcc.attlen>0)
 		{
 			double xlocal = Lpos[s].x();
 			if(view==1) latt=pDx2+xlocal;
 			if(view==2) latt=pDx2+xlocal;
 			if(view==3) latt=pDx2+xlocal;
 			//cout<<"xlocal="<<xlocal<<" ylocal="<<ylocal<<" view="<<view<<" strip="<<strip<<" latt="<<latt<<endl;
-			Etota = Etota + Edep[s]*exp(-latt/attlen);
+			Etota = Etota + Edep[s]*exp(-latt/pcc.attlen);
+			Ttota = Ttota + latt/pcc.veff;
 		}
 		else
 		{
@@ -52,40 +74,25 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	// adapted by Alex Piaseczny, Canisius College Medium Energy Nuclear Physics (CMENP), through
-	// Dr. Michael Wood from Gilfoyle EC code
-	// Jerry Gilfoyle, Feb, 2010
-	
-	// parameters: factor  - conversion for adc (MeV/channel).
-	//             pcal_tdc_to_channel - conversion factor for tdc (ns/channel).
-	
-	// int pcal_tdc_time_to_channel = (int) gpars["PCAL/pcal_tdc_time_to_channel"];     // conversion from time (ns) to TDC channels. name has to match parameters
-	
-	double TDC_time_to_channel = 20 ;
-	double PCfactor = 11.5;               // number of p.e. divided by the energy deposited in MeV; measured from PCAL cosmic tests
-	int TDC_MAX = 4095;                // max value for PC tdc.
-	double pc_MeV_to_channel = 10.;       // conversion from energy (MeV) to ADC channels
-	
 	// initialize ADC and TDC
 	int ADC = 0;
-	int TDC = TDC_MAX;
+	int TDC = 0;
 	
 	// simulate the adc value.
 	if (tInfos.eTot > 0)
 	{
-		double PC_npe = G4Poisson(Etota*PCfactor); //number of photoelectrons
+		double PC_npe = G4Poisson(Etota*pcc.PE_yld); //number of photoelectrons
 		//  Fluctuations in PMT gain distributed using Gaussian with
 		//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
 		//  algorithm, values, and comment above taken from gsim.
 		double sigma = sqrt(PC_npe)/1.22;
-		double PC_MeV = G4RandGauss::shoot(PC_npe,sigma)*pc_MeV_to_channel/PCfactor;
+		double PC_MeV = G4RandGauss::shoot(PC_npe,sigma)*pcc.ADC_MeV_to_evio/pcc.PE_yld;
 		if (PC_MeV <= 0) PC_MeV=0.0; // guard against weird, rare events.
 		ADC = (int) PC_MeV;
 	}
 	
 	// simulate the tdc.
-	TDC = (int) (tInfos.time*TDC_time_to_channel);
-	if (TDC > TDC_MAX) TDC = TDC_MAX;
+	TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio);
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
@@ -121,9 +128,8 @@ map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	return MH;
 }
 
-
-
-
+// this static function will be loaded first thing by the executable
+pcConstants pcal_HitProcess::pcc = initializePCConstants(1);
 
 
 

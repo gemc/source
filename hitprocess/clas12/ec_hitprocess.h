@@ -14,10 +14,10 @@ class ecConstants
 	
 		double NSTRIPS;              // Number of strips
 		double attlen;               // Attenuation Length (mm)
-		double TDC_time_to_channel;  // conversion from time (ns) to TDC channels.
-		double ECfactor;             // number of p.e. divided by the energy deposited in MeV; value taken from gsim. see EC NIM paper table 1.
-		int TDC_MAX;                 // max value for EC tdc.
-		double ec_MeV_to_channel;    // conversion from energy (MeV) to ADC channels
+		double TDC_time_to_evio;     // Conversion from time (ns) to EVIO TDC format
+		double ADC_MeV_to_evio;      // Conversion from energy (MeV) to EVIO FADC250 format
+		double PE_yld;               // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+		double veff;                 // Effective velocity of scintillator light (mm/ns)
 };
 
 

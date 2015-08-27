@@ -11,12 +11,11 @@ static ecConstants initializeECConstants(int runno)
 	ecc.runNo = 0;
 	
 	ecc.NSTRIPS             = 36;
-	ecc.attlen              = 3760.; // Attenuation Length (mm)
-	ecc.TDC_time_to_channel = 20.;   // conversion from time (ns) to TDC channels.
-	ecc.ECfactor            = 3.5;   // number of p.e. divided by the energy deposited in MeV; value taken from gsim. see EC NIM paper table 1.
-	ecc.TDC_MAX             = 4095;  // max value for EC tdc.
-	ecc.ec_MeV_to_channel   = 10.;   // conversion from energy (MeV) to ADC channels
-	
+	ecc.attlen              = 3760.;  // Attenuation Length (mm)
+	ecc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	ecc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
+	ecc.PE_yld              = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	ecc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
 	return ecc;
 }
 
@@ -55,6 +54,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// Get Total Energy deposited
 	double Etota = 0;
+	double Ttota = 0;
 	double latt = 0;
 	vector<G4double> Edep = aHit->GetEdep();
 	
@@ -68,6 +68,8 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
 			if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
 			Etota = Etota + Edep[s]*exp(-latt/ecc.attlen);
+			Ttota = Ttota + latt/ecc.veff;
+			
 		}
 		else
 		{
@@ -78,24 +80,24 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// initialize ADC and TDC
 	int ADC = 0;
-	int TDC = ecc.TDC_MAX;
+	int TDC = 0;
 	
 	// simulate the adc value.
 	if (Etota > 0)
 	{
-		double EC_npe = G4Poisson(Etota*ecc.ECfactor); //number of photoelectrons
+		double EC_npe = G4Poisson(Etota*ecc.PE_yld); //number of photoelectrons
 		//  Fluctuations in PMT gain distributed using Gaussian with
 		//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
 		//  algorithm, values, and comment above taken from gsim.
 		double sigma = sqrt(EC_npe)/1.22;
-		double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ec_MeV_to_channel/ecc.ECfactor;
+		double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ADC_MeV_to_evio/ecc.PE_yld;
 		if (EC_MeV <= 0) EC_MeV = 0.0; // guard against weird, rare events.
 		ADC = (int) EC_MeV;
 	}
 	
-	// simulate the tdc.
-	TDC = (int) (tInfos.time*ecc.TDC_time_to_channel);
-	if (TDC > ecc.TDC_MAX) TDC = ecc.TDC_MAX;
+	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
+	// around 1.4 us.  This offset is omitted in the simulation.
+	TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio);
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
