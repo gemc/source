@@ -136,13 +136,19 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attLeft  = exp(-dLeft/cm/attLength);
 	double attRight = exp(-dRight/cm/attLength);
 
+	// gain factor to simulate PMT gain matching algorithm
+	// i.e.- L,R PMTs are not gain matched to each other, but adjusted so geometeric mean sqrt(L*R)
+	// is independent of counter length
+	double gainLeft  = sqrt(attLeft*attRight);
+	double gainRight = gainLeft;
+	
 	// multiple of MIP energy attenuated
 	double eneL = (tInfos.eTot/ftc.dEdxMIP)*attLeft;
 	double eneR = (tInfos.eTot/ftc.dEdxMIP)*attRight;
 	
 	// attenuated energy, converted in counts
-	double adcl = ftc.countsForAMinimumIonizing[sector-1][panel-1][0][paddle-1]*eneL;
-	double adcr = ftc.countsForAMinimumIonizing[sector-1][panel-1][1][paddle-1]*eneR;
+	double adcl = ftc.countsForAMinimumIonizing[sector-1][panel-1][0][paddle-1]*eneL/gainLeft;
+	double adcr = ftc.countsForAMinimumIonizing[sector-1][panel-1][1][paddle-1]*eneR/gainRight;
 
 	// timewalk depends on adc values
 	double timeWalkLeft  = ftc.twlk_A0[sector-1][panel-1][0][paddle-1]/(1 + ftc.twlk_A1[sector-1][panel-1][0][paddle-1]*sqrt(adcl));
