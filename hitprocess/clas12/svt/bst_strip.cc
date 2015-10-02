@@ -96,10 +96,19 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 		}
 	}
 	
+	
+	
 	if(StripHit != -1)
 	{
 		// correcting for z positioning inside the module
 		double dpitch = pitch + lz*tan(dalpha/rad);
+		
+		
+		// for even layers x is proportional to strip number.
+		// for odd layers x is inversly proportional to strip number
+		int moduleDirection = 1;
+		if(layer%2 == 0)
+			moduleDirection = -1;
 		
 		// one strip only, all energy to it
 		if(fabs(minDist)<=dpitch/4.0)
@@ -107,22 +116,22 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 			strip_id.push_back(StripHit);
 			strip_id.push_back(1);
 		}
-		// two hits, on the right of the strip
+		// two hits, on the right of the strip (left if odd layers)
 		// 10% loss due to capacitance between strip and backplane
 		if(minDist>dpitch/4.0)
 		{
 			strip_id.push_back(StripHit);
 			strip_id.push_back(0.45);
-			strip_id.push_back(StripHit+1);
+			strip_id.push_back(StripHit + moduleDirection);
 			strip_id.push_back(0.45);
 		}
-		// two hits, on the left of the strip
+		// two hits, on the left of the strip (right if odd layers)
 		// 10% loss due to capacitance between strip and backplane
 		if(minDist<-dpitch/4.0)
 		{
 			strip_id.push_back(StripHit);
 			strip_id.push_back(0.45);
-			strip_id.push_back(StripHit-1);
+			strip_id.push_back(StripHit - moduleDirection);
 			strip_id.push_back(0.45);
 		}
 	}

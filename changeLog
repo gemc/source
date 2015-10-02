@@ -13,6 +13,10 @@ Future of gemc:
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
 - remove obsolete cpp materials
 
+10/2/15
+- fixed bst energy sharing routine.
+- added bonus hit process routine
+
 8/6/15
 - overloaded get_info with extra argument: fixed bug that affected particles that 
   contain parenthesis in the name. Volker found this one after 5 minutes of playing with the code!

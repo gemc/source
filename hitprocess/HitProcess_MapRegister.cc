@@ -4,6 +4,7 @@
 #include "flux_hitprocess.h"         ///< flux hit process common to all
 
 // CLAS12
+#include "clas12/bonus_hitprocess.h"          ///< Barrel Silicon Tracker (bst)
 #include "clas12/svt/bst_hitprocess.h"          ///< Barrel Silicon Tracker (bst)
 #include "clas12/cnd_hitprocess.h"              ///< Central Neutron Detector
 #include "clas12/ctof_hitprocess.h"             ///< Central TOF
@@ -52,6 +53,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		// CLAS12
 		if(EXP == "clas12")
 		{
+			hitMap["bonus"]    = &bonus_HitProcess::createHitClass;
 			hitMap["bst"]      = &bst_HitProcess::createHitClass;
 			hitMap["cnd"]      = &cnd_HitProcess::createHitClass;
 			hitMap["ctof"]     = &ctof_HitProcess::createHitClass;

@@ -51,6 +51,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = adc;
+	dgtz["vout"]   = vout;
 	dgtz["bco"]    = tInfos.time;
 	
 	return dgtz;
