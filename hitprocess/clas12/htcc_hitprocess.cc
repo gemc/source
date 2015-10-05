@@ -121,12 +121,15 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		cout <<  log_msg << " (sector, ring, half)=(" << isector << ", " << iring << ", " << ihalf << ")"
 		     << " x=" << tInfos.x/cm << " y=" << tInfos.y/cm << " z=" << tInfos.z/cm << endl;
 	}
+	trueInfos tInfos(aHit);
+
 	dgtz["sector"] = idsector;
 	dgtz["ring"]   = idring;
 	dgtz["half"]   = idhalf;
 	dgtz["nphe"]   = ndetected;
 	dgtz["hitn"]   = hitn;
-	
+	dgtz[“time"]   =  tInfos.t;
+
 	return dgtz;
 }
 
