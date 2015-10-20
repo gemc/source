@@ -11,6 +11,7 @@
 #include "G4Trd.hh"
 #include "G4Trap.hh"
 #include "G4Tubs.hh"
+#include "G4CutTubs.hh"
 #include "G4EllipticalTube.hh"
 #include "G4Paraboloid.hh"
 #include "G4Hype.hh"
@@ -228,6 +229,34 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		built = 1;
 	}
 	
+	// ####
+	// Cut Tube
+	// ####
+	if(type == "CTube")
+	{
+		if(dimensions.size() != 11)
+		{
+			cout << hd_msg << " Fatal Error: the number of dimensions for " << name
+			<< " is " << dimensions.size() <<  ":" << endl;
+			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
+			cout << "      This does not match a G4CutTubs. Exiting" << endl << endl;
+			exit(0);
+		}
+		pLowNorm = G4ThreeVector(dimensions[5], dimensions[6], dimensions[7]);
+		pHighNorm = G4ThreeVector(dimensions[8], dimensions[9], dimensions[10]);
+
+		SolidV = new G4CutTubs(name,            ///< name
+				       dimensions[0],   ///< Inner radius
+				       dimensions[1],   ///< Outer radius
+				       dimensions[2],   ///< Half length in z
+				       dimensions[3],   ///< The starting phi angle
+				       dimensions[4],   ///< Delta Phi angle of the segment
+				       pLowNorm,        ///< Outside Normal at -z
+				       pHighNorm);      ///< Outside Normal at +z
+		
+		built = 1;
+	}
+
 	// ###############
 	// G4ElipticalTube
 	// ###############

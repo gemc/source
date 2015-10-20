@@ -75,7 +75,10 @@ class detector
 		
 		string                 type;   ///< solid type. This follows the GEANT4 definitions
 		vector<double>   dimensions;   ///< vector of dimensions. Size, units depends on solid type
-		
+
+		G4ThreeVector pLowNorm;        ///< Vector describing the outside Normal at -z for a cut tube geometry
+		G4ThreeVector pHighNorm;       ///< Vector describing the outside Normal at +z for a cut tube geometry
+
 		string             material;   ///< Volume Material name.
 		string             magfield;   ///< Magnetic Field. The string "no" means that the field is inherited from the mother volume.
 		
