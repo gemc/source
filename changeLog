@@ -13,6 +13,9 @@ Future of gemc:
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
 - remove obsolete cpp materials
 
+10/21/15
+- typo fixed in htcc hit process
+
 10/20/15
 - merged from Nick: added time infos to htcc routine
 
