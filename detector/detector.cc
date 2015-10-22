@@ -234,6 +234,8 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	// ####
 	if(type == "CTube")
 	{
+	  G4ThreeVector pLowNorm;
+	  G4ThreeVector pHighNorm;
 		if(dimensions.size() != 11)
 		{
 			cout << hd_msg << " Fatal Error: the number of dimensions for " << name
