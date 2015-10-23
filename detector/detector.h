@@ -75,7 +75,7 @@ class detector
 		
 		string                 type;   ///< solid type. This follows the GEANT4 definitions
 		vector<double>   dimensions;   ///< vector of dimensions. Size, units depends on solid type
-		
+
 		string             material;   ///< Volume Material name.
 		string             magfield;   ///< Magnetic Field. The string "no" means that the field is inherited from the mother volume.
 		
