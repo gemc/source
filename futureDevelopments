@@ -3,6 +3,7 @@ GEMC Future Development
 New features:
 
 - hybrid banks (for FADC)
+- multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
 - JAVA API
@@ -15,7 +16,7 @@ Code Improvements:
 - move timewindow to general generator tab - make all other the same
 - remove obsolete cpp materials
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string) - check performance hit
-
+- speed up the search for same identifier start with 
 
 Code Reorganization:
 - bring output structure out of gemc - general library

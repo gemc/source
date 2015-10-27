@@ -93,8 +93,6 @@ map<string, detector> buildDetector(map<string, detectorFactoryInMap> detectorFa
 	if(hall_dims.size() != 3)
 		cout << "   !!! Error: Hall dimensions is not a vector of 3 numbers. Example of dimensions: \"20*m, 20*m, 20*m\"" << endl;
 	
-	
-	
 	detector queen;
 	queen.name        = "root";
 	queen.mother      = "akasha";
@@ -311,7 +309,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
 
 
-			// 15: sensitivity
+	// 15: sensitivity
 	det.sensitivity = gt.data[15];
 
 	if(det.sensitivity != "no")
@@ -326,7 +324,6 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	
 	
 	// 18 detector system
-	
 	det.system  = gt.data[18];
 	det.factory = gt.data[19];
 
@@ -341,35 +338,6 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		cout << det;	
 	return det;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

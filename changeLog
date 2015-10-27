@@ -1,7 +1,6 @@
 Future of gemc:
 
-- hybrid banks
-- physics details choices (disable some physics, etc)
+- hybrid banks, multihit
 - culling options combobox
 - clone viewer
 - add viewer with specific detectors
@@ -12,6 +11,9 @@ Future of gemc:
 - bring splash screen out of gemc
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
 - remove obsolete cpp materials
+
+- add cosmic_beam option
+- production cut / threshold valid for the whole system
 
 10/21/15
 - typo fixed in htcc hit process

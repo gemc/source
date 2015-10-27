@@ -247,7 +247,7 @@ void MDetectorConstruction::isSensitive(detector detect)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	
 	string sensi   = detect.sensitivity;
-		
+	
 	// TODO: Add ProductionCutOnly 0.01*mm
 	// for (non) sensitive volumes that require that
 	// Region map has stringify(cut/mm) as key

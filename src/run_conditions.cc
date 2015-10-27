@@ -133,7 +133,6 @@ map<string, string> runConditions::getDetectorConditionsMap()
 {
 	map<string, string> detmap;
 	
-	
 	// filling name, rotation, position modifications from gcard
 	for(map<string, detectorCondition>::iterator it = detectorConditionsMap.begin(); it != detectorConditionsMap.end(); it++)
 	{

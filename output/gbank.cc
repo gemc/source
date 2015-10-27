@@ -144,14 +144,6 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	// flux bank integrated digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
 	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information integrated over the hit");

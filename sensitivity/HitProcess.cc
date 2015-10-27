@@ -38,7 +38,6 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 	
 	trueInfos tInfos(aHit);
 	
-	
 	if(WRITEBANK)
 	{
 		raws["hitn"]    = hitn;
@@ -92,7 +91,6 @@ map< string, vector <double> > HitProcess::allRaws(MHit* aHit, int hitn)
 
 
 	vector<double> hitnd(pids.size(), (double) hitn);
-	
 	
 	vector<G4ThreeVector>  gpos = aHit->GetPos();
 	vector<G4ThreeVector>  lpos = aHit->GetLPos();
