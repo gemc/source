@@ -106,6 +106,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("mvy",    21,   "Rd", "y component of primary vertex of the mother of the particle entering the sensitive volume");
 	abank.load_variable("mvz",    22,   "Rd", "z component of primary vertex of the mother of the particle entering the sensitive volume");
 	abank.load_variable("avg_t",  23,   "Rd", "Average time");
+	abank.load_variable("nsteps", 24,   "Ri", "Number of steps");
 	abank.load_variable("hitn",   99,   "Ri", "Hit Number");
 	abank.orderNames();
 	banks["raws"] = abank;

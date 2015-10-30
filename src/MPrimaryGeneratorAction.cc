@@ -363,6 +363,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	{
 		for(int p=0; p<PBUNCH; p++)
 		{
+			
 			// luminosity momentum
 			L_Mom   = L_mom/MeV   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
 			L_Theta = L_theta/rad + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
@@ -385,6 +386,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticlePosition(LUMI_V);
 			particleGun->  SetParticleTime(TBUNCH*b);
 			particleGun->GeneratePrimaryVertex(anEvent);
+			
+			if(GEN_VERBOSITY > 5)
+				cout << " Bunch " << b << "  particle no. " << p << endl;
+
 		}
 	}
 	
@@ -427,6 +432,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 	
+	
+	if(GEN_VERBOSITY > 5)
+		cout << " Generation done " << endl;
 }
 
 

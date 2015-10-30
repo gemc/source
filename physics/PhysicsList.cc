@@ -73,7 +73,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	}
 	
 	G4LossTableManager::Instance();
-	defaultCutValue = 0.7*mm;
+	defaultCutValue = gemcOpt.optMap["PRODUCTIONCUT"].arg;
 	cutForGamma     = defaultCutValue;
 	cutForElectron  = defaultCutValue;
 	cutForPositron  = defaultCutValue;

@@ -10,12 +10,12 @@
 using namespace CLHEP;
 
 
-sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string variation, string system)
+sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string variation, string s)
 {
 	double verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
+	name             = SD;
 	thisFactory      = factory + " " + variation;
-	
-	name = SD;
+	system           = s;
 	
 	// iF SD is FLUX, returns special sensitiveID
 	if(SD == "flux")

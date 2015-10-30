@@ -37,7 +37,8 @@ class sensitiveID
 		double         pedestal;         ///< pedestal
 		double         delay;            ///< time from PMT face to signal
 		string         thisFactory;      ///< Factory used to generate the sensitive detector
-		
+		string         system;           ///< Factory used to generate the sensitive detector
+	
 		// class constructor
 		sensitiveID(string name, goptions, string factory, string variation, string system);
 		sensitiveID(){;}

@@ -47,14 +47,18 @@ class MDetectorConstruction : public G4VUserDetectorConstruction
 		map<string, G4ProductionCuts*>   SePC_Map;
 		set<string>                      activeFields;
 	
+	
+	
 	private:		
 		detector findDetector(string);   // returns map detector
 		void buildDetector(string);      // build detector
 		
 	public:
 		void isSensitive(detector);
+		void assignRegions(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector
 		void hasMagfield(detector);
 		void buildMirrors();
+		void assignRegions();
 		void updateGeometry();
 		G4VPhysicalVolume* Construct();
 	
