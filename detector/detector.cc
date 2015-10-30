@@ -802,7 +802,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	// Logical Volume Basic Constructor
 	// If LogicV exists already, this is a copy
 	if(LogicV == 0)
-		LogicV = new G4LogicalVolume(SolidV, (*MMats)[material], name);
+		LogicV = new G4LogicalVolume(SolidV, (*MMats)[material], name, 0, 0, 0, true);
 	if(name == "root") LogicV->SetVisAttributes(G4VisAttributes::GetInvisible());
 	else LogicV->SetVisAttributes(VAtts);
 	

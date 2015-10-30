@@ -504,11 +504,11 @@ void goptions::setGoptions()
 	optMap["PHYSICS"].type = 1;
 	optMap["PHYSICS"].ctgr = "physics";
 		
-	optMap["HALL_MATERIAL"].args = "G4_AIR";
+	optMap["HALL_MATERIAL"].args = "Vacuum";
 	optMap["HALL_MATERIAL"].help = "Composition of the Experimental Hall. \n";
 	optMap["HALL_MATERIAL"].help += "            Air normal simulation\n";
-	optMap["HALL_MATERIAL"].help += "            Air_Opt Simulation with Optical Physics (default)\n";
-	optMap["HALL_MATERIAL"].help += "            Vacuum\n";
+	optMap["HALL_MATERIAL"].help += "            Air_Opt Simulation with Optical Physics\n";
+	optMap["HALL_MATERIAL"].help += "            Vacuum (default)\n";
 	optMap["HALL_MATERIAL"].name = "Composition of the Experimental Hall";
 	optMap["HALL_MATERIAL"].type = 1;
 	optMap["HALL_MATERIAL"].ctgr = "physics";
@@ -572,7 +572,13 @@ void goptions::setGoptions()
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "physics";
 
+	optMap["PRODUCTIONCUT"].arg   = 10;
+	optMap["PRODUCTIONCUT"].help  = "Production cut for root, in mm\n";
+	optMap["PRODUCTIONCUT"].name  = "Production cut for root, in mm";
+	optMap["PRODUCTIONCUT"].type  = 0;
+	optMap["PRODUCTIONCUT"].ctgr  = "physics";
 	
+
 	
 	// General
 	optMap["DF"].args  = "no";

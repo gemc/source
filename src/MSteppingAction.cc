@@ -23,13 +23,13 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 	G4ThreeVector   pos   = aStep->GetPostStepPoint()->GetPosition();      ///< Global Coordinates of interaction
 	G4Track*        track = aStep->GetTrack();
-	string          volname(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName());
+	//string          volname(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName());
 	
 	if(fabs(pos.x()) > max_x_pos ||
 	   fabs(pos.y()) > max_y_pos ||
 	   fabs(pos.z()) > max_z_pos ) track->SetTrackStatus(fStopAndKill);   ///< Killing track if outside of interest region
 	
-	if(track->GetKineticEnergy() < energyCut )
+	if(track->GetKineticEnergy() < energyCut)
 		track->SetTrackStatus(fStopAndKill);
 	
 	// Anything passing material "Kryptonite" is killed
@@ -46,6 +46,8 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 			track->SetTrackStatus(fStopAndKill);
 		}
 	}
+	
+	//	cout << " track id " << track->GetTrackID() << endl;
 	
 	
 //	// checking if a step is stuck in the same position

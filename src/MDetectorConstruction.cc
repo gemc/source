@@ -11,6 +11,7 @@
 #include "G4VisAttributes.hh"
 #include "G4SDManager.hh"
 #include "G4OpBoundaryProcess.hh"
+#include "G4RegionStore.hh"
 
 // gemc headers
 #include "MDetectorConstruction.h"
@@ -89,9 +90,12 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	// ########################################################################
 	vector<string> relatives;
 	string mom, kid;
+	
+	vector<string> regions;  // all volumes for which mom is "root"
+
 	for( map<string, detector>::iterator i =  hallMap->begin(); i!=hallMap->end(); i++)
 	{
-		// don't build anything if it doesn't exist
+		// don't build anything if the exist flag is not set
 		if(i->second.exist == 0) continue;
 		
 		// put the first volume in relatives
@@ -103,11 +107,17 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			detector kid = findDetector(relatives.back());
 			detector mom = findDetector(kid.mother);
 			
+			// if the mother system is different than the kid system
+			// then the kid will define a new region
+			if(mom.system != kid.system)
+				regions.push_back(kid.name);
+
+			
 			// Mom doesn't exists in the hallMap. Stopping everything.
 			if(mom.name != "akasha"  && mom.name == "notfound")
 			{
 				cout << hd_msg << "  Mom was not found for <" << relatives.back() << ">. "
-				<< " We have a No Child Left Behind policy. Exiting. " << endl << endl;
+				     << " We have a No Child Left Behind policy. Exiting. " << endl << endl;
 				exit(0);
 			}
 			
@@ -116,8 +126,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			{
 				for(unsigned int ir=0; ir<relatives.size()-1; ir++) cout << "\t";
 				cout << hd_msg << " Checking " << kid.name << ", child of " << mom.name
-				<< ", for a living ancestor. "
-				<< " This Geneaology Depth is " << relatives.size() << "." << endl;
+				               << ", for a living ancestor. "
+				               << " This Geneaology Depth is " << relatives.size() << "." << endl;
 			}
 			
 			// Mom is built, kid not built yet.
@@ -127,8 +137,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 				{
 					for(unsigned int ir=0; ir<relatives.size()-1; ir++) cout << "\t";
 					cout << hd_msg << "  Found:  " << kid.name
-					<< " is not built yet but its mommie " << mom.name << " is."
-					<< " Building " << kid.name << " of type: "  << kid.type << "..." << endl;
+					     << " is not built yet but its mommie " << mom.name << " is."
+					     << " Building " << kid.name << " of type: "  << kid.type << "..." << endl;
 				}
 				
 				// Check kid dependency on copies
@@ -228,12 +238,18 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 				
 				relatives.pop_back();
 			}
-			
 		}
 	}
 	
 	// build mirrors
 	buildMirrors();
+	
+	
+	// assign regions
+	// includes root
+	regions.push_back("root");
+	assignRegions(regions);
+	
 	
 	return (*hallMap)["root"].GetPhysical();
 }
@@ -247,10 +263,6 @@ void MDetectorConstruction::isSensitive(detector detect)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	
 	string sensi   = detect.sensitivity;
-	
-	// TODO: Add ProductionCutOnly 0.01*mm
-	// for (non) sensitive volumes that require that
-	// Region map has stringify(cut/mm) as key
 	
 	if(sensi != "no" && sensi.find("mirror:") == string::npos)
 	{
@@ -272,12 +284,6 @@ void MDetectorConstruction::isSensitive(detector detect)
 			// passing detector infos to access factory, runMin, runMax and variation
 			SeDe_Map[sensi] = new sensitiveDetector(sensi, gemcOpt, detect.factory, detect.run, detect.variation, detect.system);
 			
-			// Creating G4 Region, assigning Production Cut to it.
-			SeRe_Map[sensi] = new G4Region(sensi);
-			SePC_Map[sensi] = new G4ProductionCuts;
-			SePC_Map[sensi] ->SetProductionCut(SeDe_Map[sensi]->SDID.prodThreshold);
-			SeRe_Map[sensi]->SetProductionCuts(SePC_Map[sensi]);
-			
 			// Pass Detector Map Pointer to Sensitive Detector
 			SeDe_Map[sensi]->hallMap        = hallMap;
 			
@@ -287,17 +293,6 @@ void MDetectorConstruction::isSensitive(detector detect)
 		
 		// Setting Max Acceptable Step for this SD
 		detect.SetUserLimits(new G4UserLimits(SeDe_Map[sensi]->SDID.maxStep, SeDe_Map[sensi]->SDID.maxStep));
-		
-		// checking that the sensitive detector is actually built
-		map<string, G4Region*>::iterator  itrRE = SeRe_Map.find(sensi);
-		if(itrRE != SeRe_Map.end())
-			SeRe_Map[sensi]->AddRootLogicalVolume(detect.GetLogical());
-		
-		else
-		{
-			cout << hd_msg << " Attention: " << sensi << " doesn't exist in the sensitive detector list. Aborting. " << endl;
-			exit(9);
-		}
 	}
 }
 
@@ -519,14 +514,13 @@ void MDetectorConstruction::buildMirrors()
 				if(surfaceFinish == "polishedfrontpainted") mirrorSurfaces.back()->SetFinish(polishedfrontpainted);  // smooth top-layer (front) paint
 				if(surfaceFinish == "polishedbackpainted")  mirrorSurfaces.back()->SetFinish(polishedbackpainted);   // same is 'polished' but with a back-paint
 				
-				if(surfaceFinish == "ground")               mirrorSurfaces.back()->SetFinish(ground);                              // rough surface
-				if(surfaceFinish == "groundfrontpainted")   mirrorSurfaces.back()->SetFinish(groundfrontpainted);      // rough top-layer (front) paint
-				if(surfaceFinish == "groundbackpainted")    mirrorSurfaces.back()->SetFinish(groundbackpainted);        // same as 'ground' but with a back-paint
+				if(surfaceFinish == "ground")               mirrorSurfaces.back()->SetFinish(ground);                // rough surface
+				if(surfaceFinish == "groundfrontpainted")   mirrorSurfaces.back()->SetFinish(groundfrontpainted);    // rough top-layer (front) paint
+				if(surfaceFinish == "groundbackpainted")    mirrorSurfaces.back()->SetFinish(groundbackpainted);     // same as 'ground' but with a back-paint
 				
 				
-				if(surfaceFinish == "polishedlumirrorair")  mirrorSurfaces.back()->SetFinish(polishedlumirrorair);    // mechanically polished surface, with lumirror
+				if(surfaceFinish == "polishedlumirrorair")  mirrorSurfaces.back()->SetFinish(polishedlumirrorair);   // mechanically polished surface, with lumirror
 				if(surfaceFinish == "polishedlumirrorglue") mirrorSurfaces.back()->SetFinish(polishedlumirrorglue);  // mechanically polished surface, with lumirror & meltmount
-//				if(surfaceFinish == "") mirrorSurfaces.back()->SetFinish();
 
 				
 				// surface model
@@ -561,10 +555,6 @@ void MDetectorConstruction::buildMirrors()
 					// why it's not dumping all properties?
 					mirrorsMPT.back()->DumpTable();
 				}
-
-				
-				
-				
 			}
 			else
 			{
@@ -572,21 +562,52 @@ void MDetectorConstruction::buildMirrors()
 				exit(0);
 
 			}
-			
-			
 		}
-		
-		
-		
-		
 	}
-	
-	
-	
- 
-	
-	
 }
+
+void MDetectorConstruction::assignRegions(vector<string> volumes)
+{
+	for(unsigned int i=0; i<volumes.size(); i++)
+	{
+		detector regionDet = findDetector(volumes[i]);
+	
+		// looking in the sensitive detector map for the SD with matching system
+		for(map<string, sensitiveDetector*>::iterator itr = SeDe_Map.begin(); itr != SeDe_Map.end(); itr++)
+		{
+			if(regionDet.system == itr->second->SDID.system)
+			{
+				// region name is volume + system
+				string regionName = volumes[i] + "_" + regionDet.system;
+				
+				map<string, G4Region*>::iterator itrr = SeRe_Map.find(regionName);
+				
+				// if not found, add new region. Otherwise it's already there.
+				if(itrr == SeRe_Map.end())
+				{
+					// Creating G4 Region, assigning Production Cut to it.
+					// assigning the logical volume to the region (this will apply the region to all daughters)
+					SeRe_Map[regionName] = new G4Region(regionName);
+					SeRe_Map[regionName]->AddRootLogicalVolume(regionDet.GetLogical());
+
+					SePC_Map[regionName] = new G4ProductionCuts;
+					SePC_Map[regionName] ->SetProductionCut(itr->second->SDID.prodThreshold);
+					
+					//G4Region* thisRegion = G4RegionStore::GetInstance()->GetRegion(regionName);
+					SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
+					//thisRegion->SetProductionCuts(SePC_Map[regionName]);
+					
+				}
+			}
+		}		
+	}
+}
+
+
+
+
+
+
 
 
 

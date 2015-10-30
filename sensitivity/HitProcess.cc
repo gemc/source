@@ -54,7 +54,6 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 		raws["avg_lx"]  = tInfos.lx;
 		raws["avg_ly"]  = tInfos.ly;
 		raws["avg_lz"]  = tInfos.lz;
-		raws["avg_t"]   = tInfos.time;
 		raws["px"]      = aHit->GetMom().getX();
 		raws["py"]      = aHit->GetMom().getY();
 		raws["pz"]      = aHit->GetMom().getZ();
@@ -64,6 +63,8 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 		raws["mvx"]     = aHit->GetmVert().getX();
 		raws["mvy"]     = aHit->GetmVert().getY();
 		raws["mvz"]     = aHit->GetmVert().getZ();
+		raws["avg_t"]   = tInfos.time;
+		raws["nsteps"]  = aHit->GetPIDs().size();
 	}
 	return raws;
 }

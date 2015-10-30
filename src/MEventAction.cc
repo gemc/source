@@ -119,6 +119,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	MHitCollection* MHC;
 	int nhits;
 	
+	if(evtN%Modulo == 0 )
+		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
+	
+	
 	// building the tracks database with all the tracks in all the hits
 	// if SAVE_ALL_MOTHERS is set
 	set<int> track_db;

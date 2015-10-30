@@ -15,6 +15,16 @@ Future of gemc:
 - add cosmic_beam option
 - production cut / threshold valid for the whole system
 
+10/30/15
+- detector: added explicit optimization in the constructor
+- default cut coming from PRODUCTIONCUT flag now instead of being hardcoded. Default value is 1cm
+- output: added nsteps in the true info banks
+- added system in the sensitive detector class
+- production cut will now affect all volumes in a system rather than just the sensitive volumes
+- better verbosity for event action
+- default material reverted to vacuum
+
+
 10/21/15
 - typo fixed in htcc hit process
 

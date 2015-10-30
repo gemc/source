@@ -17,6 +17,8 @@ Code Improvements:
 - remove obsolete cpp materials
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string) - check performance hit
 - speed up the search for same identifier start with 
+- add generic "system" that contains a list detectors, sensitive det, materials?
+
 
 Code Reorganization:
 - bring output structure out of gemc - general library
