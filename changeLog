@@ -16,6 +16,11 @@ Future of gemc:
 - production cut / threshold valid for the whole system
 
 10/30/15
+- preparing for FADC mode 1
+- fixing region assignment in case some volume is an operation
+
+
+10/30/15
 - detector: added explicit optimization in the constructor
 - default cut coming from PRODUCTIONCUT flag now instead of being hardcoded. Default value is 1cm
 - output: added nsteps in the true info banks

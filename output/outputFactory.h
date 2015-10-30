@@ -49,7 +49,12 @@ class hitOutput
 		// treated Volt signal as a function of time
 		// DISABLED by default
 		map< double, double >  signalVT;
-		
+	
+		// quantized signal as a function of time bunch
+		// DISABLED by default
+		map< int, int >  quantumS;
+	
+	
 		// multi - digitized information from step by step
 		// DISABLED by default
 		map< string, vector <int> >  multiDgt;
@@ -61,8 +66,7 @@ class hitOutput
 		void setAllRaws  (map< string, vector <double> > r) {allRaws  = r;}
 		void setSignal   (map< double, double > s)          {signalVT = s;}
 		void setMultiDgt (map< string, vector <int> > d)    {multiDgt = d;}
-		
-		
+	
 		void setOneRaw    (string s, double d)              {raws[s] = d;}
 		void setOneRaw    (string s, int i)                 {raws[s] = (double) i;}
 

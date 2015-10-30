@@ -38,8 +38,7 @@ using namespace std;
 // These Bank Types ID can be left hardcoded here
 #define DETECTOR_BANK_ID 0
 
-
-// geant4 raw information, integrated over the hit
+// true information, integrated over the hit
 // this number adds to the TAG of the mother bank
 // and it's added to the tag of the variables
 // example:
@@ -50,7 +49,7 @@ using namespace std;
 // Variable ID must be different from zero
 #define RAWINT_ID 1
 
-// geant4 digitized information, integrated over the hit
+// digitized information, integrated over the hit
 // this number adds to the TAG of the mother bank
 // and it's added to the tag of the variables
 // example:
@@ -61,18 +60,22 @@ using namespace std;
 // Variable ID must be different from zero
 #define DGTINT_ID 2
 
-
-// geant4 raw information, step by step
+// true information, step by step
 // identified by "D" in the variable type
 #define RAWSTEP_ID 3
 
-// geant4 digitized information, multi hit (step by step)
+// digitized information, multi hit (step by step)
 // identified by "M" in the variable type
 #define DGTMULTI_ID 4
 
-// geant4 voltage versus time info
+// voltage versus time info
 // identified by "V" in the variable type
 #define VOLTAGETIME_ID 5
+
+// quantum signal: it's the processed signal every # nanoseconds
+// (bunch time parameter given by user)
+// identified by "Q" in the variable type
+#define QUANTUM_SIGNAL_ID 6
 
 
 /// \class gBank

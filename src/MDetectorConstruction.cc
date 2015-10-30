@@ -109,7 +109,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			
 			// if the mother system is different than the kid system
 			// then the kid will define a new region
-			if(mom.system != kid.system)
+			if(mom.system != kid.system && kid.material != "Component")
 				regions.push_back(kid.name);
 
 			
@@ -176,8 +176,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 				{
 					int sstart = 10;
 					if(kid.type.find("Operation:~") == 0 || kid.type.find("Operation:@") == 0 ) sstart = 11;
-					
-					
 					
 					string operation(kid.type, sstart, kid.type.size());
 					vector<string> operands = get_strings(replaceCharWithChars(operation, "-+*/", " "));
@@ -568,17 +566,21 @@ void MDetectorConstruction::buildMirrors()
 
 void MDetectorConstruction::assignRegions(vector<string> volumes)
 {
+	double VERB    = gemcOpt.optMap["HIT_VERBOSITY"].arg ;
+
 	for(unsigned int i=0; i<volumes.size(); i++)
 	{
-		detector regionDet = findDetector(volumes[i]);
-	
 		// looking in the sensitive detector map for the SD with matching system
 		for(map<string, sensitiveDetector*>::iterator itr = SeDe_Map.begin(); itr != SeDe_Map.end(); itr++)
 		{
+			detector regionDet = findDetector(volumes[i]);
+
 			if(regionDet.system == itr->second->SDID.system)
 			{
+
 				// region name is volume + system
-				string regionName = volumes[i] + "_" + regionDet.system;
+				string regionName = volumes[i] + "_" + get_info(regionDet.system, "/").back();
+				
 				
 				map<string, G4Region*>::iterator itrr = SeRe_Map.find(regionName);
 				
@@ -593,9 +595,10 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 					SePC_Map[regionName] = new G4ProductionCuts;
 					SePC_Map[regionName] ->SetProductionCut(itr->second->SDID.prodThreshold);
 					
-					//G4Region* thisRegion = G4RegionStore::GetInstance()->GetRegion(regionName);
+					if(VERB > 3)
+						cout << "  Region " << regionName << " activated for volume " << regionDet.name << " with range: " << itr->second->SDID.prodThreshold << endl;
+					
 					SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
-					//thisRegion->SetProductionCuts(SePC_Map[regionName]);
 					
 				}
 			}
