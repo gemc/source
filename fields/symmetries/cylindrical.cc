@@ -68,15 +68,17 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 			// checking map consistency for first coordinate
 			if( (min1  + i1*cell1 - d1)/d1 > 0.001)
 			{
-				cout << "   !! Error:  coordinate index wrong. Map point should be " <<  min1  + i1*cell1
-				     << " but it's  " << d1 << " instead." << endl;
+				cout << "   !! Error: first coordinate index wrong. Map point should be " <<  min1  + i1*cell1
+				     << " but it's  " << d1 << " instead."  << endl;
+                cout << " min1: " << min1 << " cell1: " << cell1 << " unit1: " << unit1 << " i1: " << i1 << endl;
 			}
 			// checking map consistency for second coordinate
 			if( (min2  + i2*cell2 - d2)/d2 > 0.001)
 			{
-				cout << "   !! Error:  coordinate index wrong. Map point should be " <<  min2  + i2*cell2
+				cout << "   !! Error: second coordinate index wrong. Map point should be " <<  min2  + i2*cell2
 				     << " but it's  " << d2 << " instead." << endl;
-			}			
+                cout << " min2: " << min2 << " cell2: " << cell2 << " unit2: " << unit2 << " i2: " << i2 << endl;
+			}
 
 			// calculating index 
 			unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
