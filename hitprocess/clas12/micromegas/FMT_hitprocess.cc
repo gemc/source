@@ -14,7 +14,8 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// FMT ID:
 	// layer, type, sector, strip
 	
-	int layer  = 2*identity[0].id + identity[1].id - 2 ;
+	int layer  = 1*identity[0].id + identity[1].id - 1 ; // modified on 7/27/2015 to match new geometry (Frederic Georges)
+	//int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
 	
@@ -47,7 +48,8 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	class fmt_strip fmts;
 	fmts.fill_infos();
 	
-	int layer  = 2*yid[0].id + yid[1].id - 2 ;
+	int layer  = 1*yid[0].id + yid[1].id - 1 ; // modified on 7/27/2015 to match new geometry (Frederic Georges)
+	//int layer  = 2*yid[0].id + yid[1].id - 2 ;
 	int sector = yid[2].id;
 	
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);

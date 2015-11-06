@@ -150,16 +150,18 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 	unsigned int IT = floor( ( TC - startMap[0] ) / cellSize[0] );
 	unsigned int IL = floor( ( LC - startMap[1] ) / cellSize[1] );
 
-	// checking if the point is closer to the top of the cell
-	if( fabs( startMap[0] + IT*cellSize[0] - TC) > fabs( startMap[0] + (IT+1)*cellSize[0] - TC)  ) IT++;
-	if( fabs( startMap[1] + IL*cellSize[1] - LC) > fabs( startMap[1] + (IL+1)*cellSize[1] - LC)  ) IL++;
+	if (TC < startMap[0] || LC < startMap[1]) return; // outside map, returning no field
 
-	// outside map, returning no field
-	if(IT>=np[0] || IL>=np[1]) return;
-	
 	// no interpolation
 	if(interpolation == "none")
 	{
+ 	        // checking if the point is closer to the top of the cell
+	        if( fabs( startMap[0] + IT*cellSize[0] - TC) > fabs( startMap[0] + (IT+1)*cellSize[0] - TC)  ) IT++;
+		if( fabs( startMap[1] + IL*cellSize[1] - LC) > fabs( startMap[1] + (IL+1)*cellSize[1] - LC)  ) IL++;
+
+		// outside map, returning no field
+		if(IT>=np[0] || IL>=np[1]) return;
+	
 		if(symmetry == "cylindrical-z") 
 		{
 			Bfield[0] = B1_2D[IT][IL] * cos(phi);
@@ -179,6 +181,42 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 			Bfield[2] = B1_2D[IT][IL] * cos(phi);
 		}
 	}
+	else if (interpolation == "linear")
+	  {
+	    // outside map, returning no field
+	    if (IT+1 >= np[0] || IL+1 >= np[1]) return;
+
+	    // relative position within cell
+	    double xtr = (TC - (startMap[0] + IT*cellSize[0])) / cellSize[0];
+	    double xlr = (LC - (startMap[1] + IL*cellSize[1])) / cellSize[1];
+
+	    double b10 = B1_2D[IT][IL] * (1.0 - xtr)   + B1_2D[IT+1][IL] * xtr;
+	    double b11 = B1_2D[IT][IL+1] * (1.0 - xtr) + B1_2D[IT+1][IL+1] * xtr;
+	    double b1 = b10 * (1.0 - xlr) + b11 * xlr;
+	    double b20 = B2_2D[IT][IL] * (1.0 - xtr)   + B2_2D[IT+1][IL] * xtr;
+	    double b21 = B2_2D[IT][IL+1] * (1.0 - xtr) + B2_2D[IT+1][IL+1] * xtr;
+	    double b2 = b20 * (1.0 - xlr) + b21 * xlr;
+
+	    if(symmetry == "cylindrical-z") 
+	      {
+		Bfield[0] = b1 * cos(phi);
+		Bfield[1] = b1 * sin(phi);
+		Bfield[2] = b2;
+	      }
+	    else if(symmetry == "cylindrical-x")
+	      {
+		Bfield[0] = b2;
+		Bfield[1] = b1 * cos(phi);
+		Bfield[2] = b1 * sin(phi);
+	      }
+	    else if(symmetry == "cylindrical-y")
+	      {
+		Bfield[1] = b2;
+		Bfield[0] = b1 * sin(phi);
+		Bfield[2] = b1 * cos(phi);
+	      }
+	  }
+	  else 	cout << "unkown field interpolation method, field is not on!!!" << endl;
 
 	// we don't worry about computer speed
 	// if verbosity is set this high
