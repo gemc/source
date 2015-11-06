@@ -9,8 +9,8 @@ class fmt_strip
 
 		double interlayer;       // distance between 2 layers of a superlayer
 		double intersuperlayer;  // distance between 2 superlayers
-		double R_max;         // outer radius of strip part
-		double R_min;         // inner radius of strip part
+		double R_max;            // outer radius of strip part
+		double R_min;            // inner radius of strip part
 
 		double Z_1stlayer;       // z position of the 1st layer
 
@@ -23,7 +23,8 @@ class fmt_strip
 		double sigma_td;         // current value of the transverse diffusion
 		double w_i;              // mean ionization potential
 		int Nel;                 // number of electrons (Nt) for a given hit
-		double u_real; // u of the hit after transverse diffusion
+		double y_real; 			 // y position of the hit after transverse diffusion
+		double x_real;			 // x position of the hit after transverse diffusion
 		void fill_infos();
 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
