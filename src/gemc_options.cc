@@ -470,7 +470,23 @@ void goptions::setGoptions()
 	optMap["SIGNALVT"].type = 1;
 	optMap["SIGNALVT"].ctgr = "output";
 	
+	// voltage versus time resolution, in ns
+	optMap["VTRESOLUTION"].arg = 0.1;
+	optMap["VTRESOLUTION"].help = "Voltage versus time resolution, in ns";
+	optMap["VTRESOLUTION"].name = "Voltage versus time resolution, in ns.";
+	optMap["VTRESOLUTION"].type = 0;
+	optMap["VTRESOLUTION"].ctgr = "output";
 	
+	// sampling time of electronics (typically FADC), electronic event time size
+	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
+	// the default for event time size is 2 microsecond, for a total of 500 ADC points / channel
+	optMap["TSAMPLING"].args = "4, 2000";
+	optMap["TSAMPLING"].help = "Sampling time of electronics (typically FADC)";
+	optMap["TSAMPLING"].name = "Sampling time of electronics (typically FADC)";
+	optMap["TSAMPLING"].type = 1;
+	optMap["TSAMPLING"].ctgr = "output";
+	
+
 	// Physics
 	optMap["PHYSICS"].args = "FTFP_BERT";
 	optMap["PHYSICS"].help =  "    Physics List. The lists are modular and can be added together. \n";

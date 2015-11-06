@@ -219,7 +219,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			exit(0);
 		}
 		
-		SolidV = new G4Tubs(name,            ///< name
+		SolidV = new G4Tubs(name,        ///< name
 							dimensions[0],   ///< Inner radius
 							dimensions[1],   ///< Outer radius
 							dimensions[2],   ///< Half length in z
@@ -234,8 +234,6 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	// ####
 	if(type == "CTube")
 	{
-	  G4ThreeVector pLowNorm;
-	  G4ThreeVector pHighNorm;
 		if(dimensions.size() != 11)
 		{
 			cout << hd_msg << " Fatal Error: the number of dimensions for " << name
@@ -244,17 +242,15 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			cout << "      This does not match a G4CutTubs. Exiting" << endl << endl;
 			exit(0);
 		}
-		pLowNorm = G4ThreeVector(dimensions[5], dimensions[6], dimensions[7]);
-		pHighNorm = G4ThreeVector(dimensions[8], dimensions[9], dimensions[10]);
 
-		SolidV = new G4CutTubs(name,            ///< name
+		SolidV = new G4CutTubs(name,  ///< name
 				       dimensions[0],   ///< Inner radius
 				       dimensions[1],   ///< Outer radius
 				       dimensions[2],   ///< Half length in z
 				       dimensions[3],   ///< The starting phi angle
 				       dimensions[4],   ///< Delta Phi angle of the segment
-				       pLowNorm,        ///< Outside Normal at -z
-				       pHighNorm);      ///< Outside Normal at +z
+						 G4ThreeVector(dimensions[5], dimensions[6], dimensions[7]),        ///< Outside Normal at -z
+				       G4ThreeVector(dimensions[8], dimensions[9], dimensions[10]));      ///< Outside Normal at +z
 		
 		built = 1;
 	}

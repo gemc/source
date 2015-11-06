@@ -13,6 +13,8 @@
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 {
+	setlocale(LC_NUMERIC, "en_US");
+
 	int np_1     =  map->getCoordinateWithSpeed(0).np;
 	int np_2     =  map->getCoordinateWithSpeed(1).np;	
 	double min1  =  map->getCoordinateWithSpeed(0).min;
@@ -52,8 +54,7 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 		tmp = string(ctmp);
 	}
 
-	// now reading map
-	// values as read from map
+	// now reading map values
 	for(int i1 = 0; i1<np_1 ; i1++)
 	{
 		for(int i2 = 0; i2<np_2 ; i2++)
@@ -64,7 +65,7 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 			d2 *= unit2;
 			b1 *= scale;
 			b2 *= scale;
-						
+
 			// checking map consistency for first coordinate
 			if( (min1  + i1*cell1 - d1)/d1 > 0.001)
 			{

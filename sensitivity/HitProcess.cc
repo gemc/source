@@ -167,15 +167,17 @@ map< string, vector <double> > HitProcess::allRaws(MHit* aHit, int hitn)
 
 
 
-map< double, double >  HitProcess :: signalVT(MHit* aHit, int hitn)
+map< double, double >  HitProcess :: signalVT(MHit* aHit)
 {
-	// HARDCODING TIME RESOLUTION HERE
-	double tres = 0.1*ns;
-	
+	// Time resolution is an external parameter
+	double tres = gemcOpt.optMap["VTRESOLUTION"].arg;
 	
 	map< double, double > VT;
 	sensitiveID SID = aHit->GetSDID();
 	
+	// signal parameters
+	double par[4];
+
 	// setting signal parameters
 	par[0] = SID.delay;
 	par[1] = SID.riseTime;
@@ -195,7 +197,7 @@ map< double, double >  HitProcess :: signalVT(MHit* aHit, int hitn)
 	{
 		if(tmin > times[s]) tmin = times[s];
 		if(tmax < times[s]) tmax = times[s];
-	//	cout << " step " << s+1 << " time " << times[s] << "  tmin " << tmin << "  tmax " << tmax << endl;
+		//	cout << " step " << s+1 << " time " << times[s] << "  tmin " << tmin << "  tmax " << tmax << endl;
 	}
 	
 	// adding 1/2 DELAY to tmin
@@ -207,7 +209,7 @@ map< double, double >  HitProcess :: signalVT(MHit* aHit, int hitn)
 	unsigned int nt = (int) (tmax - tmin)/tres;
 
 
-	//cout <<  "  tmin " << tmin << "  tmax " << tmax << "  nt " << nt << endl;
+	// cout <<  "  tmin " << tmin << "  tmax " << tmax << "  nt " << nt << endl;
 	
 	for(unsigned ti=0; ti<nt; ti++)
 	{
@@ -236,6 +238,67 @@ map< double, double >  HitProcess :: signalVT(MHit* aHit, int hitn)
 	return VT;
 }
 
+
+
+map< int, int > HitProcess :: quantumS(map< double, double > vts, sensitiveID sdid)
+{
+	// voltage signal time resolution is an external parameter
+	double sres = gemcOpt.optMap["VTRESOLUTION"].arg;
+
+	// sampling time of electronics (typically FADC)
+	double tsampling = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
+
+	// time resolution is an external parameter
+	double tres = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
+	
+	// quantum signal, all initialized to zero
+	// number of elements in the map is total time / resolution
+	map< int, int > QS;
+	for(int i=0; i<tsampling/tres; i++)
+	{
+		QS[i*4] = 0;
+	}
+	
+	map< int, int > :: iterator   qsi = QS.begin();
+	map<double, double>::iterator vti = vts.begin();
+	int qsind = 0;
+	
+	
+	// leaving the zeros until the first entry in the voltage signal
+	while (qsi->first < vti->first)
+	{
+		//		cout << qsi->first << " " << vti->first << endl;
+		qsi++;
+		qsind++;
+	}
+		
+	for(unsigned i=0; i<vts.size(); i++)
+	{
+		if(fabs(vti->first - qsi->first) < sres/2)
+		{
+			// recording signal only if above threshold
+			if(fabs(vti->second - sdid.pedestal) > sdid.signalThreshold*100)
+				QS[qsind*4] = fabs(vti->second - sdid.pedestal);
+			
+			// index have to be increased upon matching
+			qsi++;
+			qsind++;
+		}
+			
+		vti++;
+	}
+	
+//	for(map< int, int > :: iterator qq = QS.begin(); qq != QS.end(); qq++)
+//		cout << qq->first << " " << qq->second << endl;
+		
+	
+//	for(map< double, double > :: iterator qq = vts.begin(); qq != vts.end(); qq++)
+//		cout << qq->first << " " << qq->second <<  " " << fabs(qq->second - sdid.pedestal) << " " << sdid.signalThreshold*100 << endl;
+
+	
+	
+	return QS;
+}
 
 
 trueInfos::trueInfos(MHit* aHit)

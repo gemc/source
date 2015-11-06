@@ -461,8 +461,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					
 					MHit* aHit = (*MHC)[h];					
 					
-					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit, h+1));
+					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit));
+					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit->GetSDID()));
+					
 					allVTOutput.push_back(thisHitOutput);
+	
+					// this is not written out yet
 					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
 					if(VERB > 4 || vname.find(catch_v) != string::npos)

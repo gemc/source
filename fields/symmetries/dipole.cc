@@ -12,6 +12,8 @@
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_Dipole(gMappedField* map, double v)
 {
+	setlocale(LC_NUMERIC, "en_US");
+
 	int np_1     =  map->getCoordinateWithSpeed(0).np;
 	int np_2     =  map->getCoordinateWithSpeed(1).np;
 	double min1  =  map->getCoordinateWithSpeed(0).min;

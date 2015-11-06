@@ -65,6 +65,7 @@ class hitOutput
 		void setDgtz     (map<string, double> d)            {dgtz = d;}
 		void setAllRaws  (map< string, vector <double> > r) {allRaws  = r;}
 		void setSignal   (map< double, double > s)          {signalVT = s;}
+		void setQuantumS (map< int, int > s)                {quantumS = s;}
 		void setMultiDgt (map< string, vector <int> > d)    {multiDgt = d;}
 	
 		void setOneRaw    (string s, double d)              {raws[s] = d;}
@@ -79,6 +80,7 @@ class hitOutput
 		map<string, double>            getDgtz()     {return dgtz;}
 		map< string, vector <double> > getAllRaws()  {return allRaws;}
 		map< double, double >          getSignalVT() {return signalVT;}
+		map< int, int >         		 getQuantumS() {return quantumS;}
 		map< string, vector <int> >    getMultiDgt() {return multiDgt;}
 	
 		double getIntRawVar(string s)

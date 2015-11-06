@@ -99,8 +99,11 @@ class HitProcess
 		virtual map<string, double> integrateDgt(MHit*, int) = 0;
 		
 		// - signalVT: returns a V(t) function
-		virtual map< double, double > signalVT(MHit*, int) ;
-		
+		virtual map< double, double > signalVT(MHit*) ;
+	
+		// - quantum signal: V(t) in ADC channel, reported every bunch time
+		virtual map< int, int > quantumS(map< double, double >, sensitiveID) ;
+	
 		// - multiDgt: returns multiple digitized information / hit
 		virtual map< string, vector <int> > multiDgt(MHit*, int) = 0;
 		
@@ -116,9 +119,6 @@ class HitProcess
 		map<string, double> gpars;
 		double verbosity;
 		string log_msg;
-	
-		// signal parameters
-		double par[4];
 	
 		inline double DGauss(double x, double *par, double Edep, double stepTime)
 		{

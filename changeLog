@@ -1,24 +1,25 @@
-Future of gemc:
+Changelog for GEMC
 
-- hybrid banks, multihit
-- culling options combobox
-- clone viewer
-- add viewer with specific detectors
-- move timewindow to general generator tab - make all other the same
-- bring output structure out of gemc
-- bring options out of gemc
-- bring graph out of gemc
-- bring splash screen out of gemc
-- "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
-- remove obsolete cpp materials
 
-- add cosmic_beam option
-- production cut / threshold valid for the whole system
+11/6/15
+- added bunch sampling of the voltage vs signal time. Data structure name is quantumS, map<int, int>
+- added TSAMPLING option: first number is time interval of sampling (typically 4 ns for FADC)
+  and the second number is the total event time
+
+11/5/15
+- Making sure the numeric conditions on reading maps is the en_US
+some other country may interpret the dot or commas differently (e.g. 1.0 is 1,0 in some country)
+
+11/3/15
+- time resolution is an external parameter "VTRESOLUTION"
+- fixed production threshold for flux detectors (Zhiwen), was 1000 eV should be 1mm
+
+11/2/15
+- Added more verbosity in cylindrical.cc
 
 10/30/15
 - preparing for FADC mode 1
 - fixing region assignment in case some volume is an operation
-
 
 10/30/15
 - detector: added explicit optimization in the constructor
@@ -28,7 +29,6 @@ Future of gemc:
 - production cut will now affect all volumes in a system rather than just the sensitive volumes
 - better verbosity for event action
 - default material reverted to vacuum
-
 
 10/21/15
 - typo fixed in htcc hit process
@@ -158,9 +158,14 @@ Future of gemc:
 - fixed font size in both devel and 2.2 so that icons titles fit well in the GUI in Linux
 (2.2 as well)
 
+
+=======
 1/29/15
 
 gemc 2.2 released!
+==================
+
+
 
 1/28/15
 - added utility function to convert vector<int> to vector<double>. Used in g4signal
