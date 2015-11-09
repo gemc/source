@@ -43,17 +43,20 @@ void bmt_strip::fill_infos()
     int arraySize[] = {sizeof(CR4C_group) / sizeof(CR4C_group[0]),sizeof(CR5C_group) / sizeof(CR5C_group[0]),sizeof(CR6C_group) / sizeof(CR6C_group[0])}; // size of arrays describing the C-detectors for a given MM region
 
     // pitch CR4C for first region of macromegas (CRC4)
-    for(int i =0; i<arraySize[0]; i++)
+    for(int i =0; i<arraySize[0]; i++) {
         pitchC4.push_back(interStripC+CR4C_width[i]);
- 
+        nbunchC4.push_back(CR4C_group[i]);
+    }
     // pitch CR5C for second region of macromegas (CRC5)
-    for(int i =0; i<arraySize[1]; i++)
+    for(int i =0; i<arraySize[1]; i++) {
         pitchC5.push_back(interStripC+CR5C_width[i]);
-
+        nbunchC5.push_back(CR5C_group[i]);
+    }
     // pitch CR6C for third region of macromegas (CRC6)
-    for(int i =0; i<arraySize[2]; i++)
+    for(int i =0; i<arraySize[2]; i++) {
         pitchC6.push_back(interStripC+CR6C_width[i]);
-
+        nbunchC6.push_back(CR6C_group[i]);
+    }
     // z of the upstream part of the layer
     Z0.push_back(-127.820); Z0.push_back(-127.820);
     Z0.push_back(-148.740); Z0.push_back(-148.740);
@@ -115,7 +118,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // The first number is the ID,
         // the second number is the sharing percentage
         vector<double> strip_id;
-
+        int arraySize[] = {nbunchC4.size(),nbunchC5.size(),nbunchC6.size()};
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
@@ -169,38 +172,39 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                 for(int iel=0;iel<Nel;iel++)
                 { // loop over (total) electrons
                 // select the equal-size-pitch groups based on the layer
+					if(layer%2==1)
+					{ //  for "C" layers, i.e. measuring z
+						int arrayIdx = (layer-1)/2;
 
-                        if(layer%2==1)
-                        { //  for "C" layers, i.e. measuring z
+                        vector<double> pitchC;
+                        vector<int>nbunchC;
 
-                        int CRC_group[arraySize[(layer-1)/2]];
-                        double CRC_width[arraySize[(layer-1)/2]];
                         if(layer==1) {
-                                CRC_group[] = CR4C_group;
-                                CRC_width[] = CR4C_width;
+                                pitchC = pitchC4;
+                                nbunchC = nbunchC4;
                         }
                         if(layer==3) {
-                                CRC_group[] = CR5C_group;
-                                CRC_width[] = CR5C_width;
+                        	pitchC = pitchC5;
+                        	nbunchC = nbunchC5;
                         }
                         if(layer==5) {
-                                CRC_group[] = CR6C_group;
-                                CRC_width[] = CR6C_width;
+                        	pitchC = pitchC6;
+                        	nbunchC = nbunchC6;
                         }
 
                         // the real z is generated using a gaussian number generator with sigma corresponding to the sigma of the dispersion
                         z_real = (double) (G4RandGauss::shoot(z,sigma_td));
                         // if this z is within the first group of equal-pitch strips then get its closest strip
-                        if(z_real-Z0[layer]-DZ_inWidth>0 && z_real-Z0[layer]-DZ_inWidth<CRC_group[0]*(interStripC+CRC_width[0]))
-                                ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/(interStripC+CRC_width[0])))+0.5);    // the closest strip
+                        if(z_real-Z0[layer]-DZ_inWidth>0 && z_real-Z0[layer]-DZ_inWidth<nbunchC[0]*pitchC[0])
+                                ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/pitchC[0]))+0.5);    // the closest strip
                         // is the effective z divided by the pitch +0.5
                         // if there is only one group -- stop here
                         // otherwise loop over the number of groups of equal-pitch strips and find the corresponding nearest strip from z
                         int nstripsPrevGrp =0;
                         if(arraySize[(layer-1)/2]>1)
                                 for(int i =1; i<arraySize[(layer-1)/2]; i++) {
-                                nstripsPrevGrp+=i*CRC_group[i];
-                                if(z_real-Z0[layer]-DZ_inWidth>CRC_group[i-1]*(interStripC+CRC_width[i-1]) && z_real-Z0[layer]-DZ_inWidth<CRC_group[i]*(interStripC+CRC_width[i]))
+                                nstripsPrevGrp+=i*nbunchC[i];
+                                if(z_real-Z0[layer]-DZ_inWidth>nbunchC[i-1]*pitchC[i-1] && z_real-Z0[layer]-DZ_inWidth<nbunchC[i]*pitchC[i])
                                         ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/(interStripC+CRC_width[i])))+0.5+nstripsPrevGrp);
                                 }
                         }
