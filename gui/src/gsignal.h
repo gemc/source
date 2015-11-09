@@ -8,6 +8,7 @@
 #include "options.h"
 #include "utils.h"
 #include "sensitiveDetector.h"
+#include "graph.h"
 
 // G4 headers
 #include "G4UImanager.hh"
@@ -20,7 +21,6 @@ using namespace std;
 
 
 // Class definition
-
 class gsignal : public QWidget
 {
 	// metaobject required for non-qt slots
@@ -30,20 +30,20 @@ class gsignal : public QWidget
 		gsignal(QWidget *parent, goptions*, map<string, sensitiveDetector*>);
 		~gsignal();
 		
-		int xorig, yorig;       // origin of the axis
-		int xaxil, yaxil;       // axis length
-		double xmin, ymin;      // graph minima
-		double xmax, ymax;      // graph maxima
-		double inside;          // how much inside the graph will be
-		double dx, dy, DX, DY;  // lowercase: graph limits; uppercase: scene inside limits
-		int nticksx, nticksy;
-		
+//		int xorig, yorig;       // origin of the axis
+//		int xaxil, yaxil;       // axis length
+//		double xmin, ymin;      // graph minima
+//		double xmax, ymax;      // graph maxima
+//		double inside;          // how much inside the graph will be
+//		double dx, dy, DX, DY;  // lowercase: graph limits; uppercase: scene inside limits
+//		int nticksx, nticksy;
+//		map<int, QPen> pcolors;
+	
 		string signalChoice;    // what to plot
 		vector<string> availableSignals;
 		QComboBox *qcsignal;    // combo box
 	
 		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
-		void osci_bg( string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks, labels and oscilloscope background
 		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);
 		
 		goptions *gemcOpt;
@@ -55,8 +55,7 @@ class gsignal : public QWidget
 		G4UImanager  *UImanager;
 		map<string, sensitiveDetector*> SeDe_Map;
 		
-		map<int, QPen> pcolors;
-		
+	
 	private:
 		QTreeWidget *gsignals;
 		QTreeWidget *s_detectors;

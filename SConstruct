@@ -154,7 +154,8 @@ gui_sources = Split("""
 	gui/src/infos.cc
 	gui/src/g4dialog.cc
 	gui/src/gsignal.cc
-	gui/src/physicsListGui.cc""")
+	gui/src/physicsListGui.cc
+	utilities/graph.cc""")
 env.Library(source = gui_sources, target = "lib/gui")
 
 

@@ -43,6 +43,8 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	yorig   =  335;
 	xaxil   =  455;
 	yaxil   =  290;
+	
+	
 	inside  = 20;
 	DX      = xaxil - 2*inside;
 	DY      = yaxil - 2*inside;
@@ -533,31 +535,31 @@ void gsignal::plots_bg(string xtit, string ytit, vector<double> x, vector<double
 	scene->addItem(Title);
 	QFont sansFont("Times-Roman", 18);
 	Title->setFont(sansFont);
-	Title->moveBy( -(double) title.length()*10.0, 10); // this should more or less center it
+	Title->moveBy( -(double) title.length()*18.0, 10); // this should more or less center it
 
 	if(x.size()<1) return;
 	
 	// axis
-	QGraphicsLineItem *xaxis  = new QGraphicsLineItem( xorig-4, yorig, xorig+xaxil,  yorig);
-	QGraphicsLineItem *xaxisa = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig + 4);
-	QGraphicsLineItem *xaxisb = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig - 4);
+	QGraphicsLineItem *xaxis  = new QGraphicsLineItem( xorig-60      ,  yorig, xorig+xaxil-60     ,  yorig);
+//	QGraphicsLineItem *xaxisa = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig + 4);
+//	QGraphicsLineItem *xaxisb = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig - 4);
 	xaxis->setPen( QPen(Qt::black, 3));
-	xaxisa->setPen(QPen(Qt::black, 2));
-	xaxisb->setPen(QPen(Qt::black, 2));
+//	xaxisa->setPen(QPen(Qt::black, 2));
+//	xaxisb->setPen(QPen(Qt::black, 2));
 	scene->addItem(xaxis);
-	scene->addItem(xaxisa);
-	scene->addItem(xaxisb);
+//	scene->addItem(xaxisa);
+//	scene->addItem(xaxisb);
 	
 	
-	QGraphicsLineItem *yaxis  = new QGraphicsLineItem(xorig, yorig+4, xorig,  yorig-yaxil);
-	QGraphicsLineItem *yaxisa = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig - 4,  yorig-yaxil + 15);
-	QGraphicsLineItem *yaxisb = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig + 4,  yorig-yaxil + 15);
+	QGraphicsLineItem *yaxis  = new QGraphicsLineItem(xorig-60, yorig+4, xorig-60,  yorig-yaxil);
+//	QGraphicsLineItem *yaxisa = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig - 4,  yorig-yaxil + 15);
+//	QGraphicsLineItem *yaxisb = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig + 4,  yorig-yaxil + 15);
 	yaxis->setPen( QPen(Qt::black, 3));
-	yaxisa->setPen(QPen(Qt::black, 3));
-	yaxisb->setPen(QPen(Qt::black, 3));
+//	yaxisa->setPen(QPen(Qt::black, 3));
+//	yaxisb->setPen(QPen(Qt::black, 3));
 	scene->addItem(yaxis);
-	scene->addItem(yaxisa);
-	scene->addItem(yaxisb);
+//	scene->addItem(yaxisa);
+//	scene->addItem(yaxisb);
 	
 	
 	// labels
@@ -646,7 +648,7 @@ void gsignal::plots_bg(string xtit, string ytit, vector<double> x, vector<double
 		alab = new QGraphicsSimpleTextItem(QString(lab));
 		QFont sansFont("Helvetica", 12);
 		alab->setFont(sansFont);
-		alab->moveBy(xorig - 50, yorig - inside - a*DY/nticksy - 6);
+		alab->moveBy(xorig - 80, yorig - inside - a*DY/nticksy - 6);
 		scene->addItem(alab);
 	}
 	
