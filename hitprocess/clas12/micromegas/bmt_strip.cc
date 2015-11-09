@@ -218,7 +218,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 								pitchZ = pitchZ4;
 								if(layer==2)
 								pitchZ = pitchZ5;
-								if(layer==2)
+								if(layer==4)
 								pitchZ = pitchZ6;
                                 phi_real = phi + ((G4RandGauss::shoot(0,sigma_td))/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer]; // the sign of the 2nd term (Lorentz angle) should be a "-" as the B field is along +z and the MM are convex (and electrons are negatively charged)
                                 ClosestStrip = (int) (floor(((R[layer]/pitchZ)*(phi_real-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
@@ -253,5 +253,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                 strip_id.push_back(-1);
                 strip_id.push_back(1);
         }
+        System.out.println("strip_id "+strip_id.size());
         return strip_id;
 }
