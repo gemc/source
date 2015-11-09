@@ -207,18 +207,19 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                                 }
                         }
 
-                        //  for "Z" layers
-                        int pitchZ;
-                        // select the right pitch value based on the layer
-                        if(layer==0)
-                        pitchZ = pitchZ4;
-                        if(layer==2)
-                        pitchZ = pitchZ5;
-                        if(layer==2)
-                        pitchZ = pitchZ6;
+
 
                         if(layer%2==0)
                         { //  for "Z" layers, i.e. measuring phi
+                        	//  for "Z" layers
+								int pitchZ = 0;
+								// select the right pitch value based on the layer
+								if(layer==0)
+								pitchZ = pitchZ4;
+								if(layer==2)
+								pitchZ = pitchZ5;
+								if(layer==2)
+								pitchZ = pitchZ6;
                                 phi_real = phi + ((G4RandGauss::shoot(0,sigma_td))/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer]; // the sign of the 2nd term (Lorentz angle) should be a "-" as the B field is along +z and the MM are convex (and electrons are negatively charged)
                                 ClosestStrip = (int) (floor(((R[layer]/pitchZ)*(phi_real-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
                         }
