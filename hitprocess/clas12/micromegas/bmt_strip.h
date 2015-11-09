@@ -33,7 +33,9 @@ class bmt_strip
 		vector<double> pitchC4;  // pitch for C4
 		vector<double> pitchC5;  // pitch for C5
 		vector<double> pitchC6;  // pitch for C6
-		
+		vector<int> nbunchC4; // number of strip bunches for C4
+		vector<int> nbunchC5; // number of strip bunches for C5
+		vector<int> nbunchC6; // number of strip bunches for C6
 		vector<double> Inactivtheta; // dead angle because of mecanics
 		double DZ_inLength; // size of the band of dead zones all around in the length of the card
 		double DZ_inWidth; // size of the band of dead zones all around in the width of the card
