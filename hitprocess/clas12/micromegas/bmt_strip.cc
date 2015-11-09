@@ -30,18 +30,17 @@ void bmt_strip::fill_infos()
  
  // pitch CR6Z -> CR6 = central tracker region 6
     double strip_widthZ = 0.328;
-    pitchZ6 = Cstrip_wdith + strip_widthZ;
-
+    pitchZ6 = interStripZ + strip_widthZ;
  
  // pitch CRC --> for the C-detectors, the strips are in bunches of equal pitches
-    Double_t CR4C_width[13]={0.345,0.28,0.225,0.175,0.17,0.21,0.26,0.31,0.37,0.44,0.515,0.605,0.7};     // width of the corresponding group of strips
-    Double_t CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,32,896};                              // the number of strips with equal pitches
+    double CR4C_width[13]={0.345,0.28,0.225,0.175,0.17,0.21,0.26,0.31,0.37,0.44,0.515,0.605,0.7};     // width of the corresponding group of strips
+    double CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,32,896};                              // the number of strips with equal pitches
     // For CR5, no existing value. picked a random value compatible with the geometry
-    Double_t CR5C_width[1]={0.253};                                                                     // width of the corresponding group of strips
-    Double_t CR5C_group[1]={1024};                                                                      // the number of strips with equal pitches
-    Double_t CR6C_width[14]={0.38,0.32,0.27,0.23,0.17,0.18,0.22,0.25,0.29,0.33,0.37,0.41,0.46,0.51};    // width of the corresponding group of strips
-    Double_t CR6C_group[14]={32,32,32,32,704,64,32,32,32,32,32,32,32,32};                               // the number of strips with equal pitches
-    Int_t arraySize[] = {sizeof(CR4C_group) / sizeof(CR4C_group[0]),sizeof(CR5C_group) / sizeof(CR5C_group[0]),1sizeof(CR6C_group) / sizeof(CR6C_group[0])}; // size of arrays describing the C-detectors for a given MM region
+    double CR5C_width[1]={0.253};                                                                     // width of the corresponding group of strips
+    double CR5C_group[1]={1024};                                                                      // the number of strips with equal pitches
+    double CR6C_width[14]={0.38,0.32,0.27,0.23,0.17,0.18,0.22,0.25,0.29,0.33,0.37,0.41,0.46,0.51};    // width of the corresponding group of strips
+    double CR6C_group[14]={32,32,32,32,704,64,32,32,32,32,32,32,32,32};                               // the number of strips with equal pitches
+    int arraySize[] = {sizeof(CR4C_group) / sizeof(CR4C_group[0]),sizeof(CR5C_group) / sizeof(CR5C_group[0]),1sizeof(CR6C_group) / sizeof(CR6C_group[0])}; // size of arrays describing the C-detectors for a given MM region
 
     // pitch CR4C for first region of macromegas (CRC4)
     for(int i =0; i<sizeof(CR4C_group) / sizeof(CR4C_group[0]); i++)
