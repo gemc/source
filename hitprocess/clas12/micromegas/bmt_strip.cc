@@ -34,24 +34,24 @@ void bmt_strip::fill_infos()
  
  // pitch CRC --> for the C-detectors, the strips are in bunches of equal pitches
     double CR4C_width[13]={0.345,0.28,0.225,0.175,0.17,0.21,0.26,0.31,0.37,0.44,0.515,0.605,0.7};     // width of the corresponding group of strips
-    double CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,32,896};                              // the number of strips with equal pitches
+    double CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,896};                              	  // the number of strips with equal pitches
     // For CR5, no existing value. picked a random value compatible with the geometry
     double CR5C_width[1]={0.253};                                                                     // width of the corresponding group of strips
     double CR5C_group[1]={1024};                                                                      // the number of strips with equal pitches
     double CR6C_width[14]={0.38,0.32,0.27,0.23,0.17,0.18,0.22,0.25,0.29,0.33,0.37,0.41,0.46,0.51};    // width of the corresponding group of strips
     double CR6C_group[14]={32,32,32,32,704,64,32,32,32,32,32,32,32,32};                               // the number of strips with equal pitches
-    int arraySize[] = {sizeof(CR4C_group) / sizeof(CR4C_group[0]),sizeof(CR5C_group) / sizeof(CR5C_group[0]),1sizeof(CR6C_group) / sizeof(CR6C_group[0])}; // size of arrays describing the C-detectors for a given MM region
+    int arraySize[] = {sizeof(CR4C_group) / sizeof(CR4C_group[0]),sizeof(CR5C_group) / sizeof(CR5C_group[0]),sizeof(CR6C_group) / sizeof(CR6C_group[0])}; // size of arrays describing the C-detectors for a given MM region
 
     // pitch CR4C for first region of macromegas (CRC4)
-    for(int i =0; i<sizeof(CR4C_group) / sizeof(CR4C_group[0]); i++)
+    for(int i =0; i<arraySize[0]; i++)
         pitchC4.push_back(interStripC+CR4C_width[i]);
  
     // pitch CR5C for second region of macromegas (CRC5)
-        for(int i =0; i<sizeof(CR5C_group) / sizeof(CR5C_group[0]); i++)
+    for(int i =0; i<arraySize[1]; i++)
         pitchC5.push_back(interStripC+CR5C_width[i]);
 
     // pitch CR6C for third region of macromegas (CRC6)
-    for(int i =0; i<sizeof(CR6C_group) / sizeof(CR6C_group[0]); i++)
+    for(int i =0; i<arraySize[2]; i++)
         pitchC6.push_back(interStripC+CR6C_width[i]);
 
     // z of the upstream part of the layer
@@ -173,8 +173,8 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                         if(layer%2==1)
                         { //  for "C" layers, i.e. measuring z
 
-                        Int_t CRC_group[arraySize[(layer-1)/2]];
-                        Double_t CRC_width[arraySize[(layer-1)/2]];
+                        int CRC_group[arraySize[(layer-1)/2]];
+                        double CRC_width[arraySize[(layer-1)/2]];
                         if(layer==1) {
                                 CRC_group[] = CR4C_group;
                                 CRC_width[] = CR4C_width;
