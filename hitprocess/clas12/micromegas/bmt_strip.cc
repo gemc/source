@@ -174,8 +174,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                 // select the equal-size-pitch groups based on the layer
 					if(layer%2==1)
 					{ //  for "C" layers, i.e. measuring z
-						int arrayIdx = (layer-1)/2;
-
                         vector<double> pitchC;
                         vector<int>nbunchC;
 
@@ -205,7 +203,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                                 for(int i =1; i<arraySize[(layer-1)/2]; i++) {
                                 nstripsPrevGrp+=i*nbunchC[i];
                                 if(z_real-Z0[layer]-DZ_inWidth>nbunchC[i-1]*pitchC[i-1] && z_real-Z0[layer]-DZ_inWidth<nbunchC[i]*pitchC[i])
-                                        ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/(interStripC+CRC_width[i])))+0.5+nstripsPrevGrp);
+                                        ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/pitchC[i]))+0.5+nstripsPrevGrp);
                                 }
                         }
 
