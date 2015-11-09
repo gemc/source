@@ -253,6 +253,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                 strip_id.push_back(-1);
                 strip_id.push_back(1);
         }
-        System.out.println("strip_id "+strip_id.size());
+
         return strip_id;
 }
