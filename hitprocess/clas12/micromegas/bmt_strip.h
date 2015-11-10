@@ -33,6 +33,9 @@ class bmt_strip
 		vector<double> pitchC4;  // pitch for C4
 		vector<double> pitchC5;  // pitch for C5
 		vector<double> pitchC6;  // pitch for C6
+		vector<double> widthC4;  // strip with for C4
+		vector<double> widthC5;  // strip with for C5
+		vector<double> widthC6;  // strip with for C6
 		vector<int> nbunchC4; // number of strip bunches for C4
 		vector<int> nbunchC5; // number of strip bunches for C5
 		vector<int> nbunchC6; // number of strip bunches for C6
@@ -60,7 +63,11 @@ class bmt_strip
 		double x,y,z;            // z of the track is redefined in FindCard. Units are microns - input are millimiters 
 		void fill_infos(); 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
-   
+		int getNearestCstrip(double z, int layer, int arraySize,vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth);
+		double getZasfcnCstrip(int strip, int layer, vector<double> pitchC, vector<double> widthC, vector<int>nbunchC);
+		int getNearestZstrip(int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
+		double getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
+		double getEnergyFraction(double, z0, double z, double sigma);
 };
 
 #endif

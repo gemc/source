@@ -10,10 +10,10 @@ void bmt_strip::fill_infos()
  // all dimensions are in mm
     Pi  = 3.14159265358;
 
-    interlayer         = 15.0;
-    Nsector            = 3;
+    interlayer     = 15.0;
+    Nsector        = 3;
     hDrift         = 3.0;
-    hStrip2Det         = hDrift/2.;
+    hStrip2Det     = hDrift/2.;
     sigma_td_max   = 0.4;
     theta_L        = Pi*20./180.;
     w_i            = 25.0;
@@ -44,16 +44,19 @@ void bmt_strip::fill_infos()
 
     // pitch CR4C for first region of macromegas (CRC4)
     for(int i =0; i<arraySize[0]; i++) {
+    	widthC4.push_back(CR4C_width[i]);
         pitchC4.push_back(interStripC+CR4C_width[i]);
         nbunchC4.push_back(CR4C_group[i]);
     }
     // pitch CR5C for second region of macromegas (CRC5)
     for(int i =0; i<arraySize[1]; i++) {
+    	widthC5.push_back(CR5C_width[i]);
         pitchC5.push_back(interStripC+CR5C_width[i]);
         nbunchC5.push_back(CR5C_group[i]);
     }
     // pitch CR6C for third region of macromegas (CRC6)
     for(int i =0; i<arraySize[2]; i++) {
+    	widthC6.push_back(CR6C_width[i]);
         pitchC6.push_back(interStripC+CR6C_width[i]);
         nbunchC6.push_back(CR6C_group[i]);
     }
@@ -118,7 +121,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // The first number is the ID,
         // the second number is the sharing percentage
         vector<double> strip_id;
-        int arraySize[] = {nbunchC4.size(),nbunchC5.size(),nbunchC6.size()};
+        int Nstrips =0 ;
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
@@ -133,8 +136,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
                 DZ_inWidth  = DZ6_inWidth;
         }
 
-        // number of electrons (Nt)
-        Nel = (int) (1e6*Edep/w_i);
 
         // 1st define phi of the mean hit point
         double phi;
@@ -167,92 +168,170 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         else sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/(cos(theta_L)*hDrift)); // same, but "Z" detectors, so Lorentz angle makes drift distance longer by 1./cos(theta_L) . Means sigma_td can be larger than sigma_td_max
 
 
-        if(Nel>0)
+        if(Edep>0)
         {
-                for(int iel=0;iel<Nel;iel++)
-                { // loop over (total) electrons
-                // select the equal-size-pitch groups based on the layer
-					if(layer%2==1)
-					{ //  for "C" layers, i.e. measuring z
-                        vector<double> pitchC;
-                        vector<int>nbunchC;
+			NbStrips = Nstrips[layer];
+			if(layer%2==1)
+			{ //  for "C" layers, i.e. measuring z
+				vector<double> pitchC;
+				vector<int>nbunchC;
+				int NbStrips;
 
-                        if(layer==1) {
-                                pitchC = pitchC4;
-                                nbunchC = nbunchC4;
-                        }
-                        if(layer==3) {
-                        	pitchC = pitchC5;
-                        	nbunchC = nbunchC5;
-                        }
-                        if(layer==5) {
-                        	pitchC = pitchC6;
-                        	nbunchC = nbunchC6;
-                        }
+				if(layer==1) {
+					pitchC = pitchC4;
+					widthC = widthC4;
+					nbunchC = nbunchC4;
+				}
+				if(layer==3) {
+					pitchC = pitchC5;
+					widthC = widthC5;
+					nbunchC = nbunchC5;
+				}
+				if(layer==5) {
+					pitchC = pitchC6;
+					widthC = widthC6;
+					nbunchC = nbunchC6;
+				}
+				int hit_strip =-1;
+				double hit_E = 0;
 
-                        // the real z is generated using a gaussian number generator with sigma corresponding to the sigma of the dispersion
-                        z_real = (double) (G4RandGauss::shoot(z,sigma_td));
-                        // if this z is within the first group of equal-pitch strips then get its closest strip
-                        if(z_real-Z0[layer]-DZ_inWidth>0 && z_real-Z0[layer]-DZ_inWidth<nbunchC[0]*pitchC[0])
-                                ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/pitchC[0]))+0.5);    // the closest strip
-                        // is the effective z divided by the pitch +0.5
-                        // if there is only one group -- stop here
-                        // otherwise loop over the number of groups of equal-pitch strips and find the corresponding nearest strip from z
-                        int nstripsPrevGrp =0;
-                        if(arraySize[(layer-1)/2]>1)
-                                for(int i =1; i<arraySize[(layer-1)/2]; i++) {
-                                nstripsPrevGrp+=i*nbunchC[i];
-                                if(z_real-Z0[layer]-DZ_inWidth>nbunchC[i-1]*pitchC[i-1] && z_real-Z0[layer]-DZ_inWidth<nbunchC[i]*pitchC[i])
-                                        ClosestStrip = (int) (floor(((z_real-Z0[layer]-DZ_inWidth)/pitchC[i]))+0.5+nstripsPrevGrp);
-                                }
-                        }
+				double z_min = z-3*sigma_t; // minimum z in range
+				double z_max = z+3*sigma_t; // maximum z in range
 
+				double lowerBound = Z0[layer]+DZ_inWidth;
+				double upperBound = Z0[layer]+DZ[layer]-DZ_inWidth;
 
+				if(z>z_min && z_min<lowerBound)  	// the z_min falls outside of fiducial area
+					z_min=lowerBound;				// move the lower bound to the lower edge of the fiducial area
+				if(z<z_max && z_max>upperBound)  	// the z_max falls outside of fiducial area
+					z_max>upperBound				// move the lower bound to the upper edge of the fiducial area
 
-                        if(layer%2==0)
-                        { //  for "Z" layers, i.e. measuring phi
-                        	//  for "Z" layers
-								int pitchZ = 0;
-								// select the right pitch value based on the layer
-								if(layer==0)
-								pitchZ = pitchZ4;
-								if(layer==2)
-								pitchZ = pitchZ5;
-								if(layer==4)
-								pitchZ = pitchZ6;
-                                phi_real = phi + ((G4RandGauss::shoot(0,sigma_td))/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer]; // the sign of the 2nd term (Lorentz angle) should be a "-" as the B field is along +z and the MM are convex (and electrons are negatively charged)
-                                ClosestStrip = (int) (floor(((R[layer]/pitchZ)*(phi_real-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
-                        }
+				if(z_min>=lowerBound && z_max<=upperBound)
+				{
+					int min_strip = getNearestCstrip(z_min, layer, pitchC, nbunchC, NbStrips, DZ_inWidth);
+					int max_strip = getNearestCstrip(z_max, layer, pitchC, nbunchC, NbStrips, DZ_inWidth);
 
-                        // acceptance criteria
-                        if(ClosestStrip>=0 && ClosestStrip<=Nstrips[layer] && z>=Z0[layer]+DZ_inWidth && z<=Z0[layer]+DZ[layer]-DZ_inWidth && phi>=phiij-Pi/Nsector+DZ_inLength/R[layer] && phi<=phiij+Pi/Nsector-DZ_inLength/R[layer])
-                        { // strip is in the acceptance, check if new strip or not
-                                for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
-                                {
-                                        if(strip_id[2*istrip]==ClosestStrip)
-                                        {// already hit strip - add Edep
-                                                strip_id[2*istrip+1]=strip_id[2*istrip+1]+1./((double) Nel); // no gain fluctuation yet
-                                                ClosestStrip=-1; // not to use it anymore
-                                        }
-                                }
-                                if(ClosestStrip>-1)
-                                { // this is a new strip
-                                        strip_id.push_back(ClosestStrip);
-                                        strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
-                                }
-                        }
-                        else
-                        { // not in the acceptance
-                                strip_id.push_back(-1);
-                                strip_id.push_back(1);
-                        }
-                }
+					for(int s = min_strip; s<=max_strip; s++)
+					{
+						double Cz = getZasfcnCstrip(s, layer, pitchC, widthC, nbunchC);
+						double f =  getEnergyFraction(z0, Cz, sigma_td);
+						if(f>0.05)
+						{// 5% of total Edep cut off
+							strip_id.push_back(s);
+							strip_id.push_back(Edep*f);
+						}
+					}
+				} else {
+					strip_id.push_back(-1); // not in fiducial
+					strip_id.push_back(0);
+				}
+
+			}
+			if(layer%2==0)
+			{ //  for "Z" layers, i.e. measuring phi
+				int hit_strip =-1;
+				double hit_E = 0;
+
+				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
+				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
+
+				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
+				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
+
+				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
+					phi_min=lowerBound;					// move the lower bound to the lower edge of the fiducial area
+				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
+					phi_max>upperBound					// move the lower bound to the upper edge of the fiducial area
+
+				if(phi_min>=lowerBound && phi_max<=upperBound)
+				{
+					int min_strip = getNearestZstrip(layer, phi_min, phiij, pitchZ, DZ_inLength);
+					int max_strip = getNearestZstrip(layer, phi_max, phiij, pitchZ, DZ_inLength);
+
+					for(int s = min_strip; s<=max_strip; s++)
+					{
+						double Cphi = getPhiasfcnCstrip(s, layer, phi_min, phiij, pitchZ, DZ_inLength);
+						double f =  getEnergyFraction(0, Cphi, sigma_td);
+						if(f>0.05)
+						{// 5% of total Edep cut off
+							strip_id.push_back(s);
+							strip_id.push_back(Edep*f);
+						}
+					}
+				} else {
+					strip_id.push_back(-1); // not in fiducial
+					strip_id.push_back(0);
+				}
+			}
         }
-        else
-        { // Nel=0, consider the Edep is 0
-                strip_id.push_back(-1);
-                strip_id.push_back(1);
-        }
+		else
+		{ // Nel=0, consider the Edep is 0
+				strip_id.push_back(-1);
+				strip_id.push_back(0);
+		}
 
         return strip_id;
+}
+int bmt_strip::getNearestCstrip(double z, int layer, int arraySize,vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth){
+
+	int arraySize = nbunchC.size();
+	int ClosestStrip =-1;
+	double lowerBound = Z0[layer]+DZ_inWidth;
+	double upperBound = Z0[layer]+DZ[layer]-DZ_inWidth;
+	if(z==lowerBound)
+		ClosestStrip = 1;
+	if(z==upperBound)
+			ClosestStrip = NbStrips;
+	// if this z is within the first group of equal-pitch strips then get its closest strip
+	if(z-lowerBound>0 && z-lowerBound<nbunchC[0]*pitchC[0])
+			ClosestStrip = (int) (floor(((z-lowerBound)/pitchC[0]))+0.5);
+	// the closest strip is the effective z divided by the pitch +0.5
+	// if there is only one group -- stop here...
+	// otherwise loop over the number of groups of equal-pitch
+	// strips and find the corresponding nearest strip from z
+	int nstripsPrevGrp =0;
+	if(arraySize>1)
+		for(int i =1; i<arraySize i++) {
+			nstripsPrevGrp+=i*nbunchC[i-1];
+			if(z-lowerBound>nbunchC[i-1]*pitchC[i-1] && z-lowerBound<nbunchC[i]*pitchC[i])
+					ClosestStrip = (int) (floor(((z-lowerBound)/pitchC[i]))+0.5+nstripsPrevGrp);
+		}
+	return ClosestStrip;
+}
+/**
+ * A method to return the z position of a given C strip...
+ */
+double bmt_strip::getZasfcnCstrip(int strip, int layer, vector<double> pitchC, vector<double> widthC, vector<int>nbunchC){
+
+	int num_strip = strip - 1;     			// index of the strip (starts at 0)
+
+	//For CRC, this function returns the Z position of the strip center
+	int group=0;
+	int limit=nbun[group];
+	double zcalc=Z0[layer]+widthC[group]/2.;
+
+	if (num_strip>0){
+	  for (int j=1;j<num_strip+1;j++){
+		zc+=width[group]/2.;
+		if (j>=limit) { //test if we change the width
+			group++;
+			limit+=width[group];
+		}
+		zc+=width[group]/2.+interStripC;
+	  }
+	}
+	return zc;
+
+
+}
+int bmt_strip::getNearestZstrip(int layer, double phi, double phiij, double pitchZ, double DZ_inLength) {
+	return (int) (floor(((R[layer]/pitchZ)*(phi-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
+}
+
+double bmt_strip::getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) {
+	return (s - 0.5)*pitchZ/R[layer]+phiij-Pi/Nsector + (Inactivtheta[layer]/2.)*Pi/180. + DZ_inLength/R[layer];
+}
+double bmt_strip::getEnergyFraction(double, z0, double z, double sigma){
+	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
+	return pdf_gaussian;
 }
