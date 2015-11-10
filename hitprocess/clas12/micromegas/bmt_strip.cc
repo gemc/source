@@ -1,6 +1,5 @@
 // gemc headers
 #include "bmt_strip.h"
-#include "Randomize.hh"
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -161,12 +160,10 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         if(phi-phiij<=-Pi/Nsector) phi = phi+2.*Pi;
         if(phi-phiij>Pi/Nsector) phi = phi-2.*Pi;
         if(phi-phiij<=-Pi/Nsector || phi-phiij>Pi/Nsector) cout << "WARNING: incorrect phi value in BMT: " << phi*180./Pi << " vs " << phiij*180./Pi << endl;
-        int ClosestStrip=0;
 
         // now compute the sigma of the (transverse) dispersion for this interaction
         if(layer==1 || layer==3 || layer==5) sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/hDrift); // "C" det, transverse diffusion grows with square root of distance
         else sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/(cos(theta_L)*hDrift)); // same, but "Z" detectors, so Lorentz angle makes drift distance longer by 1./cos(theta_L) . Means sigma_td can be larger than sigma_td_max
-
 
         if(Edep>0)
         {
@@ -228,6 +225,14 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			}
 			if(layer%2==0)
 			{ //  for "Z" layers, i.e. measuring phi
+				int pitchZ;
+
+				if(layer==0)
+				pitchZ = pitchZ4;
+				if(layer==2)
+				pitchZ = pitchZ5;
+				if(layer==4)
+				pitchZ = pitchZ6;
 
 				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
@@ -304,17 +309,17 @@ double bmt_strip::getZasfcnCstrip(int strip, int layer, vector<double> pitchC, v
 
 	//For CRC, this function returns the Z position of the strip center
 	int group=0;
-	int limit=nbun[group];
-	double zcalc=Z0[layer]+widthC[group]/2.;
+	int limit=nbunch[group];
+	double zc=Z0[layer]+widthC[group]/2.;
 
 	if (num_strip>0){
 	  for (int j=1;j<num_strip+1;j++){
-		zc+=width[group]/2.;
+		zc+=widthC[group]/2.;
 		if (j>=limit) { //test if we change the width
 			group++;
-			limit+=width[group];
+			limit+=widthC[group];
 		}
-		zc+=width[group]/2.+interStripC;
+		zc+=widthC[group]/2.+interStripC;
 	  }
 	}
 	return zc;
