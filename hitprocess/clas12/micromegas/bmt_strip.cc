@@ -235,13 +235,13 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					pitchZ = pitchZ5;
 				if(layer==4)
 					pitchZ = pitchZ6;
-                cout<<" layer "<< layer <<" pitchZ "+pitchZ<<endl;
+
 				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 
 				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
-
+				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" phiij "<<phiij<<endl;
 				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
 					phi_min=lowerBound;					// move phi_min to the lower edge of the fiducial area
 				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
