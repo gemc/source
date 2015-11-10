@@ -226,14 +226,14 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			}
 			if(layer%2==0)
 			{ //  for "Z" layers, i.e. measuring phi
-				int pitchZ =1;
+				double pitchZ =pitchZ6;
 
 				if(layer==0)
 					pitchZ = pitchZ4;
 				if(layer==2)
 					pitchZ = pitchZ5;
-				if(layer==4)
-					pitchZ = pitchZ6;
+				//if(layer==4)
+				//	pitchZ = pitchZ6;
 
 				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
