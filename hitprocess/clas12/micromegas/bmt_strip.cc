@@ -28,8 +28,7 @@ void bmt_strip::fill_infos()
     pitchZ5 = 0.49; // none existing value. picked a rabdom value compatible with the geometry
  
  // pitch CR6Z -> CR6 = central tracker region 6
-    double strip_widthZ = 0.328;
-    pitchZ6 = interStripZ + strip_widthZ;
+    pitchZ6 = 0.528; //interStripZ + strip_widthZ(=0.328)
  
  // pitch CRC --> for the C-detectors, the strips are in bunches of equal pitches
     double CR4C_width[13]={0.345,0.28,0.225,0.175,0.17,0.21,0.26,0.31,0.37,0.44,0.515,0.605,0.7};     // width of the corresponding group of strips
@@ -150,10 +149,10 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         double theta_tmp=0;
         for(int t=0; t<Nsector; t++)
         {
-                theta_tmp = MidTile[layer]+2.*t*Pi/Nsector;
-                if(theta_tmp>2.*Pi) theta_tmp = theta_tmp - 2.*Pi;
-                if(theta_tmp<0) theta_tmp = theta_tmp + 2.*Pi;
-                if(fabs(phi-theta_tmp)<Pi/Nsector || fabs(2.*Pi-fabs(phi-theta_tmp))<Pi/Nsector) ti=t; // gives tile #
+			theta_tmp = MidTile[layer]+2.*t*Pi/Nsector;
+			if(theta_tmp>2.*Pi) theta_tmp = theta_tmp - 2.*Pi;
+			if(theta_tmp<0) theta_tmp = theta_tmp + 2.*Pi;
+			if(fabs(phi-theta_tmp)<Pi/Nsector || fabs(2.*Pi-fabs(phi-theta_tmp))<Pi/Nsector) ti=t; // gives tile #
         }
 
         double phiij = MidTile[layer]+2.*ti*Pi/Nsector;
@@ -241,7 +240,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
 				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
-				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" phiij "<<phiij<<endl;
+				cout<<" layer "<< layer <<" pitchZ "<<pitchZ6<<" phiij "<<phiij<<endl;
 				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
 					phi_min=lowerBound;					// move phi_min to the lower edge of the fiducial area
 				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
