@@ -121,7 +121,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // The first number is the ID,
         // the second number is the sharing percentage
         vector<double> strip_id;
-        int Nbstrips =0 ;
+        int NbStrips =0 ;
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
@@ -213,7 +213,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					for(int s = min_strip; s<=max_strip; s++)
 					{
 						double Cz = getZasfcnCstrip(s, layer, pitchC, widthC, nbunchC);
-						double f =  getEnergyFraction(z0, Cz, sigma_td);
+						double f =  getEnergyFraction(z, Cz, sigma_td);
 						if(f>0.05)
 						{// 5% of total Edep cut off
 							strip_id.push_back(s);
@@ -228,8 +228,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			}
 			if(layer%2==0)
 			{ //  for "Z" layers, i.e. measuring phi
-				int hit_strip =-1;
-				double hit_E = 0;
 
 				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
@@ -238,9 +236,9 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
 
 				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
-					phi_min=lowerBound;					// move the lower bound to the lower edge of the fiducial area
+					phi_min=lowerBound;					// move phi_min to the lower edge of the fiducial area
 				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
-					phi_max>upperBound					// move the lower bound to the upper edge of the fiducial area
+					phi_max=upperBound;					// move phi_max to the upper edge of the fiducial area
 
 				if(phi_min>=lowerBound && phi_max<=upperBound)
 				{
@@ -271,7 +269,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
         return strip_id;
 }
-int bmt_strip::getNearestCstrip(double z, int layer, int arraySize,vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth){
+int bmt_strip::getNearestCstrip(double z, int layer, vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth){
 
 	int arraySize = nbunchC.size();
 	int ClosestStrip =-1;

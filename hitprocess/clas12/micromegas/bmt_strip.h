@@ -63,7 +63,7 @@ class bmt_strip
 		double x,y,z;            // z of the track is redefined in FindCard. Units are microns - input are millimiters 
 		void fill_infos(); 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
-		int getNearestCstrip(double z, int layer, int arraySize,vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth);
+		int getNearestCstrip(double z, int layer, vector<double> pitchC, vector<int>nbunchC, int NbStrips, double DZ_inWidth);
 		double getZasfcnCstrip(int strip, int layer, vector<double> pitchC, vector<double> widthC, vector<int>nbunchC);
 		int getNearestZstrip(int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
 		double getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
