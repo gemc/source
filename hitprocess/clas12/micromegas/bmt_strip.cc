@@ -164,7 +164,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // now compute the sigma of the (transverse) dispersion for this interaction
         if(layer==1 || layer==3 || layer==5) sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/hDrift); // "C" det, transverse diffusion grows with square root of distance
         else sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/(cos(theta_L)*hDrift)); // same, but "Z" detectors, so Lorentz angle makes drift distance longer by 1./cos(theta_L) . Means sigma_td can be larger than sigma_td_max
-
+        cout<<" x "<<x<<" y "<<y<<" z "<<endl;
         if(Edep>0)
         {
 			NbStrips = Nstrips[layer];
@@ -193,7 +193,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
 				double z_min = z-3*sigma_td; // minimum z in range
 				double z_max = z+3*sigma_td; // maximum z in range
-
+				cout<<" z_min "<<z_min <<" z_max "<<z_max<<endl;
 				double lowerBound = Z0[layer]+DZ_inWidth;
 				double upperBound = Z0[layer]+DZ[layer]-DZ_inWidth;
 
@@ -206,11 +206,12 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 				{
 					int min_strip = getNearestCstrip(z_min, layer, pitchC, nbunchC, NbStrips, DZ_inWidth);
 					int max_strip = getNearestCstrip(z_max, layer, pitchC, nbunchC, NbStrips, DZ_inWidth);
-
+					cout<<" min_strip "<<min_strip <<" max_strip "<<max_strip<<endl;
 					for(int s = min_strip; s<=max_strip; s++)
 					{
 						double Cz = getZasfcnCstrip(s, layer, pitchC, widthC, nbunchC);
 						double f =  getEnergyFraction(z, Cz, sigma_td);
+						cout<<" strip "<<s <<"  f "<< f<<endl;
 						if(f>0.05)
 						{// 5% of total Edep cut off
 							strip_id.push_back(s);
@@ -249,7 +250,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 				{
 					int min_strip = getNearestZstrip(layer, phi_min, phiij, pitchZ, DZ_inLength);
 					int max_strip = getNearestZstrip(layer, phi_max, phiij, pitchZ, DZ_inLength);
-
+					cout<<" phi "<<phi <<" phi_min "<<phi_min<<" phi_max "<<phi_max<<endl;
 					for(int s = min_strip; s<=max_strip; s++)
 					{
 						double Cphi = getPhiasfcnCstrip(s, layer, phi_min, phiij, pitchZ, DZ_inLength);
