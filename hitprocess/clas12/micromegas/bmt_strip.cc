@@ -293,7 +293,7 @@ int bmt_strip::getNearestCstrip(double z, int layer, vector<double> pitchC, vect
 	// strips and find the corresponding nearest strip from z
 	int nstripsPrevGrp =0;
 	if(arraySize>1)
-		for(int i =1; i<arraySize i++) {
+		for(int i =1; i<arraySize; i++) {
 			nstripsPrevGrp+=i*nbunchC[i-1];
 			if(z-lowerBound>nbunchC[i-1]*pitchC[i-1] && z-lowerBound<nbunchC[i]*pitchC[i])
 					ClosestStrip = (int) (floor(((z-lowerBound)/pitchC[i]))+0.5+nstripsPrevGrp);
@@ -309,7 +309,7 @@ double bmt_strip::getZasfcnCstrip(int strip, int layer, vector<double> pitchC, v
 
 	//For CRC, this function returns the Z position of the strip center
 	int group=0;
-	int limit=nbunch[group];
+	int limit=nbunchC[group];
 	double zc=Z0[layer]+widthC[group]/2.;
 
 	if (num_strip>0){
