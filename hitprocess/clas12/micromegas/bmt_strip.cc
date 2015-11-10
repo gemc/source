@@ -174,7 +174,6 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 				vector<double> pitchC;
 				vector<double> widthC;
 				vector<int>nbunchC;
-				int NbStrips;
 
 				if(layer==1) {
 					pitchC = pitchC4;
@@ -241,7 +240,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
 				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
-				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" phiij "<<phiij<<endl;
+				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" pitchZ6 "<<pitchZ6<<endl;
 				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
 					phi_min=lowerBound;					// move phi_min to the lower edge of the fiducial area
 				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
