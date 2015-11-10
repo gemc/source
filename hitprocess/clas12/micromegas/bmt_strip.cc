@@ -120,6 +120,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // the second number is the sharing percentage
         vector<double> strip_id;
         int NbStrips =0 ;
+        cout<<" pitchZ4 "<< pitchZ4<< " pitchZ5 "<< pitchZ5<<" pitchZ6 "<< pitchZ6<<endl;
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
