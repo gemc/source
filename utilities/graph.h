@@ -10,12 +10,16 @@ using namespace std;
 
 
 // Class definition
-class graph : public QGraphicsScene
+class graph : public QGraphicsView
 {
 	// metaobject required for non-qt slots
 	Q_OBJECT
 	
 	public:
+		graph(QWidget *parent = 0);
+	  ~graph(){;}
+	
+		QGraphicsScene *scene;
 	
 		int xorig, yorig;       // origin of the axis
 		int xaxil, yaxil;       // axis length
@@ -23,21 +27,16 @@ class graph : public QGraphicsScene
 	
 		double xmin, ymin;      // graph minima
 		double xmax, ymax;      // graph maxima
-		double dx, dy;          // lowercase: graph limits
+		double dx, dy;          // data deltas
 	
-		double inside;          // how much inside the graph will be
-		double DX, DY;          // uppercase: scene inside limits
+		double inside;          // how much inside the ticks line will be
+		double DX, DY;          // graph deltas
 
 		void setAxis(int a, int b, int c, int d, int e, int f){xorig = a; yorig = b; xaxil = c; yaxil = d; nticksx = e; nticksy=f;}
-		void setAxisLimits(double a, double b, double c, double d, double e, double f){xmin = a; ymin = b; xmax = c; ymax = d; dx = e; dy = f;}
-		void setInside(double a, double b, double c){inside = a; DX = b; DY = c;}
+		void setInside(double a, double b, double c){inside = a; DX = xaxil-a*b; DY = yaxil-a*c;}
+		void setDataAxisLimits(vector<double>, vector<double>);
 	
 		map<int, QPen> pcolors;
-
-		graph(QWidget *parent);
-	   ~graph(){;}
-
-		QGraphicsScene *scene;
 	
 		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
 		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);

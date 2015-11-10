@@ -37,41 +37,6 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	//  | +---------------------------|
 	//  +-----------------------------+
 	
-	
-	// Graph axis origins and legth
-	xorig   = -460;
-	yorig   =  335;
-	xaxil   =  455;
-	yaxil   =  290;
-	
-	
-	inside  = 20;
-	DX      = xaxil - 2*inside;
-	DY      = yaxil - 2*inside;
-	nticksx = 5;  // number of ticks - 1
-	nticksy = 5;
-	
-	// particle colors follow gemc settings
-	// red:   positive
-	// gray:  neutral
-	// green: negative
-	//
-	// second argument of QPen is thickness of pencil
-	
-	pcolors[2112] = QPen(Qt::black,             3);   // neutrons: black
-	pcolors[22]   = QPen(Qt::blue,              3);   // photons: blue
-	pcolors[11]   = QPen(Qt::cyan,              3);   // electrons: cyan
-	pcolors[2212] = QPen(QColor(240, 80, 80),   3);   // protons: orange
-	pcolors[211]  = QPen(Qt::magenta,           3);   // pi+: magenta
-	pcolors[-211] = QPen(Qt::yellow,            3);   // pi-: yellow
-	pcolors[-11]  = QPen(Qt::red,               3);   // positrons: positive - red
-	pcolors[0]    = QPen(Qt::blue,              3);   // optical photons: blue
-	pcolors[13  ] = QPen(QColor(0,125, 0   ),   3);   // Muon+ - dark green
-	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
-	
-	
-	pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
-	
 	// Vertical Splitter - Top and Bottom layouts
 	QSplitter *splitter     = new QSplitter(Qt::Vertical);
 	
@@ -95,7 +60,6 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 		topLayout->addWidget(gsignals);
 	
 	
-	
 	availableSignals.push_back("E Dep.");
 	availableSignals.push_back("Trk ID");
 	availableSignals.push_back("Orig. Trk");
@@ -113,15 +77,13 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	availableSignals.push_back("<mvy>");
 	availableSignals.push_back("<mvz>");
 	availableSignals.push_back("Voltage");
-
+	
 	qcsignal = new QComboBox;
 	for(unsigned v=0; v<availableSignals.size(); v++)
 		qcsignal->addItem(tr(availableSignals[v].c_str()));
 	
 	qcsignal->setMaximumWidth(300);
 	connect ( qcsignal   , SIGNAL( currentIndexChanged (int) ), this, SLOT( chooseVariable(int)    ) );
-
-	
 	
 	// treesplitter size
 	QList<int> tlist;
@@ -129,25 +91,46 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	tlist.append( 300 );
 	treesplitter->setSizes(tlist);
 	
-	
 	QVBoxLayout *layoutTop = new QVBoxLayout(topWidget);
 	layoutTop->addWidget(qcsignal);
 	layoutTop->addWidget(treesplitter);
 	
 	
-    // bottom layout
-    QWidget     *bottomWidget = new QWidget(splitter);
+	// bottom layout
+	QWidget     *bottomWidget = new QWidget(splitter);
 	bottomWidget->setMinimumSize(600, 450);
 	bottomWidget->setMaximumSize(600, 450);
 	
-	scene = new QGraphicsScene(this);
-	view = new QGraphicsView(scene, this);
-
+	graphView = new graph(this);
+	
+	// Graph axis origins and legth, number of ticks each axis
+	//                 xorig  yorig  xlength ylength nticksx nticksy
+	graphView->setAxis(15,   350,    445,    310,     5,     5);
+	// inside shift of the axis ticks, and factor that multiplies the ticks size
+	graphView->setInside(20, 2, 2);
+	// particle colors follow gemc settings
+	// red:   positive
+	// gray:  neutral
+	// green: negative
+	//
+	// second argument of QPen is thickness of pencil
+	graphView->pcolors[2112] = QPen(Qt::black,             3);   // neutrons: black
+	graphView->pcolors[22]   = QPen(Qt::blue,              3);   // photons: blue
+	graphView->pcolors[11]   = QPen(Qt::cyan,              3);   // electrons: cyan
+	graphView->pcolors[2212] = QPen(QColor(240, 80, 80),   3);   // protons: orange
+	graphView->pcolors[211]  = QPen(Qt::magenta,           3);   // pi+: magenta
+	graphView->pcolors[-211] = QPen(Qt::yellow,            3);   // pi-: yellow
+	graphView->pcolors[-11]  = QPen(Qt::red,               3);   // positrons: positive - red
+	graphView->pcolors[0]    = QPen(Qt::blue,              3);   // optical photons: blue
+	graphView->pcolors[13  ] = QPen(QColor(0,125, 0   ),   3);   // Muon+ - dark green
+	graphView->pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
+	graphView->pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
+	
 	
 	// putting all together
 	QVBoxLayout *layoutBottom = new QVBoxLayout(bottomWidget);
 	layoutBottom->addWidget(new QLabel("Signal:"));
-	layoutBottom->addWidget(view);
+	layoutBottom->addWidget(graphView);
 	
 	
 	// splitter size
@@ -156,9 +139,9 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	list.append( 450 );
 	splitter->setSizes(list);
 	
-    
-    // all layouts
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+	
+	// all layouts
+	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(splitter);
 	setLayout(mainLayout);
 	
@@ -181,7 +164,7 @@ QTreeWidget* gsignal::CreateSDetsTree()
 	labels << QString("Hits List");
 	s_detectors->setHeaderLabels(labels);
 	
-    
+	
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHitCollection *MHC = it->second->GetMHitCollection();
@@ -235,7 +218,7 @@ void gsignal::chooseVariable(int index)
 {
 	signalChoice = availableSignals[index];
 	CreateSignalsTree();
-
+	
 }
 
 
@@ -301,7 +284,7 @@ QTreeWidget* gsignal::CreateSignalsTree()
 				{
 					MHit* aHit = (*MHC)[index-1];
 					int nsteps = aHit->GetPos().size();
-                    
+					
 					// photo electron tubes are treated differently than
 					// normal sensitive detectors
 					if(MSD->SDID.identifiers.back().find("nphe") != string::npos)
@@ -339,8 +322,8 @@ QTreeWidget* gsignal::CreateSignalsTree()
 							EneItems->setTextAlignment(1, Qt::AlignJustify);
 							EneItems->setTextAlignment(2, Qt::AlignJustify);
 						}
-						plots_bg("time [ns]", "Wavelenght [nm]", time, lambda, title);
-						plot_graph(time, lambda, pid);
+						graphView->plots_bg("time [ns]", "Wavelenght [nm]", time, lambda, title);
+						graphView->plot_graph(time, lambda, pid);
 					}
 					else
 					{
@@ -349,12 +332,12 @@ QTreeWidget* gsignal::CreateSignalsTree()
 						vector<int>     pid = aHit->GetPIDs();
 						
 						if(signalChoice == "E Dep.")
-			 				signal = aHit->GetEdep();
+							signal = aHit->GetEdep();
 						
 						if(signalChoice == "Trk ID")
 							signal = convertVintVdouble(aHit->GetTIds());
-			
-
+						
+						
 						// this info is available only if WRITE_INTRAW is enable
 						if(signalChoice == "Orig. Trk")
 						{
@@ -392,13 +375,13 @@ QTreeWidget* gsignal::CreateSignalsTree()
 						{
 							vector<G4ThreeVector> pos = aHit->GetLPos();
 							for(unsigned int i=0; i<pos.size(); i++)
-							signal.push_back(pos[i].x());
+								signal.push_back(pos[i].x());
 						}
 						if(signalChoice == "<ly>")
 						{
 							vector<G4ThreeVector> pos = aHit->GetLPos();
 							for(unsigned int i=0; i<pos.size(); i++)
-							signal.push_back(pos[i].y());
+								signal.push_back(pos[i].y());
 						}
 						if(signalChoice == "<lz>")
 						{
@@ -466,10 +449,10 @@ QTreeWidget* gsignal::CreateSignalsTree()
 							{
 								vector<int> trks = aHit->GetTIds();
 								for(unsigned int i=0; i<trks.size(); i++)
-								signal.push_back(0.0);
+									signal.push_back(0.0);
 							}
 						}
-
+						
 						if(signalChoice == "Mom")
 						{
 							vector<G4ThreeVector> mom = aHit->GetMoms();
@@ -514,164 +497,18 @@ QTreeWidget* gsignal::CreateSignalsTree()
 							signalItems->setTextAlignment(1, Qt::AlignJustify);
 							signalItems->setTextAlignment(2, Qt::AlignJustify);
 						}
-						plots_bg("time [ns]", signalChoice.c_str(), time, signal, title);
-						plot_graph(time, signal, pid);
+						graphView->plots_bg("time [ns]", signalChoice.c_str(), time, signal, title);
+						graphView->plot_graph(time, signal, pid);
 						
 					}
 				}
 		}
 	}
-
+	
 	return gsignals;
 }
 
 
-void gsignal::plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title)
-{
-	
-	scene->clear();
-	// title
-	QGraphicsSimpleTextItem *Title = new QGraphicsSimpleTextItem(QString(title.c_str()));
-	scene->addItem(Title);
-	QFont sansFont("Times-Roman", 18);
-	Title->setFont(sansFont);
-	Title->moveBy( -(double) title.length()*18.0, 10); // this should more or less center it
-
-	if(x.size()<1) return;
-	
-	// axis
-	QGraphicsLineItem *xaxis  = new QGraphicsLineItem( xorig-60      ,  yorig, xorig+xaxil-60     ,  yorig);
-//	QGraphicsLineItem *xaxisa = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig + 4);
-//	QGraphicsLineItem *xaxisb = new QGraphicsLineItem( xorig+xaxil,  yorig, xorig+xaxil - 15,  yorig - 4);
-	xaxis->setPen( QPen(Qt::black, 3));
-//	xaxisa->setPen(QPen(Qt::black, 2));
-//	xaxisb->setPen(QPen(Qt::black, 2));
-	scene->addItem(xaxis);
-//	scene->addItem(xaxisa);
-//	scene->addItem(xaxisb);
-	
-	
-	QGraphicsLineItem *yaxis  = new QGraphicsLineItem(xorig-60, yorig+4, xorig-60,  yorig-yaxil);
-//	QGraphicsLineItem *yaxisa = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig - 4,  yorig-yaxil + 15);
-//	QGraphicsLineItem *yaxisb = new QGraphicsLineItem(xorig,  yorig-yaxil, xorig + 4,  yorig-yaxil + 15);
-	yaxis->setPen( QPen(Qt::black, 3));
-//	yaxisa->setPen(QPen(Qt::black, 3));
-//	yaxisb->setPen(QPen(Qt::black, 3));
-	scene->addItem(yaxis);
-//	scene->addItem(yaxisa);
-//	scene->addItem(yaxisb);
-	
-	
-	// labels
-	QGraphicsSimpleTextItem *xlab = new QGraphicsSimpleTextItem(QString(xtit.c_str()));
-	QGraphicsSimpleTextItem *ylab = new QGraphicsSimpleTextItem(QString(ytit.c_str()));
-	scene->addItem(xlab);
-	scene->addItem(ylab);
-	xlab->moveBy(xorig+xaxil-60, yorig + 10);
-	ylab->moveBy(xorig-30, yorig-yaxil+50);
-	ylab->setRotation(-90);
-	
-	// calculating minima and maxima
-	xmin = 100000;
-	ymin = 100000;
-	for(unsigned int i=0; i<x.size(); i++) if(x[i] < xmin) xmin = x[i];
-	for(unsigned int i=0; i<y.size(); i++) if(y[i] < ymin) ymin = y[i];
-	xmax = -100000;
-	ymax = -100000;
-	for(unsigned int i=0; i<x.size(); i++) if(x[i] > xmax) xmax = x[i];
-	for(unsigned int i=0; i<y.size(); i++) if(y[i] > ymax) ymax = y[i];
-	
-	if(ymin == ymax)
-	{
-		if(ymin < 0) ymin *= 1.0001;
-		else ymin *= 0.9999;
-		
-		if(ymax > 0) ymax *= 1.0001;
-		else ymax *= 0.9999;
-	}
-	if(ymin == 0 && ymax == 0)
-	{
-		ymin = -1;
-		ymax = 1;
-	}
-	
-	// putting 5 vertical axis - dashed lines - between xmin and xmax
-	dx = (xmax - xmin);
-	dy = (ymax - ymin);
-	
-	// lab should be at least size 10
-	char lab[12];
-	QGraphicsSimpleTextItem *alab;
-	
-	QGraphicsLineItem *xtick;
-	for(int a=0; a<nticksx+1; a++)
-	{
-		xtick = new QGraphicsLineItem(xorig + inside + a*DX/nticksx, yorig + 4, xorig + inside + a*DX/nticksx,  yorig-yaxil+inside);
-		xtick->setPen( QPen(Qt::blue, 1, Qt::DashDotLine));
-		scene->addItem(xtick);
-	}
-	
-	for(int a=0; a<nticksx; a++)
-	{
-		sprintf(lab, "%4.3f", xmin+ a*dx/nticksx);
-		alab = new QGraphicsSimpleTextItem(QString(lab));
-		QFont sansFont("Helvetica", 12);
-		alab->setFont(sansFont);
-		alab->moveBy(xorig + inside + a*DX/nticksx - 12, yorig + 8);
-		scene->addItem(alab);
-	}
-	
-	QGraphicsLineItem *ytick;
-	for(int a=0; a<nticksy+1; a++)
-	{
-		ytick = new QGraphicsLineItem(xorig - 4, yorig - inside - a*DY/nticksy, xorig + xaxil - inside,  yorig - inside - a*DY/nticksy);
-		ytick->setPen( QPen(Qt::blue, 1, Qt::DashDotLine));
-		scene->addItem(ytick);
-	}
-	
-	
-	for(int a=0; a<nticksy; a++)
-	{
-		if     (fabs(ymin + a*dy/nticksy) < 0.01)
-			sprintf(lab, "%5.4f", ymin+ a*dy/nticksy);
-		else if(fabs(ymin + a*dy/nticksy) < 1)
-			sprintf(lab, "%5.3f", ymin+ a*dy/nticksy);
-		else if(fabs(ymin + a*dy/nticksy) < 10)
-			sprintf(lab, "%5.2f", ymin+ a*dy/nticksy);
-		else if(fabs(ymin + a*dy/nticksy) < 100)
-			sprintf(lab, "%5.1f", ymin+ a*dy/nticksy);
-		else if(fabs(ymin + a*dy/nticksy) > 1000)
-			sprintf(lab, "%2.1e", ymin+ a*dy/nticksy);
-		else
-			sprintf(lab, "%5.0f", ymin+ a*dy/nticksy);
-		
-		alab = new QGraphicsSimpleTextItem(QString(lab));
-		QFont sansFont("Helvetica", 12);
-		alab->setFont(sansFont);
-		alab->moveBy(xorig - 80, yorig - inside - a*DY/nticksy - 6);
-		scene->addItem(alab);
-	}
-	
-	
-}
-
-void gsignal::plot_graph(vector<double> x, vector<double> y, vector<int> pid)
-{
-	if(x.size()<2) return;
-	
-	QGraphicsRectItem    *rect;
-    
-	for(unsigned int i=0; i<x.size(); i++)
-	{
-		if(pcolors.find(pid[i]) == pcolors.end())
-			cout << " Attention: color not found for: " << pid[i] << endl;
-		else
-		{
-			rect = scene->addRect(0, 0, 4, 4, pcolors[pid[i]]);
-			rect->moveBy(xorig + inside + DX*(x[i]-xmin)/dx, yorig - inside - DY*(y[i]-ymin)/dy);
-		}
-	}
-}
 
 gsignal::~gsignal()
 {

@@ -43,9 +43,9 @@ class gsignal : public QWidget
 		vector<string> availableSignals;
 		QComboBox *qcsignal;    // combo box
 	
-		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
-		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);
-		
+//		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
+//		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);
+	
 		goptions *gemcOpt;
 		// we need to double check that
 		// some variables are available to display
@@ -64,8 +64,7 @@ class gsignal : public QWidget
 		QLinearGradient HitGrad;
 		QBrush          HitBrush;
 		
-		QGraphicsView *view;
-		QGraphicsScene *scene;
+		graph *graphView;
 		
 		
 	public slots:

@@ -25,7 +25,7 @@ Code Improvements:
 - add cosmic_beam option
 - optimize eventaction - too many vector<hitOutput> definitions? Can they br grouped?
 - add DEBUG ifdefs for debugging part of code
-
+- general color map to be used by geant4 / gui , maybe part of options?
 
 Code Reorganization:
 ====================
