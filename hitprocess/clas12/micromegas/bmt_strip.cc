@@ -331,7 +331,7 @@ double bmt_strip::getZasfcnCstrip(int strip, int layer, vector<double> pitchC, v
 
 }
 int bmt_strip::getNearestZstrip(int layer, double phi, double phiij, double pitchZ, double DZ_inLength) {
-	cout<<"layer "<<layer<<" phi "<<phi<<" Pi/Nsector "<<(Pi/Nsector)<<endl;
+	cout<<"layer "<<layer<<" phi "<<phi<<" phiij "<<phiij<<" pitchZ "<< pitchZ << endl;
 	return (int) (floor(((R[layer]/pitchZ)*(phi-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
 }
 
