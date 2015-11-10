@@ -121,7 +121,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // The first number is the ID,
         // the second number is the sharing percentage
         vector<double> strip_id;
-        int Nstrips =0 ;
+        int Nbstrips =0 ;
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
@@ -174,6 +174,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			if(layer%2==1)
 			{ //  for "C" layers, i.e. measuring z
 				vector<double> pitchC;
+				vector<double> widthC;
 				vector<int>nbunchC;
 				int NbStrips;
 
@@ -192,19 +193,17 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					widthC = widthC6;
 					nbunchC = nbunchC6;
 				}
-				int hit_strip =-1;
-				double hit_E = 0;
 
-				double z_min = z-3*sigma_t; // minimum z in range
-				double z_max = z+3*sigma_t; // maximum z in range
+				double z_min = z-3*sigma_td; // minimum z in range
+				double z_max = z+3*sigma_td; // maximum z in range
 
 				double lowerBound = Z0[layer]+DZ_inWidth;
 				double upperBound = Z0[layer]+DZ[layer]-DZ_inWidth;
 
 				if(z>z_min && z_min<lowerBound)  	// the z_min falls outside of fiducial area
-					z_min=lowerBound;				// move the lower bound to the lower edge of the fiducial area
+					z_min=lowerBound;				// move z_min to the lower edge of the fiducial area
 				if(z<z_max && z_max>upperBound)  	// the z_max falls outside of fiducial area
-					z_max>upperBound				// move the lower bound to the upper edge of the fiducial area
+					z_max=upperBound;				// move z_max to the upper edge of the fiducial area
 
 				if(z_min>=lowerBound && z_max<=upperBound)
 				{
@@ -331,7 +330,7 @@ int bmt_strip::getNearestZstrip(int layer, double phi, double phiij, double pitc
 double bmt_strip::getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) {
 	return (s - 0.5)*pitchZ/R[layer]+phiij-Pi/Nsector + (Inactivtheta[layer]/2.)*Pi/180. + DZ_inLength/R[layer];
 }
-double bmt_strip::getEnergyFraction(double, z0, double z, double sigma){
+double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
 	return pdf_gaussian;
 }

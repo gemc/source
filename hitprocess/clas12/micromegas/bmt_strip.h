@@ -67,7 +67,7 @@ class bmt_strip
 		double getZasfcnCstrip(int strip, int layer, vector<double> pitchC, vector<double> widthC, vector<int>nbunchC);
 		int getNearestZstrip(int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
 		double getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) ;
-		double getEnergyFraction(double, z0, double z, double sigma);
+		double getEnergyFraction(double z0, double z, double sigma);
 };
 
 #endif
