@@ -168,6 +168,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         if(Edep>0)
         {
 			NbStrips = Nstrips[layer];
+			cout<<" NbStrips "<<NbStrips<<endl;
 			if(layer%2==1)
 			{ //  for "C" layers, i.e. measuring z
 				vector<double> pitchC;
@@ -226,7 +227,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			}
 			if(layer%2==0)
 			{ //  for "Z" layers, i.e. measuring phi
-				int pitchZ;
+				int pitchZ =0;
 
 				if(layer==0)
 				pitchZ = pitchZ4;
