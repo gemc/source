@@ -164,7 +164,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // now compute the sigma of the (transverse) dispersion for this interaction
         if(layer==1 || layer==3 || layer==5) sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/hDrift); // "C" det, transverse diffusion grows with square root of distance
         else sigma_td = sigma_td_max* sqrt((sqrt(x*x+y*y)-R[layer]+hStrip2Det)/(cos(theta_L)*hDrift)); // same, but "Z" detectors, so Lorentz angle makes drift distance longer by 1./cos(theta_L) . Means sigma_td can be larger than sigma_td_max
-        cout<<" x "<<x<<" y "<<y<<" z "<<endl;
+        cout<<" x "<<x<<" y "<<y<<" z "<<z<<endl;
         if(Edep>0)
         {
 			NbStrips = Nstrips[layer];
@@ -251,12 +251,14 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					int min_strip = getNearestZstrip(layer, phi_min, phiij, pitchZ, DZ_inLength);
 					int max_strip = getNearestZstrip(layer, phi_max, phiij, pitchZ, DZ_inLength);
 					cout<<" phi "<<phi <<" phi_min "<<phi_min<<" phi_max "<<phi_max<<endl;
+					cout<<" min_strip "<<min_strip<<" max_strip "<<max_strip<<endl;
 					for(int s = min_strip; s<=max_strip; s++)
 					{
 						double Cphi = getPhiasfcnCstrip(s, layer, phi_min, phiij, pitchZ, DZ_inLength);
 						double f =  getEnergyFraction(0, Cphi, sigma_td);
 						if(f>0.05)
 						{// 5% of total Edep cut off
+							cout<<" strip "<<s <<"  f "<< f<<endl;
 							strip_id.push_back(s);
 							strip_id.push_back(Edep*f);
 						}
