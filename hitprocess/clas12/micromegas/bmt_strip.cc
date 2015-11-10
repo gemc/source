@@ -211,7 +211,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					{
 						double Cz = getZasfcnCstrip(s, layer, pitchC, widthC, nbunchC);
 						double f =  getEnergyFraction(z, Cz, sigma_td);
-						cout<<" strip "<<s <<"  f "<< f<<endl;
+						cout<<" strip "<<s <<"  z "<< z<< " cz "<< Cz <<endl;
 						if(f>0.05)
 						{// 5% of total Edep cut off
 							strip_id.push_back(s);
@@ -237,7 +237,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
 				double phi_min = phi + ((-3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
 				double phi_max = phi + ((3*sigma_td)/cos(theta_L)-(sqrt(x*x+y*y)-R[layer]+hStrip2Det)*tan(theta_L))/R[layer];
-
+				cout<<" phicorr min "<<(phi_min-phi)<<  " phicorr max "<<(phi_max-phi) "<<endl;
 				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
 				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" pitchZ6 "<<pitchZ6<<endl;
@@ -254,7 +254,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 					cout<<" min_strip "<<min_strip<<" max_strip "<<max_strip<<endl;
 					for(int s = min_strip; s<=max_strip; s++)
 					{
-						double Cphi = getPhiasfcnCstrip(s, layer, phi_min, phiij, pitchZ, DZ_inLength);
+						double Cphi = getPhiasfcnCstrip(s, layer, phiij, pitchZ, DZ_inLength);
 						double f =  getEnergyFraction(0, Cphi, sigma_td);
 						if(f>0.05)
 						{// 5% of total Edep cut off
@@ -334,7 +334,7 @@ int bmt_strip::getNearestZstrip(int layer, double phi, double phiij, double pitc
 	return (int) (floor(((R[layer]/pitchZ)*(phi-phiij+Pi/Nsector - (Inactivtheta[layer]/2.)*Pi/180. - DZ_inLength/R[layer]))+0.5));
 }
 
-double bmt_strip::getPhiasfcnCstrip(int s, int layer, double phi, double phiij, double pitchZ, double DZ_inLength) {
+double bmt_strip::getPhiasfcnCstrip(int s, int layer, double phiij, double pitchZ, double DZ_inLength) {
 	return (s - 0.5)*pitchZ/R[layer]+phiij-Pi/Nsector + (Inactivtheta[layer]/2.)*Pi/180. + DZ_inLength/R[layer];
 }
 double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
