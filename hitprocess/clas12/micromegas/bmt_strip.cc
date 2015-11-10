@@ -120,7 +120,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         // the second number is the sharing percentage
         vector<double> strip_id;
         int NbStrips =0 ;
-        cout<<" pitchZ4 "<< pitchZ4<< " pitchZ5 "<< pitchZ5<<" pitchZ6 "<< pitchZ6<<endl;
+
         // dead zones
         if(layer == 0 || layer == 1){
                 DZ_inLength = DZ4_inLength;
@@ -168,7 +168,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         if(Edep>0)
         {
 			NbStrips = Nstrips[layer];
-			cout<<" NbStrips "<<NbStrips<<endl;
+
 			if(layer%2==1)
 			{ //  for "C" layers, i.e. measuring z
 				vector<double> pitchC;
@@ -227,7 +227,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 			}
 			if(layer%2==0)
 			{ //  for "Z" layers, i.e. measuring phi
-				int pitchZ =0;
+				int pitchZ =1;
 
 				if(layer==0)
 					pitchZ = pitchZ4;
@@ -241,7 +241,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
 
 				double lowerBound = phiij-Pi/Nsector+DZ_inLength/R[layer] ;
 				double upperBound = phiij+Pi/Nsector-DZ_inLength/R[layer] ;
-				cout<<" layer "<< layer <<" pitchZ "<<pitchZ6<<" phiij "<<phiij<<endl;
+				cout<<" layer "<< layer <<" pitchZ "<<pitchZ<<" phiij "<<phiij<<endl;
 				if(phi>phi_min && phi_min<lowerBound)  	// the phi_min falls outside of fiducial area
 					phi_min=lowerBound;					// move phi_min to the lower edge of the fiducial area
 				if(phi<phi_max && phi_max>upperBound)  	// the phi_max falls outside of fiducial area
