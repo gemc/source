@@ -108,7 +108,7 @@ void bmt_strip::fill_infos()
 			CRCEDGE2[i][j] = CEdge2[j];
 		}
     }
-
+    cout<<" geo loaded "<<endl;
 }
 /**
  * Method to get digi hits based on x,y,z position and E
