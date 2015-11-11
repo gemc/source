@@ -126,9 +126,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	{
 		for(int iel=0;iel<Nel;iel++)
 		{ // loop over (total) electrons
-			cout<<" looping over Ne- (x,y,z)= "<< x <<","<< y <<","<< z <<" layer "<<layer<<endl;
 			vector<double> X=smearedPosition(layer, x, y, z);
-			cout<<" smeared pos (x,y,z)= "<< X[0] <<","<< X[1] <<","<< X[2] <<endl;
 			if( isInFiducial(sector, layer, X) == true )
 			{
 				double angle = atan2(X[1], X[0]);
@@ -140,9 +138,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					strip = getZStrip(layer, angle);
 				if(layer%2==0) // C-detector
 					strip = getCStrip(sector,layer, X[2]);
-				cout<<" smeared pos (x,y,z) strip "<<strip<<endl;;
-				if(strip != -1) {
 
+				if(strip != -1) {
 					for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
 					{
 						if(strip_id[2*istrip]==strip)
@@ -157,7 +154,6 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 						strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
 					}
 				}
-
 			}
 		}
 	} else
