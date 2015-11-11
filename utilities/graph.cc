@@ -8,8 +8,26 @@
 graph::graph(QWidget *parent) : QGraphicsView(parent)
 {
 	scene = new QGraphicsScene(this);
-
 	this->setScene(scene);
+
+	// particle colors follow gemc settings
+	// red:   positive
+	// gray:  neutral
+	// green: negative
+	//
+	// second argument of QPen is thickness of pencil
+	pcolors[2112] = QPen(Qt::black,             3);   // neutrons: black
+	pcolors[22]   = QPen(Qt::blue,              3);   // photons: blue
+	pcolors[11]   = QPen(Qt::cyan,              3);   // electrons: cyan
+	pcolors[2212] = QPen(QColor(240, 80, 80),   3);   // protons: orange
+	pcolors[211]  = QPen(Qt::magenta,           3);   // pi+: magenta
+	pcolors[-211] = QPen(Qt::yellow,            3);   // pi-: yellow
+	pcolors[-11]  = QPen(Qt::red,               3);   // positrons: positive - red
+	pcolors[0]    = QPen(Qt::blue,              3);   // optical photons: blue
+	pcolors[13  ] = QPen(QColor(0,125, 0   ),   3);   // Muon+ - dark green
+	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
+	pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
+
 }
 
 
@@ -17,7 +35,7 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title)
 {
 	// this is needed to set the scene size
-	scene->setSceneRect(0, 0, xaxil*1.1, yaxil*1.4);
+	scene->setSceneRect(0, 0, xaxil*1.1, yaxil*1.1);
 
 	
 	scene->clear();
@@ -27,7 +45,7 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 	QGraphicsSimpleTextItem *Title = new QGraphicsSimpleTextItem(QString(title.c_str()));
 	scene->addItem(Title);
 	Title->setFont(QFont("Times-Roman", 18));
-	Title->moveBy(xaxil / 2 - (double) title.length(), 10); // this should more or less center it
+	Title->moveBy(xaxil / 2 - (double) title.length(), -20); // this should more or less center it
 	
 	
 	// x axis
@@ -45,7 +63,7 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 	QGraphicsSimpleTextItem *ylab = new QGraphicsSimpleTextItem(QString(ytit.c_str()));
 	scene->addItem(xlab);
 	scene->addItem(ylab);
-	xlab->moveBy(xorig+xaxil-xtit.length()*8, yorig + 25);
+	xlab->moveBy(xorig+xaxil-xtit.length()*8, yorig + 18);
 	ylab->moveBy(xorig-30, yorig-yaxil+50);
 	ylab->setRotation(-90);
 

@@ -6,10 +6,6 @@
 #include "Hit.h"
 #include "string_utilities.h"
 
-// G4 headers
-#include "G4UIcommandTree.hh"
-#include "Randomize.hh"
-
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
@@ -20,45 +16,7 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	WRITE_INTRAW     = replaceCharWithChars(gemcOpt->optMap["INTEGRATEDRAW"].args, ",", "  ");
 	SAVE_ALL_MOTHERS = gemcOpt->optMap["SAVE_ALL_MOTHERS"].arg;
 	
-	UImanager  = G4UImanager::GetUIpointer();
 	SeDe_Map   = SD_Map;
-	
-	//  Layout:
-	//
-	//  + +-----------+------+--------+
-	//  | |           |      |        |
-	//  | |  Element  | Var  | Var    |
-	//  | |   Choice  | List | Choice |
-	//  | |           |      |        |
-	//  | +-----------+------+--------+
-	//  | +---------------------------+
-	//  | |                           |
-	//  | |           Graph           |
-	//  | +---------------------------|
-	//  +-----------------------------+
-	
-	// Vertical Splitter - Top and Bottom layouts
-	QSplitter *splitter     = new QSplitter(Qt::Vertical);
-	
-	// top layout
-	QWidget   *topWidget    = new QWidget(splitter);
-	QSplitter *treesplitter = new QSplitter(Qt::Horizontal);
-	
-	QVBoxLayout *topLayout = new QVBoxLayout(treesplitter);
-	
-	// Left: The sensitive detectors hits tree
-	s_detectors = new QTreeWidget();
-	s_detectors = CreateSDetsTree();
-	if(s_detectors)
-		topLayout->addWidget(s_detectors);
-	
-	
-	// Center: The individual signals choice
-	gsignals = new QTreeWidget();
-	gsignals = CreateSignalsTree();
-	if(gsignals)
-		topLayout->addWidget(gsignals);
-	
 	
 	availableSignals.push_back("E Dep.");
 	availableSignals.push_back("Trk ID");
@@ -77,76 +35,69 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	availableSignals.push_back("<mvy>");
 	availableSignals.push_back("<mvz>");
 	availableSignals.push_back("Voltage");
+
 	
+	//   Layout done witt splitters
+	//
+	//   +---------------------------+
+	//   |     Combo Var Choice      |
+	//   +------------+--------------+
+	//   |            |              |
+	//   |            |              |
+	//   |    Hit     |   Signal     |
+	//   |   Choice   |    Data      |
+	//   |            |              |
+	//   +------------+--------------+
+	//   +---------------------------+
+	//   |                           |
+	//   |           Graph           |
+	//   +---------------------------|
+	
+	// Combo Box on Top to choose which variable to plot
 	qcsignal = new QComboBox;
 	for(unsigned v=0; v<availableSignals.size(); v++)
 		qcsignal->addItem(tr(availableSignals[v].c_str()));
 	
-	qcsignal->setMaximumWidth(300);
 	connect ( qcsignal   , SIGNAL( currentIndexChanged (int) ), this, SLOT( chooseVariable(int)    ) );
+
 	
-	// treesplitter size
-	QList<int> tlist;
-	tlist.append( 300 );
-	tlist.append( 300 );
-	treesplitter->setSizes(tlist);
+	// Middle Left: The list of hits hits tree
+	hitList = new QTreeWidget();
+	createHitListTree();
+
+	// Middle Right: The data
+	hitData = new QTreeWidget();
+	createSignalsTree();
 	
-	QVBoxLayout *layoutTop = new QVBoxLayout(topWidget);
-	layoutTop->addWidget(qcsignal);
-	layoutTop->addWidget(treesplitter);
+	// horizontal splitter in the middle to display hits and data
+	QSplitter *dataSplitter = new QSplitter(this);
+	if(hitList)
+		dataSplitter->addWidget(hitList);
+	if(hitData)
+		dataSplitter->addWidget(hitData);
 	
 	
-	// bottom layout
-	QWidget     *bottomWidget = new QWidget(splitter);
-	bottomWidget->setMinimumSize(600, 450);
-	bottomWidget->setMaximumSize(600, 450);
-	
+	// bottom: the graph
 	graphView = new graph(this);
 	
 	// Graph axis origins and legth, number of ticks each axis
 	//                 xorig  yorig  xlength ylength nticksx nticksy
-	graphView->setAxis(15,   350,    445,    310,     5,     5);
+	graphView->setAxis(15,   310,    445,    300,     5,     5);
 	// inside shift of the axis ticks, and factor that multiplies the ticks size
 	graphView->setInside(20, 2, 2);
-	// particle colors follow gemc settings
-	// red:   positive
-	// gray:  neutral
-	// green: negative
-	//
-	// second argument of QPen is thickness of pencil
-	graphView->pcolors[2112] = QPen(Qt::black,             3);   // neutrons: black
-	graphView->pcolors[22]   = QPen(Qt::blue,              3);   // photons: blue
-	graphView->pcolors[11]   = QPen(Qt::cyan,              3);   // electrons: cyan
-	graphView->pcolors[2212] = QPen(QColor(240, 80, 80),   3);   // protons: orange
-	graphView->pcolors[211]  = QPen(Qt::magenta,           3);   // pi+: magenta
-	graphView->pcolors[-211] = QPen(Qt::yellow,            3);   // pi-: yellow
-	graphView->pcolors[-11]  = QPen(Qt::red,               3);   // positrons: positive - red
-	graphView->pcolors[0]    = QPen(Qt::blue,              3);   // optical photons: blue
-	graphView->pcolors[13  ] = QPen(QColor(0,125, 0   ),   3);   // Muon+ - dark green
-	graphView->pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
-	graphView->pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
+
+	
+	// putting all together in the main splitter
+	QSplitter *vMainsplitter     = new QSplitter(this);
+	vMainsplitter->setOrientation(Qt::Vertical);
+	vMainsplitter->addWidget(qcsignal);
+	vMainsplitter->addWidget(dataSplitter);
+	vMainsplitter->addWidget(graphView);
+	vMainsplitter->setOpaqueResize(false);
+	vMainsplitter->setMinimumSize(545, 595);
 	
 	
-	// putting all together
-	QVBoxLayout *layoutBottom = new QVBoxLayout(bottomWidget);
-	layoutBottom->addWidget(new QLabel("Signal:"));
-	layoutBottom->addWidget(graphView);
-	
-	
-	// splitter size
-	QList<int> list;
-	list.append( 420 );
-	list.append( 450 );
-	splitter->setSizes(list);
-	
-	
-	// all layouts
-	QVBoxLayout *mainLayout = new QVBoxLayout;
-	mainLayout->addWidget(splitter);
-	setLayout(mainLayout);
-	
-	
-	// Has Hit Gradient Color
+	// Hit Gradient Color
 	HitGrad = QLinearGradient(QPointF(1, 100), QPointF(180, 20));
 	HitGrad.setColorAt(0, QColor(255, 80,  80));
 	HitGrad.setColorAt(1, QColor(245, 245, 245));
@@ -156,14 +107,12 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	signalChoice = "E Dep.";
 }
 
-QTreeWidget* gsignal::CreateSDetsTree()
+void gsignal::createHitListTree()
 {
-	s_detectors->clear();
-	s_detectors->setSelectionMode(QAbstractItemView::SingleSelection);
-	QStringList labels;
-	labels << QString("Hits List");
-	s_detectors->setHeaderLabels(labels);
+	hitList->clear();
 	
+	hitList->setSelectionMode(QAbstractItemView::SingleSelection);
+	hitList->setHeaderLabels(QStringList("Hits List"));
 	
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
@@ -174,7 +123,7 @@ QTreeWidget* gsignal::CreateSDetsTree()
 		// Creating sensitive detectors name tree if it's different than "mirrors"
 		if(it->first != "mirror")
 		{
-			QTreeWidgetItem *newItem = new QTreeWidgetItem(s_detectors);
+			QTreeWidgetItem *newItem = new QTreeWidgetItem(hitList);
 			newItem->setText(0, QString(it->first.c_str()));
 			
 			if(nhits)
@@ -195,7 +144,7 @@ QTreeWidget* gsignal::CreateSDetsTree()
 					QTreeWidgetItem  *newHit = new QTreeWidgetItem(newItem);
 					
 					string hitindex = "Hit n. " + stringify(h+1) + "  nsteps: " +  stringify(nsteps) ;
-					
+				
 					// if last sensitive element is nphe_pmt then writing number of photo-electrons
 					if(!it->second->SDID.identifiers.size())
 						cout << "   !!! Error: no identifiers found for SD >" << it->second->SDID.name  << "<" << endl;
@@ -208,8 +157,7 @@ QTreeWidget* gsignal::CreateSDetsTree()
 			}
 		}
 	}
-	connect(s_detectors, SIGNAL(itemSelectionChanged() ),   this, SLOT(CreateSignalsTree() ) );
-	return s_detectors;
+	connect(hitList, SIGNAL(itemSelectionChanged() ),  this, SLOT(createSignalsTree() ) );
 }
 
 
@@ -217,27 +165,25 @@ QTreeWidget* gsignal::CreateSDetsTree()
 void gsignal::chooseVariable(int index)
 {
 	signalChoice = availableSignals[index];
-	CreateSignalsTree();
-	
+	createSignalsTree();
 }
 
 
 
-QTreeWidget* gsignal::CreateSignalsTree()
+void gsignal::createSignalsTree()
 {
-	gsignals->clear();
-	gsignals->setSelectionMode(QAbstractItemView::SingleSelection);
-	QStringList labels;
-	labels << QString("Signal");
-	gsignals->setHeaderLabels(labels);
+	hitData->clear();
+
+	hitData->setSelectionMode(QAbstractItemView::SingleSelection);
+	hitData->setHeaderLabels(QStringList("Data"));
 	
-	QTreeWidgetItem* item =  NULL;
-	if(s_detectors)
+	//	QTreeWidgetItem* item =  NULL;
+	if(hitList)
 	{
-		QList<QTreeWidgetItem *> list = s_detectors->selectedItems();
+		QList<QTreeWidgetItem *> list = hitList->selectedItems();
 		if(!list.isEmpty())
 		{
-			item = list.first();
+			QTreeWidgetItem *item = list.first();
 			
 			// trick to look for the index of this item
 			// will return zero if it's the sensitive detector name
@@ -273,7 +219,7 @@ QTreeWidget* gsignal::CreateSignalsTree()
 				SD += "  Hit n. " + c;
 			}
 			
-			QTreeWidgetItem * newHit = new QTreeWidgetItem(gsignals);
+			QTreeWidgetItem * newHit = new QTreeWidgetItem(hitData);
 			newHit->setText(0, QString(SD.c_str()));
 			newHit->setExpanded(1);
 			
@@ -338,7 +284,7 @@ QTreeWidget* gsignal::CreateSignalsTree()
 							signal = convertVintVdouble(aHit->GetTIds());
 						
 						
-						// this info is available only if WRITE_INTRAW is enable
+						// this info is available only if WRITE_INTRAW is enabled
 						if(signalChoice == "Orig. Trk")
 						{
 							if(WRITE_INTRAW.find(sDetector) != string::npos)
@@ -471,7 +417,6 @@ QTreeWidget* gsignal::CreateSignalsTree()
 								pid.push_back(1000);
 						}
 						
-						
 						SD += "  nsteps: " + stringify(nsteps);
 						newHit->setText(0, QString(SD.c_str()));
 						
@@ -504,8 +449,6 @@ QTreeWidget* gsignal::CreateSignalsTree()
 				}
 		}
 	}
-	
-	return gsignals;
 }
 
 
@@ -516,17 +459,7 @@ gsignal::~gsignal()
 	double VERB   = gemcOpt->optMap["GEO_VERBOSITY"].arg ;
 	if(VERB>2)
 		cout << hd_msg << " Signal Widget Deleted." << endl;
-	
 }
-
-
-
-
-
-
-
-
-
 
 
 

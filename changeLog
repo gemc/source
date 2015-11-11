@@ -1,5 +1,9 @@
 Changelog for GEMC
 
+11/10/15
+- graphs now are handled by a separate library
+- fixed graphs limits
+
 
 11/6/15
 - added bunch sampling of the voltage vs signal time. Data structure name is quantumS, map<int, int>

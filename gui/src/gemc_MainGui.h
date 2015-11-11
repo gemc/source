@@ -15,6 +15,7 @@
 #include "infos.h"
 #include "g4dialog.h"
 #include "gsignal.h"
+#include "gtrigger.h"
 
 
 // Class definition

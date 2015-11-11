@@ -8,12 +8,13 @@
 
 // All icon images must be 256x256
 #include "images/aboutControl_xpm.h"
-#include "images/generatorControl_xpm.h"
 #include "images/cameraControl_xpm.h"
-#include "images/signalsControl_xpm.h"
-#include "images/physicsControl_xpm.h"
 #include "images/detectorControl_xpm.h"
 #include "images/dialogControl_xpm.h"
+#include "images/generatorControl_xpm.h"
+#include "images/physicsControl_xpm.h"
+#include "images/signalsControl_xpm.h"
+#include "images/trigger_xpm.h"
 
 // C++ headers
 #include <iostream>
@@ -35,14 +36,14 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	contentsWidget->setViewMode(QListView::IconMode);
 	
 	// icon size
-	contentsWidget->setIconSize(QSize(60, 60));
+	contentsWidget->setIconSize(QSize(55, 55));
 	contentsWidget->setMovement(QListView::Static);
 
 	// icon container sizes
 	contentsWidget->setMinimumWidth(76);
 	contentsWidget->setMaximumWidth(76);
-	contentsWidget->setMinimumHeight(574);
-	contentsWidget->setMaximumHeight(574);
+	contentsWidget->setMinimumHeight(600);
+	contentsWidget->setMaximumHeight(600);
 	
 	// makes all icon the same size
 	contentsWidget->setUniformItemSizes(1);
@@ -59,7 +60,6 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	// Signal Control
 	// Physics List Control
   
-
 	pagesWidget = new QStackedWidget;
 	pagesWidget->addWidget(new run_control    (this, gemcOpt));  // for some reason run_control is very slow
 	pagesWidget->addWidget(new camera_control (this, gemcOpt));
@@ -67,6 +67,7 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	pagesWidget->addWidget(new infos          (this, gemcOpt));
 	pagesWidget->addWidget(new g4dialog       (this, gemcOpt));
 	pagesWidget->addWidget(gsig = new gsignal (this, gemcOpt, SDM));
+	pagesWidget->addWidget(new gtrigger       (this, gemcOpt, SDM));
 	pagesWidget->setMinimumWidth(550);
 	pagesWidget->setMaximumWidth(550);
 	pagesWidget->setMinimumHeight(600);
@@ -78,7 +79,6 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	// revisit this, why we need it?
 	if(qt_mode > 1)
 		contentsWidget->setCurrentRow(1);
-	
 	
 	
 	QPushButton *runButton = new QPushButton(tr("Run"));
@@ -140,18 +140,13 @@ void gemcMainWidget::changePage(QListWidgetItem *current, QListWidgetItem *previ
 	if (!current)
 		current = previous;
 	
-	// manually setting the content index
-	if(contentsWidget->row(current) == 0) pagesWidget->setCurrentIndex(0);
-	if(contentsWidget->row(current) == 1) pagesWidget->setCurrentIndex(1);
-	if(contentsWidget->row(current) == 2) pagesWidget->setCurrentIndex(2);
-	if(contentsWidget->row(current) == 3) pagesWidget->setCurrentIndex(3);
-	if(contentsWidget->row(current) == 4) pagesWidget->setCurrentIndex(4);
-	if(contentsWidget->row(current) == 5)
+	int thisIndex = contentsWidget->row(current);
+	pagesWidget->setCurrentIndex(thisIndex);
+	
+	if(thisIndex == 5)
 	{
-		pagesWidget->setCurrentIndex(5);
-		gsig->CreateSDetsTree();
+		gsig->createHitListTree();
 	}
-	if(contentsWidget->row(current) == 6) pagesWidget->setCurrentIndex(6);
 }
 
 void gemcMainWidget::createIcons()
@@ -165,6 +160,7 @@ void gemcMainWidget::createIcons()
 	buttons.push_back(addItem("Infos",     QPixmap(aboutControl_xpm)));
 	buttons.push_back(addItem("G4Dialog",  QPixmap(dialogControl_xpm)));
 	buttons.push_back(addItem("Signals",   QPixmap(signalsControl_xpm)));
+	buttons.push_back(addItem("Trigger",   QPixmap(trigger_xpm)));
 	buttons.push_back(addItem("Physics",   QPixmap(physicsControl_xpm)));
 
 	connect(contentsWidget,
@@ -209,9 +205,9 @@ void gemcMainWidget::beamOn()
 	sprintf(command, "/run/beamOn %d", nevs);
 	uim->ApplyCommand(command);
 
-//	if(pagesWidget->getCurrentIndex() == 5)
+	if(pagesWidget->currentIndex() == 5)
 	{
-		gsig->CreateSDetsTree();
+		gsig->createHitListTree();
 	}
 
 }

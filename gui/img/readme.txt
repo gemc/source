@@ -33,7 +33,6 @@ For transparency:
 
 Alternatively:
 
-
 1. Save original png in the "original" directory (256x256)
 2. Convert to xpm: http://www.office-converter.com/Convert-to-XPM
 3. Change the type to static const char *

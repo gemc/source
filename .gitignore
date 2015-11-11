@@ -12,6 +12,7 @@ gui/src/runControl/moc_momControls.cc
 gui/src/runControl/moc_primaryTab.cc
 gui/src/runControl/moc_run_control.cc
 gui/src/runControl/moc_vtxControls.cc
+gui/src/moc_gtrigger.cc
 utilities/moc_graph.cc
 lib/
 gemc

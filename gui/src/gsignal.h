@@ -11,7 +11,7 @@
 #include "graph.h"
 
 // G4 headers
-#include "G4UImanager.hh"
+//#include "G4UImanager.hh"
 
 // C++ headers
 #include <string>
@@ -29,36 +29,24 @@ class gsignal : public QWidget
 	public:
 		gsignal(QWidget *parent, goptions*, map<string, sensitiveDetector*>);
 		~gsignal();
-		
-//		int xorig, yorig;       // origin of the axis
-//		int xaxil, yaxil;       // axis length
-//		double xmin, ymin;      // graph minima
-//		double xmax, ymax;      // graph maxima
-//		double inside;          // how much inside the graph will be
-//		double dx, dy, DX, DY;  // lowercase: graph limits; uppercase: scene inside limits
-//		int nticksx, nticksy;
-//		map<int, QPen> pcolors;
 	
 		string signalChoice;    // what to plot
 		vector<string> availableSignals;
 		QComboBox *qcsignal;    // combo box
 	
-//		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
-//		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);
 	
 		goptions *gemcOpt;
+	
 		// we need to double check that
 		// some variables are available to display
 		string WRITE_INTRAW;
 		int SAVE_ALL_MOTHERS;
 	
-		G4UImanager  *UImanager;
 		map<string, sensitiveDetector*> SeDe_Map;
-		
 	
 	private:
-		QTreeWidget *gsignals;
-		QTreeWidget *s_detectors;
+		QTreeWidget *hitList;
+		QTreeWidget *hitData;
 		QTreeWidget *var_choice;
 
 		QLinearGradient HitGrad;
@@ -70,8 +58,8 @@ class gsignal : public QWidget
 	public slots:
 		
 		void chooseVariable(int);
-		QTreeWidget* CreateSDetsTree();           // creates Sensitive Detector / Hits Tree
-		QTreeWidget* CreateSignalsTree();         // creates signals tree
+		void createHitListTree();         // creates Sensitive Detector / Hits Tree
+		void createSignalsTree();         // creates signals tree
 		
 };
 
