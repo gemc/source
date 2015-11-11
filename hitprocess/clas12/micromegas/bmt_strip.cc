@@ -174,11 +174,11 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	cout<<" num e- "<<Nel<<endl;
+
 	if(Edep >0 )
 	{
 		int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
-
+		int num_detector = sector - 1; 			// index of the detector (0...2)
 		double sigma =0;
 		if(layer%2==0)
 		{// C layer
@@ -212,7 +212,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 		if(layer%2==1)
 		{// Z layer
 
-			double angle = atan2(x[1], x[0]);
+			double angle = atan2(y, x);
 			if (angle>2*Pi) angle-=2*Pi;
 
 			double angle_i = 0; // first angular boundary init
@@ -242,13 +242,13 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				double phi_min = phi+phi3sig_min;
 				double phi_max = phi+phi3sig_max;
 
-				if(phi_min<phi_i)
-					phi_min = phi_i;
-				if(phi_max>phi_f)
-					phi_max = phi_f;
+				if(phi_min<angle_i)
+					phi_min = angle_i;
+				if(phi_max>angle_f)
+					phi_max = angle_f;
 
-				int min_strip = getZStrip(sector,layer, phi_min);
-				int max_strip = getZStrip(sector,layer, phi_max);
+				int min_strip = getZStrip(layer, phi_min);
+				int max_strip = getZStrip(layer, phi_max);
 
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
