@@ -72,16 +72,19 @@ void bmt_strip::fill_infos()
     cout<<" test 4 "<<endl;
     for(int j =0; j<13; j++)
     { // region index  0 is CR4
+    	cout<<j<<": "<<CRCGROUP[0][j]<<" "<<CRCWIDTH[0][j]<<endl;
     	CRCGROUP[0][j] = CR4C_group[j];
     	CRCWIDTH[0][j] = CR4C_width[j];
     }
     for(int j =0; j<1; j++)
     { // region index  1 is CR5
+    	cout<<j<<": "<<CRCGROUP[0][j]<<" "<<CRCWIDTH[0][j]<<endl;
         CRCGROUP[1][j] = CR5C_group[j];
         CRCWIDTH[1][j] = CR5C_width[j];
     }
     for(int j =0; j<14; j++)
     { // region index  2 is CR6
+    	cout<<j<<": "<<CRCGROUP[0][j]<<" "<<CRCWIDTH[0][j]<<endl;
         CRCGROUP[2][j] = CR6C_group[j];
         CRCWIDTH[2][j] = CR6C_width[j];
     }
