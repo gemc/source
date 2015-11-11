@@ -13,7 +13,7 @@ void bmt_strip::fill_infos()
     hDrift = 3.0;
     hStrip2Det = hDrift/2.;
     ThetaL = toRadians(20.);
-
+    cout<<" filling infos "<<endl;
     // DEFINING THE Z DETECTORS
     CRZRADIUS[2]	=	205.8;
 	CRZNSTRIPS[2]	=	768;
@@ -42,6 +42,7 @@ void bmt_strip::fill_infos()
 			CRZEDGE2[i][j] = ZEdge2[j];
 		}
     }
+    cout<<" filling edges "<<endl;
     CRZXPOS[2]		=	10.547;
     // DEFINING THE C DETECTORS
 	CRCRADIUS[2]	=	220.8;
@@ -83,7 +84,7 @@ void bmt_strip::fill_infos()
         CRCGROUP[2][j] = CR6C_group[j];
         CRCWIDTH[2][j] = CR6C_width[j];
     }
-
+    cout<<" filling arrays "<<endl;
     CRCEDGE1.resize(3); //3 regions
 	for (int i = 0; i <3 ; ++i)
 		CRCEDGE1[i].resize(3);
