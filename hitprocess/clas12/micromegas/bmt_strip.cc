@@ -152,7 +152,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 		if(layer%2==1)
 		{// Z layer
-
+			cout<<" Z layer "<<endl;
 			double angle = atan2(y, x);
 			if (angle>2*Pi) angle-=2*Pi;
 
@@ -174,6 +174,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 			if(angle>=angle_i && angle<=angle_f)
 			{
+				cout<<" in acceptance "<<endl;
 				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
 				//  phi range
 				double phi3sig_min = (-3*sigma/cos(ThetaL)-(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))/CRZRADIUS[num_region];
@@ -182,7 +183,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 				double phi_min = phi+phi3sig_min;
 				double phi_max = phi+phi3sig_max;
-
+				cout<<" phi min "<<phi_min<<" phi max "<<phi_max<<endl;
 				if(phi_min<angle_i)
 					phi_min = angle_i;
 				if(phi_max>angle_f)
@@ -190,7 +191,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 				int min_strip = getZStrip(layer, phi_min);
 				int max_strip = getZStrip(layer, phi_max);
-
+				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<endl;
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
 					double f = getEnergyFraction(0, phi-CRZStrip_GetPhi( sector, layer, s), sigma);
