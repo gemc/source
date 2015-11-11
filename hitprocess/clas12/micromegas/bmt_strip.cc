@@ -158,11 +158,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					}
 				}
 
-			} else
-            { // not in the acceptance
-                strip_id.push_back(-1);
-                strip_id.push_back(1);
-            }
+			}
 		}
 	} else
     { // Nel=0, consider the Edep is 0
@@ -170,6 +166,12 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
         strip_id.push_back(1);
     }
 	cout<<strip_id.size()<<endl;
+	if(strip_id.size()==0)
+	{ // Nel=0, consider the Edep is 0
+	        strip_id.push_back(-1);
+	        strip_id.push_back(1);
+	}
+
     return strip_id;
 }
 
