@@ -13,7 +13,7 @@ void bmt_strip::fill_infos()
     hDrift = 3.0;
     hStrip2Det = hDrift/2.;
     ThetaL = toRadians(20.);
-    cout<<" filling infos "<<endl;
+
     // DEFINING THE Z DETECTORS
     CRZRADIUS[2]	=	205.8;
 	CRZNSTRIPS[2]	=	768;
@@ -71,7 +71,7 @@ void bmt_strip::fill_infos()
     	CRCGROUP[i].resize(MxGrpSize);
     	CRCWIDTH[i].resize(MxGrpSize);
     }
-    cout<<" test 4 "<<endl;
+
     for(int j =0; j<13; j++)
     { // region index  0 is CR4
     	CRCGROUP[0][j] = CR4C_group[j];
@@ -89,7 +89,7 @@ void bmt_strip::fill_infos()
         CRCGROUP[2][j] = CR6C_group[j];
         CRCWIDTH[2][j] = CR6C_width[j];
     }
-    cout<<" filling arrays "<<endl;
+
     CRCEDGE1.resize(3); //3 regions
 	for (int i = 0; i <3 ; ++i)
 		CRCEDGE1[i].resize(3);
@@ -109,7 +109,7 @@ void bmt_strip::fill_infos()
 			CRCEDGE2[i][j] = CEdge2[j];
 		}
     }
-    cout<<" geo loaded "<<endl;
+
 }
 /**
  * Method to get digi hits based on x,y,z position and E
@@ -128,19 +128,19 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 		{ // loop over (total) electrons
 			cout<<" looping over Ne- (x,y,z)= "<< x <<","<< y <<","<< z <<" layer "<<layer<<endl;
 			vector<double> X=smearedPosition(layer, x, y, z);
-			cout<<" smeared pos (x,y,z)= "<< x <<","<< y <<","<< z <<endl;
+			cout<<" smeared pos (x,y,z)= "<< X[0] <<","<< X[1] <<","<< X[2] <<endl;
 			if( isInFiducial(sector, layer, X) == true )
 			{
 				double angle = atan2(X[1], X[0]);
 				if (angle>2*Pi) angle-=2*Pi;
-				cout<<" smeared pos (x,y,z) in sen area "<<endl;
+
 				int strip = -1;
 
 				if(layer%2==1) // Z-detector
 					strip = getZStrip(layer, angle);
 				if(layer%2==0) // C-detector
 					strip = getCStrip(sector,layer, X[2]);
-				cout<<" smeared pos (x,y,z) strip "<<strip;
+				cout<<" smeared pos (x,y,z) strip "<<strip<<endl;;
 				if(strip != -1) {
 
 					for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
@@ -372,7 +372,7 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
 			for(int nCstrpNb = min_strip; nCstrpNb<=max_strip; nCstrpNb++)
 			{
 				double zstp = CRCStrip_GetZ(sector, layer, nCstrpNb ) -zi; //  c strip
-				zstp = ceil(zstp*100000)/100000;
+				zstp = ceil(zstp*100000)/100000; // rounding fix
 
 				double StripDiffCalc = abs(z-zstp);
 				if(StripDiffCalc<StripDiffMin)
