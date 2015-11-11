@@ -115,28 +115,27 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// number of electrons (Nt)
 	int Nel = (int) (1e6*Edep/25);
 	//List<double[]> listOfHits = new ArrayList<double[]>();
-
+	cout<<" num e- "<<Nel<<endl;
 	if(Nel >0 )
 	{
 		for(int iel=0;iel<Nel;iel++)
 		{ // loop over (total) electrons
+			cout<<" looping over Ne- (x,y,z)= "<x<<","<<y","<<y<<","<<z<<" layer "<<layer<<endl;
 			vector<double> X=smearedPosition(layer, x, y, z);
-
+			cout<<" smeared pos (x,y,z)= "<x<<","<<y","<<y<<","<<z<<endl;
 			if( isInFiducial(sector, layer, X) == true )
 			{
 				double angle = atan2(X[1], X[0]);
 				if (angle>2*Pi) angle-=2*Pi;
-
+				cout<<" smeared pos (x,y,z) in sen area "<<endl;
 				int strip = -1;
-				double E = 0;
 
 				if(layer%2==1) // Z-detector
 					strip = getZStrip(layer, angle);
 				if(layer%2==0) // C-detector
 					strip = getCStrip(sector,layer, X[2]);
-
+				cout<<" smeared pos (x,y,z) strip "<<strip;
 				if(strip != -1) {
-					E = 1./((double) Nel)*Edep;
 
 					for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
 					{
@@ -400,7 +399,6 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
  */
 double bmt_strip::CRCStrip_GetZ(int sector, int layer, int strip)
 {
-
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
