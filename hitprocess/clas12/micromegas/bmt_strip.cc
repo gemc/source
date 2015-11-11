@@ -115,7 +115,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-
+	cout<<" sector "<<sector<<endl;
 	if(Edep >0 )
 	{
 		int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
@@ -144,7 +144,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				{
 					double f = getEnergyFraction(z, CRCStrip_GetZ(sector, layer, s), sigma);
 					strip_id.push_back(s);
-					strip_id.push_back(Edep*f); // no gain fluctuation yet
+					strip_id.push_back(f); // no gain fluctuation yet
 				}
 
 			}
