@@ -112,11 +112,15 @@ void bmt_strip::fill_infos()
 
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
+	// the current perl script is not creating the correct geometry, therefore the sector must be corrected
+
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
 	cout<<" sector "<<sector<<endl;
-	if(Edep >0 )
+	sector = fixSector( layer,  x,  y);
+	cout<<" corr sector "<<sector<<endl;
+	if(sector>-1 && Edep >0 )
 	{
 		int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 		int num_detector = sector - 1; 			// index of the detector (0...2)
@@ -159,16 +163,13 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 			double angle_f = 0; // second angular boundary for detector A, B, or C init
 
 			double A_i=CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region];
-			if (A_i>2*Pi) A_i-=2*Pi;
 			double A_f=CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
-			if (A_f>2*Pi) A_f-=2*Pi;
 
 			angle_i = A_i;
 			angle_f = A_f;
-			if(A_i>A_f)
+			if(num_detector==1)
 			{ // for B-detector
-				angle_f = A_i;
-				angle_i = A_f;
+				angle_f = 2*Pi-A_f;
 			}
 			cout<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
 			if(angle>=angle_i && angle<=angle_f)
@@ -406,4 +407,31 @@ double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
 	return pdf_gaussian;
+}
+int bmt_strip::fixSector(int layer, double x, double y) {
+
+	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
+
+	double angle = atan2(y, x);
+	if (angle>2*Pi) angle-=2*Pi;
+
+	double angle_i = 0; // first angular boundary init
+	double angle_f = 0; // second angular boundary for detector A, B, or C init
+	int num_detector = -2;
+
+    for(int i = 0; i<3; i++) {
+
+		double A_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
+		double A_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
+
+		angle_i = A_i;
+		angle_f = A_f;
+		if(i==1)
+		{ // for B-detector
+			angle_f = 2*Pi-A_f;
+		}
+		if(phi>=angle_i && phi<=angle_f)
+			num_detector=i;
+    }
+    return num_detector + 1;
 }
