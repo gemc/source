@@ -102,11 +102,15 @@ void bmt_strip::fill_infos()
 vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
         // the return vector is always in pairs.
-
+	vector<double> strip_id;
 		{ // Nel=0, consider the Edep is 0
 				strip_id.push_back(-1);
 				strip_id.push_back(0);
 		}
 
         return strip_id;
+}
+
+double bmt_strip::toRadians(double angleDegrees) {
+	return Pi*angleDegrees/180.;
 }
