@@ -54,7 +54,7 @@ class bmt_strip
 		void fill_infos(); 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
 		double toRadians(double angleDegrees);
-		bool isInFiducial(int sector, int layer, double x[]);  					// a boolean to indicate if the hit is within sensitive area
+		bool isInFiducial(int sector, int layer, vector<double> x);  					// a boolean to indicate if the hit is within sensitive area
 		double getSigmaAzimuth(int layer, double x, double y); 					// sigma for Z-detectors
 		double getSigmaLongit(int layer, double x, double y);  					// sigma for C-detector
 		vector<double> smearedPosition(int layer, double x, double y, double z);//diffused position

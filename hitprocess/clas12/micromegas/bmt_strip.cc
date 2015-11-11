@@ -175,14 +175,14 @@ double bmt_strip::toRadians(double angleDegrees) {
 /**
  * a boolean to indicate if the hit is in the sensitive area
  */
-bool bmt_strip::isInFiducial(int sector, int layer, double x[])
+bool bmt_strip::isInFiducial(int sector, int layer, vector<double> x)
 {
 	bool isInFid = false;
 	int num_detector = sector - 1; 			// index of the detector (0...2)
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 
 	double z_i = CRZZMIN[num_region]+CRZOFFSET[num_region]; 						 // fiducial z-profile lower limit
-	double z_f = CRZZMIN[num_region]+CRZOFFSET[num_region] + CRZLENGTH[num_region]/; // fiducial z-profile upper limit
+	double z_f = CRZZMIN[num_region]+CRZOFFSET[num_region] + CRZLENGTH[num_region];  // fiducial z-profile upper limit
 
 	double R_i = 0; // inner radius init
 	double R_f = 0; // outer radius init for a C or Z detector
@@ -339,7 +339,7 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
 	int strip_group = 0;
 	int ClosestStp = -1;
 
-	for(int i =0; i< CRCGROUP[num_region].length; i++)
+	for(int i =0; i< CRCGROUP[num_region].size(); i++)
 	{
 
 		int group =i;
