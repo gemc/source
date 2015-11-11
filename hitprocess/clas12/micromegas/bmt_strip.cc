@@ -196,7 +196,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					double f = getEnergyFraction(0, phi-CRZStrip_GetPhi( sector, layer, s), sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(Edep*f); // no gain fluctuation yet
-					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi<<endl;
+					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<endl;
 				}
 			}
 		}
