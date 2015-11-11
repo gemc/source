@@ -120,9 +120,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	{
 		for(int iel=0;iel<Nel;iel++)
 		{ // loop over (total) electrons
-			cout<<" looping over Ne- (x,y,z)= "<<x<<","<<y","<<y<<","<<z<<" layer "<<layer<<endl;
+			cout<<" looping over Ne- (x,y,z)= "<< x <<","<< y <<","<< z <<" layer "<<layer<<endl;
 			vector<double> X=smearedPosition(layer, x, y, z);
-			cout<<" smeared pos (x,y,z)= "<<x<<","<<y","<<y<<","<<z<<endl;
+			cout<<" smeared pos (x,y,z)= "<< x <<","<< y <<","<< z <<endl;
 			if( isInFiducial(sector, layer, X) == true )
 			{
 				double angle = atan2(X[1], X[0]);
