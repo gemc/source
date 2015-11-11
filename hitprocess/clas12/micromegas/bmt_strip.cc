@@ -423,7 +423,7 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 
 		double A_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
 		double A_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
-
+		cout<<i<<" ai "<<A_i<<" af "<<A_f<<endl;
 		angle_i = A_i;
 		angle_f = A_f;
 		if(i==1)
