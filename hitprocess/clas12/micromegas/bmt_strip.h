@@ -54,12 +54,13 @@ class bmt_strip
 		void fill_infos(); 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
 		double toRadians(double angleDegrees);
-		bool isInFiducial(int sector, int layer, double[] x);  // a boolean to indicate if the hit is within sensitive area
-		double getSigmaAzimuth(int layer, double x, double y); // sigma for Z-detectors
-		double getSigmaLongit(int layer, double x, double y);  // sigma for C-detector
-		vector<double> smearedPosition(int layer, double x, double y, double z); //diffused position
-		int getZStrip(int layer, double angle); //the Z strip as a function of azimuthal angle
-		double CRCStrip_GetZ(int sector, int layer, int strip); // the z position of a given C strip
+		bool isInFiducial(int sector, int layer, double x[]);  					// a boolean to indicate if the hit is within sensitive area
+		double getSigmaAzimuth(int layer, double x, double y); 					// sigma for Z-detectors
+		double getSigmaLongit(int layer, double x, double y);  					// sigma for C-detector
+		vector<double> smearedPosition(int layer, double x, double y, double z);//diffused position
+		int getZStrip(int layer, double angle); 								//the Z strip as a function of azimuthal angle
+		int getCStrip(int sector, int layer, double trk_z); 					//the Z strip as a function of z
+		double CRCStrip_GetZ(int sector, int layer, int strip); 				// the z position of a given C strip
 };
 
 #endif

@@ -1,5 +1,6 @@
 // gemc headers
 #include "bmt_strip.h"
+#include "Randomize.hh"
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -124,7 +125,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 			if( isInFiducial(sector, layer, X) == true )
 			{
 				double angle = atan2(X[1], X[0]);
-				if (angle>2*PI) angle-=2*PI;
+				if (angle>2*Pi) angle-=2*Pi;
 
 				int strip = -1;
 				double E = 0;
@@ -174,10 +175,10 @@ double bmt_strip::toRadians(double angleDegrees) {
 /**
  * a boolean to indicate if the hit is in the sensitive area
  */
-bool bmt_strip::isInFiducial(int sector, int layer, double[] x)
+bool bmt_strip::isInFiducial(int sector, int layer, double x[])
 {
 	bool isInFid = false;
-
+	int num_detector = sector - 1; 			// index of the detector (0...2)
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 
 	double z_i = CRZZMIN[num_region]+CRZOFFSET[num_region]; 						 // fiducial z-profile lower limit
@@ -194,8 +195,12 @@ bool bmt_strip::isInFiducial(int sector, int layer, double[] x)
 
 	double angle_i = 0; // first angular boundary init
 	double angle_f = 0; // second angular boundary for detector A, B, or C init
-	double A_i = CRC_GetBeginStrip(sector, layer);
-	double A_f = CRC_GetEndStrip(sector, layer);
+
+	double A_i=CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region];
+	if (A_i>2*Math.PI) A_i-=2*Math.PI;
+	double A_f=CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
+	if (A_f>2*Math.PI) A_f-=2*Math.PI;
+
 	angle_i = A_i;
 	angle_f = A_f;
 	if(A_i>A_f)
@@ -272,7 +277,7 @@ vector<double> bmt_strip::smearedPosition(int layer, double x, double y, double 
 	{// Z layer
 		sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
 		// changes phi
-		double phicorr = ((double) (G4RandGauss::shoot(0,sigma)))/cos(ThetaL)
+		double phicorr = (((double) (G4RandGauss::shoot(0,sigma)))/cos(ThetaL)
 				-(sqrt(x*x+y*y)-CRZRADIUS[num_region]+
 						hStrip2Det)*tan(ThetaL))/CRZRADIUS[num_region];
 		double phi = atan2(y, x);
