@@ -170,7 +170,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				angle_f = A_i;
 				angle_i = A_f;
 			}
-			cout<<" Z layer, angle "<<angle<<" ai "<<angle_i<<" af "<<angle_f<<endl;
+			cout<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
 			if(angle>=angle_i && angle<=angle_f)
 			{
 				cout<<" in acceptance "<<endl;
