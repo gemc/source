@@ -197,9 +197,9 @@ bool bmt_strip::isInFiducial(int sector, int layer, vector<double> x)
 	double angle_f = 0; // second angular boundary for detector A, B, or C init
 
 	double A_i=CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region];
-	if (A_i>2*PI) A_i-=2*PI;
+	if (A_i>2*Pi) A_i-=2*Pi;
 	double A_f=CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
-	if (A_f>2*PI) A_f-=2*PI;
+	if (A_f>2*Pi) A_f-=2*Pi;
 
 	angle_i = A_i;
 	angle_f = A_f;
@@ -339,9 +339,11 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
 	int strip_group = 0;
 	int ClosestStp = -1;
 
-	for(int i =0; i< CRCGROUP[num_region].size(); i++)
+	int len = CRCGROUP[num_region].size();
+	for(int i =0; i< len; i++)
 	{
-
+		if(CRCGROUP[num_region][i]==0)
+			break;
 		int group =i;
 		double zi= CRCZMIN[num_region]+CRCOFFSET[num_region];
 		double z0 = CRCWIDTH[num_region][group]/2.;
