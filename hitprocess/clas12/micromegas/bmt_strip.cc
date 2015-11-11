@@ -109,65 +109,6 @@ void bmt_strip::fill_infos()
     }
 
 }
-/**
- * Method to get digi hits based on x,y,z position and E
- */
-/*vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
-{
-	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
-	vector<double> strip_id;
-	// number of electrons (Nt)
-	int Nel = (int) (1e6*Edep/25);
-	//List<double[]> listOfHits = new ArrayList<double[]>();
-	cout<<" num e- "<<Nel<<endl;
-	if(Nel >0 )
-	{
-		for(int iel=0;iel<Nel;iel++)
-		{ // loop over (total) electrons
-			vector<double> X=smearedPosition(layer, x, y, z);
-			if( isInFiducial(sector, layer, X) == true )
-			{
-				double angle = atan2(X[1], X[0]);
-				if (angle>2*Pi) angle-=2*Pi;
-
-				int strip = -1;
-
-				if(layer%2==1) // Z-detector
-					strip = getZStrip(layer, angle);
-				if(layer%2==0) // C-detector
-					strip = getCStrip(sector,layer, X[2]);
-
-				if(strip != -1) {
-					for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
-					{
-						if(strip_id[2*istrip]==strip)
-						{// already hit strip - add Edep
-							strip_id[2*istrip+1]=strip_id[2*istrip+1]+1./((double) Nel); // no gain fluctuation yet
-							strip=-1; // not to use it anymore
-						}
-					}
-					if(strip>-1)
-					{ // this is a new strip
-						strip_id.push_back(strip);
-						strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
-					}
-				}
-			}
-		}
-	} else
-    { // Nel=0, consider the Edep is 0
-        strip_id.push_back(-1);
-        strip_id.push_back(1);
-    }
-	cout<<strip_id.size()<<endl;
-	if(strip_id.size()==0)
-	{ // Nel=0, consider the Edep is 0
-	        strip_id.push_back(-1);
-	        strip_id.push_back(1);
-	}
-
-    return strip_id;
-}*/
 
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
@@ -255,7 +196,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					double f = getEnergyFraction(0, phi-CRZStrip_GetPhi( sector, layer, s), sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(Edep*f); // no gain fluctuation yet
-					cout<<" f "<<f<<endl;
+					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi<<endl;
 				}
 			}
 		}
@@ -268,8 +209,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	cout<<strip_id.size()<<endl;
 	if(strip_id.size()==0)
 	{ // Nel=0, consider the Edep is 0
-	        strip_id.push_back(-1);
-	        strip_id.push_back(Edep);
+		strip_id.push_back(-1);
+		strip_id.push_back(Edep);
 	}
 
     return strip_id;
@@ -277,54 +218,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 double bmt_strip::toRadians(double angleDegrees) {
 	return Pi*angleDegrees/180.;
 }
-/**
- * a boolean to indicate if the hit is in the sensitive area
- */
-bool bmt_strip::isInFiducial(int sector, int layer, vector<double> x)
-{
-	bool isInFid = false;
-	int num_detector = sector - 1; 			// index of the detector (0...2)
-	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 
-	double z_i = CRZZMIN[num_region]+CRZOFFSET[num_region]; 						 // fiducial z-profile lower limit
-	double z_f = CRZZMIN[num_region]+CRZOFFSET[num_region] + CRZLENGTH[num_region];  // fiducial z-profile upper limit
-
-	double R_i = 0; // inner radius init
-	double R_f = 0; // outer radius init for a C or Z detector
-	if(layer%2==1)
-		R_i = CRZRADIUS[num_region]; // Z layer
-	if(layer%2==0)
-		R_i = CRCRADIUS[num_region]; // outer radius
-
-	R_f = R_i + hDrift;
-
-	double angle_i = 0; // first angular boundary init
-	double angle_f = 0; // second angular boundary for detector A, B, or C init
-
-	double A_i=CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region];
-	if (A_i>2*Pi) A_i-=2*Pi;
-	double A_f=CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
-	if (A_f>2*Pi) A_f-=2*Pi;
-
-	angle_i = A_i;
-	angle_f = A_f;
-	if(A_i>A_f)
-	{ // for B-detector
-		angle_f = A_i;
-		angle_i = A_f;
-	}
-	// the hit parameters
-	double angle = atan2(x[1], x[0]);
-	if (angle>2*Pi) angle-=2*Pi;
-	double R = sqrt(x[0]*x[0]+x[1]*x[1]);
-	double z = x[2];
-
-	if( (angle_i-angle)<(angle_f-angle_i) && (R-R_i)<(R_f-R_i) && (z-z_i)<(z_f-z_i) )
-		isInFid = true;
-
-	return isInFid;
-
-}
 /**
  *
  * param layer
@@ -351,52 +245,13 @@ double bmt_strip::getSigmaLongit(int layer, double x, double y)
 double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 { // sigma for Z-detectors
 
-	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
+	int num_region = (int) (layer+1)/2 - 1; ///< region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	double sigma = SigmaDrift*sqrt((sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)/hDrift/ThetaL);
 
 	return sigma;
 
 }
-/**
- *
- * param layer
- * param x x-coordinate of the hit in the lab frame
- * param y y-coordinate of the hit in the lab frame
- * param z z-coordinate of the hit in the lab frame
- * return X[] = the smeared position x = X[0], y = X[1], z = X[2] taking the Lorentz angle into account
- */
-vector<double> bmt_strip::smearedPosition(int layer, double x, double y, double z)
-{
-	vector<double> newPos;
-	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 
-	double sigma =0;
-	if(layer%2==0)
-	{// C layer
-		sigma = getSigmaLongit(layer, x, y); //  longitudinal shower profile
-		// changes z
-		z = (double) (G4RandGauss::shoot(z,sigma));
-	}
-
-	if(layer%2==1)
-	{// Z layer
-		sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
-		// changes phi
-		double phicorr = (((double) (G4RandGauss::shoot(0,sigma)))/cos(ThetaL)
-				-(sqrt(x*x+y*y)-CRZRADIUS[num_region]+
-						hStrip2Det)*tan(ThetaL))/CRZRADIUS[num_region];
-		double phi = atan2(y, x);
-		phi+=phicorr;
-
-		x = sqrt(x*x+y*y)*cos(phi);
-		y = sqrt(x*x+y*y)*sin(phi);
-	}
-	newPos.push_back(x);
-	newPos.push_back(y);
-	newPos.push_back(z);
-
-	return newPos;
-}
 /**
  *
  * param layer the layer 1...6
@@ -543,7 +398,6 @@ double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
-	//double angle=CR6Z_edge[num_detector]+(CR6Z_Xpos+(CR6Z_width/2.+num_strip*(CR6Z_width+CR6Z_spacing)))/CR6Z_radius;
 	double angle=CRZEDGE1[num_region][num_detector]+(CRZXPOS[num_region]+(CRZWIDTH[num_region]/2.+num_strip*(CRZWIDTH[num_region]+CRZSPACING[num_region])))/CRZRADIUS[num_region];
 	if (angle>2*Pi) angle-=2*Pi;
 	return angle; //in rad
