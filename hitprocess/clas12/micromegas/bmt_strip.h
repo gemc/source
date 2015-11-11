@@ -17,7 +17,7 @@ class bmt_strip
 		double Pi;
 		
 		// THE GEOMETRY CONSTANTS
-		const static int NREGIONS = 3  ;					// 3 regions of MM
+		const static int NREGIONS = 3  ;	// 3 regions of MM
 		
 		//Z detector characteristics
 		double CRZRADIUS[NREGIONS] ; 		// the radius of the Z detector in mm

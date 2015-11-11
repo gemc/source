@@ -111,6 +111,7 @@ vector<double>  bmt_strip::FindStrip(int layer, int sector, double x, double y, 
         return strip_id;
 }
 
+
 double bmt_strip::toRadians(double angleDegrees) {
 	return Pi*angleDegrees/180.;
 }
