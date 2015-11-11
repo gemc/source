@@ -67,12 +67,13 @@ void bmt_strip::fill_infos()
     CRCGROUP.resize(3); //3 regions
     CRCWIDTH.resize(3);
     cout<<" test 3 "<<endl;
-    for (int i = 0; i <3 ; ++i)
+    for (int i = 0; i <3 ; ++i) {
     	CRCGROUP[i].resize(MxGrpSize);
+    	CRCWIDTH[i].resize(MxGrpSize);
+    }
     cout<<" test 4 "<<endl;
     for(int j =0; j<13; j++)
     { // region index  0 is CR4
-    	cout<<j<<": "<<CR4C_group[j]<<" "<<CR4C_width[j]<<endl;
     	CRCGROUP[0][j] = CR4C_group[j];
     	CRCWIDTH[0][j] = CR4C_width[j];
     }
