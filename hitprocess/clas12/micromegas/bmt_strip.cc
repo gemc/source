@@ -53,7 +53,7 @@ void bmt_strip::fill_infos()
     double CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,896};                              	  // the number of strips with equal pitches
     // For CR5, no existing value. picked a random value compatible with the geometry
     double CR5C_width[1]={0.253};                                                                     // the number of strips with equal pitches & width of the corresponding group of strips
-    double width[1]={1024};
+    double CR5C_group[1]={1024};
     // For CR6 the numbers are final and should not be changed
     double CR6C_width[14]={0.38,0.32,0.27,0.23,0.17,0.18,0.22,0.25,0.29,0.33,0.37,0.41,0.46,0.51};    // the number of strips with equal pitches & width of the corresponding group of strips
     double CR6C_group[14]={32,32,32,32,704,64,32,32,32,32,32,32,32,32};
@@ -64,15 +64,15 @@ void bmt_strip::fill_infos()
 
     for (int i = 0; i <3 ; ++i)
     	CRCGROUP[i].resize(MxGrpSize);
-    for(int j =0; j<sizeof(CR4C_group) / sizeof(CR4C_group[0]); j++) { // region index  0 is CR4
+    for(int j =0; j<13; j++) { // region index  0 is CR4
     	CRCGROUP[0][j] = CR4C_group[j];
     	CRCWIDTH[0][j] = CR4C_width[j];
     }
-    for(int j =0; j<sizeof(CR5C_group) / sizeof(CR5C_group[0]); j++) { // region index  1 is CR5
+    for(int j =0; j<1; j++) { // region index  1 is CR5
         CRCGROUP[1][j] = CR5C_group[j];
         CRCWIDTH[1][j] = CR5C_width[j];
     }
-    for(int j =0; j<sizeof(CR6C_group) / sizeof(CR6C_group[0]); j++) { // region index  2 is CR6
+    for(int j =0; j<14; j++) { // region index  2 is CR6
         CRCGROUP[2][j] = CR6C_group[j];
         CRCWIDTH[2][j] = CR6C_width[j];
     }

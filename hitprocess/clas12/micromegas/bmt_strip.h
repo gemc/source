@@ -14,8 +14,6 @@ class bmt_strip
 {
 	public:
 
-		double Pi;
-		
 		// THE GEOMETRY CONSTANTS
 		const static int NREGIONS = 3  ;	// 3 regions of MM
 		
