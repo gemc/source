@@ -55,7 +55,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	//yid[3].id = bmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = bmts.FindStrip(layer-1, sector-1, x, y, z, depe);
+	vector<double> multi_hit = bmts.FindStrip(layer, sector, x, y, z, depe);
 	
 	int n_multi_hits = multi_hit.size()/2;
 	
