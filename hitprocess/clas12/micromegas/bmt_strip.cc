@@ -72,7 +72,7 @@ void bmt_strip::fill_infos()
     cout<<" test 4 "<<endl;
     for(int j =0; j<13; j++)
     { // region index  0 is CR4
-    	cout<<j<<": "<<CRCGROUP[0][j]<<" "<<CRCWIDTH[0][j]<<endl;
+    	cout<<j<<": "<<CR4C_group[j]<<" "<<CR4C_width[j]<<endl;
     	CRCGROUP[0][j] = CR4C_group[j];
     	CRCWIDTH[0][j] = CR4C_width[j];
     }
