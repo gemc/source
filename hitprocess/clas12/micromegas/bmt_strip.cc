@@ -42,7 +42,7 @@ void bmt_strip::fill_infos()
 			CRZEDGE2[i][j] = ZEdge2[j];
 		}
     }
-    cout<<" filling edges "<<endl;
+
     CRZXPOS[2]		=	10.547;
     // DEFINING THE C DETECTORS
 	CRCRADIUS[2]	=	220.8;
@@ -52,7 +52,7 @@ void bmt_strip::fill_infos()
 	CRCZMIN[2]		=	-421.75;
 	CRCZMAX[2]		=	290.25;
 	CRCOFFSET[2]	=	252.18;
-	cout<<" test 1 "<<endl;
+
     // pitch CRC --> for the C-detectors, the strips are in bunches of equal pitches
     double CR4C_width[13]={0.345,0.28,0.225,0.175,0.17,0.21,0.26,0.31,0.37,0.44,0.515,0.605,0.7};     // width of the corresponding group of strips
     double CR4C_group[13]={32,32,32,32,624,32,32,32,32,32,32,32,896};                              	  // the number of strips with equal pitches
@@ -62,11 +62,11 @@ void bmt_strip::fill_infos()
     // For CR6 the numbers are final and should not be changed
     double CR6C_width[14]={0.38,0.32,0.27,0.23,0.17,0.18,0.22,0.25,0.29,0.33,0.37,0.41,0.46,0.51};    // the number of strips with equal pitches & width of the corresponding group of strips
     double CR6C_group[14]={32,32,32,32,704,64,32,32,32,32,32,32,32,32};
-    cout<<" test 2 "<<endl;
+
     int MxGrpSize = 14; // the max number of entries in CRC_group array
     CRCGROUP.resize(3); //3 regions
     CRCWIDTH.resize(3);
-    cout<<" test 3 "<<endl;
+
     for (int i = 0; i <3 ; ++i) {
     	CRCGROUP[i].resize(MxGrpSize);
     	CRCWIDTH[i].resize(MxGrpSize);
