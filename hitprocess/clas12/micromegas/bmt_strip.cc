@@ -156,6 +156,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 		if(layer%2==1)
 		{// Z layer
+			/*
 			double angle = atan2(y, x);
 			//if (angle>2*Pi) angle-=2*Pi;
 
@@ -172,8 +173,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				if(angle>0)
 					angle+=2*Pi;
 			}
-			cout<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
-			if(angle>=angle_i && angle<=angle_f)
+			cout<<" sector "<<sector<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
+			if(angle>=angle_i && angle<=angle_f) */
+			if(isInSector( layer,  x,  y)==sector)
 			{
 				cout<<" in acceptance "<<endl;
 				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
@@ -190,8 +192,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				if(phi_max>angle_f)
 					phi_max = angle_f;
 
-				int min_strip = getZStrip(layer, phi_min);
-				int max_strip = getZStrip(layer, phi_max);
+				int min_strip = getZStrip(sector, layer, phi_min);
+				int max_strip = getZStrip(sector, layer, phi_max);
 				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<endl;
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
@@ -260,19 +262,21 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
  * param angle the position angle of the hit in the Z detector
  * return the Z strip as a function of azimuthal angle
  */
-int bmt_strip::getZStrip(int layer, double angle)
+int bmt_strip::getZStrip(int sector, int layer, double angle)
 {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
-	int num_detector = -1;
+	int num_detector =isInSector( layer,  angle) - 1;
+	if(num_detector==-1)
+		return -1;
 
-	for (int i = 0; i < 3; i++)
-	{
-		if(angle>=CRZEDGE1[num_region][i] && ((angle-CRZEDGE1[num_region][i]) < abs(CRZEDGE2[num_region][i]-CRZEDGE1[num_region][i]) ))
-		{
-			num_detector = i;
-			break;
-		}
+	if(angle<0)
+		angle+=2*Pi; // from 0 to 2Pi
+
+	if(num_detector==1) {
+		double angle_f=CRCEDGE1[num_region][1]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region] - 2*Pi;
+		if(angle>=0 && angle<=angle_f)
+			angle+=2*Pi;
 	}
 	double strip_calc = ( (angle-CRZEDGE1[num_region][num_detector])*CRZRADIUS[num_region]-CRZXPOS[num_region]-CRZWIDTH[num_region]/2.)/(CRZWIDTH[num_region]+CRZSPACING[num_region]);
 	strip_calc = (int)(round(strip_calc) );
@@ -409,41 +413,28 @@ double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
 	return pdf_gaussian;
 }
-int bmt_strip::fixSector(int layer, double x, double y) {
+
+
+int bmt_strip::isInSector(int layer, double x, double y) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
 	double angle = atan2(y, x);
-	//if (angle>2*Pi) angle-=2*Pi;
+	if(angle<0)
+		angle+=2*Pi; // from 0 to 2Pi
+	double angle_pr = angle + 2*Pi;
 
 	double angle_i = 0; // first angular boundary init
 	double angle_f = 0; // second angular boundary for detector A, B, or C init
-	int num_detector = -2;
+	int num_detector = -1;
 
-    for(int i = 0; i<3; i++) {
+	for(int i = 0; i<3; i++) {
 
-		double A_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
-		double A_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
+		angle_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
+		angle_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
 
-		if(A_i>Pi)
-			A_i-=2*Pi;
-		if(A_f>Pi)
-			A_f-=2*Pi;
-
-		angle_i = A_i;
-		angle_f = A_f;
-
-		if(i==2)
-		{
-			angle_i = A_i;
-			angle_f = A_f+2*Pi;
-			if(angle<0)
-				angle+=2*Pi;
-		}
-
-		cout<<angle<<" Ai "<<A_i<<" Af "<<A_f<<" ai "<<angle_i<<" af "<<angle_f<<endl;
-		if(angle>=angle_i && angle<=angle_f)
+		if( (angle>=angle_i && angle<=angle_f) || (angle_pr>=angle_i && angle_pr<=angle_f) )
 			num_detector=i;
-    }
-    return num_detector + 1;
+	}
+	return num_detector + 1;
 }
