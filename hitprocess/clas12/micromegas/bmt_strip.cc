@@ -433,7 +433,7 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 		angle_i = A_i;
 		angle_f = A_f;
 
-		if(A_i<A_f)
+		if(i==2)
 		{
 			angle_i = A_f;
 			angle_f = A_i;
