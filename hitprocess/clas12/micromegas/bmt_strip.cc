@@ -439,7 +439,7 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 			angle_f = A_i;
 		}
 
-		cout<<angle<<" Ai "<<A_i<<" Af "<<A_f<<<<" ai "<<angle_i<<" af "<<angle_f<<endl;
+		cout<<angle<<" Ai "<<A_i<<" Af "<<A_f<<" ai "<<angle_i<<" af "<<angle_f<<endl;
 		if(angle>=angle_i && angle<=angle_f)
 			num_detector=i;
     }
