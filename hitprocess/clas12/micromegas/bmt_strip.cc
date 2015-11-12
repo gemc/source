@@ -157,7 +157,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 		if(layer%2==1)
 		{// Z layer
 			double angle = atan2(y, x);
-			if (angle>2*Pi) angle-=2*Pi;
+			//if (angle>2*Pi) angle-=2*Pi;
 
 			double angle_i = 0; // first angular boundary init
 			double angle_f = 0; // second angular boundary for detector A, B, or C init
@@ -414,7 +414,7 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
 	double angle = atan2(y, x);
-	if (angle>2*Pi) angle-=2*Pi;
+	//if (angle>2*Pi) angle-=2*Pi;
 
 	double angle_i = 0; // first angular boundary init
 	double angle_f = 0; // second angular boundary for detector A, B, or C init
@@ -424,13 +424,21 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 
 		double A_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
 		double A_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
+
+		if(A_i>Pi)
+			A_i-=2*Pi;
+		if(A_f>Pi)
+			A_f-=2*Pf;
 		cout<<i<<" ai "<<A_i<<" af "<<A_f<<endl;
-		angle_i = A_i;
-		angle_f = A_f;
-		if(i==1)
-		{ // for B-detector
-			if(angle>0)
-				angle+=2*Pi;
+		if(A_i>A_f)
+		{
+			angle_i = A_i;
+			angle_f = A_f;
+		}
+		else
+		{
+			angle_i = A_f;
+			angle_f = A_i;
 		}
 		if(angle>=angle_i && angle<=angle_f)
 			num_detector=i;
