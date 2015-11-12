@@ -262,7 +262,7 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
  * param angle the position angle of the hit in the Z detector
  * return the Z strip as a function of azimuthal angle
  */
-int bmt_strip::getZStrip(int layer, double phi);
+int bmt_strip::getZStrip(int layer, double phi)
 {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	int num_detector =isInSector( layer,  angle) - 1;
