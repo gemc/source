@@ -9,13 +9,16 @@ gtrigger::gtrigger(QWidget *parent, goptions *Opts, map<string, sensitiveDetecto
 	gemcOpt  = Opts;
 	SeDe_Map = SD_Map;
 	VOLTAGES = replaceCharWithChars(gemcOpt->optMap["SIGNALVT"].args, ",", "  ");
-
+	plotChoice = 0;  // start with both plots
+	
 	// top: choose what to show
 	QComboBox *whatToShow = new QComboBox;
 	whatToShow->addItem("Voltages and Triggers");
 	whatToShow->addItem("Voltages only");
 	whatToShow->addItem("Triggers only");
+	connect ( whatToShow   , SIGNAL( currentIndexChanged (int) ), this, SLOT( choosePlots(int)    ) );
 
+	
 	// need an overal scroll area with all the signals
 	scrollArea = new QScrollArea;
 	scrollArea->setMinimumSize(545, 565);
@@ -32,21 +35,19 @@ gtrigger::gtrigger(QWidget *parent, goptions *Opts, map<string, sensitiveDetecto
 	vMainsplitter->addWidget(whatToShow);
 	vMainsplitter->addWidget(scrollArea);
 	vMainsplitter->setMinimumSize(545, 595);
-
-	
 }
 
 
 
 void gtrigger::createGraphs()
 {
-	int graphVsize = 150;
+	int graphVsize   = 150;
+	int triggerValue = 3500;
 	
 	// clear all widgets first
 	for(unsigned i=0; i<vGraphsplitter->count(); i++)
 	{
 		vGraphsplitter->widget(i)->hide();
-		//		delete vGraphsplitter->widget(i);
 		vGraphsplitter->widget(i)->deleteLater() ;
 	}
 	
@@ -57,7 +58,15 @@ void gtrigger::createGraphs()
 		MHitCollection *MHC = it->second->GetMHitCollection();
 		if(MHC)
 			if(VOLTAGES.find(it->first) != string::npos)
-				ntotHits += MHC->GetSize();
+			{
+				int nhits = MHC->GetSize();
+				for(int h=0; h<nhits; h++)
+				{
+					MHit *aHit = (*MHC)[h];
+					if(aHit->diditpassTrigger())
+						ntotHits++;
+				}
+			}
 	}
 	
 	// now creating all the graphs
@@ -76,10 +85,11 @@ void gtrigger::createGraphs()
 		allGraphs[h]->setPensWidth(2, 1);
 		allGraphs[h]->setMinimumSize(545, graphVsize);
 		allGraphs[h]->setMaximumSize(545, graphVsize);
-		
+
 		vGraphsplitter->addWidget(allGraphs[h]);
 		vGraphsplitter->setCollapsible(h,0);
 	}
+	
 
 	// now plotting all hits
 	// notice detector index
@@ -88,12 +98,17 @@ void gtrigger::createGraphs()
 	{
 		MHitCollection *MHC = it->second->GetMHitCollection();
 		int nhits = 0;
+		int ntriggers = 0;
 		if(MHC) nhits = MHC->GetSize();
 		if(VOLTAGES.find(it->first) != string::npos)
 		{
 			for(int h=0; h<nhits; h++)
 			{
 				MHit *aHit = (*MHC)[h];
+				if(aHit->diditpassTrigger() == 0)
+					continue;
+				
+				ntriggers++;
 				
 				string title = it->first + " ";
 				
@@ -103,27 +118,65 @@ void gtrigger::createGraphs()
 				
 				vector<int> time = aHit->getQuantumT();
 				vector<int> qadc = aHit->getQuantumQ();
+				vector<int> trig = aHit->getQuantumTR();
+				
 				// pid needed to differentiate colors
 				vector<int> pid;
+				vector<int> tpid;
 				
 				vector<double> dtime;
 				vector<double> dqadc;
+				vector<double> dtrig;
+				vector<double> dttime;
+				
+				int goingUp   = 0;
+				int goingDown = triggerValue;
+				
 				for(unsigned int i=0; i<time.size(); i++)
 				{
-					dtime.push_back((double) time[i]);
+					dtime.push_back( (double) time[i]);
+					dttime.push_back((double) time[i]);
 					dqadc.push_back((double) qadc[i]);
+					dtrig.push_back((double) trig[i]);
 					pid.push_back(2212);
+					tpid.push_back(1000);
 					
+					if(trig[i] > 0)
+					{
+						while(goingUp < triggerValue)
+						{
+							goingUp += triggerValue / 100;
+							dttime.push_back((double) time[i] + 0.001);
+							dtrig.push_back(goingUp);
+							tpid.push_back(1000);
+						}
+						goingDown = triggerValue;
+					}
+					else
+					{
+						if(goingUp >= triggerValue)
+						{
+							while(goingDown > 0)
+							{
+								goingDown -= triggerValue / 100;
+								dttime.push_back((double) time[i] + 0.001);
+								dtrig.push_back(goingDown);
+								tpid.push_back(1000);
+								goingUp = 0;
+							}
+						}
+					}
 				}
 				
-				
-				allGraphs[dIndex + h]->plots_bg("bunch [4*ns]", "Voltage", dtime, dqadc, title);
-				allGraphs[dIndex + h]->plot_graph(dtime, dqadc, pid);
-				
+				int gIndex = dIndex + ntriggers - 1;
+				allGraphs[gIndex]->setFixedAxis(0, 500, 0, 4000);
+				allGraphs[gIndex]->plots_bg("bunch [4*ns]", "", dtime, dqadc, title);
+				if(plotChoice == 0 || plotChoice == 2) allGraphs[gIndex]->plot_graph(dttime, dtrig, tpid);
+				if(plotChoice == 0 || plotChoice == 1) allGraphs[gIndex]->plot_graph(dtime, dqadc, pid);
+
 			}
 		
-		
-			dIndex += nhits ;
+			dIndex += ntriggers ;
 		}
 		
 	}
@@ -140,5 +193,10 @@ gtrigger::~gtrigger()
 	
 }
 
+void gtrigger::choosePlots(int index)
+{
+	plotChoice = index;
+	createGraphs();
+}
 
 

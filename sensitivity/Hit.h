@@ -60,9 +60,11 @@ class MHit : public G4VHit
 		vector<double> signalT;         ///< Time vector
 		vector<double> signalV;         ///< Voltage Vector
 
-		vector<int> quantumT;        ///< quantized Time vector
-		vector<int> quantumQ;        ///< quantized charge (ADC) Vector
+		vector<int> quantumT;           ///< quantized Time vector
+		vector<int> quantumQ;           ///< quantized charge (ADC) Vector
+		vector<int> quantumTR;          ///< Trigger based on QuantumQ
 
+		int hasTrigger;                 ///< is 1 if this hit produces a signal above threshold
 	
 	public:
 		// infos filled in Sensitive Detector
@@ -175,9 +177,14 @@ class MHit : public G4VHit
 		}
 	}
 	
-	inline vector<int> getQuantumT(){return quantumT;}
-	inline vector<int> getQuantumQ(){return quantumQ;}
-
+	inline vector<int> getQuantumT() {return quantumT;}
+	inline vector<int> getQuantumQ() {return quantumQ;}
+	inline vector<int> getQuantumTR(){return quantumTR;}
+	inline void setQuantumTR(vector<int> t)   { quantumTR = t; }
+	
+	// trigger
+	inline void passedTrigger(){hasTrigger = 1;}
+	inline int diditpassTrigger(){return hasTrigger;}
 	
 	
 };

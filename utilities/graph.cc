@@ -31,6 +31,7 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 	// default pen widts
 	axisPenWidth = 3;
 	dataPenWidth = 3;
+	fixedAxis    = 0;
 }
 
 
@@ -121,7 +122,7 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 		QGraphicsSimpleTextItem *alab = new QGraphicsSimpleTextItem(QString(lab));
 		alab->setFont(QFont("Helvetica", 12));
 		// moved by its point size * number of digit (3)
-		alab->moveBy(xorig - 36, yorig - inside - a*DY/nticksy - 6);
+		alab->moveBy(xorig - 40, yorig - inside - a*DY/nticksy - 6);
 		scene->addItem(alab);
 	}
 	
@@ -149,6 +150,14 @@ void graph::plot_graph(vector<double> x, vector<double> y, vector<int> pid)
 
 void graph::setDataAxisLimits(vector<double> x, vector<double> y)
 {
+	// user already set these up
+	if(fixedAxis)
+	{
+		dx = (xmax - xmin);
+		dy = (ymax - ymin);
+
+		return;
+	}
 	// need to reset limits every time
 	xmin = 100000;
 	ymin = 100000;
@@ -181,6 +190,24 @@ void graph::setDataAxisLimits(vector<double> x, vector<double> y)
 	dy = (ymax - ymin);
 
 }
+
+
+void graph::setFixedAxis(int xmi, int xma, int ymi, int yma)
+{
+	xmin = xmi;
+	xmax = xma;
+	ymin = ymi;
+	ymax = yma;
+	
+	
+	fixedAxis = 1;
+}
+
+
+
+
+
+
 
 
 

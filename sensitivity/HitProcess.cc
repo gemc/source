@@ -242,6 +242,9 @@ map< double, double >  HitProcess :: signalVT(MHit* aHit)
 
 map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 {
+	// hardcoded trigger value, need to determine how
+	double triggerV = 3500;
+	
 	sensitiveID sdid = aHit->GetSDID();
 
 	// voltage signal time resolution is an external parameter
@@ -256,9 +259,11 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 	// quantum signal, all initialized to zero
 	// number of elements in the map is total time / resolution
 	map< int, int > QS;
+	vector<int> TR;
 	for(int i=0; i<tsampling/tres; i++)
 	{
 		QS[i*4] = 0;
+		TR.push_back(0);
 	}
 	
 	map< int, int > :: iterator   qsi = QS.begin();
@@ -278,10 +283,16 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 	{
 		if(fabs(vti->first - qsi->first) < sres/2)
 		{
-			// recording signal only if above threshold
-			if(fabs(vti->second - sdid.pedestal) > sdid.signalThreshold*100)
-				QS[qsind*4] = fabs(vti->second - sdid.pedestal);
-			
+			// recording all signals
+			QS[qsind*4] = fabs(vti->second - sdid.pedestal);
+
+			// recording trigger only if above threshold
+			if(fabs(vti->second - sdid.pedestal) > sdid.signalThreshold*sdid.mvToMeV)
+			{
+				TR[qsind] = triggerV;
+				aHit->passedTrigger();
+			}
+				
 			// index have to be increased upon matching
 			qsi++;
 			qsind++;
@@ -301,6 +312,7 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 //		cout << qq->first << " " << qq->second <<  " " << fabs(qq->second - sdid.pedestal) << " " << sdid.signalThreshold*100 << endl;
 
 	aHit->setQuantum(QS);
+	aHit->setQuantumTR(TR);
 
 	
 	return QS;

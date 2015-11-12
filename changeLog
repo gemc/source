@@ -2,7 +2,9 @@ Changelog for GEMC
 
 11/12/15
 - added graphing of the FADC signal. The shape and intensity of the signal should be optimized for each detector
-
+- trigger signal added to hit
+- display of trigger added to trigger gui
+- dropdown menu to decide to plot voltage, trigger, or both
 
 11/10/15
 - graphs now are handled by a separate library

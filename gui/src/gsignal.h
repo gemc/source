@@ -30,19 +30,18 @@ class gsignal : public QWidget
 		gsignal(QWidget *parent, goptions*, map<string, sensitiveDetector*>);
 		~gsignal();
 	
-		string signalChoice;    // what to plot
-		vector<string> availableSignals;
-		QComboBox *qcsignal;    // combo box
-	
-	
-		goptions *gemcOpt;
-	
 		// we need to double check that
 		// some variables are available to display
 		string WRITE_INTRAW;
 		int SAVE_ALL_MOTHERS;
 	
 		map<string, sensitiveDetector*> SeDe_Map;
+		goptions *gemcOpt;
+
+		string signalChoice;    // what to plot
+		vector<string> availableSignals;
+		QComboBox *qcsignal;    // combo box
+	
 	
 	private:
 		QTreeWidget *hitList;

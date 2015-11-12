@@ -16,6 +16,8 @@ MHit::MHit() : G4VHit()
 	colour_touch  = G4Colour(0.0, 0.0, 1.0);
 	colour_hit    = G4Colour(1.0, 0.0, 0.0);
 	colour_passby = G4Colour(0.0, 1.0, 0.0);
+	
+	hasTrigger = 0;
 }
 
 MHit::~MHit() {;}

@@ -30,8 +30,11 @@ class gtrigger : public QWidget
 		QSplitter *vGraphsplitter;
 		string VOLTAGES;
 	
+		int plotChoice;
+	
 	public slots:
-		
+		void choosePlots(int);
+
 	
 };
 

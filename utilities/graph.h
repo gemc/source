@@ -28,6 +28,7 @@ class graph : public QGraphicsView
 		double xmin, ymin;      // graph minima
 		double xmax, ymax;      // graph maxima
 		double dx, dy;          // data deltas
+		int fixedAxis;          // if 1, limits are provided by user
 	
 		double inside;          // how much inside the ticks line will be
 		double DX, DY;          // graph deltas
@@ -38,6 +39,7 @@ class graph : public QGraphicsView
 		void setInside(double a, double b, double c){inside = a; DX = xaxil-a*b; DY = yaxil-a*c;}
 		void setDataAxisLimits(vector<double>, vector<double>);
 		void setPensWidth(int a, int b){axisPenWidth = a; dataPenWidth = b;}
+		void setFixedAxis(int xmi, int xma, int ymi, int yma);
 	
 		map<int, QPen> pcolors;
 	
