@@ -118,7 +118,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	vector<double> strip_id;
 
 	cout<<" sector "<<sector<<endl;
-	sector = fixSector( layer,  x,  y);
+	sector = isInSector( layer,  x,  y);
 	cout<<" corr sector "<<sector<<endl;
 	if(sector>-1 && Edep >0 )
 	{
@@ -187,10 +187,10 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				double phi_min = phi+phi3sig_min;
 				double phi_max = phi+phi3sig_max;
 				cout<<" phi min "<<phi_min<<" phi max "<<phi_max<<endl;
-				if(phi_min<angle_i)
-					phi_min = angle_i;
-				if(phi_max>angle_f)
-					phi_max = angle_f;
+				//if(phi_min<angle_i)
+				//	phi_min = angle_i;
+				//if(phi_max>angle_f)
+				//	phi_max = angle_f;
 
 				int min_strip = getZStrip(sector, layer, phi_min);
 				int max_strip = getZStrip(sector, layer, phi_max);
