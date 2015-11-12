@@ -435,8 +435,10 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 
 		if(i==2)
 		{
-			angle_i = A_f;
-			angle_f = A_i;
+			angle_i = A_i;
+			angle_f = A_f+2*Pi;
+			if(angle<0)
+				angle+=2*Pi;
 		}
 
 		cout<<angle<<" Ai "<<A_i<<" Af "<<A_f<<" ai "<<angle_i<<" af "<<angle_f<<endl;
