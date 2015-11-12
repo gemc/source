@@ -428,7 +428,7 @@ int bmt_strip::fixSector(int layer, double x, double y) {
 		if(A_i>Pi)
 			A_i-=2*Pi;
 		if(A_f>Pi)
-			A_f-=2*Pf;
+			A_f-=2*Pi;
 		cout<<i<<" ai "<<A_i<<" af "<<A_f<<endl;
 		if(A_i>A_f)
 		{
