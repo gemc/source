@@ -61,7 +61,7 @@ class bmt_strip
 		double CRCStrip_GetZ(int sector, int layer, int strip); 				// the z position of a given C strip
 		double CRZStrip_GetPhi(int sector, int layer, int strip);				// the phi angle of a given Z strip
 		double getEnergyFraction(double z0, double z, double sigma); 			// gaussian pdf
-		int isInSector(int layer, double x, double y);							// a patch to fix the sector value until the volumes geom is fixed in GEMC
+		int isInSector(int layer, double angle);							    // the sector according to this geometry defined in fillinfos()
 };
 
 #endif

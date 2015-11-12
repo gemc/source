@@ -118,7 +118,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	vector<double> strip_id;
 
 	cout<<" sector "<<sector<<endl;
-	sector = isInSector( layer,  x,  y);
+	sector = isInSector( layer,  atan2(y,x));
 	cout<<" corr sector "<<sector<<endl;
 	if(sector>-1 && Edep >0 )
 	{
@@ -175,7 +175,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 			}
 			cout<<" sector "<<sector<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
 			if(angle>=angle_i && angle<=angle_f) */
-			if(isInSector( layer,  x,  y)==sector)
+			if(isInSector( layer,  atan2(y,x))==sector)
 			{
 				cout<<" in acceptance "<<endl;
 				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
@@ -414,11 +414,10 @@ double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 }
 
 
-int bmt_strip::isInSector(int layer, double x, double y) {
+int bmt_strip::isInSector(int layer, double angle) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
-	double angle = atan2(y, x);
 	if(angle<0)
 		angle+=2*Pi; // from 0 to 2Pi
 	double angle_pr = angle + 2*Pi;
