@@ -192,8 +192,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				//if(phi_max>angle_f)
 				//	phi_max = angle_f;
 
-				int min_strip = getZStrip(sector, layer, phi_min);
-				int max_strip = getZStrip(sector, layer, phi_max);
+				int min_strip = getZStrip(layer, phi_min);
+				int max_strip = getZStrip(layer, phi_max);
 				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<endl;
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
@@ -262,10 +262,8 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
  * param angle the position angle of the hit in the Z detector
  * return the Z strip as a function of azimuthal angle
  */
-int bmt_strip::getZStrip(int sector, int layer, double x, double y)
+int bmt_strip::getZStrip(int layer, double phi);
 {
-
-	double angle = Math.atan2(y,x);
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	int num_detector =isInSector( layer,  angle) - 1;
 	if(num_detector==-1)
