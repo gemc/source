@@ -39,6 +39,7 @@ class gemcMainWidget : public QWidget
 
 	private:
     	gsignal   *gsig;
+		gtrigger  *gtrig;
 		QLineEdit *nEvents;
 		QTimer *gtimer;
 		int playing;        // controls cycling event

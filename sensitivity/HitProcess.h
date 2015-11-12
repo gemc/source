@@ -102,7 +102,7 @@ class HitProcess
 		virtual map< double, double > signalVT(MHit*) ;
 	
 		// - quantum signal: V(t) in ADC channel, reported every bunch time
-		virtual map< int, int > quantumS(map< double, double >, sensitiveID) ;
+		virtual map< int, int > quantumS(map< double, double >, MHit*) ;
 	
 		// - multiDgt: returns multiple digitized information / hit
 		virtual map< string, vector <int> > multiDgt(MHit*, int) = 0;

@@ -462,7 +462,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					MHit* aHit = (*MHC)[h];					
 					
 					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit));
-					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit->GetSDID()));
+					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit));
 					
 					allVTOutput.push_back(thisHitOutput);
 	

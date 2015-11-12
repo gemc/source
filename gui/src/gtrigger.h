@@ -23,10 +23,13 @@ class gtrigger : public QWidget
 		map<string, sensitiveDetector*> SeDe_Map;
 		goptions *gemcOpt;
 
+		void createGraphs();
 	
 	private:
+		QScrollArea *scrollArea;
+		QSplitter *vGraphsplitter;
+		string VOLTAGES;
 	
-		
 	public slots:
 		
 	

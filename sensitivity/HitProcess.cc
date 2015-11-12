@@ -240,8 +240,10 @@ map< double, double >  HitProcess :: signalVT(MHit* aHit)
 
 
 
-map< int, int > HitProcess :: quantumS(map< double, double > vts, sensitiveID sdid)
+map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 {
+	sensitiveID sdid = aHit->GetSDID();
+
 	// voltage signal time resolution is an external parameter
 	double sres = gemcOpt.optMap["VTRESOLUTION"].arg;
 
@@ -288,6 +290,9 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, sensitiveID sd
 		vti++;
 	}
 	
+	
+	
+	
 //	for(map< int, int > :: iterator qq = QS.begin(); qq != QS.end(); qq++)
 //		cout << qq->first << " " << qq->second << endl;
 		
@@ -295,7 +300,8 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, sensitiveID sd
 //	for(map< double, double > :: iterator qq = vts.begin(); qq != vts.end(); qq++)
 //		cout << qq->first << " " << qq->second <<  " " << fabs(qq->second - sdid.pedestal) << " " << sdid.signalThreshold*100 << endl;
 
-	
+	aHit->setQuantum(QS);
+
 	
 	return QS;
 }

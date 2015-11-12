@@ -28,6 +28,9 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
 	pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
 
+	// default pen widts
+	axisPenWidth = 3;
+	dataPenWidth = 3;
 }
 
 
@@ -45,17 +48,17 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 	QGraphicsSimpleTextItem *Title = new QGraphicsSimpleTextItem(QString(title.c_str()));
 	scene->addItem(Title);
 	Title->setFont(QFont("Times-Roman", 18));
-	Title->moveBy(xaxil / 2 - (double) title.length(), -20); // this should more or less center it
+	Title->moveBy(-xorig/2 + xaxil / 2 - (double) title.length()*3, -yaxil*0.05); // this should more or less center it
 	
 	
 	// x axis
 	QGraphicsLineItem *xaxis  = new QGraphicsLineItem(xorig,  yorig, xorig+xaxil,  yorig);
-	xaxis->setPen( QPen(Qt::black, 3));
+	xaxis->setPen( QPen(Qt::black, axisPenWidth));
 	scene->addItem(xaxis);
 	
 	// y axis
 	QGraphicsLineItem *yaxis  = new QGraphicsLineItem(xorig, yorig, xorig,  yorig-yaxil);
-	yaxis->setPen( QPen(Qt::black, 3));
+	yaxis->setPen( QPen(Qt::black, axisPenWidth));
 	scene->addItem(yaxis);
 	
 	// axis labels
@@ -137,7 +140,7 @@ void graph::plot_graph(vector<double> x, vector<double> y, vector<int> pid)
 			cout << " Attention: color not found for: " << pid[i] << endl;
 		else
 		{
-			rect = scene->addRect(xorig + inside, yorig - inside, 4, 4, pcolors[pid[i]]);
+			rect = scene->addRect(xorig + inside, yorig - inside, dataPenWidth, dataPenWidth, pcolors[pid[i]]);
 			rect->moveBy(DX*(x[i]-xmin)/dx, - DY*(y[i]-ymin)/dy);
 		}
 	}

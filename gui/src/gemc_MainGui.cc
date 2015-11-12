@@ -61,13 +61,13 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	// Physics List Control
   
 	pagesWidget = new QStackedWidget;
-	pagesWidget->addWidget(new run_control    (this, gemcOpt));  // for some reason run_control is very slow
-	pagesWidget->addWidget(new camera_control (this, gemcOpt));
-	pagesWidget->addWidget(new detector_tree  (this, *gemcOpt, RM, hMap,  matMap));
-	pagesWidget->addWidget(new infos          (this, gemcOpt));
-	pagesWidget->addWidget(new g4dialog       (this, gemcOpt));
-	pagesWidget->addWidget(gsig = new gsignal (this, gemcOpt, SDM));
-	pagesWidget->addWidget(new gtrigger       (this, gemcOpt, SDM));
+	pagesWidget->addWidget(new run_control     (this, gemcOpt));  // for some reason run_control is very slow
+	pagesWidget->addWidget(new camera_control  (this, gemcOpt));
+	pagesWidget->addWidget(new detector_tree   (this, *gemcOpt, RM, hMap,  matMap));
+	pagesWidget->addWidget(new infos           (this, gemcOpt));
+	pagesWidget->addWidget(new g4dialog        (this, gemcOpt));
+	pagesWidget->addWidget(gsig  = new gsignal (this, gemcOpt, SDM));
+	pagesWidget->addWidget(gtrig = new gtrigger(this, gemcOpt, SDM));
 	pagesWidget->setMinimumWidth(550);
 	pagesWidget->setMaximumWidth(550);
 	pagesWidget->setMinimumHeight(600);
@@ -147,6 +147,11 @@ void gemcMainWidget::changePage(QListWidgetItem *current, QListWidgetItem *previ
 	{
 		gsig->createHitListTree();
 	}
+	if(thisIndex == 6)
+	{
+		gtrig->createGraphs();
+	}
+
 }
 
 void gemcMainWidget::createIcons()
@@ -208,6 +213,10 @@ void gemcMainWidget::beamOn()
 	if(pagesWidget->currentIndex() == 5)
 	{
 		gsig->createHitListTree();
+	}
+	if(pagesWidget->currentIndex() == 6)
+	{
+		gtrig->createGraphs();
 	}
 
 }

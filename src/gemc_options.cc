@@ -480,7 +480,7 @@ void goptions::setGoptions()
 	// sampling time of electronics (typically FADC), electronic event time size
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
 	// the default for event time size is 2 microsecond, for a total of 500 ADC points / channel
-	optMap["TSAMPLING"].args = "4, 2000";
+	optMap["TSAMPLING"].args = "4, 500";
 	optMap["TSAMPLING"].help = "Sampling time of electronics (typically FADC)";
 	optMap["TSAMPLING"].name = "Sampling time of electronics (typically FADC)";
 	optMap["TSAMPLING"].type = 1;

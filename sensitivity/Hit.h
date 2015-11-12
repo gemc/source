@@ -57,8 +57,11 @@ class MHit : public G4VHit
 		vector<identifier> identity;    ///< Identity
 		sensitiveID SID;                ///< Sensitive ID has detector information like  signalThreshold, timeWindow, prodThreshold, maxStep, riseTime, fallTime, mvToMeV
 			
-		vector<double> signalT;    ///< Time vector
-		vector<double> signalV;    ///< Voltage Vector
+		vector<double> signalT;         ///< Time vector
+		vector<double> signalV;         ///< Voltage Vector
+
+		vector<int> quantumT;        ///< quantized Time vector
+		vector<int> quantumQ;        ///< quantized charge (ADC) Vector
 
 	
 	public:
@@ -160,6 +163,23 @@ class MHit : public G4VHit
 		inline vector<double> getSignalT(){return signalT;}
 		inline vector<double> getSignalV(){return signalV;}
 
+	inline void setQuantum(map< int, int > QS)
+	{
+		quantumT.clear();
+		quantumQ.clear();
+		
+		for(map< int, int >::iterator it = QS.begin(); it!=QS.end(); it++)
+		{
+			quantumT.push_back(it->first);
+			quantumQ.push_back(it->second);
+		}
+	}
+	
+	inline vector<int> getQuantumT(){return quantumT;}
+	inline vector<int> getQuantumQ(){return quantumQ;}
+
+	
+	
 };
 
 

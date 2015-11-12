@@ -32,9 +32,12 @@ class graph : public QGraphicsView
 		double inside;          // how much inside the ticks line will be
 		double DX, DY;          // graph deltas
 
+		double axisPenWidth, dataPenWidth;
+	
 		void setAxis(int a, int b, int c, int d, int e, int f){xorig = a; yorig = b; xaxil = c; yaxil = d; nticksx = e; nticksy=f;}
 		void setInside(double a, double b, double c){inside = a; DX = xaxil-a*b; DY = yaxil-a*c;}
 		void setDataAxisLimits(vector<double>, vector<double>);
+		void setPensWidth(int a, int b){axisPenWidth = a; dataPenWidth = b;}
 	
 		map<int, QPen> pcolors;
 	

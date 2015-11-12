@@ -82,7 +82,7 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	
 	// Graph axis origins and legth, number of ticks each axis
 	//                 xorig  yorig  xlength ylength nticksx nticksy
-	graphView->setAxis(15,   310,    445,    300,     5,     5);
+	graphView->setAxis(40,   310,    465,    300,     5,     5);
 	// inside shift of the axis ticks, and factor that multiplies the ticks size
 	graphView->setInside(20, 2, 2);
 
@@ -93,8 +93,8 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	vMainsplitter->addWidget(qcsignal);
 	vMainsplitter->addWidget(dataSplitter);
 	vMainsplitter->addWidget(graphView);
-	vMainsplitter->setOpaqueResize(false);
 	vMainsplitter->setMinimumSize(545, 595);
+	graphView->setMinimumSize(545, 450);
 	
 	
 	// Hit Gradient Color
@@ -110,7 +110,6 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 void gsignal::createHitListTree()
 {
 	hitList->clear();
-	
 	hitList->setSelectionMode(QAbstractItemView::SingleSelection);
 	hitList->setHeaderLabels(QStringList("Hits List"));
 	

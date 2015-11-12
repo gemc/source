@@ -1,9 +1,12 @@
 Changelog for GEMC
 
+11/12/15
+- added graphing of the FADC signal. The shape and intensity of the signal should be optimized for each detector
+
+
 11/10/15
 - graphs now are handled by a separate library
 - fixed graphs limits
-
 
 11/6/15
 - added bunch sampling of the voltage vs signal time. Data structure name is quantumS, map<int, int>
