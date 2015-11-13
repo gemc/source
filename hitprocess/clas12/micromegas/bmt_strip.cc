@@ -247,7 +247,9 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 int bmt_strip::getZStrip(int layer, double angle)
 {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
-	int num_detector =isInSector( layer,  angle) - 1;
+	vector<float> hit_angularValues = isInSector( layer,  atan2(y,x));
+	int sector = (int)hit_angularValues[0];
+	int num_detector = sector - 1;
 	if(num_detector==-1)
 		return -1;
 
