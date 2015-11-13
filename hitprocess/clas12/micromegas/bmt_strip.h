@@ -60,8 +60,8 @@ class bmt_strip
 		int getCStrip(int sector, int layer, double trk_z); 					//the Z strip as a function of z
 		double CRCStrip_GetZ(int sector, int layer, int strip); 				// the z position of a given C strip
 		double CRZStrip_GetPhi(int sector, int layer, int strip);				// the phi angle of a given Z strip
+		vector<float> isInSector(int layer, double angle);					    // the sector number and angle edges according to this geometry defined in fillinfos()
 		double getEnergyFraction(double z0, double z, double sigma); 			// gaussian pdf
-		int isInSector(int layer, double angle);							    // the sector according to this geometry defined in fillinfos()
 };
 
 #endif
