@@ -123,7 +123,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	if(sector>-1 && Edep >0 )
 	{
 		int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
-		int num_detector = sector - 1; 			// index of the detector (0...2)
+		//int num_detector = sector - 1; 			// index of the detector (0...2)
 		double sigma =0;
 		if(layer%2==0)
 		{// C layer
@@ -179,7 +179,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<endl;
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
-					double f = getEnergyFraction(0, phi-CRZStrip_GetPhi( sector, layer, s), sigma);
+					//corresponding phi value between +/-3sigmas
+					double phi_s =  (CRZStrip_GetPhi( sector, layer, s)*CRZRADIUS[num_region]+(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))*cos(ThetaL);
+					double f = getEnergyFraction(0, phi_s);
 					strip_id.push_back(s);
 					strip_id.push_back(f); // no gain fluctuation yet
 					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f<<" sigma "<< sigma<<endl;
