@@ -179,7 +179,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 				int min_strip = getZStrip(layer, phi_min);
 				int max_strip = getZStrip(layer, phi_max);
-				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<endl;
+				cout<<" strip min "<<min_strip<<" strip max "<<max_strip<<" strip "<<getZStrip(layer, phi)<<endl;
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
 					//corresponding phi value between +/-3sigmas
