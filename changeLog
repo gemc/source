@@ -1,5 +1,10 @@
 Changelog for GEMC
 
+
+11/13/15
+- added COSMICRAYS option, small utility macro to show the distribution
+- removed some unnecessary variables in MPRimaryGeneratorAction
+
 11/12/15
 - added graphing of the FADC signal. The shape and intensity of the signal should be optimized for each detector
 - trigger signal added to hit

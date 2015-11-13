@@ -81,7 +81,24 @@ void goptions::setGoptions()
 	optMap["STEER_BEAM"].ctgr = "generator";
 	optMap["STEER_BEAM"].name = "STEER_BEAM";
 	optMap["STEER_BEAM"].help = "Steer the beam, and translate the vertex, of an StdHep file by the amount specified in Beam_P, Beam_V, Spread_V \n";
-  
+	
+	
+	optMap["COSMICRAYS"].args = "no";
+	optMap["COSMICRAYS"].help = "Cosmic Generator. The model has a (cos(theta), p) probability function:\n\n";
+	optMap["COSMICRAYS"].help += "              a^(b*cos(theta))/(c*p^2). \n\n";
+	optMap["COSMICRAYS"].help += "      The COSMICRAYS option sets the parameters and the momentum range in the last two numbers. \n";
+	optMap["COSMICRAYS"].help += "      By default the parameters are: \n";
+	optMap["COSMICRAYS"].help += "       a = 55.6: \n";
+	optMap["COSMICRAYS"].help += "       b = 1.04: \n";
+	optMap["COSMICRAYS"].help += "       c = 64: \n";
+	optMap["COSMICRAYS"].help += "      One can use the defaults or set the pars with the options: \n";
+	optMap["COSMICRAYS"].help += "      example 1: -COSMICRAYS=\"default, 1, 10\" will use the default parameterization, and momentum range [1-10] GeV \n";
+	optMap["COSMICRAYS"].help += "      example 2: -COSMICRAYS=\"55, 2, 66, 3, 4\" will set the parameterization, and momentum range [3-4] GeV \n";
+	optMap["COSMICRAYS"].name = "Cosmic Generator";
+	optMap["COSMICRAYS"].type = 1;
+	optMap["COSMICRAYS"].ctgr = "generator";
+
+	
 	
 	// Luminosity Beam
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";

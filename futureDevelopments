@@ -28,6 +28,9 @@ Code Improvements:
 - general color map to be used by geant4 / gui , maybe part of options?
 - reorg splitters in various gui
 - bring some guis out of main gui, pop up windows?
+- re-organize primary generator, use external library project?
+- re-define and document all verbosities
+
 
 Code Reorganization:
 ====================
