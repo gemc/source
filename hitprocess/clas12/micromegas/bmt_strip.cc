@@ -147,8 +147,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				{
 					double f = getEnergyFraction(CRCStrip_GetZ(sector, layer, getCStrip(sector,layer, z)), CRCStrip_GetZ(sector, layer, s), sigma);
 					strip_id.push_back(s);
-					strip_id.push_back(f); // no gain fluctuation yet
-					cout<<" z "<<z<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f*Edep<<endl;
+					strip_id.push_back(f);
 				}
 
 			}
@@ -156,37 +155,32 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 		if(layer%2==1)
 		{
-			if(isInSector( layer,  atan2(y,x))==sector)
+			sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
+			//  phi range
+			double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
+
+			double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+			double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+
+			double phi = atan2(y, x);
+
+			double phi_min = phi+phi3sig_min;
+			double phi_max = phi+phi3sig_max;
+
+			int min_strip = getZStrip(layer, phi_min);
+			int max_strip = getZStrip(layer, phi_max);
+
+			double dphi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
+			for(int s = min_strip; s < max_strip+1; s++)
 			{
-				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
-				//  phi range
-				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
-
-				double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-				double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-
-				double phi = atan2(y, x);
-
-				double phi_min = phi+phi3sig_min;
-				double phi_max = phi+phi3sig_max;
-
-				//if(phi_min<angle_i)
-				//	phi_min = angle_i;
-				//if(phi_max>angle_f)
-				//	phi_max = angle_f;
-
-				int min_strip = getZStrip(layer, phi_min);
-				int max_strip = getZStrip(layer, phi_max);
-
-				for(int s = min_strip; s < max_strip+1; s++)
+				//corresponding phi value between +/-3sigmas
+				if(isInSector( layer, phi_s) == sector)
 				{
-					//corresponding phi value between +/-3sigmas
-					double phi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-					double phi_s =  ( CRZStrip_GetPhi( sector, layer, s)*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-					double f = getEnergyFraction(0, phi_s-phi_0, sigma);
+					double phi_s = CRZStrip_GetPhi( sector, layer, s);
+					double dphi_s =  ( phi_s*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
+					double f = getEnergyFraction(0, dphi_s-dphi_0, sigma);
 					strip_id.push_back(s);
-					strip_id.push_back(f); // no gain fluctuation yet
-
+					strip_id.push_back(f);
 				}
 			}
 		}
