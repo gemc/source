@@ -107,18 +107,17 @@ void bmt_strip::fill_infos()
 			CRCEDGE2[i][j] = CEdge2[j];
 		}
     }
+
 }
 
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
+	// the current perl script is not creating the correct geometry, therefore the sector must be corrected
+
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
-	// the current perl script is not creating the correct geometry, therefore the sector must be corrected
-	// the isInSector method returns the sector and angular boundaries if the sector based on the hit x,y position in the lab
-	vector<float> hit_angularValues = isInSector( layer,  atan2(y,x));
-	sector = (int)hit_angularValues[0];
-	float minSecAngle = hit_angularValues[1];
-	float maxSecAngle = hit_angularValues[2];
+
+	sector = isInSector( layer,  atan2(y,x));
 
 	if(sector>-1 && Edep >0 )
 	{
@@ -148,42 +147,47 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				{
 					double f = getEnergyFraction(CRCStrip_GetZ(sector, layer, getCStrip(sector,layer, z)), CRCStrip_GetZ(sector, layer, s), sigma);
 					strip_id.push_back(s);
-					strip_id.push_back(f); // should be normalized
+					strip_id.push_back(f); // no gain fluctuation yet
+					cout<<" z "<<z<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f*Edep<<endl;
 				}
+
 			}
 		}
 
 		if(layer%2==1)
 		{
-			sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
-			//  phi range
-			double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
-
-			double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-			double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-
-			double phi = atan2(y, x);
-
-			double phi_min = phi+phi3sig_min;
-			double phi_max = phi+phi3sig_max;
-
-			if((float)phi_min<minSecAngle)
-				phi_min = (double)minSecAngle;
-			if((float)phi_max>maxSecAngle)
-				phi_max = (double)maxSecAngle;
-
-			int min_strip = getZStrip(layer, phi_min);
-			int max_strip = getZStrip(layer, phi_max);
-
-			for(int s = min_strip; s < max_strip+1; s++)
+			if(isInSector( layer,  atan2(y,x))==sector)
 			{
-				//corresponding phi value between +/-3sigmas
-				double phi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-				double phi_s =  ( CRZStrip_GetPhi( sector, layer, s)*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-				double f = getEnergyFraction(0, phi_s-phi_0, sigma);
-				strip_id.push_back(s);
-				strip_id.push_back(f); // should be normalized
+				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
+				//  phi range
+				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
 
+				double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+				double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+
+				double phi = atan2(y, x);
+
+				double phi_min = phi+phi3sig_min;
+				double phi_max = phi+phi3sig_max;
+
+				//if(phi_min<angle_i)
+				//	phi_min = angle_i;
+				//if(phi_max>angle_f)
+				//	phi_max = angle_f;
+
+				int min_strip = getZStrip(layer, phi_min);
+				int max_strip = getZStrip(layer, phi_max);
+
+				for(int s = min_strip; s < max_strip+1; s++)
+				{
+					//corresponding phi value between +/-3sigmas
+					double phi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
+					double phi_s =  ( CRZStrip_GetPhi( sector, layer, s)*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
+					double f = getEnergyFraction(0, phi_s-phi_0, sigma);
+					strip_id.push_back(s);
+					strip_id.push_back(f); // no gain fluctuation yet
+
+				}
 			}
 		}
 	}
@@ -247,9 +251,7 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 int bmt_strip::getZStrip(int layer, double angle)
 {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
-	vector<float> hit_angularValues = isInSector( layer,  angle);
-	int sector = (int)hit_angularValues[0];
-	int num_detector = sector - 1;
+	int num_detector =isInSector( layer,  angle) - 1;
 	if(num_detector==-1)
 		return -1;
 
@@ -392,8 +394,13 @@ double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 	return angle; //in rad
 }
 
-vector<float> bmt_strip::isInSector(int layer, double angle) {
-	vector<float> values; //[0] --> region, [1] --> phi_min, [2] -->phi_max
+double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
+	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
+	return pdf_gaussian;
+}
+
+
+int bmt_strip::isInSector(int layer, double angle) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
@@ -410,18 +417,8 @@ vector<float> bmt_strip::isInSector(int layer, double angle) {
 		angle_i=CRCEDGE1[num_region][i]+CRCXPOS[num_region]/CRCRADIUS[num_region];
 		angle_f=CRCEDGE1[num_region][i]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
 
-		if( (angle>=angle_i && angle<=angle_f) || (angle_pr>=angle_i && angle_pr<=angle_f) ) {
+		if( (angle>=angle_i && angle<=angle_f) || (angle_pr>=angle_i && angle_pr<=angle_f) )
 			num_detector=i;
-			values.push_back((float) (num_detector + 1));
-			values.push_back((float) angle_i);
-			values.push_back((float) angle_f);
-		}
 	}
-	return values;
+	return num_detector + 1;
 }
-
-double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
-	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
-	return pdf_gaussian;
-}
-
