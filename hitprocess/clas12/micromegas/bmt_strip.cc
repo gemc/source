@@ -149,32 +149,14 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					double f = getEnergyFraction(z, CRCStrip_GetZ(sector, layer, s), sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(f); // no gain fluctuation yet
+					cout<<" z "<<z<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f<<endl;
 				}
 
 			}
 		}
 
 		if(layer%2==1)
-		{// Z layer
-			/*
-			double angle = atan2(y, x);
-			//if (angle>2*Pi) angle-=2*Pi;
-
-			double angle_i = 0; // first angular boundary init
-			double angle_f = 0; // second angular boundary for detector A, B, or C init
-
-			double A_i=CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region];
-			double A_f=CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region];
-
-			angle_i = A_i;
-			angle_f = A_f;
-			if(num_detector==1)
-			{ // for B-detector
-				if(angle>0)
-					angle+=2*Pi;
-			}
-			cout<<" sector "<<sector<<" Z layer, angle "<<angle<<" ai "<<CRCEDGE1[num_region][num_detector]+CRCXPOS[num_region]/CRCRADIUS[num_region]<<" af "<<CRCEDGE1[num_region][num_detector]+(CRCXPOS[num_region]+CRCLENGTH[num_region])/CRCRADIUS[num_region]<<endl;
-			if(angle>=angle_i && angle<=angle_f) */
+		{
 			if(isInSector( layer,  atan2(y,x))==sector)
 			{
 				cout<<" in acceptance "<<endl;
@@ -199,8 +181,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				{
 					double f = getEnergyFraction(0, phi-CRZStrip_GetPhi( sector, layer, s), sigma);
 					strip_id.push_back(s);
-					strip_id.push_back(Edep*f); // no gain fluctuation yet
-					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<endl;
+					strip_id.push_back(f); // no gain fluctuation yet
+					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f<<endl;
 				}
 			}
 		}
