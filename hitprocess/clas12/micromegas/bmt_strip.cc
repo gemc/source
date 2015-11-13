@@ -173,10 +173,10 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 			double dphi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
 			for(int s = min_strip; s < max_strip+1; s++)
 			{
-				//corresponding phi value between +/-3sigmas
+				double phi_s = CRZStrip_GetPhi( sector, layer, s);
 				if(isInSector( layer, phi_s) == sector)
 				{
-					double phi_s = CRZStrip_GetPhi( sector, layer, s);
+					//corresponding phi value between +/-3sigmas
 					double dphi_s =  ( phi_s*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
 					double f = getEnergyFraction(0, dphi_s-dphi_0, sigma);
 					strip_id.push_back(s);
