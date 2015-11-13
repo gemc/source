@@ -162,8 +162,11 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				cout<<" in acceptance "<<endl;
 				sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
 				//  phi range
-				double phi3sig_min = (-3*sigma/cos(ThetaL)-(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))/CRZRADIUS[num_region];
-				double phi3sig_max = ( 3*sigma/cos(ThetaL)-(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))/CRZRADIUS[num_region];
+				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
+
+				double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+				double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+
 				double phi = atan2(y, x);
 
 				double phi_min = phi+phi3sig_min;
@@ -180,7 +183,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
 					//corresponding phi value between +/-3sigmas
-					double phi_s =  ((CRZStrip_GetPhi( sector, layer, s))*CRZRADIUS[num_region]+(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))*cos(ThetaL);
+					double phi_s = ( (CRZStrip_GetPhi( sector, layer, s)-CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi)))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL))*cos(ThetaL);
 					double f = getEnergyFraction(0, phi_s, sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(f); // no gain fluctuation yet
