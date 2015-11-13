@@ -164,8 +164,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				//  phi range
 				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
 
-				double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-				double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+				double phi3sig_min = (-33*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+				double phi3sig_max = ( 33*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
 
 				double phi = atan2(y, x);
 
@@ -196,13 +196,13 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	else
     { // Nel=0, consider the Edep is 0
         strip_id.push_back(-1);
-        strip_id.push_back(Edep);
+        strip_id.push_back(1);
     }
 	cout<<strip_id.size()<<endl;
 	if(strip_id.size()==0)
 	{ // Nel=0, consider the Edep is 0
 		strip_id.push_back(-1);
-		strip_id.push_back(Edep);
+		strip_id.push_back(1);
 	}
 
     return strip_id;
