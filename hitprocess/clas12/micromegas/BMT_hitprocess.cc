@@ -20,19 +20,31 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
 
-	cout<<identity <<" "<<tInfos.eTot<<endl;
+	//cout<<identity <<" "<<tInfos.eTot<<endl;
 	if(verbosity>4)
 	{
 		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
-	
+	// Same assumption as for SVT ???
+	// the energy deposited from a mip is 80 KeV
+	// The max value of the ADC is 2.5V
+	// We set for now 3 values of mip inside the 2.5V.
+	// So ~250 KeV = 2.5V, or 0.10 MeV = 1 Volt.
+
+	double maxV = 2.5;
+	double etoV = 0.1;
+	double vout = tInfos.eTot/etoV;
+	double vrat = vout / maxV;
+	int adc     = floor(vrat*8);
+	if(adc >7) adc = 7;
+
 	dgtz["hitn"]   = hitn;
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
-	
+	dgtz["ADC"] = adc;
 	return dgtz;
 }
 
