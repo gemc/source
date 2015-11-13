@@ -180,11 +180,11 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
 					//corresponding phi value between +/-3sigmas
-					double phi_s =  (CRZStrip_GetPhi( sector, layer, s)*CRZRADIUS[num_region]+(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))*cos(ThetaL);
+					double phi_s =  ((phi-CRZStrip_GetPhi( sector, layer, s))*CRZRADIUS[num_region]+(sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)*tan(ThetaL))*cos(ThetaL);
 					double f = getEnergyFraction(0, phi_s, sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(f); // no gain fluctuation yet
-					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f<<" sigma "<< sigma<<endl;
+					cout<<" phi "<<phi<<" "<<CRZStrip_GetPhi( sector, layer, s)<<" f "<<f<<" phi_s "<< phi_s<<endl;
 				}
 			}
 		}
