@@ -82,7 +82,6 @@ void goptions::setGoptions()
 	optMap["STEER_BEAM"].name = "STEER_BEAM";
 	optMap["STEER_BEAM"].help = "Steer the beam, and translate the vertex, of an StdHep file by the amount specified in Beam_P, Beam_V, Spread_V \n";
 	
-	
 	optMap["COSMICRAYS"].args = "no";
 	optMap["COSMICRAYS"].help = "Cosmic Generator. The model has a (cos(theta), p) probability function:\n\n";
 	optMap["COSMICRAYS"].help += "              a^(b*cos(theta))/(c*p^2). \n\n";
@@ -98,7 +97,13 @@ void goptions::setGoptions()
 	optMap["COSMICRAYS"].type = 1;
 	optMap["COSMICRAYS"].ctgr = "generator";
 
+	optMap["COSMICAREA"].args = "0*cm, 0*cm, 0*cm, 50*cm";
+	optMap["COSMICAREA"].help = "Target (x,y,z) location and radius of area of interest";
+	optMap["COSMICAREA"].name = "Target (x,y,z) location and radius of area of interest";
+	optMap["COSMICAREA"].type = 1;
+	optMap["COSMICAREA"].ctgr = "generator";
 	
+
 	
 	// Luminosity Beam
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";

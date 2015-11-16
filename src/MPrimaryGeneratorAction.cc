@@ -24,12 +24,13 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	hd_msg        = gemcOpt->optMap["LOG_MSG"].args + " Beam Settings >> " ;
 	input_gen     = gemcOpt->optMap["INPUT_GEN_FILE"].args;
 	cosmics       = gemcOpt->optMap["COSMICRAYS"].args;
+	string cArea  = gemcOpt->optMap["COSMICAREA"].args;
 	GEN_VERBOSITY = gemcOpt->optMap["GEN_VERBOSITY"].arg;
+	
 	
 	particleTable = G4ParticleTable::GetParticleTable();
 	
 	beamPol  = 0;
-	
 	
 	setBeam();
 	
@@ -37,6 +38,14 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	
 	if(input_gen == "gemc_internal")
 	{
+		vector<string> cvalues = get_info(gemcOpt->optMap["COSMICAREA"].args, string(",\""));
+	
+		if(cvalues.size() != 4)
+			cout << "  !!!  Warning:  COSMICAREA flag not set correctly. It should be 4 numbers: x,y,z and R." << endl;
+			
+		cosmicTarget = G4ThreeVector(get_number(cvalues[0]), get_number(cvalues[1]), get_number(cvalues[2]));
+		cosmicRadius = get_number(cvalues[3]);
+
 		if(cosmics == "no")
 		{
 			cout << endl << hd_msg << " Beam Type: "      << Particle->GetParticleName() << endl;
@@ -178,9 +187,60 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 		else
 		{
-			// generating random momentum, cos(theta)
-			double thisMom  = cminp + cmaxp*G4UniformRand();
-			double thisCthe = G4UniformRand();
+			// first randomly pick a number inside the sphere
+			double cosmicVX = 100000;
+			double cosmicVY = 100000;
+			double cosmicVZ = 100000;
+			
+			while( (cosmicVX - cosmicTarget.x() )*(cosmicVX - cosmicTarget.x() ) +
+				    (cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
+				    (cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius )
+			{
+				cosmicVX = cosmicRadius*G4UniformRand();
+				cosmicVY = cosmicRadius*G4UniformRand();
+				cosmicVZ = cosmicRadius*G4UniformRand();
+			}
+			// now generating random momentum, cos(theta)
+			double cosmicProb = G4UniformRand();
+			
+			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand())/GeV;
+			double thisthe = G4UniformRand();
+			while (cosmicBeam(thisthe, thisMom) < cosmicProb)
+			{
+				thisMom = (cminp + (cmaxp-cminp)*G4UniformRand())/GeV;
+				thisthe = G4UniformRand();
+			}
+			// isotropic in phi
+			double thisPhi = 2*pi*G4UniformRand();
+			
+			// now finding the vertex. Assuming twice the radius as starting point
+			// attention:
+			// axis transformation, z <> y,  x <> -x
+			double pvx = cosmicVX - 2*cosmicRadius*sin(thisthe)*cos(thisPhi);
+			double pvy = cosmicVY + 2*cosmicRadius*cos(thisthe);
+			double pvz = cosmicVZ + 2*cosmicRadius*sin(thisthe)*sin(thisPhi);
+			particleGun->SetParticlePosition(G4ThreeVector(pvx, pvy, pvz));
+
+			
+			// choosing charge of the muons
+			string muonType = "mu+";
+			if(G4UniformRand() <= 0.5)
+				muonType = "mu-";
+				
+			Particle = particleTable->FindParticle(muonType);
+			double mass = Particle->GetPDGMass();
+			double akine = sqrt(thisMom*thisMom + mass*mass) - mass ;
+
+			particleGun->SetParticleDefinition(Particle);
+
+			// when assigning momentum the direction is reversed
+			G4ThreeVector beam_dir(cos(thisPhi)*sin(thisthe), -cos(thisthe), -sin(thisPhi)*sin(thisthe));
+			particleGun->SetParticleEnergy(akine);
+			particleGun->SetParticleMomentumDirection(beam_dir);
+			
+			particleGun->GeneratePrimaryVertex(anEvent);
+
+			
 		}
 		
 		
@@ -565,9 +625,7 @@ void MPrimaryGeneratorAction::setBeam()
 				if(cminp < 1) cminp = 1;
 				
 			}
-			
 		}
-		
 	}
 	
 	else  if( input_gen.compare(0,4,"LUND")==0 || input_gen.compare(0,4,"lund")==0 )
@@ -745,7 +803,10 @@ MPrimaryGeneratorAction::~MPrimaryGeneratorAction()
 }
 
 
-
+double MPrimaryGeneratorAction::cosmicBeam(double t, double p)
+{
+	return pow(cosmicA, cosmicB*cos(t))/(cosmicC*p*p);
+}
 
 
 

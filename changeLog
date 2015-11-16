@@ -1,5 +1,9 @@
 Changelog for GEMC
 
+11/16/15
+- default runNo set to 1 (fixed case when in GUI mode a different runno was set)
+- added COSMICAREA option to define the area where the cosmic ray will go through,
+  in the form (x, y, z) and radius.
 
 11/13/15
 - added COSMICRAYS option, small utility macro to show the distribution

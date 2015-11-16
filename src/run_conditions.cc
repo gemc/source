@@ -299,7 +299,8 @@ int runWeights::getRunNumber(int evn)
 	}
 	
 	// default
-	return 1;
+	runNo = 1;
+	return runNo;
 }
 
 

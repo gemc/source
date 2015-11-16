@@ -58,6 +58,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	
 		double cosmicA, cosmicB, cosmicC; ///< cosmic ray model parameters
 		double cminp, cmaxp, cMom;        ///< minimum and maximum cosmic ray momentum
+		G4ThreeVector cosmicTarget;       ///< Location of area of interest for cosmic rays
+		double cosmicRadius;              ///< radius of area of interest for cosmic rays
 	
 		// Generators Input Files
 		ifstream  gif;                    ///< Generator Input File
@@ -90,7 +92,9 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	
 		G4ParticleGun* particleGun;
 		void setBeam();
-    
+	
+		double cosmicBeam(double, double);
+	
 };
 
 #endif
