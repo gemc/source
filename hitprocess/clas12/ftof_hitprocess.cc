@@ -2,6 +2,10 @@
 #include "G4Poisson.hh"
 #include "Randomize.hh"
 
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
 
 // gemc headers
 #include "ftof_hitprocess.h"
@@ -15,11 +19,31 @@ static ftofConstants initializeFTOFConstants(int runno)
 	ftofConstants ftc;
 	
 	// database
-	ftc.runNo = 0;
-	ftc.date       = "2014-10-29";
+	ftc.runNo = runno;
+	ftc.date       = "2015-11-15";
 	ftc.connection = "mysql://clas12writer:geom3try@clasdb.jlab.org/clas12";
-	ftc.database   = "/test/cc_calib/";
 	ftc.variation  = "main";
+
+	// temporary reading attenuations, these are dummy numbers and don't set the values yet
+	ftc.database   = "/calibration/ftof/attenuation";
+
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftc.connection));
+
+	
+	
+	
+	auto_ptr<Assignment> calibModel(calib->GetAssignment(ftc.database));
+	
+	
+	//table holds information about columns
+//	for(size_t rowI = 0; rowI < calibModel->GetRowsCount(); rowI++)
+//	{
+//		cout << "  sector: "       << calibModel->GetValueInt(rowI, 0)
+//		     << "  panel:  "       << calibModel->GetValue(rowI, 1)
+//		     << "  paddle:  "      << calibModel->GetValueInt(rowI, 2)
+//			  << "  length_left:  " << calibModel->GetValueDouble(rowI, 3) << endl;
+//	}
+//	
 
 	
 	
