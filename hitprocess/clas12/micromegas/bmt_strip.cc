@@ -230,7 +230,7 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 { // sigma for Z-detectors
 
 	int num_region = (int) (layer+1)/2 - 1; ///< region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
-	double sigma = SigmaDrift*sqrt((sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)/hDrift/ThetaL);
+	double sigma = SigmaDrift*sqrt((sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det)/hDrift/cos(ThetaL));
 
 	return sigma;
 
