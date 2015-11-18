@@ -112,12 +112,11 @@ void bmt_strip::fill_infos()
 
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
-	// the current perl script is not creating the correct geometry, therefore the sector must be corrected
 
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	sector = isInSector( layer,  atan2(y,x));
+	cout<<" estimated sector = "<<isInSector( layer,  atan2(y,x))<<" detector "<<getDetectorIndex( sector)<<endl;
 
 	if(sector>-1 && Edep >0 )
 	{
@@ -140,12 +139,12 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 					z_min = z_i;
 				if(z_max>z_f)
 					z_max = z_f;
-				int min_strip = getCStrip(sector,layer, z_min);
-				int max_strip = getCStrip(sector,layer, z_max);
+				int min_strip = getCStrip(layer, z_min);
+				int max_strip = getCStrip(layer, z_max);
 
 				for(int s = min_strip; s < max_strip+1; s++)
 				{
-					double f = getEnergyFraction(CRCStrip_GetZ(sector, layer, getCStrip(sector,layer, z)), CRCStrip_GetZ(sector, layer, s), sigma);
+					double f = getEnergyFraction(CRCStrip_GetZ(layer, getCStrip(layer, z)), CRCStrip_GetZ(layer, s), sigma);
 					strip_id.push_back(s);
 					strip_id.push_back(f);
 				}
@@ -275,7 +274,7 @@ int bmt_strip::getZStrip(int layer, double angle)
  * param trk_z the track z position of intersection with the C-detector
  * return the C-strip
  */
-int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
+int bmt_strip::getCStrip(int layer, double trk_z) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	double Zb=0;
@@ -311,7 +310,7 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
 
 			for(int nCstrpNb = min_strip; nCstrpNb<=max_strip; nCstrpNb++)
 			{
-				double zstp = CRCStrip_GetZ(sector, layer, nCstrpNb ) -zi; //  c strip
+				double zstp = CRCStrip_GetZ(layer, nCstrpNb ) -zi; //  c strip
 				zstp = ceil(zstp*100000)/100000; // rounding fix
 
 				double StripDiffCalc = abs(z-zstp);
@@ -337,13 +336,11 @@ int bmt_strip::getCStrip(int sector, int layer, double trk_z) {
 }
 
 /**
- *
- * param sector the hit sector
  * param layer the hit layer
  * param strip the hit strip
  * return the z position in mm for the C-detectors
  */
-double bmt_strip::CRCStrip_GetZ(int sector, int layer, int strip)
+double bmt_strip::CRCStrip_GetZ(int layer, int strip)
 {
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
@@ -379,9 +376,9 @@ double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 	// Sector = num_detector + 1;
 	// num_detector = 0 (region A), 1 (region B), 2, (region C)
 	//For CRZ, this function returns the angle to localize the  center of strip "num_strip" for the "num_detector"
-	int num_detector = sector - 1; 			// index of the detector (0...2)
-	int num_strip = strip - 1;     			// index of the strip (starts at 0)
-	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
+	int num_detector = getDetectorIndex(sector); 			// index of the detector (0...2): sector 1 corresponds to detector B, 2 to A,  3 to C in the geometry created by GEMC
+	int num_strip = strip - 1;     							// index of the strip (starts at 0)
+	int num_region = (int) (layer+1)/2 - 1; 				// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 
 	double angle=CRZEDGE1[num_region][num_detector]+(CRZXPOS[num_region]+(CRZWIDTH[num_region]/2.+num_strip*(CRZWIDTH[num_region]+CRZSPACING[num_region])))/CRZRADIUS[num_region];
 	if (angle>2*Pi) angle-=2*Pi;
@@ -393,6 +390,19 @@ double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 	return pdf_gaussian;
 }
 
+int bmt_strip::getDetectorIndex(int sector) {
+	//sector 1 corresponds to detector B, 2 to A,  3 to C
+	// A is detIdx 0, B 1, C 2.
+	int DetIdx = -1;
+	if(sector == 1)
+		DetIdx = 1;
+	if(sector == 2)
+		DetIdx = 0;
+	if(sector == 3)
+		DetIdx = 2;
+
+	return DetIdx;
+}
 
 int bmt_strip::isInSector(int layer, double angle) {
 

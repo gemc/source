@@ -58,9 +58,10 @@ class bmt_strip
 		double getSigmaLongit(int layer, double x, double y);  					// sigma for C-detector
 		int getZStrip(int layer, double angle); 								//the Z strip as a function of azimuthal angle
 		int getCStrip(int sector, int layer, double trk_z); 					//the Z strip as a function of z
-		double CRCStrip_GetZ(int sector, int layer, int strip); 				// the z position of a given C strip
+		double CRCStrip_GetZ(int layer, int strip); 							// the z position of a given C strip
 		double CRZStrip_GetPhi(int sector, int layer, int strip);				// the phi angle of a given Z strip
 		double getEnergyFraction(double z0, double z, double sigma); 			// gaussian pdf
+		int getDetectorIndex(int sector);										// index of the detector (0...2): sector 1 corresponds to detector B, 2 to A,  3 to C in the geometry created by GEMC
 		int isInSector(int layer, double angle);							    // the sector according to this geometry defined in fillinfos()
 };
 
