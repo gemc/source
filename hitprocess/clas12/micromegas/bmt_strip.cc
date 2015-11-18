@@ -116,11 +116,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	cout<<" estimated sector = "<<isInSector( layer,  atan2(y,x))<<" detector "<<getDetectorIndex( sector)<<endl;
-
 	if(sector>-1 && Edep >0 )
 	{
-		int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
+		int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 		//int num_detector = sector - 1; 			// index of the detector (0...2)
 		double sigma =0;
 		if(layer%2==0)
