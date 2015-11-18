@@ -16,17 +16,17 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 	// green: negative
 	//
 	// second argument of QPen is thickness of pencil
-	pcolors[2112] = QPen(Qt::black,             3);   // neutrons: black
-	pcolors[22]   = QPen(Qt::blue,              3);   // photons: blue
-	pcolors[11]   = QPen(Qt::cyan,              3);   // electrons: cyan
-	pcolors[2212] = QPen(QColor(240, 80, 80),   3);   // protons: orange
-	pcolors[211]  = QPen(Qt::magenta,           3);   // pi+: magenta
-	pcolors[-211] = QPen(Qt::yellow,            3);   // pi-: yellow
-	pcolors[-11]  = QPen(Qt::red,               3);   // positrons: positive - red
-	pcolors[0]    = QPen(Qt::blue,              3);   // optical photons: blue
-	pcolors[13  ] = QPen(QColor(0,125, 0   ),   3);   // Muon+ - dark green
-	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   3);   // Muon- - light green
-	pcolors[1000] = QPen(Qt::black,             3);   // neutrons: black
+	pcolors[2112] = QPen(Qt::black,             2);   // neutrons: black
+	pcolors[22]   = QPen(Qt::blue,              2);   // photons: blue
+	pcolors[11]   = QPen(Qt::cyan,              2);   // electrons: cyan
+	pcolors[2212] = QPen(QColor(219, 117, 41),  2);   // protons: orange
+	pcolors[211]  = QPen(Qt::magenta,           2);   // pi+: magenta
+	pcolors[-211] = QPen(Qt::yellow,            2);   // pi-: yellow
+	pcolors[-11]  = QPen(Qt::red,               2);   // positrons: positive - red
+	pcolors[0]    = QPen(Qt::blue,              2);   // optical photons: blue
+	pcolors[13  ] = QPen(QColor(0,125, 0   ),   2);   // Muon+ - dark green
+	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   2);   // Muon- - light green
+	pcolors[1000] = QPen(Qt::black,             2);   // neutrons: black
 
 	// default pen widts
 	axisPenWidth = 3;
@@ -191,6 +191,17 @@ void graph::setDataAxisLimits(vector<double> x, vector<double> y)
 
 }
 
+void graph::plotLabel(string lab, int pid, double xpos, double ypos, int labSize)
+{
+	QGraphicsSimpleTextItem *alab = new QGraphicsSimpleTextItem(QString(lab.c_str()));
+	alab->setFont(QFont("Times-Roman", labSize));
+	// moved by its point size * number of digit (3)
+	alab->moveBy(xpos, ypos);
+	alab->setPen(pcolors[pid]);
+
+	scene->addItem(alab);
+
+}
 
 void graph::setFixedAxis(int xmi, int xma, int ymi, int yma)
 {

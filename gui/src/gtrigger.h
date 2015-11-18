@@ -24,18 +24,21 @@ class gtrigger : public QWidget
 		goptions *gemcOpt;
 
 		void createGraphs();
-	
+
 	private:
 		QScrollArea *scrollArea;
 		QSplitter *vGraphsplitter;
 		string VOLTAGES;
-	
 		int plotChoice;
+
+		void createSummary();
+		int determineNhits();
+	
 	
 	public slots:
 		void choosePlots(int);
 
-	
+
 };
 
 #endif

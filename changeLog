@@ -1,8 +1,10 @@
 Changelog for GEMC
 
+11/18/15
+- added Trigger Summary plot and option in the dropdown menu
+
 11/17/15
 - accessing CCDB database in ftof digitization routine
-
 
 11/16/15
 - default runNo set to 1 (fixed case when in GUI mode a different runno was set)

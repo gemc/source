@@ -86,7 +86,7 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double L2_theta, L2_dtheta;           ///< Luminosity theta,  delta theta
 		double L2_phi, L2_dphi;               ///< Luminosity phi, delta phi, randomized phi
 		double L2_vx, L2_vy, L2_vz;           ///< Luminosity Beam Vertex coordinates
-		double L2_dvr, L2_dvz;               ///< Luminosity Deltas Beam Vertex: Radius and z-vertex
+		double L2_dvr, L2_dvz;                ///< Luminosity Deltas Beam Vertex: Radius and z-vertex
 		int NP2;                              ///< Number of Luminosity Particles per event
 		double TBUNCH2;                       ///< Time Between Bunches
 	

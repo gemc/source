@@ -45,7 +45,7 @@ class graph : public QGraphicsView
 	
 		void plots_bg(string xtit, string ytit, vector<double> x, vector<double> y, string title);  // draw axis, ticks and labels
 		void plot_graph(vector<double> x, vector<double> y, vector<int> pid);
-
+		void plotLabel(string, int, double, double, int);
 	
 };
 
