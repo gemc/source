@@ -120,10 +120,12 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	if(sector>-1 && Nel >0 )
+	int strip = -1;
+
+	for(int iel=0;iel<Nel;iel++)
 	{
 		int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
-		//int num_detector = sector - 1; 			// index of the detector (0...2)
+
 		double sigma =0;
 		if(layer%2==0)
 		{// C layer
@@ -132,71 +134,55 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 			if(z>=z_i && z<=z_f)
 			{
-				sigma = getSigmaLongit(layer, x, y); //  longitudinal shower profile
-				// range of z
-				double z_min = z-3*sigma;
-				double z_max = z+3*sigma;
+				sigma = getSigmaLongit(layer, x, y); //  longitudinal diffusion
 
-				if(z_min<z_i)
-					z_min = z_i;
-				if(z_max>z_f)
-					z_max = z_f;
-				int min_strip = getCStrip(layer, z_min);
-				int max_strip = getCStrip(layer, z_max);
+				double z_d = (double) (G4RandGauss::shoot(z,sigma));
 
-				for(int s = min_strip; s < max_strip+1; s++)
-				{
-					double f = getEnergyFraction(CRCStrip_GetZ(layer, getCStrip(layer, z)), CRCStrip_GetZ(layer, s), sigma);
-					strip_id.push_back(s);
-					strip_id.push_back(f);
-				}
+				strip = getCStrip(layer, z_d);
 
 			}
 		}
 
 		if(layer%2==1)
-		{
-			sigma = getSigmaAzimuth(layer, x, y); //  azimuth shower profile taking into account the Lorentz angle
-			//  phi range
+		{// Z layer
+			sigma = getSigmaAzimuth(layer, x, y); //   diffusion  taking into account the Lorentz angle
+
 			double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
 
-			double phi3sig_min = (-3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-			double phi3sig_max = ( 3*sigma/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+			double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
 
-			double phi = atan2(y, x);
+			strip = getZStrip(layer, phi_d);
 
-			double phi_min = phi+phi3sig_min;
-			double phi_max = phi+phi3sig_max;
+		}
 
-			int min_strip = getZStrip(layer, phi_min);
-			int max_strip = getZStrip(layer, phi_max);
-
-			double dphi_0 =  ( CRZStrip_GetPhi( sector, layer, getZStrip(layer, phi))*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-			for(int s = min_strip; s < max_strip+1; s++)
+		if(strip != -1)
+		{
+			for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
 			{
-				double phi_s = CRZStrip_GetPhi( sector, layer, s);
-				if(isInSector( layer, phi_s) == sector)
-				{
-					//corresponding phi value between +/-3sigmas
-					double dphi_s =  ( phi_s*CRZRADIUS[num_region]+Delta_rad*tan(ThetaL) )*cos(ThetaL);
-					double f = getEnergyFraction(0, dphi_s-dphi_0, sigma);
-					strip_id.push_back(s);
-					strip_id.push_back(f);
+				if(strip_id[2*istrip]==strip)
+				{// already hit strip - add Edep
+					strip_id[2*istrip+1]=strip_id[2*istrip+1]+1./((double) Nel); // no gain fluctuation ;
+					strip = -1; // not to use it anymore
 				}
 			}
+			if(strip > -1) { // new strip
+				strip_id.push_back(strip);
+				strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
+			}
+		}
+		else
+		{// not in the acceptance
+			strip_id.push_back(-1);
+			strip_id.push_back(1);
 		}
 	}
-	else
+	if(Nel==0)
     { // Nel=0, consider the Edep is 0
         strip_id.push_back(-1);
         strip_id.push_back(1);
     }
 
-	if(strip_id.size()==0)
-	{ // Nel=0, consider the Edep is 0
-		strip_id.push_back(-1);
-		strip_id.push_back(1);
-	}
+
 
     return strip_id;
 }
