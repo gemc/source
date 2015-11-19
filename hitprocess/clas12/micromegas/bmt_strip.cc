@@ -149,6 +149,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 			double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
 
+			double phi = atan2(y,x);
 			double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
 
 			strip = getZStrip(layer, phi_d);
