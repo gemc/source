@@ -12,7 +12,8 @@ void bmt_strip::fill_infos()
     SigmaDrift = 0.4;
     hDrift = 3.0;
     hStrip2Det = hDrift/2.;
-    ThetaL = toRadians(20.);
+    FieldFlag = 0;
+    ThetaL = (double) FieldFlag*toRadians(20.);
 
     // DEFINING THE Z DETECTORS
     CRZRADIUS[2]	=	205.8;
@@ -113,10 +114,13 @@ void bmt_strip::fill_infos()
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
 
+	double w_i = 25; //ionization potential assumed to be 25 eV
+	int Nel = (int) (1e6*Edep/w_i);
+
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	if(sector>-1 && Edep >0 )
+	if(sector>-1 && Nel >0 )
 	{
 		int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
 		//int num_detector = sector - 1; 			// index of the detector (0...2)

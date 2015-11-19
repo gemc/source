@@ -20,7 +20,6 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
 
-	cout<<" sector "<<sector<<endl;
 	if(verbosity>4)
 	{
 		trueInfos tInfos(aHit);

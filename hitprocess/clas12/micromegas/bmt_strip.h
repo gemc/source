@@ -46,18 +46,19 @@ class bmt_strip
 
 		// THE SIMULATION CONSTANTS
 		double Pi ;
-		double SigmaDrift;
-		double hDrift;
-		double hStrip2Det;
-		double ThetaL ;
+		double SigmaDrift;					// Max transverse diffusion value (GEMC value)
+		double hDrift;						// Size of the drift gap
+		double hStrip2Det;					// distance between strips and the middle of the conversion gap (~half the drift gap)
+		double ThetaL ;						// the Lorentz angle
+		int FieldFlag ; 					// A flag to indicate if the field is on; if value = 0, then the field is off, if value = 1, the field is 5-T
 
 		void fill_infos(); 
 		vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep);   // Strip Finding Routine
 		double toRadians(double angleDegrees);
 		double getSigmaAzimuth(int layer, double x, double y); 					// sigma for Z-detectors
 		double getSigmaLongit(int layer, double x, double y);  					// sigma for C-detector
-		int getZStrip(int layer, double angle); 								//the Z strip as a function of azimuthal angle
-		int getCStrip(int layer, double trk_z); 								//the Z strip as a function of z
+		int getZStrip(int layer, double angle); 								// the Z strip as a function of azimuthal angle
+		int getCStrip(int layer, double trk_z); 								// the Z strip as a function of z
 		double CRCStrip_GetZ(int layer, int strip); 							// the z position of a given C strip
 		double CRZStrip_GetPhi(int sector, int layer, int strip);				// the phi angle of a given Z strip
 		double getEnergyFraction(double z0, double z, double sigma); 			// gaussian pdf
