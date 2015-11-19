@@ -68,7 +68,9 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " a =  :" << cosmicA << endl;
 			cout << hd_msg << " b =  :" << cosmicB << endl;
 			cout << hd_msg << " c =  :" << cosmicC << endl;
-			cout << hd_msg << " Momentum Range: [" << cminp/GeV << " - " << cmaxp/GeV << "] GeV" << endl << endl;
+			cout << hd_msg << " Momentum Range: [" << cminp/GeV << " - " << cmaxp/GeV << "] GeV" << endl ;
+			cout << hd_msg << " Cosmic Area :" << cosmicTarget << endl;
+			cout << hd_msg << " Cosmic Radius :" << cosmicRadius/cm << " cm " << endl;
 		}
 	}
 	
@@ -196,26 +198,27 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				    (cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
 				    (cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius )
 			{
-				cosmicVX = cosmicRadius*G4UniformRand();
-				cosmicVY = cosmicRadius*G4UniformRand();
-				cosmicVZ = cosmicRadius*G4UniformRand();
+				cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+				cosmicVY = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+				cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
 			}
 			// now generating random momentum, cos(theta)
 			double cosmicProb = G4UniformRand();
 			
-			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand())/GeV;
-			double thisthe = G4UniformRand();
-			while (cosmicBeam(thisthe, thisMom) < cosmicProb)
+			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+			double thisthe = pi*G4UniformRand()/2.0;
+			while (cosmicBeam(thisthe, thisMom/GeV) < cosmicProb)
 			{
-				thisMom = (cminp + (cmaxp-cminp)*G4UniformRand())/GeV;
-				thisthe = G4UniformRand();
+				thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+				thisthe = pi*G4UniformRand()/2.0;
 			}
 			// isotropic in phi
-			double thisPhi = 2*pi*G4UniformRand();
+			double thisPhi = -pi + 2*pi*G4UniformRand();
 			
 			// now finding the vertex. Assuming twice the radius as starting point
 			// attention:
 			// axis transformation, z <> y,  x <> -x
+			// cause the cosmics come from the sky
 			double pvx = cosmicVX - 2*cosmicRadius*sin(thisthe)*cos(thisPhi);
 			double pvy = cosmicVY + 2*cosmicRadius*cos(thisthe);
 			double pvz = cosmicVZ + 2*cosmicRadius*sin(thisthe)*sin(thisPhi);
@@ -235,6 +238,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			// when assigning momentum the direction is reversed
 			G4ThreeVector beam_dir(cos(thisPhi)*sin(thisthe), -cos(thisthe), -sin(thisPhi)*sin(thisthe));
+			
+			if(GEN_VERBOSITY > 3)
+			{
+				cout << hd_msg << " Particle id=" <<  Particle->GetParticleName()
+				     << "  Vertex=" << G4ThreeVector(pvx, pvy, pvz)/cm << "cm,  momentum=" << thisMom/GeV << " GeV, theta="
+				     << thisthe/deg <<  " degrees,   phi=" << thisPhi/deg << " degrees" << endl;
+				cout << endl;
+			}
+
+			
 			particleGun->SetParticleEnergy(akine);
 			particleGun->SetParticleMomentumDirection(beam_dir);
 			
@@ -384,7 +397,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					
 					G4ThreeVector beam_dir(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad));
 					
-					if(gemcOpt->optMap["STEER_BEAM"].arg != 0){
+					if(gemcOpt->optMap["STEER_BEAM"].arg != 0)
+					{
 						beam_dir.rotateY(theta);
 						beam_dir.rotateZ(phi);
 					}
