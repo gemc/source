@@ -271,6 +271,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	double Zb=0;
 	double Z0 =0;
+	double z =0;
 	// get group
 	int len = CRCGROUP[num_region].size();
 	for(int group =0; group< len; group++)
@@ -279,7 +280,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 		double z0 = CRCWIDTH[num_region][group]/2.;
 		double zb = CRCGROUP[num_region][group]*(CRCWIDTH[num_region][group] + CRCSPACING[num_region]) ;
 
-		double z = trk_z - zi;
+		z = trk_z - zi;
 		z=round(z); // edge effect fix
 		Z0+=z0;
 		Zb=zb+Z0;
