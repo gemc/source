@@ -278,7 +278,8 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	double Z_uppBound[len];
 	int NStrips[len];
 
-	Z_lowBound[0] = CRCZMIN[num_region]+CRCOFFSET[num_region]+CRCWIDTH[num_region][0]/2.; // the lower bound is the zMin+theOffset with half the width
+	double zi= CRCZMIN[num_region]+CRCOFFSET[num_region];
+	Z_lowBound[0] = CRCWIDTH[num_region][0]/2.; // the lower bound is the zMin+theOffset with half the width
 	Z_uppBound[0] = Z_lowBound[0]
 					   + (CRCGROUP[num_region][0]-1)*(CRCWIDTH[num_region][0]/2.+ CRCSPACING[num_region])
 					   + CRCWIDTH[num_region][0]/2.;
@@ -300,7 +301,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 
 	for(int group =0; group< len; group++)
 	{
-		double zi= CRCZMIN[num_region]+CRCOFFSET[num_region];
+
 		double z0 = CRCWIDTH[num_region][group]/2.;
 		double zb = CRCGROUP[num_region][group]*(CRCWIDTH[num_region][group] + CRCSPACING[num_region]) ;
 
