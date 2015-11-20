@@ -293,8 +293,8 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 
 	}
 
-	int cClosestStrip = (int) (floor(((z-Z0)/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5);
-	cout<<" strip_group "<<strip_group<<" strip "<<cClosestStrip<<endl;
+	int cClosestStrip = (int) (floor(((z-Z0)/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5+CRCGROUP[num_region][group]);
+	cout<<" strip_group "<<strip_group<<"~ strip "<<cClosestStrip<<endl;
 	for(int i =0; i< len; i++)
 	{
 		if(CRCGROUP[num_region][i]==0)
@@ -329,6 +329,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 				{
 					StripDiffMin = StripDiffCalc;
 					ClosestStp = nCstrpNb;
+					cout<<" strip_group "<<strip_group<<" strip "<<ClosestStrip<<endl;
 				}
 				else
 				{
