@@ -329,7 +329,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 				{
 					StripDiffMin = StripDiffCalc;
 					ClosestStp = nCstrpNb;
-					cout<<" strip_group "<<strip_group<<" strip "<<ClosestStrip<<endl;
+
 				}
 				else
 				{
