@@ -268,6 +268,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	int strip_group = 0;
 	int ClosestStp = -1;
 	int StartStrip = 0;
+
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
 	double Zb=0;
 	double Z0 =0;
