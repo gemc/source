@@ -276,20 +276,23 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	int len = CRCGROUP[num_region].size();
 	double Z_lowBound[len];
 	double Z_uppBound[len];
+	int NStrips[len];
 
 	Z_lowBound[0] = CRCZMIN[num_region]+CRCOFFSET[num_region]+CRCWIDTH[num_region][0]/2.;
 	Z_uppBound[0] = Z_lowBound[0]
 					   + (CRCGROUP[num_region][0]-1)*(CRCWIDTH[num_region][0]/2.+ CRCSPACING[num_region])
 					   + CRCWIDTH[num_region][0]/2;
+	NStrips[0] = CRCGROUP[num_region][0];
 	for(int i =1; i< len; i++)
 	{
 		Z_lowBound[i] = Z_uppBound[i-1] + CRCWIDTH[num_region][i-1]/2. ;
 		Z_uppBound[i] = Z_lowBound[i] + (CRCGROUP[num_region][i]-1)*(CRCWIDTH[num_region][i]/2.+ CRCSPACING[num_region]);
+		NStrips[i] = NStrips[i-1] + CRCGROUP[num_region][i];
 
 		if(trk_z>=Z_lowBound[i] && trk_z<=Z_uppBound[i]) {
 			strip_group = i;
-			int cClosestStrip = (int) (floor(((z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5)+CRCGROUP[num_region][strip_group];
-				cout<<" strip_group "<<strip_group<<" c strip "<<cClosestStrip<<" start "<<CRCGROUP[num_region][strip_group]<<endl;
+			int cClosestStrip = (int) (floor(((z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5)+NStrips[i-1];
+				cout<<" strip_group "<<strip_group<<" c strip "<<cClosestStrip<<" start "<<NStrips[i-1]<<endl;
 
 			break;
 		}
