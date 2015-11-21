@@ -290,7 +290,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 		Z_uppBound[i] = Z_lowBound[i] + (CRCGROUP[num_region][i]-1)*(CRCWIDTH[num_region][i] + CRCSPACING[num_region]);
 		cout<<i<<" NStrips[i] "<<NStrips[i]<<" "<<Z_lowBound[i]<<" - "<<Z_uppBound[i]<<endl;
 		NStrips[i] = NStrips[i-1] + CRCGROUP[num_region][i];
-		trk_z = Z_uppBound[2] ;
+		trk_z = Z_lowBound[1] ;
 		if(trk_z>=Z_lowBound[i] && trk_z<=Z_uppBound[i]) {
 			strip_group = i;
 			int cClosestStrip = (int) (floor(((trk_z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5)+NStrips[i-1];
