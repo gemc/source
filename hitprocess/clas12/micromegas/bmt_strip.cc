@@ -288,6 +288,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	{
 		Z_lowBound[i] = Z_uppBound[i-1] + CRCWIDTH[num_region][i-1]/2. ;
 		Z_uppBound[i] = Z_lowBound[i] + (CRCGROUP[num_region][i]-1)*(CRCWIDTH[num_region][i] + CRCSPACING[num_region]);
+		cout<<i<<" NStrips[i] "<<NStrips[i]<<endl;
 		NStrips[i] = NStrips[i-1] + CRCGROUP[num_region][i];
 		trk_z = Z_uppBound[2] ;
 		if(trk_z>=Z_lowBound[i] && trk_z<=Z_uppBound[i]) {
