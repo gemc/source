@@ -139,7 +139,6 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				double z_d = (double) (G4RandGauss::shoot(z,sigma));
 
 				strip = getCStrip(layer, z_d);
-
 			}
 		}
 
@@ -153,7 +152,6 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 			double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
 
 			strip = getZStrip(layer, phi_d);
-
 		}
 
 		if(strip != -1)
@@ -265,40 +263,38 @@ int bmt_strip::getZStrip(int layer, double angle)
  */
 int bmt_strip::getCStrip(int layer, double trk_z) {
 
-	int strip_group = 0;
-	int ClosestStp = -1;
-	int StartStrip = 0;
-
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
-	double Zb=0;
-	double Z0 =0;
-	double z =0;
+	int strip_group = 0;
+	int ClosestStrip =-1;
 	// get group
-	int len = CRCGROUP[num_region].size();
+	int len = CRCGROUP[num_region].length;
 	double Z_lowBound[len];
 	double Z_uppBound[len];
 	int NStrips[len];
 
 	double zi= CRCZMIN[num_region]+CRCOFFSET[num_region];
+	double z = trk_z - zi;
+
 	Z_lowBound[0] = CRCWIDTH[num_region][0]/2.; // the lower bound is the zMin+theOffset with half the width
 	Z_uppBound[0] = Z_lowBound[0]
 					   + (CRCGROUP[num_region][0]-1)*(CRCWIDTH[num_region][0]+ CRCSPACING[num_region]);
 	NStrips[0] = CRCGROUP[num_region][0];
 	for(int i =1; i< len; i++)
 	{
-		Z_lowBound[i] = Z_uppBound[i-1] + CRCWIDTH[num_region][i-1]/2. ;
+		Z_lowBound[i] = Z_uppBound[i-1] + CRCWIDTH[num_region][i-1]/2. + CRCSPACING[num_region] + CRCWIDTH[num_region][i]/2.;
 		Z_uppBound[i] = Z_lowBound[i] + (CRCGROUP[num_region][i]-1)*(CRCWIDTH[num_region][i] + CRCSPACING[num_region]);
-		cout<<i<<" NStrips[i] "<<NStrips[i]<<" "<<Z_lowBound[i]<<" - "<<Z_uppBound[i]<<endl;
-		NStrips[i] = NStrips[i-1] + CRCGROUP[num_region][i];
-		trk_z = Z_lowBound[1] + (CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region]);
-		if(trk_z>=Z_lowBound[i] && trk_z<=Z_uppBound[i]) {
-			strip_group = i;
-			int cClosestStrip = (int) (floor(((trk_z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region])))+0.5)+NStrips[i-1];
-				cout<<Z_lowBound[i]<<" - "<<Z_uppBound[i]<<" c strip "<<cClosestStrip<<" pos "<<(zi+Z_lowBound[0])<<" c z "<<CRCStrip_GetZ( layer,  1)<<endl;
 
-			//break;
+		NStrips[i] = NStrips[i-1] + CRCGROUP[num_region][i];
+
+		if(z>=Z_lowBound[i] && z<=Z_uppBound[i]) {
+			strip_group = i;
+			ClosestStrip = 1 + (int) (Math.round(((z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region]))))+NStrips[i-1];
+
+			len =i;
 		}
 	}
+	return ClosestStrip;
+}
 
 	for(int group =0; group< len; group++)
 	{
