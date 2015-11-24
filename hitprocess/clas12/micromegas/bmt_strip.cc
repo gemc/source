@@ -121,67 +121,67 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	vector<double> strip_id;
 
 	int strip = -1;
-
-	for(int iel=0;iel<Nel;iel++)
+	if(Nel>0)
 	{
-		int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
-
-		double sigma =0;
-		if(layer%2==0)
-		{// C layer
-			double z_i = CRZZMIN[num_region]+CRZOFFSET[num_region]; 						 // fiducial z-profile lower limit
-			double z_f = CRZZMIN[num_region]+CRZOFFSET[num_region] + CRZLENGTH[num_region];  // fiducial z-profile upper limit
-
-			if(z>=z_i && z<=z_f)
-			{
-				sigma = getSigmaLongit(layer, x, y); //  longitudinal diffusion
-
-				double z_d = (double) (G4RandGauss::shoot(z,sigma));
-
-				strip = getCStrip(layer, z_d);
-			}
-		}
-
-		if(layer%2==1)
-		{// Z layer
-			sigma = getSigmaAzimuth(layer, x, y); //   diffusion  taking into account the Lorentz angle
-
-			double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
-
-			double phi = atan2(y,x);
-			double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
-
-			strip = getZStrip(layer, phi_d);
-		}
-
-		if(strip != -1)
+		for(int iel=0;iel<Nel;iel++)
 		{
-			for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
-			{
-				if(strip_id[2*istrip]==strip)
-				{// already hit strip - add Edep
-					strip_id[2*istrip+1]=strip_id[2*istrip+1]+1./((double) Nel); // no gain fluctuation ;
-					strip = -1; // not to use it anymore
+			int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
+
+			double sigma =0;
+			if(layer%2==0)
+			{// C layer
+				double z_i = CRZZMIN[num_region]+CRZOFFSET[num_region]; 						 // fiducial z-profile lower limit
+				double z_f = CRZZMIN[num_region]+CRZOFFSET[num_region] + CRZLENGTH[num_region];  // fiducial z-profile upper limit
+
+				if(z>=z_i && z<=z_f)
+				{
+					sigma = getSigmaLongit(layer, x, y); //  longitudinal diffusion
+
+					double z_d = (double) (G4RandGauss::shoot(z,sigma));
+
+					strip = getCStrip(layer, z_d);
 				}
 			}
-			if(strip > -1) { // new strip
-				strip_id.push_back(strip);
-				strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
+
+			if(layer%2==1)
+			{// Z layer
+				sigma = getSigmaAzimuth(layer, x, y); //   diffusion  taking into account the Lorentz angle
+
+				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
+
+				double phi = atan2(y,x);
+				double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
+
+				strip = getZStrip(layer, phi_d);
+			}
+
+			if(strip != -1)
+			{
+				for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
+				{
+					if(strip_id[2*istrip]==strip)
+					{// already hit strip - add Edep
+						strip_id[2*istrip+1]=strip_id[2*istrip+1]+1./((double) Nel); // no gain fluctuation ;
+						strip = -1; // not to use it anymore
+					}
+				}
+				if(strip > -1) { // new strip
+					strip_id.push_back(strip);
+					strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
+				}
+			}
+			else
+			{// not in the acceptance
+				strip_id.push_back(-1);
+				strip_id.push_back(1);
 			}
 		}
-		else
-		{// not in the acceptance
-			strip_id.push_back(-1);
-			strip_id.push_back(1);
-		}
 	}
-	if(Nel==0)
+	else
     { // Nel=0, consider the Edep is 0
         strip_id.push_back(-1);
         strip_id.push_back(1);
     }
-
-
 
     return strip_id;
 }
