@@ -267,7 +267,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	int strip_group = 0;
 	int ClosestStrip =-1;
 	// get group
-	int len = CRCGROUP[num_region].length;
+	int len = CRCGROUP[num_region].size();
 	double Z_lowBound[len];
 	double Z_uppBound[len];
 	int NStrips[len];
@@ -288,7 +288,7 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 
 		if(z>=Z_lowBound[i] && z<=Z_uppBound[i]) {
 			strip_group = i;
-			ClosestStrip = 1 + (int) (Math.round(((z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region]))))+NStrips[i-1];
+			ClosestStrip = 1 + (int) (round(((z-Z_lowBound[strip_group])/(CRCWIDTH[num_region][strip_group] + CRCSPACING[num_region]))))+NStrips[i-1];
 
 			len =i;
 		}
@@ -296,80 +296,6 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 	return ClosestStrip;
 }
 
-	for(int group =0; group< len; group++)
-	{
-
-		double z0 = CRCWIDTH[num_region][group]/2.;
-		double zb = CRCGROUP[num_region][group]*(CRCWIDTH[num_region][group] + CRCSPACING[num_region]) ;
-
-		z = trk_z - zi;
-		z=round(z); // edge effect fix
-		Z0+=z0;
-		Zb=zb+Z0;
-
-		if(z>=Z0 && z<Zb)
-		{
-			strip_group = group;
-			if(strip_group>0) {
-				for(int s =0; s<strip_group; s++)
-					StartStrip+=CRCGROUP[num_region][strip_group];
-			}
-			break;
-		}
-
-	}
-
-	for(int i =0; i< len; i++)
-	{
-		if(CRCGROUP[num_region][i]==0)
-			break;
-		int group =i;
-		double zi= CRCZMIN[num_region]+CRCOFFSET[num_region];
-		double z0 = CRCWIDTH[num_region][group]/2.;
-		double zb = CRCGROUP[num_region][group]*(CRCWIDTH[num_region][group] + CRCSPACING[num_region]) ;
-
-		double z = trk_z - zi;
-		z=round(z); // edge effect fix
-		Z0+=z0;
-		Zb=zb+Z0;
-
-		if(z>=Z0 && z<Zb)
-		{
-			strip_group = group;
-			int min_strip = 1;
-			for(int g =0; g<strip_group; g++)
-				min_strip+=CRCGROUP[num_region][g];
-			int max_strip = min_strip + CRCGROUP[num_region][strip_group];
-
-			double StripDiffMin = CRCLENGTH[num_region];
-
-			for(int nCstrpNb = min_strip; nCstrpNb<=max_strip; nCstrpNb++)
-			{
-				double zstp = CRCStrip_GetZ(layer, nCstrpNb ) -zi; //  c strip
-				zstp = ceil(zstp*100000)/100000; // rounding fix
-
-				double StripDiffCalc = abs(z-zstp);
-				if(StripDiffCalc<StripDiffMin)
-				{
-					StripDiffMin = StripDiffCalc;
-					ClosestStp = nCstrpNb;
-
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-		Z0+=zb;
-	}
-
-
-	if(ClosestStp<1 || ClosestStp>CRCNSTRIPS[num_region])
-		ClosestStp = -1;
-	cout<<" Closeststp "<<ClosestStp<<endl;
-	return ClosestStp;
-}
 
 /**
  * param layer the hit layer
