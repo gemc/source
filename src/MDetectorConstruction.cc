@@ -82,6 +82,19 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			mother = findDetector(mother.mother);
 		}
 		if(i->first != "root") i->second.scanned = 0;
+
+		// scanning for replica, replicants physical volumes are not built
+		if(i->second.type.find("ReplicaOf:") != string::npos)
+		{
+			stringstream ops;
+			string operands(i->second.type, 10, i->second.type.size());
+			ops << operands;
+			string original;
+			ops >> original;
+
+			replicants.insert(original);
+		}
+		
 	}
 	
 	
@@ -171,6 +184,41 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 						kid.scanned = 1;
 					}
 				}
+				
+				// Check kid dependency on replicas
+				if(kid.type.find("ReplicaOf:") == 0)
+				{
+					
+					stringstream ops;
+					string operands(kid.type, 10, kid.type.size());
+					ops << operands;
+					string original;
+					ops >> original;
+					
+					detector dorig = findDetector(original);
+					// if dependency is not built yet, then
+					// add it to the relative list
+					if(dorig.scanned == 0)
+					{
+						relatives.push_back(TrimSpaces(original));
+						
+						if(VERB > 3  || kid.name.find(catch_v) != string::npos)
+						{
+							for(unsigned int ir=0; ir<relatives.size()-1; ir++) cout << "\t";
+							cout << hd_msg << kid.name << " is a replica volume of  " << original
+							<< ". Must build: " << original << " first " << endl;
+						}
+					}
+					// otherwise can build the kid
+					else
+					{
+						buildDetector(kid.name);
+						kid.scanned = 1;
+					}
+				}
+				
+				
+				
 				// Check kid dependency on operations
 				else if(kid.type.find("Operation:") == 0)
 				{
@@ -349,21 +397,50 @@ void MDetectorConstruction::buildDetector(string name)
 {
 	detector kid = findDetector(name);
 	detector mom = findDetector(kid.mother);
-	
+
 	if(kid.name != "notfound" || mom.name != "notfound")
 	{
-		(*hallMap)[kid.name].create_solid(gemcOpt, hallMap);
 		
-		// creating logical volume
-		if((*hallMap)[kid.name].create_logical_volume(mats, gemcOpt))
+		// handling replicas
+		if(kid.type.find("ReplicaOf:") == 0)
 		{
-			// creating physical volume
-			(*hallMap)[kid.name].create_physical_volumes(gemcOpt, mom.GetLogical());
+			// get the replicant detector
+			stringstream ops;
+			string operands(kid.type, 10, kid.type.size());
+			ops << operands;
+			string repName;
+			ops >> repName;
 			
-			isSensitive((*hallMap)[kid.name]);  // if sensitive, associate sensitive detector
-			hasMagfield((*hallMap)[kid.name]);  // if it has magnetic field, create or use MFM
+			detector rep = findDetector(repName);
+			
+			if(rep.name != "notfound" )
+			{
+				// creating the replicas volume
+				(*hallMap)[kid.name].create_replicas(gemcOpt, mom.GetLogical(), rep);
+			}
+			else
+			{
+				cout << "   Attention: " << kid.name << " not found. " << endl;
+			}
 		}
-		(*hallMap)[kid.name].scanned = 1;
+		else
+		{
+			(*hallMap)[kid.name].create_solid(gemcOpt, hallMap);
+			
+			// creating logical volume
+			if((*hallMap)[kid.name].create_logical_volume(mats, gemcOpt))
+			{
+				
+				// creating physical volume unless it is in the replicant set
+				if(replicants.find(kid.name) == replicants.end())
+					(*hallMap)[kid.name].create_physical_volumes(gemcOpt, mom.GetLogical());
+				
+				
+				isSensitive((*hallMap)[kid.name]);  // if sensitive, associate sensitive detector
+				hasMagfield((*hallMap)[kid.name]);  // if it has magnetic field, create or use MFM
+			}
+			(*hallMap)[kid.name].scanned = 1;
+		}
 	}
 	
 	if(kid.name == "notfound")

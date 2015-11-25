@@ -30,12 +30,14 @@ Code Improvements:
 - bring some guis out of main gui, pop up windows?
 - re-organize primary generator, use external library project?
 - re-define and document all verbosities
-- get screen resolution
-
+- get screen resolution and adjust gui dimensions to that
+- match detector types to geant4
 
 Add production cut verbosity?
 
-If you want to know the traslation from an energy cut value to a range cut value for a given particle in a given material, you can do with the following instructions. First you have to instantiate the user action
+If you want to know the traslation from an energy cut value to a range cut value for a given
+particle in a given material, you can do with the following instructions.
+First you have to instantiate the user action
 
 /gamos/userAction GmCutsEnergy2RangeUA
 
@@ -43,8 +45,9 @@ and then you can use the command
 
 /gamos/physics/ECuts2RangeCuts MATERIAL_NAME CUT_VALUE PARTICLE_NAME
 
-You may use in the material name an '*' if you want to name several materials at the same time. For the particle name only the following names have a meaning: gamma, e-, e+, e*, *. This will produce a table with the conversion for each material and particle similar to the following one:
-
+You may use in the material name an '*' if you want to name several materials at the same time.
+For the particle name only the following names have a meaning: gamma, e-, e+, e*, *.
+This will produce a table with the conversion for each material and particle similar to the following one:
 
 GmCutsEnergy2RangeUA:  MATERIAL:  G4_AIR  PART: gamma
 ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 286588

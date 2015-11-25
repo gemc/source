@@ -46,7 +46,7 @@ class MDetectorConstruction : public G4VUserDetectorConstruction
 		map<string, G4Region*>           SeRe_Map;
 		map<string, G4ProductionCuts*>   SePC_Map;
 		set<string>                      activeFields;
-	
+		set<string>                      replicants; // don't build these physical volumes
 	
 	
 	private:		

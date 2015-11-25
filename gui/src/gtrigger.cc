@@ -42,7 +42,7 @@ gtrigger::gtrigger(QWidget *parent, goptions *Opts, map<string, sensitiveDetecto
 int gtrigger::determineNhits()
 {
 	// clear all widgets
-	for(unsigned i=0; i<vGraphsplitter->count(); i++)
+	for(int i=0; i<vGraphsplitter->count(); i++)
 		vGraphsplitter->widget(i)->deleteLater() ;
 	
 

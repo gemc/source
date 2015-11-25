@@ -53,6 +53,13 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	
+	if(type.find("ReplicaOf") != string::npos)
+	{
+		if(VERB>4 || name.find(catch_v) != string::npos)
+			cout << hd_msg << " " << name << " is a Replica. Solid Volume will not be built." << endl;
+		return 0;
+	}
+	
 	// ####
 	// Box
 	// ####
@@ -745,20 +752,18 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 }
 
 
-
-
-
-
 int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions gemcOpt)
 {
 	string hd_msg  = gemcOpt.optMap["LOG_MSG"].args + " Logical: >> ";
 	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	string defmat  = gemcOpt.optMap["DEFAULT_MATERIAL"].args;
-	if(material=="Component")
+	
+	// don't build the logical volumes for components or replicas
+	if(material == "Component" || material == "OfReplica")
 	{
 		if(VERB>4 || name.find(catch_v) != string::npos)
-			cout << hd_msg << " " << name << " is a Solid Component. Logical Volume will not be built." << endl;
+			cout << hd_msg << " " << name << " is a Solid Component or a Replicant. Logical Volume will not be built." << endl;
 		return 0;
 	}
 	
@@ -794,11 +799,11 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 		}
 	}
 	
-	
 	// Logical Volume Basic Constructor
 	// If LogicV exists already, this is a copy
 	if(LogicV == 0)
 		LogicV = new G4LogicalVolume(SolidV, (*MMats)[material], name, 0, 0, 0, true);
+	
 	if(name == "root") LogicV->SetVisAttributes(G4VisAttributes::GetInvisible());
 	else LogicV->SetVisAttributes(VAtts);
 	
@@ -818,52 +823,15 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	bool   OVERL   = gemcOpt.optMap["CHECK_OVERLAPS"].arg > 0 ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	if(PhysicalV) delete PhysicalV;
-	if(material=="Component")
+	
+	// don't build physical volumes for components or replicas.
+	// Replicas are built in the dedicated routine
+	if(material == "Component" || material == "OfReplica")
 	{
 		if(VERB>4 || name.find(catch_v) != string::npos)
-			cout << hd_msg << " " << name << " is a Solid Component. Physical Volume will not be built." << endl;
+			cout << hd_msg << " " << name << " is a Solid Component or a Replicant. Physical Volume will not be built, or replicas will be built instead." << endl;
 		return 1;
 	}
-	if(material=="Component")
-	{
-		if(VERB>4 || name.find(catch_v) != string::npos)
-			cout << hd_msg << " " << name << " is a Solid Component. Physical Volume will not be built." << endl;
-		return 1;
-	}
-	
-	if(type.find("Replica:") == 0)
-	{
-		if(dimensions.size() != 4)
-		{
-			cout << hd_msg << " Fatal Error: the number of dimensions for " << name
-			<< " is " << dimensions.size() <<  ":" << endl;
-			for(unsigned int i=0; i<dimensions.size(); i++)
-				cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
-			cout << "      This does not match a G4Replicas (4). Exiting" << endl << endl;
-			exit(0);
-		}
-		
-		EAxis pAxis;
-		if(dimensions[0] == 1) pAxis = kXAxis;
-		if(dimensions[0] == 2) pAxis = kYAxis;
-		if(dimensions[0] == 3) pAxis = kZAxis;
-		int nreps     = (int) dimensions[1];
-		double width  = dimensions[2];
-		double offset = dimensions[3];
-		
-		// the logical volume is built
-		// the mother is built as well
-		PhysicalV = new G4PVReplica(name,     ///< name
-								LogicV,       ///< Logical Volume Copy
-								mamma,        ///< Mother Logical Volume
-								pAxis,        ///< EAxis of copy - can be kXAxis,kYAxis,kZAxis,kRho,kRadial3D,kPhi
-								nreps,        ///< Number of repetitions
-								width,        ///< Width of repetitions
-								offset);      ///< Offset of repetitions
-		
-	}
-	
-	
 	
 	
 	if(name == "root")
@@ -894,6 +862,59 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	return 1;
 }
 
+int detector::create_replicas(goptions gemcOpt, G4LogicalVolume *mamma, detector replicant)
+{
+	string hd_msg  = gemcOpt.optMap["LOG_MSG"].args + " Physical: >> ";
+	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
+	string catch_v = gemcOpt.optMap["CATCH"].args;
+	
+	// deleting the replicant detector physicsal volume as well
+	if(replicant.PhysicalV) delete replicant.PhysicalV;
+	
+	// reset this physical volume
+	if(PhysicalV) delete PhysicalV;
+	
+	
+	if(type.find("ReplicaOf:") == 0)
+	{
+		if(dimensions.size() != 4)
+		{
+			cout << hd_msg << " Fatal Error: the number of parameters for " << name
+				  << " is " << dimensions.size() <<  ":" << endl;
+			for(unsigned int i=0; i<dimensions.size(); i++)
+				cout << "      parameter " << i + 1 << ": " <<  dimensions[i] << endl;
+			cout << "      This does not match a G4Replicas (4). Exiting" << endl << endl;
+			exit(0);
+		}
+		
+		EAxis pAxis;
+		if(dimensions[0] == 1) pAxis = kXAxis;
+		if(dimensions[0] == 2) pAxis = kYAxis;
+		if(dimensions[0] == 3) pAxis = kZAxis;
+		int nreps     = (int) get_number(dimensions[1]);
+		double width  = get_number(dimensions[2]);
+		double offset = get_number(dimensions[3]);
+		
+		// the logical volume is built
+		// the mother is built as well
+		PhysicalV = new G4PVReplica(name,   ///< name
+											 replicant.LogicV, ///< Logical Volume to be replicated
+											 mamma,            ///< Mother Logical Volume
+											 pAxis,            ///< EAxis of copy - can be kXAxis,kYAxis,kZAxis,kRho,kRadial3D,kPhi
+											 nreps,            ///< Number of repetitions
+											 width,            ///< Width of repetitions
+											 offset);          ///< Offset of repetitions
+		
+	}
+	
+	if(VERB>4 || name.find(catch_v) != string::npos)
+	{
+		if(mamma)
+			cout << hd_msg << " " << name << " Physical Volume(s) built inside " << mamma->GetName() << "." << endl;
+	}
+	
+	return 1;
+}
 
 
 

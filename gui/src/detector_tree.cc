@@ -135,7 +135,7 @@ map<string, tree_item> detector_tree::read_geometry(QTreeWidget *motherWidget)
 		item.visible   = i->second.visible;
 		item.wiresolid = i->second.style;
 		
-		if(i->second.name != "root" && i->second.GetLogical())
+		if(i->second.name != "root" && i->second.GetPhysical())
 		{
 			tree_map.insert(map<string, tree_item>::value_type(i->second.name, item));
 			if(VERB > 3) cout << hd_msg << " Mapping Detector " << i->first << endl;

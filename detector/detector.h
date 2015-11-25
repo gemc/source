@@ -103,9 +103,10 @@ class detector
 		G4VPhysicalVolume*         PhysicalV;   ///< Physical Volume
 		
 	public:
-		int create_solid(goptions, map<string, detector>*);                             ///< Creates the Solid. If it's a Copy Placement, retrieve and assigns LogicV
-		int create_logical_volume(map<string, G4Material*>*, goptions);                 ///< Creates the Logical Volume.
-		int create_physical_volumes(goptions, G4LogicalVolume*);                        ///< Creates the Physical Volume
+		int create_solid(goptions, map<string, detector>*);                              ///< Creates the Solid. If it's a Copy Placement, retrieve and assigns LogicV
+		int create_logical_volume(map<string, G4Material*>*, goptions);                  ///< Creates the Logical Volume.
+		int create_physical_volumes(goptions, G4LogicalVolume*);                         ///< Creates the Physical Volume
+		int create_replicas(goptions, G4LogicalVolume*, detector);                       ///< Creates the Replica Volumes 
 		void setSensitivity(G4VSensitiveDetector *SD){LogicV->SetSensitiveDetector(SD);} ///< Assign the sensitive detector to the Logical Volume
 		
 		G4VSolid          *GetSolid()   { return SolidV;}                                ///< Returns G4 Solid pointer
