@@ -53,11 +53,10 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			if(dmom > 0) cout << " +- " << G4BestUnit(dmom, "Energy") ;
 			cout << endl;
 			cout << hd_msg << " Beam Direction: (theta, phi) = (" << theta/deg << ", " << phi/deg << ") deg" ;
-			if(dtheta > 0 || dphi > 0) cout << " +- (" << dtheta/deg << ", " << dphi/deg << ") deg " << endl;
-			cout << hd_msg << " Beam Vertex: (" << vx/cm << ", " << vy/cm << ", " << vz/cm << ") cm" ;
+			if(dtheta > 0 || dphi > 0) cout << " +- (" << dtheta/deg << ", " << dphi/deg << ") deg ";
+			cout << endl << hd_msg << " Beam Vertex: (" << vx/cm << ", " << vy/cm << ", " << vz/cm << ") cm" ;
 			if(dvr + dvz > 0) cout << " (radius, z-spread) = (" << dvr/cm << ", " << dvz/cm << ") cm" ;
-			cout << hd_msg << " Beam polarization: "    << polDeg << "%" ;
-			cout << endl ;
+			cout << endl << hd_msg << " Beam polarization: "    << polDeg << "%" << endl ;
 			cout << hd_msg << " Polarization Direction: (theta, phi) = (" << polTheta/deg << ", " << polPhi/deg << ")" ;
 			cout << endl;
 		}

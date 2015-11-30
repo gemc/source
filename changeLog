@@ -1,5 +1,9 @@
 Changelog for GEMC
 
+11/30/15
+- init run number with option map by default
+- fixed beam log
+
 11/25/15
 - fixed replicas routines.
 

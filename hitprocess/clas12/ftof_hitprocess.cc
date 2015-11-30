@@ -18,6 +18,10 @@ static ftofConstants initializeFTOFConstants(int runno)
 {
 	ftofConstants ftc;
 	
+	// do not initialize at the beginning, only after the end of the first event,
+	// with the proper run number coming from options or run table
+	if(runno == -1) return ftc;
+	
 	// database
 	ftc.runNo = runno;
 	ftc.date       = "2015-11-15";
@@ -29,9 +33,6 @@ static ftofConstants initializeFTOFConstants(int runno)
 
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftc.connection));
 
-	
-	
-	
 	auto_ptr<Assignment> calibModel(calib->GetAssignment(ftc.database));
 	
 	
@@ -44,8 +45,6 @@ static ftofConstants initializeFTOFConstants(int runno)
 //			  << "  length_left:  " << calibModel->GetValueDouble(rowI, 3) << endl;
 //	}
 //	
-
-	
 	
 	ftc.npaddles[0] = 23;
 	ftc.npaddles[1] = 62;
@@ -279,7 +278,7 @@ map< string, vector <int> >  ftof_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // this static function will be loaded first thing by the executable
-ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(1);
+ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(-1);
 
 
 

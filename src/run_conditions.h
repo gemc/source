@@ -120,6 +120,7 @@ class runWeights
 		int runNo;
 		int getRunNumber(int n);
 		bool isNewRun;
+		int defaultRunNumber;
 	
 	private:
 		// map with weights as coming from the file
@@ -127,6 +128,7 @@ class runWeights
 	
 		// fill the number of events map
 		void randomize();
+	
 		// map with numnber of events for each run, based on weight map
 		map<int, int> n;
 	

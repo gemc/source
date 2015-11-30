@@ -7,15 +7,21 @@
 
 static ecConstants initializeECConstants(int runno)
 {
+
 	ecConstants ecc;
-	ecc.runNo = 0;
+
+	// do not initialize at the beginning, only after the end of the first event,
+	// with the proper run number coming from options or run table
+	if(runno == -1) return ecc;
+
+	ecc.runNo             = runno;
+	ecc.NSTRIPS           = 36;
+	ecc.attlen            = 3760.;  // Attenuation Length (mm)
+	ecc.TDC_time_to_evio  = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	ecc.ADC_MeV_to_evio   = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
+	ecc.PE_yld            = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	ecc.veff              = 160. ;  // Effective velocity of scintillator light (mm/ns)
 	
-	ecc.NSTRIPS             = 36;
-	ecc.attlen              = 3760.;  // Attenuation Length (mm)
-	ecc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
-	ecc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
-	ecc.PE_yld              = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
-	ecc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
 	return ecc;
 }
 
@@ -216,7 +222,7 @@ map< string, vector <int> >  ec_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 
 // this static function will be loaded first thing by the executable
-ecConstants ec_HitProcess::ecc = initializeECConstants(1);
+ecConstants ec_HitProcess::ecc = initializeECConstants(-1);
 
 
 

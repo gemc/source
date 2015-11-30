@@ -214,19 +214,20 @@ map<string, string> runConditions::get_systems()
 
 runWeights::runWeights(goptions opts)
 {
-	string fname = opts.optMap["RUN_WEIGHTS"].args;
-	int nevts    = opts.optMap["N"].arg;
-	startEvent   = opts.optMap["EVN"].arg;
+	string fname     = opts.optMap["RUN_WEIGHTS"].args;
+	int nevts        = opts.optMap["N"].arg;
+	startEvent       = opts.optMap["EVN"].arg;
+	defaultRunNumber = opts.optMap["RUNNO"].arg;
 	
 	isNewRun = FALSE;
 	
 	if(nevts==0) return;
 	
-	// by default there is only 1 weight, the run number is 1 for all events	
+	// by default there is only 1 weight, the run number is defaultRunNumber for all events
 	if(fname == "no")
 	{
-		w[1]  = 1;
-		n[1]  = nevts;
+		w[defaultRunNumber]  = 1;
+		n[defaultRunNumber]  = nevts;
 		return;
 	}
 	
@@ -264,8 +265,8 @@ runWeights::runWeights(goptions opts)
 		}
 	}
 	
-	// initializing runNo to zero so isNewRun is 1 for the first event
-	runNo = 0;
+	// initializing runNo to zero so isNewRun is true for the first event
+	// runNo = 0;
 	
 	cout << " > Run weights table loaded: " << endl;
 	for(map<int, double>::iterator it = w.begin(); it != w.end(); it++)
@@ -298,8 +299,9 @@ int runWeights::getRunNumber(int evn)
 		}
 	}
 	
-	// default
-	runNo = 1;
+	// default comes from the option map
+	runNo = defaultRunNumber;
+	
 	return runNo;
 }
 
