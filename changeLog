@@ -3,6 +3,8 @@ Changelog for GEMC
 11/30/15
 - init run number with option map by default
 - fixed beam log
+- do not init hit process routines at start, waiting until end of first event
+- text materials are now backward compatible
 
 11/25/15
 - fixed replicas routines.

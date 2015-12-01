@@ -81,11 +81,7 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			continue;
 			
 			gtable gt(get_strings(dbline, "|"));
-			if( gt.data.size() != 18)
-				cout << "ERROR: Incorrect number of materials items (" << gt.data.size() << ") for " << gt.data[0]
-			         << ". We should have 18 but we have " << gt.data.size() << " instead." << endl;
-
-		
+			
 			material thisMat(TrimSpaces(             gt.data[0])); // name
 			thisMat.desc                =            gt.data[1];   // description
 			thisMat.density             = get_number(gt.data[2]);  // density
@@ -98,14 +94,18 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			thisMat.opticalsFromString(              gt.data[9], "efficiency");
 			
 			// scintillation
-			thisMat.opticalsFromString(             gt.data[10], "fastcomponent");
-			thisMat.opticalsFromString(             gt.data[11], "slowcomponent");
-			thisMat.scintillationyield = get_number(gt.data[12]);
-			thisMat.resolutionscale    = get_number(gt.data[13]);
-			thisMat.fasttimeconstant   = get_number(gt.data[14]);
-			thisMat.slowtimeconstant   = get_number(gt.data[15]);
-			thisMat.yieldratio         = get_number(gt.data[16]);
-			
+			// this condition is for backward compatibility,
+			// scintillation was added with gemc 2.3
+			if( gt.data.size() == 18)
+			{
+				thisMat.opticalsFromString(             gt.data[10], "fastcomponent");
+				thisMat.opticalsFromString(             gt.data[11], "slowcomponent");
+				thisMat.scintillationyield = get_number(gt.data[12]);
+				thisMat.resolutionscale    = get_number(gt.data[13]);
+				thisMat.fasttimeconstant   = get_number(gt.data[14]);
+				thisMat.slowtimeconstant   = get_number(gt.data[15]);
+				thisMat.yieldratio         = get_number(gt.data[16]);
+			}
 			mymats[thisMat.name] = thisMat;
 			
 		}

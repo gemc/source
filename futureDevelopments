@@ -32,6 +32,7 @@ Code Improvements:
 - re-define and document all verbosities
 - get screen resolution and adjust gui dimensions to that
 - match detector types to geant4
+- make mysql material factory back-ward compatible
 
 Add production cut verbosity?
 
