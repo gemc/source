@@ -12,49 +12,53 @@ using namespace ccdb;
 
 static ecConstants initializeECConstants(int runno)
 {
-
+	
 	ecConstants ecc;
-
+	
+	// do not initialize at the beginning, only after the end of the first event,
+	// with the proper run number coming from options or run table
+	if(runno == -1) return ecc;
+	
 	int isec,isla,ilay,istr;
 	double par[8];
-	 	
+	
 	// database
 	ecc.runNo      = runno;
 	ecc.date       = "2015-11-29";
 	ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	ecc.variation  = "default";
-
+	
 	ecc.NSTRIPS             = 36;
 	ecc.attl                = 3760.;  // Attenuation Length (mm)
 	ecc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
 	ecc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
 	ecc.PE_yld              = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	ecc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-
+	
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
-
-	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo); 
+	
+	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo);
 	vector<vector<double> > data; calib->GetCalib(data,ecc.database);
 	
-        for(int row = 0; row < data.size(); row++)
-	  {
-	    isec   = data[row][0];
-	    isla   = data[row][1];
-	    ilay   = data[row][2];
-	    istr   = data[row][3];
-	    par[0] = data[row][4];
-	    par[1] = data[row][5]*10.0;
-	    par[2] = data[row][6];
-	    
-	    if (isla==2||isla==3)
-	    {
-	      ecc.attlen[0][istr-1][isla-2][ilay-1][isec-1] = par[0];
-	      ecc.attlen[1][istr-1][isla-2][ilay-1][isec-1] = par[1];
-	      ecc.attlen[2][istr-1][isla-2][ilay-1][isec-1] = par[2];
-	      cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
-	      cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
-	    }
-          }
+	for(int row = 0; row < data.size(); row++)
+	{
+		isec   = data[row][0];
+		isla   = data[row][1];
+		ilay   = data[row][2];
+		istr   = data[row][3];
+		par[0] = data[row][4];
+		par[1] = data[row][5]*10.0;
+		par[2] = data[row][6];
+		
+		if (isla==2||isla==3)
+		{
+			ecc.attlen[0][istr-1][isla-2][ilay-1][isec-1] = par[0];
+			ecc.attlen[1][istr-1][isla-2][ilay-1][isec-1] = par[1];
+			ecc.attlen[2][istr-1][isla-2][ilay-1][isec-1] = par[2];
+//			cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
+//			cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
+		}
+	}
 	
 	return ecc;
 }
@@ -82,7 +86,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
-
+	
 	
 	// Get scintillator mother volume dimensions (mm)
 	double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
@@ -96,11 +100,11 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double Etota = 0;
 	double Ttota = 0;
 	double latt = 0;
-
+	
 	vector<G4double> Edep = aHit->GetEdep();
-
+	
 	double att;
-
+	
 	double A = ecc.attlen[0][sector-1][stack-1][view-1][strip-1];
 	double B = ecc.attlen[1][sector-1][stack-1][view-1][strip-1];
 	double C = ecc.attlen[2][sector-1][stack-1][view-1][strip-1];
@@ -134,9 +138,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (Etota > 0)
 	{
 		double EC_npe = G4Poisson(Etota*ecc.PE_yld); //number of photoelectrons
-		//  Fluctuations in PMT gain distributed using Gaussian with
-		//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-		//  algorithm, values, and comment above taken from gsim.
+																	//  Fluctuations in PMT gain distributed using Gaussian with
+																	//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
+																	//  algorithm, values, and comment above taken from gsim.
 		double sigma = sqrt(EC_npe)/1.22;
 		double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ADC_MeV_to_evio/ecc.PE_yld;
 		if (EC_MeV <= 0) EC_MeV = 0.0; // guard against weird, rare events.
@@ -154,7 +158,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = ADC;
 	dgtz["TDC"]    = TDC;
-		
+	
 	return dgtz;
 }
 
@@ -213,7 +217,7 @@ vector<identifier>  ec_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	if (view == 1)
 	{
 		strip = (int) floor((ylocal + pDy1)*ecc.NSTRIPS/(2*pDy1)) + 1;  // U view strip.
-		//cout << "view=" << view << " strip=" << strip << " xloc=" << xlocal << " yloc=" << ylocal << " pDy1: " << pDy1 << " floor:" << (ylocal + pDy1)*ecc.NSTRIPS/(2*pDy1) << " NS: " << ecc.NSTRIPS << endl;
+																							 //cout << "view=" << view << " strip=" << strip << " xloc=" << xlocal << " yloc=" << ylocal << " pDy1: " << pDy1 << " floor:" << (ylocal + pDy1)*ecc.NSTRIPS/(2*pDy1) << " NS: " << ecc.NSTRIPS << endl;
 	}
 	else if (view == 2)
 	{
@@ -224,7 +228,7 @@ vector<identifier>  ec_HitProcess :: processID(vector<identifier> id, G4Step* aS
 		double BG = abs(BGtop/BA); // maximum length of W view along a line perpendicular to the strips (height of the W view triangle).
 		
 		strip = (int) floor(BH*ecc.NSTRIPS/BG)+1 ; // W view strip.
-		//cout<<"view="<<view<<" strip="<<strip<<" xloc="<<xlocal<<" yloc="<<ylocal<<endl;
+																 //cout<<"view="<<view<<" strip="<<strip<<" xloc="<<xlocal<<" yloc="<<ylocal<<endl;
 	}
 	else if (view == 3)
 	{
@@ -235,7 +239,7 @@ vector<identifier>  ec_HitProcess :: processID(vector<identifier> id, G4Step* aS
 		double CD = abs(CDtop/BA);  // maximum length of V view along a line perpendicular to the strips (height of the V view triangle).
 		
 		strip = (int) floor(CF*ecc.NSTRIPS/CD)+1 ; // V view strip.
-		//cout<<"view="<<view<<" strip="<<strip<<" xloc="<<xlocal<<" yloc="<<ylocal<<endl;
+																 //cout<<"view="<<view<<" strip="<<strip<<" xloc="<<xlocal<<" yloc="<<ylocal<<endl;
 	}
 	else
 	{
@@ -264,7 +268,7 @@ map< string, vector <int> >  ec_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 
 // this static function will be loaded first thing by the executable
-ecConstants ec_HitProcess::ecc = initializeECConstants(2);
+ecConstants ec_HitProcess::ecc = initializeECConstants(-1);
 
 
 

@@ -14,6 +14,12 @@ using namespace ccdb;
 static pcConstants initializePCConstants(int runno)
 {
 	pcConstants pcc;
+	
+	// do not initialize at the beginning, only after the end of the first event,
+	// with the proper run number coming from options or run table
+	if(runno == -1) return pcc;
+	
+	
 	int isec,isla,ilay,istr;
 	double par[8];
 	
@@ -28,32 +34,32 @@ static pcConstants initializePCConstants(int runno)
 	pcc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
 	pcc.PE_yld              = 11.5 ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-
+	
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
-
-	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo); 
+	
+	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
 	vector<vector<double> > data; calib->GetCalib(data,pcc.database);
 	
-        for(int row = 0; row < data.size(); row++)
-	  {
-	    isec   = data[row][0];
-	    isla   = data[row][1];
-	    ilay   = data[row][2];
-	    istr   = data[row][3];
-	    par[0] = data[row][4];
-	    par[1] = data[row][5]*10.0;
-	    par[2] = data[row][6];
-	    
-	    if (isla==1)
-	    {
-	      pcc.attlen[0][istr-1][ilay-1][isec-1] = par[0];
-	      pcc.attlen[1][istr-1][ilay-1][isec-1] = par[1];
-	      pcc.attlen[2][istr-1][ilay-1][isec-1] = par[2];
-	      cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
-	      cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
-	    }
-          }
-
+	for(int row = 0; row < data.size(); row++)
+	{
+		isec   = data[row][0];
+		isla   = data[row][1];
+		ilay   = data[row][2];
+		istr   = data[row][3];
+		par[0] = data[row][4];
+		par[1] = data[row][5]*10.0;
+		par[2] = data[row][6];
+		
+		if (isla==1)
+		{
+			pcc.attlen[0][istr-1][ilay-1][isec-1] = par[0];
+			pcc.attlen[1][istr-1][ilay-1][isec-1] = par[1];
+			pcc.attlen[2][istr-1][ilay-1][isec-1] = par[2];
+//			cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
+//			cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
+		}
+	}
+	
 	return pcc;
 }
 
@@ -78,7 +84,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
-
+	
 	HCname = "PCAL Hit Process";
 	
 	// Get scintillator volume x dimension (mm)
@@ -96,11 +102,11 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	
 	double att;
-
+	
 	double A = pcc.attlen[0][sector-1][view-1][strip-1];
 	double B = pcc.attlen[1][sector-1][view-1][strip-1];
 	double C = pcc.attlen[2][sector-1][view-1][strip-1];
-
+	
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
@@ -129,9 +135,9 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (tInfos.eTot > 0)
 	{
 		double PC_npe = G4Poisson(Etota*pcc.PE_yld); //number of photoelectrons
-		//  Fluctuations in PMT gain distributed using Gaussian with
-		//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-		//  algorithm, values, and comment above taken from gsim.
+																	//  Fluctuations in PMT gain distributed using Gaussian with
+																	//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
+																	//  algorithm, values, and comment above taken from gsim.
 		double sigma = sqrt(PC_npe)/1.22;
 		double PC_MeV = G4RandGauss::shoot(PC_npe,sigma)*pcc.ADC_MeV_to_evio/pcc.PE_yld;
 		if (PC_MeV <= 0) PC_MeV=0.0; // guard against weird, rare events.
@@ -176,7 +182,7 @@ map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // this static function will be loaded first thing by the executable
-pcConstants pcal_HitProcess::pcc = initializePCConstants(2);
+pcConstants pcal_HitProcess::pcc = initializePCConstants(-1);
 
 
 

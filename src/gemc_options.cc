@@ -381,25 +381,25 @@ void goptions::setGoptions()
 	
 	optMap["MAX_X_POS"].arg  = 20000.;
 	optMap["MAX_X_POS"].help = "Max X Position in millimeters. Beyond this the track will be killed";
-	optMap["MAX_X_POS"].name = "Max X Position in millimeters. Beyond this the track will be killed";
+	optMap["MAX_X_POS"].name = "Max X Position in millimeters. Beyond this the track will be killed.";
 	optMap["MAX_X_POS"].type = 0;
 	optMap["MAX_X_POS"].ctgr = "control";
 	
 	optMap["MAX_Y_POS"].arg  = 20000.;
 	optMap["MAX_Y_POS"].help = "Max Y Position in millimeters. Beyond this the track will be killed";
-	optMap["MAX_Y_POS"].name = "Max Y Position in millimeters. Beyond this the track will be killed";
+	optMap["MAX_Y_POS"].name = "Max Y Position in millimeters. Beyond this the track will be killed.";
 	optMap["MAX_Y_POS"].type = 0;
 	optMap["MAX_Y_POS"].ctgr = "control";
 	
 	optMap["MAX_Z_POS"].arg  = 20000.;
 	optMap["MAX_Z_POS"].help = "Max Z Position in millimeters. Beyond this the track will be killed";
-	optMap["MAX_Z_POS"].name = "Max Z Position in millimeters. Beyond this the track will be killed";
+	optMap["MAX_Z_POS"].name = "Max Z Position in millimeters. Beyond this the track will be killed.";
 	optMap["MAX_Z_POS"].type = 0;
 	optMap["MAX_Z_POS"].ctgr = "control";
 	
 	optMap["DAWN_N"].arg = 0;
-	optMap["DAWN_N"].help = "Number of events to be displayed with the DAWN driver (also activate the DAWN driver).";
 	optMap["DAWN_N"].name = "Number of events to be displayed with the DAWN driver (also activate the DAWN driver)";
+	optMap["DAWN_N"].help = "Number of events to be displayed with the DAWN driver (also activate the DAWN driver).";
 	optMap["DAWN_N"].type = 0;
 	optMap["DAWN_N"].ctgr = "control";
 	
@@ -413,7 +413,7 @@ void goptions::setGoptions()
 	optMap["HIT_PROCESS_LIST"].ctgr = "control";
 	
 	optMap["SAVE_ALL_MOTHERS"].arg = 0;
-	optMap["SAVE_ALL_MOTHERS"].name = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage. Default is 0";
+	optMap["SAVE_ALL_MOTHERS"].name = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage";
 	optMap["SAVE_ALL_MOTHERS"].help = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage. Default is 0.\n";
 	optMap["SAVE_ALL_MOTHERS"].type = 0;
 	optMap["SAVE_ALL_MOTHERS"].ctgr = "control";
@@ -425,20 +425,20 @@ void goptions::setGoptions()
 	optMap["HIGH_RES"].ctgr = "control";
 	
 	optMap["RECORD_PASSBY"].arg = 0;
-	optMap["RECORD_PASSBY"].name = "Set to one if you want to save zero energy hits in the output. Default is 0.";
+	optMap["RECORD_PASSBY"].name = "Set to one if you want to save zero energy hits in the output";
 	optMap["RECORD_PASSBY"].help = "Set to one if you want to save zero energy hits in the output. Default is 0.\n";
 	optMap["RECORD_PASSBY"].type = 0;
 	optMap["RECORD_PASSBY"].ctgr = "control";
 	
 	optMap["RECORD_MIRRORS"].arg = 0;
-	optMap["RECORD_MIRRORS"].name = "Set to one if you want to save mirror hits in the output. Default is 0.";
+	optMap["RECORD_MIRRORS"].name = "Set to one if you want to save mirror hits in the output";
 	optMap["RECORD_MIRRORS"].help = "Set to one if you want to save mirror hits in the output. Default is 0.\n";
 	optMap["RECORD_MIRRORS"].type = 0;
 	optMap["RECORD_MIRRORS"].ctgr = "control";
 	
 	optMap["RUNNO"].arg  = 1;
-	optMap["RUNNO"].name = "Run Number. Controls the geometry and calibration parameters.";
-	optMap["RUNNO"].help = "Run Number. Controls the geometry and calibration parameters.\n";
+	optMap["RUNNO"].name = "Run Number. Controls the geometry and calibration parameters";
+	optMap["RUNNO"].help = "Run Number. Controls the geometry and calibration parameters. Default is 1\n";
 	optMap["RUNNO"].type = 0;
 	optMap["RUNNO"].ctgr = "control";
 	

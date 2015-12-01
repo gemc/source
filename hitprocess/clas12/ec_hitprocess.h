@@ -12,7 +12,7 @@ class ecConstants
 		// runNo is mandatory variable to keep track of run number changes
 		int runNo;
 		string variation;
-	        string date;
+		string date;
 		string connection;
 		char   database[80];
 		

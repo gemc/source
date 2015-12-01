@@ -5,6 +5,9 @@ Changelog for GEMC
 - fixed beam log
 - do not init hit process routines at start, waiting until end of first event
 - text materials are now backward compatible
+- merged ec and pcal hit process from Cole Smith. Instantiation of those constants class with -1.
+- commented out screen log (will need a verbosity mechanism though)
+- RUNNO -help shows default of 1
 
 11/25/15
 - fixed replicas routines.
