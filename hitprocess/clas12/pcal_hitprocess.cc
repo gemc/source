@@ -3,19 +3,57 @@
 #include "Randomize.hh"
 #include <math.h>
 
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
 // gemc headers
 #include "pcal_hitprocess.h"
 
 static pcConstants initializePCConstants(int runno)
 {
 	pcConstants pcc;
-	pcc.runNo = 0;
+	int isec,isla,ilay,istr;
+	double par[8];
 	
-	pcc.attlen              = 3760.;  // Attenuation Length (mm)
+	// database
+	pcc.runNo      = runno;
+	pcc.date       = "2015-11-29";
+	pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	pcc.variation  = "default";
+	
+	pcc.attl                = 3760.;  // Attenuation Length (mm)
 	pcc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
 	pcc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
 	pcc.PE_yld              = 11.5 ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
+
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
+
+	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo); 
+	vector<vector<double> > data; calib->GetCalib(data,pcc.database);
+	
+        for(int row = 0; row < data.size(); row++)
+	  {
+	    isec   = data[row][0];
+	    isla   = data[row][1];
+	    ilay   = data[row][2];
+	    istr   = data[row][3];
+	    par[0] = data[row][4];
+	    par[1] = data[row][5]*10.0;
+	    par[2] = data[row][6];
+	    
+	    if (isla==1)
+	    {
+	      pcc.attlen[0][istr-1][ilay-1][isec-1] = par[0];
+	      pcc.attlen[1][istr-1][ilay-1][isec-1] = par[1];
+	      pcc.attlen[2][istr-1][ilay-1][isec-1] = par[2];
+	      cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
+	      cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
+	    }
+          }
+
 	return pcc;
 }
 
@@ -34,7 +72,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
-	// get sector, stack (inner or outer), view (U, V, W), and strip.
+	// get sector, view (U, V, W), and strip.
 	int sector = identity[0].id;
 	int module = identity[1].id;
 	int view   = identity[2].id;
@@ -53,19 +91,28 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double Etota = 0;
 	double Ttota = 0;
 	double latt = 0;
+	
 	vector<G4double> Edep = aHit->GetEdep();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	
+	double att;
+
+	double A = pcc.attlen[0][sector-1][view-1][strip-1];
+	double B = pcc.attlen[1][sector-1][view-1][strip-1];
+	double C = pcc.attlen[2][sector-1][view-1][strip-1];
+
+	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
-		if(pcc.attlen>0)
+		if(B>0)
 		{
 			double xlocal = Lpos[s].x();
 			if(view==1) latt=pDx2+xlocal;
 			if(view==2) latt=pDx2+xlocal;
 			if(view==3) latt=pDx2+xlocal;
 			//cout<<"xlocal="<<xlocal<<" ylocal="<<ylocal<<" view="<<view<<" strip="<<strip<<" latt="<<latt<<endl;
-			Etota = Etota + Edep[s]*exp(-latt/pcc.attlen);
+			att   = A*exp(-latt/B)+C;
+			Etota = Etota + Edep[s]*att;
 			Ttota = Ttota + latt/pcc.veff;
 		}
 		else
@@ -129,7 +176,7 @@ map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // this static function will be loaded first thing by the executable
-pcConstants pcal_HitProcess::pcc = initializePCConstants(1);
+pcConstants pcal_HitProcess::pcc = initializePCConstants(2);
 
 
 
