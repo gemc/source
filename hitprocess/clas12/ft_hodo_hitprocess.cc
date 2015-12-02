@@ -9,6 +9,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	trueInfos tInfos(aHit);
 	
 	// use Crystal ID to define IDX and IDY
 	int ID    = identity[0].id;
@@ -17,6 +18,13 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// initialize ADC and TDC
 	int ADC = 0;
 	int TDC = 8191;
+
+	if(tInfos.eTot>0)
+	{
+	  ADC = (int) (tInfos.eTot*100);
+	  TDC = (int) (tInfos.time *100);
+	}
+	  
 	
 	dgtz["hitn"]  = hitn;
 	dgtz["id"]    = ID;

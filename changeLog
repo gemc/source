@@ -1,5 +1,9 @@
 Changelog for GEMC
 
+12/2/15
+- added reference in the code to cosmic model
+- added ADC e TDC in ft_hodo
+
 11/30/15
 - init run number with option map by default
 - fixed beam log

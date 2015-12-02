@@ -186,6 +186,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				cout << endl;
 			}
 		}
+		// cosmic model
+		// paper: A. Dar, Phys.Rev.Lett, 51,3,p.227 (1983)
 		else
 		{
 			// first randomly pick a number inside the sphere
