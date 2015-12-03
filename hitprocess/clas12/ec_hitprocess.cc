@@ -105,9 +105,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double att;
 	
-	double A = ecc.attlen[0][sector-1][stack-1][view-1][strip-1];
-	double B = ecc.attlen[1][sector-1][stack-1][view-1][strip-1];
-	double C = ecc.attlen[2][sector-1][stack-1][view-1][strip-1];
+	double A = ecc.attlen[0][strip-1][stack-1][view-1][sector-1];
+	double B = ecc.attlen[1][strip-1][stack-1][view-1][sector-1];
+	double C = ecc.attlen[2][strip-1][stack-1][view-1][sector-1];
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
