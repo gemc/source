@@ -5,6 +5,15 @@
 #include <cmath>
 #include <cstdlib>
 
+// Veronique Ziegler (Dec. 3 2015)
+
+// a method to load the geometry
+// this is a temporary solution
+// this method is loaded for every hit at this stage and slows down the code execution.
+// TODO: load the geometry once at the beginning of run time...
+
+// Note: this method only contains the constants for the third micromegas region,
+// the constants for the other 2 are missing...
 void bmt_strip::fill_infos()
 {
  // all dimensions are in mm
@@ -110,23 +119,23 @@ void bmt_strip::fill_infos()
     }
 
 }
-
+// the routine to find the strip
 vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, double z, double Edep)
 {
 
 	double w_i = 25; //ionization potential assumed to be 25 eV
-	int Nel = (int) (1e6*Edep/w_i);
+	int Nel = (int) (1e6*Edep/w_i); // the number of electrons produced
 
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
 	int strip = -1;
-	if(Nel>0)
+	if(Nel>0) // if the track deposited energy is greater than the assumed ionization potential digitize
 	{
-		for(int iel=0;iel<Nel;iel++)
+		for(int iel=0;iel<Nel;iel++)  // at this stage the same algorithm requiring looping over all e-'s is kept (slow...)
 		{
 			int num_region = (int) (layer+1)/2 - 1; 	// region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6;
-
+			// start the loop and get the strip number from the layer, z and phi hit information
 			double sigma =0;
 			if(layer%2==0)
 			{// C layer
@@ -135,9 +144,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
 				if(z>=z_i && z<=z_f)
 				{
-					sigma = getSigmaLongit(layer, x, y); //  longitudinal diffusion
+					sigma = getSigmaLongit(layer, x, y); 					//  longitudinal diffusion
 
-					double z_d = (double) (G4RandGauss::shoot(z,sigma));
+					double z_d = (double) (G4RandGauss::shoot(z,sigma));	//  shower profile in z generated using a gaussian distribution with width=sigma
 
 					strip = getCStrip(layer, z_d);
 				}
@@ -150,13 +159,14 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 				double Delta_rad = sqrt(x*x+y*y)-CRZRADIUS[num_region]+hStrip2Det;
 
 				double phi = atan2(y,x);
+				//shower profile in phi generated
 				double phi_d = phi + ((G4RandGauss::shoot(0,sigma))/cos(ThetaL)-Delta_rad*tan(ThetaL))/CRZRADIUS[num_region];
 
 				strip = getZStrip(layer, phi_d);
 			}
-
+			// if the strip is found (i.e. the hit is within acceptance
 			if(strip != -1)
-			{
+			{	// search the existing strip array to see if this strip is already stored, if yes, add contributing energy
 				for(int istrip=0;istrip< (int) (strip_id.size()/2);istrip++)
 				{
 					if(strip_id[2*istrip]==strip)
@@ -165,7 +175,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 						strip = -1; // not to use it anymore
 					}
 				}
-				if(strip > -1) { // new strip
+				if(strip > -1) { // new strip, add it
 					strip_id.push_back(strip);
 					strip_id.push_back(1./((double) Nel)); // no gain fluctuation yet
 				}
@@ -185,17 +195,17 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, double x, double y, d
 
     return strip_id;
 }
+// rad to deg conversion
 double bmt_strip::toRadians(double angleDegrees) {
 	return Pi*angleDegrees/180.;
 }
 
-/**
- *
- * param layer
- * param x x-coordinate of the hit in the lab frame
- * param y y-coordinate of the hit in the lab frame
- * return the sigma along the beam direction (longitudinal)
- */
+//
+// param layer
+// param x x-coordinate of the hit in the lab frame
+// param y y-coordinate of the hit in the lab frame
+// return the sigma along the beam direction (longitudinal)
+//
 double bmt_strip::getSigmaLongit(int layer, double x, double y)
 { // sigma for C-detector
 
@@ -205,13 +215,12 @@ double bmt_strip::getSigmaLongit(int layer, double x, double y)
 	return sigma;
 }
 
-/**
- *
- * param layer
- * param x x-coordinate of the hit in the lab frame
- * param y y-coordinate of the hit in the lab frame
- * return the sigma along in the azimuth direction taking the Lorentz angle into account
- */
+//
+// param layer
+// param x x-coordinate of the hit in the lab frame
+// param y y-coordinate of the hit in the lab frame
+// return the sigma along in the azimuth direction taking the Lorentz angle into account
+//
 double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 { // sigma for Z-detectors
 
@@ -222,12 +231,11 @@ double bmt_strip::getSigmaAzimuth(int layer, double x, double y)
 
 }
 
-/**
- *
- * param layer the layer 1...6
- * param angle the position angle of the hit in the Z detector
- * return the Z strip as a function of azimuthal angle
- */
+//
+// param layer the layer 1...6
+// param angle the position angle of the hit in the Z detector
+// return the Z strip as a function of azimuthal angle
+//
 int bmt_strip::getZStrip(int layer, double angle)
 {
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
@@ -254,13 +262,12 @@ int bmt_strip::getZStrip(int layer, double angle)
 
 	return value;
 }
-/**
- *
- * param sector
- * param layer
- * param trk_z the track z position of intersection with the C-detector
- * return the C-strip
- */
+//
+// param sector
+// param layer
+// param trk_z the track z position of intersection with the C-detector
+// return the C-strip
+//
 int bmt_strip::getCStrip(int layer, double trk_z) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
@@ -297,11 +304,11 @@ int bmt_strip::getCStrip(int layer, double trk_z) {
 }
 
 
-/**
- * param layer the hit layer
- * param strip the hit strip
- * return the z position in mm for the C-detectors
- */
+//
+// param layer the hit layer
+// param strip the hit strip
+// return the z position in mm for the C-detectors
+//
 double bmt_strip::CRCStrip_GetZ(int layer, int strip)
 {
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
@@ -327,13 +334,12 @@ double bmt_strip::CRCStrip_GetZ(int layer, int strip)
 
 	return zc; //in mm
 }
-/**
-*
-* param sector the sector in CLAS12 1...3
-* param layer the layer 1...6
-* param strip the strip number (starts at 1)
-* return the angle to localize the  center of strip
-*/
+//
+// param sector the sector in CLAS12 1...3
+// param layer the layer 1...6
+// param strip the strip number (starts at 1)
+// return the angle to localize the  center of strip
+//
 double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 	// Sector = num_detector + 1;
 	// num_detector = 0 (region A), 1 (region B), 2, (region C)
@@ -347,6 +353,7 @@ double bmt_strip::CRZStrip_GetPhi(int sector, int layer, int strip){
 	return angle; //in rad
 }
 
+// not used (implemented for alternate algorithm not yet fully developed)
 double bmt_strip::getEnergyFraction(double z0, double z, double sigma){
 	double pdf_gaussian = (1./(sigma*sqrt(2*Pi)))* exp( -0.5*((z-z0)/sigma)*((z-z0)/sigma) );
 	return pdf_gaussian;
@@ -366,6 +373,7 @@ int bmt_strip::getDetectorIndex(int sector) {
 	return DetIdx;
 }
 
+// not used yet (implemented for alternate algorithm not yet fully developed)
 int bmt_strip::isInSector(int layer, double angle) {
 
 	int num_region = (int) (layer+1)/2 - 1; // region index (0...2) 0=layers 1&2, 1=layers 3&4, 2=layers 5&6
