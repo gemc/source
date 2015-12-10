@@ -103,9 +103,9 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double att;
 	
-	double A = pcc.attlen[0][sector-1][view-1][strip-1];
-	double B = pcc.attlen[1][sector-1][view-1][strip-1];
-	double C = pcc.attlen[2][sector-1][view-1][strip-1];
+	double A = pcc.attlen[0][strip-1][view-1][sector-1];
+	double B = pcc.attlen[1][strip-1][view-1][sector-1];
+	double C = pcc.attlen[2][strip-1][view-1][sector-1];
 	
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
