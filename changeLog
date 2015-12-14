@@ -1,5 +1,14 @@
 Changelog for GEMC
 
+12/14/15
+- fixed typo in description of INTEGRATEDDGT option
+- Luminosity particle properties are now the same for every particle in the beam bunch.
+  This apparently is more efficient for geant4.
+
+12/8/15
+- fixed warning in ec and pcal digitization
+- better log for material warning
+
 12/2/15
 - added reference in the code to cosmic model
 - added ADC e TDC in ft_hodo

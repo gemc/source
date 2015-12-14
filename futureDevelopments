@@ -22,7 +22,6 @@ Code Improvements:
   check performance hit
 - speed up the search for same identifier start with 
 - add generic "system" that contains a list detectors, sensitive det, materials?
-- add cosmic_beam option
 - optimize eventaction - too many vector<hitOutput> definitions? Can they br grouped?
 - add DEBUG ifdefs for debugging part of code
 - general color map to be used by geant4 / gui , maybe part of options?
@@ -33,6 +32,9 @@ Code Improvements:
 - get screen resolution and adjust gui dimensions to that
 - match detector types to geant4
 - make mysql material factory back-ward compatible
+- add /tracking/storeTrajectory 4 button
+- add track verbosity output
+- add options for particles color
 
 Add production cut verbosity?
 

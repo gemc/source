@@ -783,7 +783,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	{
 		if(defmat == "none")
 		{
-			cout << hd_msg << " Warning: " << material << " is not defined. Exiting" << endl;
+			cout << hd_msg << " Warning: material >" << material << "< is not defined. Exiting" << endl;
 			cout << hd_msg << " You can set the DEFAULT_MATERIAL flag to replace an undefined material. " << endl;
 			exit(0);
 		}

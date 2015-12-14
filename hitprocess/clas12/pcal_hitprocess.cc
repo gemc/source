@@ -40,7 +40,7 @@ static pcConstants initializePCConstants(int runno)
 	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
 	vector<vector<double> > data; calib->GetCalib(data,pcc.database);
 	
-	for(int row = 0; row < data.size(); row++)
+	for(unsigned row = 0; row < data.size(); row++)
 	{
 		isec   = data[row][0];
 		isla   = data[row][1];

@@ -40,7 +40,7 @@ static ecConstants initializeECConstants(int runno)
 	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo);
 	vector<vector<double> > data; calib->GetCalib(data,ecc.database);
 	
-	for(int row = 0; row < data.size(); row++)
+	for(unsigned row = 0; row < data.size(); row++)
 	{
 		isec   = data[row][0];
 		isla   = data[row][1];

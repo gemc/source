@@ -256,9 +256,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			
 		}
-		
-		
-		
 	}
 	else
 	// external generator: input file
@@ -455,37 +452,53 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	
 	particleGun->SetParticleDefinition(L_Particle);
 	double L_mass = L_Particle->GetPDGMass();
+	double L_Mom   = L_mom/MeV   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
+	double L_Theta = L_theta/rad + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
+	double L_Phi   = L_phi/rad   + (2.0*G4UniformRand()-1.0)*L_dphi/rad;
+	double L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
 
+	// luminosity vertex
+	double L_VR  = G4UniformRand()*L_dvr/mm;
+	double L_PHI = 2.0*pi*G4UniformRand();
+	G4ThreeVector L_beam_vrt(L_vx, L_vy, L_vz);
+	L_vx = L_beam_vrt.x()/mm + L_VR*cos(L_PHI);
+	L_vy = L_beam_vrt.y()/mm + L_VR*sin(L_PHI);
+	L_vz = L_beam_vrt.z()/mm + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
+
+	
 	for(int b=0; b<NBUNCHES; b++)
 	{
-		for(int p=0; p<PBUNCH; p++)
+		//	for(int p=0; p<PBUNCH; p++)
 		{
 			
-			// luminosity momentum
-			double L_Mom   = L_mom/MeV   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
-			double L_Theta = L_theta/rad + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
-			double L_Phi   = L_phi/rad   + (2.0*G4UniformRand()-1.0)*L_dphi/rad;
+			// spread momentum if needed
+			if(L_dmom > 0)
+			{
+				L_Mom   = L_mom   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
+				L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
+				L_Phi   = L_phi   + (2.0*G4UniformRand()-1.0)*L_dphi/rad;
+				L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
+			}
 			
-			double L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
+			if(L_dvz > 0)
+			{
+				L_vz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
+			}
+			
 			particleGun->SetParticleEnergy(L_akine);
-
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L_Phi/rad)*sin(L_Theta/rad), sin(L_Phi/rad)*sin(L_Theta/rad), cos(L_Theta/rad)));
 
 			
-			// luminosity vertex
-			double L_VR  = G4UniformRand()*L_dvr/mm;
-			double L_PHI = 2.0*pi*G4UniformRand();
-			G4ThreeVector L_beam_vrt(L_vx, L_vy, L_vz);
-			L_vx = L_beam_vrt.x()/mm + L_VR*cos(L_PHI);
-			L_vy = L_beam_vrt.y()/mm + L_VR*sin(L_PHI);
-			L_vz = L_beam_vrt.z()/mm + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
 			G4ThreeVector LUMI_V(L_vx, L_vy, L_vz);
 			particleGun->SetParticlePosition(LUMI_V);
+			
 			particleGun->  SetParticleTime(TBUNCH*b);
 			particleGun->GeneratePrimaryVertex(anEvent);
+			particleGun->SetNumberOfParticles(PBUNCH);
 			
-			if(GEN_VERBOSITY > 5)
-				cout << " Bunch " << b << "  particle no. " << p << endl;
+			
+//			if(GEN_VERBOSITY > 5)
+//				cout << " Bunch " << b << "  particle no. " << p << endl;
 
 		}
 	}
