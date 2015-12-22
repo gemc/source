@@ -10,12 +10,9 @@ map<string, double> bubble_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
-	// true information
-	// for example tInfos.eTot is total energy deposited
-	trueInfos tInfos(aHit);
 	
 	dgtz["detId"]   = identity[0].id;;
-	dgtz["totEDep"] = tInfos.eTot;
+	dgtz["totEDep"] = aHit->GetE();
 	dgtz["pid"]     = aHit->GetPID();
 	dgtz["hitn"]    = hitn;
 	
