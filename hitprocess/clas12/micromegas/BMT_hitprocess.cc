@@ -18,19 +18,20 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int layer  = identity[0].id;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
-	
+	trueInfos tInfos(aHit);
+
 	if(verbosity>4)
 	{
 		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
-	
+
 	dgtz["hitn"]   = hitn;
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
-	
+	dgtz["Edep"] = tInfos.eTot;
 	return dgtz;
 }
 
@@ -55,7 +56,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	//yid[3].id = bmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = bmts.FindStrip(layer-1, sector-1, x, y, z, depe);
+	vector<double> multi_hit = bmts.FindStrip(layer, sector, x, y, z, depe);
 	
 	int n_multi_hits = multi_hit.size()/2;
 	
