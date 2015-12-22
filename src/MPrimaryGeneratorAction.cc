@@ -82,9 +82,9 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		cout << endl;
 		cout << hd_msg << " Luminosity Particle Direction: (theta, phi) = (" << L_theta/deg << ", " << L_phi/deg << ") deg" ;
 		if(L_dtheta > 0 || L_dphi > 0) cout << " +- (" << L_dtheta/deg << ", " << L_dphi/deg << ") deg" ;
-		cout << hd_msg << " Luminosity Particle Vertex: (" << L_vx/cm << ", " << L_vy/cm << ", " << L_vz/cm << ") cm" ;
+		cout << endl << hd_msg << " Luminosity Particle Vertex: (" << L_vx/cm << ", " << L_vy/cm << ", " << L_vz/cm << ") cm" ;
 		if(L_dvr + L_dvz > 0) cout << " (radius, z-spread) = (" << L_dvr/cm << ", " << L_dvz/cm << ")" ;
-		cout << hd_msg << " Number of Luminosity Particles: " << NP << endl;
+		cout << endl << hd_msg << " Number of Luminosity Particles: " << NP << endl;
 		cout << hd_msg << " Luminosity Time Window: " << TWINDOW/ns << " nanoseconds." << endl ;
 		cout << hd_msg << " Luminosity Time Between Bunches: " << TBUNCH/ns << " nanoseconds." << endl;
 	}
@@ -97,9 +97,9 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		cout << endl;
 		cout << hd_msg << " Luminosity Particle 2 Direction: (theta, phi) = (" << L2_theta/deg << ", " << L2_phi/deg << ") deg" ;
 		if(L2_dtheta > 0 || L2_dphi > 0) cout << " +- (" << L2_dtheta/deg << ", " << L2_dphi/deg << ") deg" ;
-		cout << hd_msg << " Luminosity Particle Vertex: (" << L2_vx/cm << ", " << L2_vy/cm << ", " << L2_vz/cm << ") cm" ;
+		cout << endl << hd_msg << " Luminosity Particle Vertex: (" << L2_vx/cm << ", " << L2_vy/cm << ", " << L2_vz/cm << ") cm" ;
 		if(L2_dvr + L2_dvz > 0) cout << " (radius, z-spread) = (" << L2_dvr/cm << ", " << L2_dvz/cm << ") cm" ;
-		cout << hd_msg << " Number of Luminosity Particles 2: " << NP2 << endl;
+		cout << endl << hd_msg << " Number of Luminosity Particles 2: " << NP2 << endl;
 		cout << hd_msg << " Luminosity Time Between Bunches: " << TBUNCH2/ns << " nanoseconds." << endl;
 	}
 	

@@ -127,8 +127,8 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ring"]   = idring;
 	dgtz["half"]   = idhalf;
 	dgtz["nphe"]   = ndetected;
-	dgtz["hitn"]   = hitn;
 	dgtz["time"]   = tInfos.time;
+	dgtz["hitn"]   = hitn;
 
 	return dgtz;
 }

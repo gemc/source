@@ -1,9 +1,15 @@
 Changelog for GEMC
 
+12/22/15
+- added injector bubble hit process routine
+- better log output for luminosity option
+
 12/14/15
 - fixed typo in description of INTEGRATEDDGT option
 - Luminosity particle properties are now the same for every particle in the beam bunch.
-  This apparently is more efficient for geant4.
+  This apparently is more efficient for geant4. It also speeds up the simulation
+  considerably and seems to prevents code hangs.
+- fixed log on luminosity particles
 
 12/8/15
 - fixed warning in ec and pcal digitization

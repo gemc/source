@@ -29,6 +29,8 @@
 #include "HPS/SVT_hitprocess.h"        ///< Silicon Vertex Trackers.
 #include "HPS/muon_hodo_hitprocess.h"  ///< HPS Muon Hodoscopes
 
+// Cebaf
+#include "injector/bubble_hitprocess.h"       ///< Calorimeter Crystals
 
 
 map<string, HitProcess_Factory> HitProcess_Map(string experiments)
@@ -92,6 +94,11 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["cormo"]      = &cormo_HitProcess::createHitClass;
 			hitMap["veto"]       = &veto_HitProcess::createHitClass;
 		}
+		else if( EXP == "injector" )
+		{
+			hitMap["bubble"]     = &bubble_HitProcess::createHitClass;
+		}
+		
 	}
 	
 	cout << endl;
