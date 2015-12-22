@@ -11,10 +11,10 @@ map<string, double> bubble_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<identifier> identity = aHit->GetId();
 	
 	
-	dgtz["detId"]   = identity[0].id;;
-	dgtz["totEDep"] = aHit->GetE();
-	dgtz["pid"]     = aHit->GetPID();
-	dgtz["hitn"]    = hitn;
+	dgtz["detId"] = identity[0].id;;
+	dgtz["kinE"]  = aHit->GetE();
+	dgtz["pid"]   = aHit->GetPID();
+	dgtz["hitn"]  = hitn;
 	
 	return dgtz;
 }
