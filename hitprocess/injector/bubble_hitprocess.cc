@@ -9,11 +9,14 @@ map<string, double> bubble_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	int thisPid = aHit->GetPID();
+	double totEnergy = aHit->GetE();
 	
-	
-	dgtz["detId"] = identity[0].id;;
-	dgtz["kinE"]  = aHit->GetE();
-	dgtz["pid"]   = aHit->GetPID();
+	if(thisPid == 11 || thisPid == -11) totEnergy -= electron_mass_c2;
+
+	dgtz["detId"] = identity[0].id;
+	dgtz["kinE"]  = totEnergy;
+	dgtz["pid"]   = thisPid;
 	dgtz["hitn"]  = hitn;
 	
 	return dgtz;
