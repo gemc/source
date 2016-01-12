@@ -25,7 +25,8 @@ static ftofConstants initializeFTOFConstants(int runno)
 	// database
 	ftc.runNo = runno;
 	ftc.date       = "2015-11-15";
-	ftc.connection = "mysql://clas12writer:geom3try@clasdb.jlab.org/clas12";
+	ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
 	ftc.variation  = "main";
 
 	// temporary reading attenuations, these are dummy numbers and don't set the values yet

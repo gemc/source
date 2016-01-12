@@ -1,5 +1,8 @@
 Changelog for GEMC
 
+1/12/16
+- changed ftot ccdb connection to reader instead of writer
+
 12/22/15
 - added injector bubble hit process routine
 - better log output for luminosity option
