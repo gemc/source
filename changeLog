@@ -1,5 +1,9 @@
 Changelog for GEMC
 
+1/22/16
+- forcing all volumes to be solids when doing slices. This seems to solve all slice-related problems, probably
+  due to a mix of wireframe / solid volumes.
+
 1/12/16
 - changed ftot ccdb connection to reader instead of writer
 

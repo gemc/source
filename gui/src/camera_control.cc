@@ -282,9 +282,11 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 
 void camera_control::slice()
 {
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
+	// can't have a mix of wireframe / solid when doing a slice.
+	// forcing all to be solid
+	UImanager->ApplyCommand("/vis/geometry/set/forceSolid all -1 1");
+
+	
 	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
 
 	UImanager->ApplyCommand("/vis/viewer/set/cutawayMode intersection");
@@ -316,14 +318,7 @@ void camera_control::slice()
 
 void camera_control::clearSlice()
 {
-	// making sure it catches all planes, I thought
-	// one command would be enough for all
 	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	
-	
 	
 	sliceXActi->setChecked(false);
 	sliceYActi->setChecked(false);
