@@ -324,10 +324,8 @@ void goptions::setGoptions()
 	optMap["USE_GUI"].arg   = 1;
 	optMap["USE_GUI"].help  = " GUI switch\n";
 	optMap["USE_GUI"].help += "      0.  Don't use the graphical interface\n";
-	optMap["USE_GUI"].help += "      1.  Qt GUI Interface. \n";
-	optMap["USE_GUI"].help += "      2.  OpenGL Stored mode (can't interact with picture; sliders works well)\n";
-	optMap["USE_GUI"].help += "      3.  OpenGL Immediate mode (can't interact with picture; sliders works well; slower than Stored mode)\n";
-	optMap["USE_GUI"].help += "      4.  QT OpenGL Stored mode (can interact with picture; sliders works but picture needs to be updated by clicking on it)\n";
+	optMap["USE_GUI"].help += "      1.  OGLSQt (OGL, OGLS, OGLSQt)\n";
+	optMap["USE_GUI"].help += "      2.  OGLIQt (OGLI, OGLIQt) \n";
 	optMap["USE_GUI"].name  = "QT Gui";
 	optMap["USE_GUI"].type  = 0;
 	optMap["USE_GUI"].ctgr  = "control";

@@ -7,7 +7,8 @@ New features:
 - multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
-- JAVA API
+- add to gdml button
+- add to vrml button
 
 
 Code Improvements:

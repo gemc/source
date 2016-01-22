@@ -111,10 +111,10 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		
 	// OpenGL immediate mode
 	if(use_gui==1)
-		commands.push_back("/vis/open OGLS " + gemcOpt.optMap["geometry"].args + newpos);
+		commands.push_back("/vis/open OGLSQt " + gemcOpt.optMap["geometry"].args + newpos);
 	// openGL stored mode
 	else if(use_gui==2)
-		commands.push_back("/vis/open OGLI "   + gemcOpt.optMap["geometry"].args + newpos);
+		commands.push_back("/vis/open OGLIQt " + gemcOpt.optMap["geometry"].args + newpos);
 	
  	commands.push_back("/vis/viewer/set/autoRefresh 1");
 		
