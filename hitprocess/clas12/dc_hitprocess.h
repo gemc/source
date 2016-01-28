@@ -4,6 +4,10 @@
 // gemc headers
 #include "HitProcess.h"
 
+// constants to be used in the digitization routine
+// warning: since NWIRES and ministagger are also used by processID, the plugin loading
+// has to happen before the first event is processed. In other words,
+// initializeDCConstants(1) - or remove the 	if(runno == -1) return dcc;
 class dcConstants
 {
 	public:

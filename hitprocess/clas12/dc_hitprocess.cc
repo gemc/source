@@ -67,19 +67,17 @@ static dcConstants initializeDCConstants(int runno)
 
 map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
+	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
-	int sector   = identity[0].id;
-	int SL       = identity[1].id;
-	int LayerI   = identity[2].id - 1; // layer index
-	int nwire    = identity[3].id;
-	
+	int SLI   = identity[1].id - 1;
+	int nwire = identity[3].id;
 	
 	// nwire position information
-	double ylength =  aHit->GetDetector().dimensions[3];       ///< G4Trap Semilength
-	double deltay  = 2.0*ylength/dcc.NWIRES;                   ///< Y length of cell
-	double WIRE_Y  = nwire*deltay + dcc.miniStagger[LayerI];   ///< Center of wire hit
+	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semilength
+	double deltay  = 2.0*ylength/dcc.NWIRES;                ///< Y length of cell
+	double WIRE_Y  = nwire*deltay + dcc.miniStagger[SLI];   ///< Center of wire hit
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
 	vector<double>        stepTime    = aHit->GetTime();
@@ -99,8 +97,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
-		signal_t = stepTime[s]/ns + DOCA.mag()/dcc.driftVelocity[LayerI];
-		
+		signal_t = stepTime[s]/ns + DOCA.mag()/dcc.driftVelocity[SLI];
+
 		// threshold hardcoded, please get from parameters
 		if(signal_t < minTime)
 		{
@@ -140,7 +138,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// distance-dependent efficiency as a function of doca
 	
-	double X = (doca/cm) / (2*dcc.dLayer[SL-1]);
+	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 	double ddEff = dcc.P1/pow(X*X + dcc.P2, 2) + dcc.P3/pow( (1-X) + dcc.P4, 2);
 	double random = G4UniformRand();
 
@@ -149,15 +147,15 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
-	dgtz["sector"]     = sector;
-	dgtz["superlayer"] = SL;
-	dgtz["layer"]      = LayerI+1;
+	dgtz["sector"]     = identity[0].id;
+	dgtz["superlayer"] = SLI+1;
+	dgtz["layer"]      = identity[2].id;
 	dgtz["wire"]       = nwire;
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
-	dgtz["time"]       =  doca/dcc.driftVelocity[LayerI];
-	dgtz["stime"]      = sdoca/dcc.driftVelocity[LayerI];
+	dgtz["time"]       =  doca/dcc.driftVelocity[SLI];
+	dgtz["stime"]      = sdoca/dcc.driftVelocity[SLI];
 	dgtz["fired"]      = fired;
 	
 	return dgtz;
@@ -167,7 +165,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
 	vector<identifier> yid = id;
-	int Layer = yid[2].id;
+	int SLI = yid[1].id - 1;
 	
 	G4StepPoint   *prestep   = aStep->GetPreStepPoint();
 	G4StepPoint   *poststep  = aStep->GetPostStepPoint();
@@ -179,7 +177,7 @@ vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	
 	double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;
-	double loc_y   = Lxyz.y() + ylength - dcc.miniStagger[Layer-1];    ///< Distance from bottom of G4Trap - modified by ministaggger
+	double loc_y   = Lxyz.y() + ylength - dcc.miniStagger[SLI];    ///< Distance from bottom of G4Trap - modified by ministaggger
 	
 	int nwire = (int) floor(loc_y/deltay);
 	
@@ -219,7 +217,7 @@ map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // this static function will be loaded first thing by the executable
-dcConstants dc_HitProcess::dcc = initializeDCConstants(-1);
+dcConstants dc_HitProcess::dcc = initializeDCConstants(1);
 
 
 
