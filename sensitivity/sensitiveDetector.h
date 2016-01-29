@@ -69,6 +69,9 @@ class sensitiveDetector : public G4VSensitiveDetector
 		string GetDetectorHitType(string name)                {return (*hallMap)[name].hitType;}  ///< returns detector hitType
 		MHitCollection* GetMHitCollection()                   {if(hitCollection) return hitCollection; else return NULL;}              ///< returns hit collection
 		MHit* find_existing_hit(vector<identifier>);                                               ///< returns hit collection hit inside identifer
+
+
+	int processID(string procName);        // return an ID
 };
 
 
