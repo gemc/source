@@ -9,6 +9,7 @@
 
 // gemc headers
 #include "HitProcess.h"
+#include "bmt_strip.h"
 
 // Class definition
 
@@ -39,6 +40,9 @@
 /// \author \n V. Ziegler, S. Procureur, G. Charles, M. Ungaro
 /// \author mail: ziegler@jlab.org sebastien.procureur@cea.fr, gabriel.charles@cea.fr, ungaro@jlab.org\n\n\n
 
+// Veronique Ziegler (Dec. 3 2015)
+// M. Ungaro (Jan. 26 2016)
+
 class BMT_HitProcess : public HitProcess
 {
 	public:
@@ -57,6 +61,16 @@ class BMT_HitProcess : public HitProcess
 	
 		// creates the HitProcess
 		static HitProcess *createHitClass() {return new BMT_HitProcess;}
+	
+	
+	private:
+	
+		// constants initialized with initWithRunNumber
+		static bmtConstants bmtc;
+	
+		double fieldScale;
+	
+		void initWithRunNumber(int runno);
 };
 
 #endif
