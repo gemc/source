@@ -171,7 +171,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			thisHit->SetPID(pid);
 			thisHit->SetCharge(q);
 			thisHit->SetMatName(materialName);
-			thisHit->SetProcName(processName);
+			thisHit->SetProcID(processID(processName));
 			thisHit->SetSDID(SDID);
 			hitCollection->insert(thisHit);
 			Id_Set.insert(mhPID);
@@ -214,7 +214,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 					thisHit->SetPID(pid);
 					thisHit->SetCharge(q);
 					thisHit->SetMatName(materialName);
-					thisHit->SetProcName(processName);
+					thisHit->SetProcID(processID(processName));
 					thisHit->SetDetector((*hallMap)[name]);
 					
 					if(verbosity > 6 || name.find(catch_v) != string::npos)
@@ -280,6 +280,32 @@ MHit*  sensitiveDetector::find_existing_hit(vector<identifier> PID)  ///< return
 }
 
 
+int sensitiveDetector::processID(string procName)
+{
+	if(procName == "eIoni")            return 1;
+	if(procName == "compt")            return 2;
+	if(procName == "eBrem")            return 3;
+	if(procName == "phot")             return 4;
+	if(procName == "conv")             return 5;
+	if(procName == "annihil")          return 6;
+	if(procName == "photonNuclear")    return 7;
+	if(procName == "electronNuclear")  return 8;
+	if(procName == "hadElastic")       return 9;
+	if(procName == "protonInelastic")  return 10;
+	if(procName == "neutronInelastic") return 11;
+	if(procName == "pi-Inelastic")     return 12;
+	if(procName == "pi+Inelastic")     return 13;
+	if(procName == "hIoni")            return 14;
+	if(procName == "nCapture")         return 15;
+	if(procName == "Decay")            return 16;
+	if(procName == "muIoni")           return 17;
+	if(procName == "CoulombScat")      return 18;
+
+	if(procName == "na")            return 90;
+	
+	cout << " process name " << procName << " not catalogued." << endl;
+	return 99;
+}
 
 
 

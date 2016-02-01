@@ -71,7 +71,7 @@ class sensitiveDetector : public G4VSensitiveDetector
 		MHit* find_existing_hit(vector<identifier>);                                               ///< returns hit collection hit inside identifer
 
 
-	int processID(string procName);        // return an ID
+		int processID(string procName);   // return an ID from a process name. 
 };
 
 

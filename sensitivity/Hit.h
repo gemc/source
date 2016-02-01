@@ -50,7 +50,7 @@ class MHit : public G4VHit
 		vector<int>        otrackID;    ///< Original G4Track ID in each step
 		vector<G4ThreeVector> mvert;    ///< Primary Vertex of the track's mother
 		vector<string> materialName;    ///< Material name
-		vector<string>  processName;    ///< Process that originated this step
+		vector<int>     processID;     ///< Process that originated this step
     
 		vector<detector>  Detectors;    ///< Detectors Hit. It might be a vector if multiple detectors have the same identifier
 		
@@ -141,10 +141,10 @@ class MHit : public G4VHit
 		inline string GetMatName()                     { return  materialName[0]; }
 		inline vector<string> GetMatNames()            { return  materialName; }
 
-		inline void SetProcName(string pname)           { processName.push_back(pname); }
-		inline void SetProcNames(vector<string> pnames) { processName = pnames; }
-		inline string GetProcName()                     { return  processName[0]; }
-		inline vector<string> GetProcNames()            { return  processName; }
+		inline void SetProcID(int procID)          { processID.push_back(procID); }
+		inline void SetProcID(vector<int> procIDs) { processID = procIDs; }
+		inline int GetProcID()                     { return  processID[0]; }
+		inline vector<int> GetProcIDs()            { return  processID; }
 
 		inline void SetSDID(sensitiveID s)   { SID = s; }
 		inline sensitiveID GetSDID()         { return SID; }
