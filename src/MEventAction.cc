@@ -155,7 +155,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		trajectoryContainer = evt->GetTrajectoryContainer();
 		momDaugther.clear();
 		
-		cout << " >> Total number of tracks " << trajectoryContainer->size() << endl;
+		if(VERB>3)
+			cout << " >> Total number of tracks " << trajectoryContainer->size() << endl;
 
 		while(trajectoryContainer && track_db.size())
 		{
