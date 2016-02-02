@@ -39,12 +39,16 @@ void gfield::create_MFM()
 
 		// caching does not seem to help for dipole-y
 		// will it help for other field maps?
-		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, 1 * cm);
+		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, 1 * m);
 		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
 
-		// change these?
-		MFM->SetDeltaOneStep(0.01 * mm);
-		MFM->SetDeltaIntersection(0.001 * mm);
+		G4double minEps= 0.1;  //   Minimum & value for smallest steps
+		G4double maxEps= 1.0;  //   Maximum & value for largest steps
+		
+		MFM->SetMinimumEpsilonStep( minEps );
+		MFM->SetMaximumEpsilonStep( maxEps );
+ 		MFM->SetDeltaOneStep(0.01 * mm);
+		MFM->SetDeltaIntersection(0.01 * mm);
 	}
 
 }

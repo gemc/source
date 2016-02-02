@@ -21,7 +21,7 @@
 /// - Mac OS X
 /// \section docs Documentation:
 /// - <a href="http://gemc.jlab.org">  gemc website </a>
-/// \section Dependencies:
+/// \section dependencies Dependencies
 /// - geant4 (simulation libraries)
 /// - clhep  (random generators, physics vectors, geometry and linear algebra libraries)
 /// - qt4 (graphic libraries)

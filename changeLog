@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+2/2/16
+- making doxygen more happy
+- changing caching of the maps to 1 meter by default. This should be an option.
+- making step sizes explicit in field routine
+
 2/1/16
  - Process names replaced with process ID in MHit. A map of names to process ID is in place and documented.
    The list of process may not contain all - a log is printed on screen if a process does not have an ID - so they can be added later on.
