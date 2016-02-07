@@ -5,8 +5,11 @@ Changelog for GEMC
  - added cerenkov to the map of processes in the output
  - better description for some true information variables
  - added dInelastic in the map of processes in the output
- - htcc pmt material had a (useless) refraction index that caused infinite
+ - htcc pmt material had a refraction index that caused infinite
    bouncing of optical photons between the pmt glass limits!
+ - correction: fixing bouncing of photons by limiting the
+   number of steps to 100. Notice there are rarely above 20 steps
+   for CC detectors.
 
 2/2/16
  - making doxygen more happy

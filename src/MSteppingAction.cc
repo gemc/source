@@ -37,14 +37,17 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 	{
 		track->SetTrackStatus(fStopAndKill);
 	}
-	
+
 	
 	if(track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
 	{
-		if(track->GetLogicalVolumeAtVertex()->GetMaterial()->GetName() == "SemiMirror")
-		{
-			track->SetTrackStatus(fStopAndKill);
-		}
+        // killing photon if above 100 steps
+        // notice we rarely go above 20 steps for all normal CC detectors
+        if(track->GetCurrentStepNumber() > 100)
+            track->SetTrackStatus(fStopAndKill);
+       
+        if(track->GetLogicalVolumeAtVertex()->GetMaterial()->GetName() == "SemiMirror")
+            track->SetTrackStatus(fStopAndKill);
 	}
 	
 	//	cout << " track id " << track->GetTrackID() << endl;

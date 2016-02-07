@@ -169,17 +169,17 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 		0.1612000,     0.1305000  };
 	
 	// Index of refraction of HTCC PMT quartz window:
-//	G4double Rindex_HTCCPMT[nEntries_HTCCGas] =
-//	{ 1.5420481,  1.5423678,  1.5427003,  1.5430465,  1.5434074,
-//		1.5437840,  1.5441775,  1.5445893,  1.5450206,  1.5454731,
-//		1.5459484,  1.5464485,  1.5469752,  1.5475310,  1.5481182,
-//		1.5487396,  1.5493983,  1.5500977,  1.5508417,  1.5516344,
-//		1.5524807,  1.5533859,  1.5543562,  1.5553983,  1.5565202,
-//		1.5577308,  1.5590402,  1.5604602,  1.5620045,  1.5636888,
-//		1.5655313,  1.5675538,  1.5697816,  1.5722449,  1.5749797,
-//		1.5780296,  1.5814472,  1.5852971,  1.5896593,  1.5946337,
-//		1.6003470,  1.6069618,  1.6146902,  1.6238138,  1.6347145,
-//		1.6479224,  1.6641955  };
+	G4double Rindex_HTCCPMT[nEntries_HTCCGas] =
+	{ 1.5420481,  1.5423678,  1.5427003,  1.5430465,  1.5434074,
+		1.5437840,  1.5441775,  1.5445893,  1.5450206,  1.5454731,
+		1.5459484,  1.5464485,  1.5469752,  1.5475310,  1.5481182,
+		1.5487396,  1.5493983,  1.5500977,  1.5508417,  1.5516344,
+		1.5524807,  1.5533859,  1.5543562,  1.5553983,  1.5565202,
+		1.5577308,  1.5590402,  1.5604602,  1.5620045,  1.5636888,
+		1.5655313,  1.5675538,  1.5697816,  1.5722449,  1.5749797,
+		1.5780296,  1.5814472,  1.5852971,  1.5896593,  1.5946337,
+		1.6003470,  1.6069618,  1.6146902,  1.6238138,  1.6347145,
+		1.6479224,  1.6641955  };
 	
 	// Reflectivity of Al-MgF2 HTCC mirror coating:
 	G4double Reflectivity_HTCCMirror[nEntries_HTCCGas] =
@@ -299,7 +299,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	G4MaterialPropertiesTable* HTCCPMTquartz_MPT = new G4MaterialPropertiesTable();
 	HTCCPMTquartz_MPT->AddProperty("EFFICIENCY", PhotonEnergy_HTCCGas, QuantumEfficiency_HTCCPMT, nEntries_HTCCGas );
     // disabling this cause it causes infinite loop between pmt and htcc gas - photon bouncing around
-	//HTCCPMTquartz_MPT->AddProperty("RINDEX",     PhotonEnergy_HTCCGas, Rindex_HTCCPMT,            nEntries_HTCCGas );
+	HTCCPMTquartz_MPT->AddProperty("RINDEX",     PhotonEnergy_HTCCGas, Rindex_HTCCPMT,            nEntries_HTCCGas );
 	MMats["HTCCPMTquartz"]->SetMaterialPropertiesTable(HTCCPMTquartz_MPT);
 	
 	//Below we add new material definitions which include the actual measured reflectivity of thermally shaped sheets of acryl
