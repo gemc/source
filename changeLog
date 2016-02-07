@@ -4,6 +4,9 @@ Changelog for GEMC
 2/7/16
  - added cerenkov to the map of processes in the output
  - better description for some true information variables
+ - added dInelastic in the map of processes in the output
+ - htcc pmt material had a (useless) refraction index that caused infinite
+   bouncing of optical photons between the pmt glass limits!
 
 2/2/16
  - making doxygen more happy

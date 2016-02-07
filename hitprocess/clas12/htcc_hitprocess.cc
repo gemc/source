@@ -14,10 +14,32 @@ using namespace CLHEP;
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	vector<identifier> identity = aHit->GetId();
 	
+    // we want to crash if identity doesn't have size 3
+    vector<identifier> identity = aHit->GetId();
+    int idsector = identity[0].id;
+    int idring   = identity[1].id;
+    int idhalf   = identity[2].id;
+    int thisPid  = aHit->GetPID();
+    
+    trueInfos tInfos(aHit);
+
+    // if anything else than a photon hits the PMT
+    // the nphe is the particle id
+    // and identifiers are negative
+    dgtz["sector"] = -idsector;
+    dgtz["ring"]   = -idring;
+    dgtz["half"]   = -idhalf;
+    dgtz["nphe"]   = thisPid;
+    dgtz["time"]   = tInfos.time;
+    dgtz["hitn"]   = hitn;
+
+	
+    
+    
 	// if the particle is not an opticalphoton return empty bank
-	if(aHit->GetPID() != 0) return dgtz;
+	if(thisPid != 0)
+        return dgtz;
 	
 	// Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
 	// we want to implement QE here in a flexible way:
@@ -48,10 +70,6 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	// we want to crash if identity doesn't have size 3
-	int idsector = identity[0].id;
-	int idring   = identity[1].id;
-	int idhalf   = identity[2].id;
 
 	
 	// if identifiers for theta and phi indices have been defined, use them.
@@ -68,7 +86,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		iring   = identity[idring].id;
 		ihalf  = identity[idhalf].id;
 	}
-	else return dgtz; //no valid ID
+	else return dgtz; // no valid ID
 	
 	// here is the fun part: figure out the number of photons we detect based
 	// on the quantum efficiency of the photocathode material, if defined:
@@ -115,13 +133,10 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	if(verbosity>4)
 	{
-		trueInfos tInfos(aHit);
-
 	
 		cout <<  log_msg << " (sector, ring, half)=(" << isector << ", " << iring << ", " << ihalf << ")"
 		     << " x=" << tInfos.x/cm << " y=" << tInfos.y/cm << " z=" << tInfos.z/cm << endl;
 	}
-	trueInfos tInfos(aHit);
 
 	dgtz["sector"] = idsector;
 	dgtz["ring"]   = idring;
@@ -145,7 +160,6 @@ vector<identifier>  htcc_HitProcess :: processID(vector<identifier> id, G4Step *
 map< string, vector <int> >  htcc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
-	
 	return MH;
 }
 

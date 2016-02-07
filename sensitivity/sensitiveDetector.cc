@@ -60,6 +60,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
 		return false;
 	
+        
 	// do not record Mirrors unless specified
 	if(HCname == "mirror" && RECORD_MIRROR == 0) return false;
 	
@@ -301,6 +302,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "muIoni")           return 17;
 	if(procName == "CoulombScat")      return 18;
     if(procName == "Cerenkov")         return 19;
+    if(procName == "dInelastic")       return 20;
 
 	if(procName == "na")            return 90;
 	
