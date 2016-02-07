@@ -28,7 +28,7 @@ class ftofConstants
 		//	1 - noADC
 		//	2 - noTDC
 		//	3 - noADC, noTDC(PMTisdead)
-		// 5 - any other reconstruction problem
+		//  5 - any other reconstruction problem
 		vector<int> status[6][3][2];
 	
 		// effective velocity

@@ -1,6 +1,8 @@
 Changelog for GEMC
 ==================
 
+
+
 2/2/16
 - making doxygen more happy
 - changing caching of the maps to 1 meter by default. This should be an option.

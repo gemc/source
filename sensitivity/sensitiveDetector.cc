@@ -300,6 +300,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "Decay")            return 16;
 	if(procName == "muIoni")           return 17;
 	if(procName == "CoulombScat")      return 18;
+    if(procName == "Cerenkov")         return 19;
 
 	if(procName == "na")            return 90;
 	

@@ -53,19 +53,3 @@ In fact the same <b>gemc</b> executable is used for many different experiments.
 ========
 
 
-### Contributing to gemc
-Join the gemc collaboration to contribute to the <a href="http://gemc.github.io">development of gemc</a>!
-
-
-========
-
-
-
-
-### See also:
-
-#### Running CLAS12 Reconstruction
-
-* <a href="http://clasweb.jlab.org/clas12offline/docs/software/html/reconstruction/introduction.html"> CLAS 12 Offline software </a>
-
-
