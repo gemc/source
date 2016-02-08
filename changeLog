@@ -212,7 +212,8 @@ Changelog for GEMC
 
 4/8/15
  - Added template for calibration constants
- - FTOF digitization: retrieving and using constants:
+ - FTOF digitization. Retrieving and using constants
+
   * status
   * effective velocity
   * attenuation length
@@ -247,6 +248,7 @@ Changelog for GEMC
 
 .. Note::
    1/29/15 gemc 2.2 released!
+
 |
 
 1/28/15
@@ -337,6 +339,7 @@ Changelog for GEMC
 
 .. Note::
    10/22/14 gemc 2.1 released!
+
 |
 
 10/21/14
@@ -500,19 +503,22 @@ Changelog for GEMC
  - added Trimspaces to vector<string> functions
  - run_conditions: get_systems() now returns a map<string, string> : name, factory
  - bank scheme changed as requested from Hall-B software group
+
   Reason: makes it more readable by 3rd party software.
   I'm opposed to this, I think we should be driven by human readability instead of 3rd party software
-  from:
+  from::
+
     Mother (tag, 0)
      daughter (tag, daughter id)
        vars (tag + daughter id, variable id)
-  to:
+
+  to::
+
    Mother (tag, 0)
     daughter (tag + daughter id, 0)
     vars (tag + daughter id, variable id)
 
-   hit number now changed num from 0 to 99
-
+ - hit number now changed num from 0 to 99
  - Fixed multiple writing of the generated particle bank
  - Names of average quantities in the true info output changed from <v> to avg_v
  - Times font changed to Times-Roman. This doesn't help Maverick screen log whining yet.
@@ -604,9 +610,23 @@ Changelog for GEMC
 4/1/2014
  - Changed elements, nelements to components, ncomponents
  - Added simple materials from MYSQL factory in addition to the CPP factory:
-  1. molecular. Example:
+
+ 1. molecular. Example::
+
      H2O->AddElement(H, natoms=2);
          H2O->AddElement(O, natoms=1);
-  2. by mass fraction. Example:
+ 2. by mass fraction. Example::
+
          Gas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2);
+
  - Air > G4_AIR as default Air material
+
+
+
+
+
+
+
+
+
+
