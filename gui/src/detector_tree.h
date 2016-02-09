@@ -5,6 +5,7 @@
 #include <QTreeWidgetItem>
 #include <QAction>
 #include <QContextMenuEvent>
+#include <QtWidgets>
 
 // G4 headers
 #include "G4RunManager.hh"
@@ -72,6 +73,7 @@ class detector_tree : public QWidget
 		
 		descriptionTab  *dTab;
 	
+		QPushButton *writeToGDML, *showDetInNewWindow;
 	
 		
 	private:
@@ -87,13 +89,16 @@ class detector_tree : public QWidget
 		G4RunManager *runManager;
 		G4UImanager  *UImanager;
 		
-		private slots:
+	private slots:
 		void switch_visibility();
 		void switch_visibility_daughters();
 		void switch_wiresolid();
 		void switch_color();
 		void show_detector();
-		void write_gdml_file();
+		void write_gdml_file(string);
+		void set_gdml_name();
+		void set_gdml_nameAll();
+		void inspectDetector();
 		void change_placement();                ///< changes coordinates/rotation of the detector
 
 	private:

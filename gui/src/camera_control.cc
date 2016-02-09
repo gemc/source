@@ -259,8 +259,21 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	explodeSlider->setRange(0, 30);
 	connect ( explodeSlider , SIGNAL( valueChanged(int) ), this, SLOT( explode(int) ) );
 	
+	QPushButton *screenShotPNG = new QPushButton(tr("PNG screenshot"));
+	screenShotPNG->setToolTip("Print a screenshot to a PNG file");
+	screenShotPNG->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( screenShotPNG , SIGNAL(clicked()), this, SLOT( printPNG() ));
+	
+	QPushButton *screenShotPDF = new QPushButton(tr("EPS screenshot"));
+	screenShotPDF->setToolTip("Print a screenshot to a encapsulated poscript file");
+	screenShotPDF->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( screenShotPDF , SIGNAL(clicked()), this, SLOT( printPDF() ));
+	
+	
 	QHBoxLayout *explodeLayout = new QHBoxLayout;
 	explodeLayout->addWidget(explodeSlider);
+	explodeLayout->addWidget(screenShotPNG);
+	explodeLayout->addWidget(screenShotPDF);
 
 	QGroupBox *explodeGroup = new QGroupBox(tr("Explode"));
 	explodeGroup->setLayout(explodeLayout);
@@ -277,6 +290,26 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	setLayout(mainLayout);
 	
 	
+	
+}
+
+
+void camera_control::printPNG()
+{
+	char command[100];
+	sprintf(command, "/vis/ogl/export gemc.png");
+	UImanager->ApplyCommand(command);
+
+}
+
+
+void camera_control::printPDF()
+{
+	char command[100];
+	sprintf(command, "/vis/ogl/set/printMode vectored");
+	UImanager->ApplyCommand(command);
+	sprintf(command, "/vis/ogl/printEPS");
+	UImanager->ApplyCommand(command);
 	
 }
 

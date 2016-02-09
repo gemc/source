@@ -45,17 +45,17 @@ void descriptionTab::update_detector(detector *Det)
 		
 		// position and rotation
 		string xyzpos = "( " +
-						stringify(det->pos.getX()/mm) + ", " +
-		                stringify(det->pos.getY()/mm) + ", " +
-		                stringify(det->pos.getZ()/mm) + ") mm";
+		stringify(det->pos.getX()/mm) + ", " +
+		stringify(det->pos.getY()/mm) + ", " +
+		stringify(det->pos.getZ()/mm) + ") mm";
 
 		placeEdit->setText(xyzpos.c_str());
 		
 		
 		string xyzrot = "( " +
-		                stringify(det->rot.getPhi()/deg) + ", " +
-		                stringify(det->rot.getTheta()/deg) + ", " +
-						stringify(det->rot.getPsi()/deg) + ") deg ";
+		stringify(det->rot.getPhi()/deg) + ", " +
+		stringify(det->rot.getTheta()/deg) + ", " +
+		stringify(det->rot.getPsi()/deg) + ") deg ";
 		
 		rotEdit->setText(xyzrot.c_str());
 		

@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+2/9/16
+ - added muPairProd to the map of processes in the output
+ - added buttons to export a detector or the whole root in gdml format
+ - added button to inspect detector in a new window
+ - added buttons to print screenshots in png EPS format
+
 2/7/16
  - added cerenkov to the map of processes in the output
  - better description for some true information variables

@@ -301,9 +301,10 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "Decay")            return 16;
 	if(procName == "muIoni")           return 17;
 	if(procName == "CoulombScat")      return 18;
-    if(procName == "Cerenkov")         return 19;
-    if(procName == "dInelastic")       return 20;
-
+	if(procName == "Cerenkov")         return 19;
+	if(procName == "dInelastic")       return 20;
+	if(procName == "muPairProd")       return 21;
+	
 	if(procName == "na")            return 90;
 	
 	cout << " process name " << procName << " not catalogued." << endl;

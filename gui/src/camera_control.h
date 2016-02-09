@@ -67,6 +67,9 @@ class camera_control : public QWidget
 
 		void explode(int);
 		
+		void printPNG();
+		void printPDF();
+	
 		void set_perspective(int);
 		void switch_antialiasing(int);
 		void switch_auxiliary_edges(int);

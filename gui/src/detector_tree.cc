@@ -2,7 +2,6 @@
 #include <QActionGroup>
 #include <QColorDialog>
 #include <QMenu>
-#include <QtWidgets>
 
 // gemc headers
 #include "detector_tree.h"
@@ -76,7 +75,27 @@ detector_tree::detector_tree(QWidget *parent, goptions Opts, G4RunManager* RM, m
 	QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->addWidget(treeWidget);
 	
-	
+	writeToGDML = new QPushButton(tr("detector to gdml"));
+	writeToGDML->setEnabled(false);
+
+	writeToGDML->setToolTip("Creates a gdml file for the highlighted detector");
+	writeToGDML->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( writeToGDML , SIGNAL(clicked()), this, SLOT( set_gdml_name() ));
+	leftLayout->addWidget(writeToGDML);
+
+	QPushButton *writeToGDMLA = new QPushButton(tr("all detectors to gdml"));
+	writeToGDMLA->setToolTip("Creates a gdml file for all detectors");
+	writeToGDMLA->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( writeToGDMLA , SIGNAL(clicked()), this, SLOT( set_gdml_nameAll() ));
+	leftLayout->addWidget(writeToGDMLA);
+
+	showDetInNewWindow= new QPushButton(tr("inspect detector"));
+	showDetInNewWindow->setEnabled(false);
+	showDetInNewWindow->setToolTip("Creates a gdml file for all detectors");
+	showDetInNewWindow->setIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
+	connect ( showDetInNewWindow , SIGNAL(clicked()), this, SLOT( inspectDetector() ) );
+	leftLayout->addWidget(showDetInNewWindow);
+
 	
 	QWidget *rightWidget = new QWidget(splitter);
 	QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
@@ -270,6 +289,20 @@ void detector_tree::switch_visibility_daughters()
 	UImanager->ApplyCommand(command);	
 }
 
+void detector_tree::inspectDetector()
+{
+	string name  = qs_tostring(treeWidget->currentItem()->text(0));
+	
+	char command[100];
+	sprintf(command, "/vis/open OGL");
+	UImanager->ApplyCommand(command);
+	sprintf(command, "/vis/specify %s", name.c_str());
+	UImanager->ApplyCommand(command);
+	sprintf(command, "/vis/viewer/set/background .85 .95 .98 1");
+	UImanager->ApplyCommand(command);
+}
+
+
 void detector_tree::switch_wiresolid()
 {
 	string name  = qs_tostring(treeWidget->currentItem()->text(0));
@@ -304,6 +337,9 @@ void detector_tree::show_detector()
 	detector detect = (*Hall_Map)[name];
 	dTab->update_detector(&detect);
 
+	writeToGDML->setEnabled(true);
+	showDetInNewWindow->setEnabled(true);
+
 	
 		// have to overload "=" to make this happen
 //		 if((*Hall_Map)[name] != detect)
@@ -330,15 +366,23 @@ void detector_tree::show_detector()
 }
 
 
-
-
-
-void detector_tree::write_gdml_file()
+void detector_tree::set_gdml_name()
 {
-	string name  = qs_tostring(treeWidget->currentItem()->text(0));
-	string fileout=name;
+	write_gdml_file(qs_tostring(treeWidget->currentItem()->text(0)));
+}
+void detector_tree::set_gdml_nameAll()
+{
+	write_gdml_file("root");
+}
+
+
+
+void detector_tree::write_gdml_file(string name)
+{
+	string fileout = name + ".gdml";
+	
 	detector detect = (*Hall_Map)[name];
-	fileout.append(".gdml");
+	
 	struct stat stFileInfo;
 	if(stat(fileout.c_str(),&stFileInfo)==0)   // Check if file exists already.
 	{
@@ -352,6 +396,8 @@ void detector_tree::write_gdml_file()
 	parser.Write(fileout.c_str(),detect.GetPhysical(),false);	
 }
 
+
+				
 void detector_tree::change_placement()
 {
 	cout << " YAY! " << endl;
@@ -388,7 +434,7 @@ void detector_tree::createActions()
 	Write_GDML_File = new QAction(tr("Write GDML File"), this);
 	Write_GDML_File->setShortcut(tr("Ctrl+G"));
 	Write_GDML_File->setStatusTip(tr("Write file name.gdml to current directory"));
-	connect(Write_GDML_File,SIGNAL(triggered()), this, SLOT(write_gdml_file()));
+	connect(Write_GDML_File,SIGNAL(triggered()), this, SLOT(set_gdml_name()));
 }
 
 

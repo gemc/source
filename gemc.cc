@@ -223,8 +223,16 @@ int main( int argc, char **argv )
 	gemc_splash.message(" Initializing Physics List " + phys_list + "...");
 	runManager->SetUserInitialization(new PhysicsList(gemcOpt));
 
-	// Setting Max step for all the simulation. This is historically needed to limit
-	// the step in magnetic field in vacuum
+	// Setting Max step for all the simulation.
+	// Notice: on the forum:
+	// http://hypernews.slac.stanford.edu/HyperNews/geant4/get/emfields/183/1.html
+	// it is mentioned that going through volumes of different materials could create problems.
+	// this is verified in clas12 when going from target to "hall" - even when vacuum was not involved.
+	// the solution to that was to create a transitional tube from target to the vacuum line
+	// This solution allowed to avoid setting MAX_FIELD_STEP to a value that would slow down the
+	// simulation by a factor of 5
+	
+	
 	double max_step = gemcOpt.optMap["MAX_FIELD_STEP"].arg;
 	if(max_step != 0)
 		G4TransportationManager::GetTransportationManager()->GetPropagatorInField()->SetLargestAcceptableStep(max_step);
