@@ -22,6 +22,7 @@ class ftofConstants
 	
 		// number of paddles in each panel, in order p1a, p1b, p2
 		int npaddles[3];
+		int thick[3];
 	
 		// status:
 		//	0 - fully functioning
@@ -39,8 +40,9 @@ class ftofConstants
 		// depends on the panel
 		vector<double> attlen[6][3][2];
 	
-		// de/dx = 2MeV / g/ cm3 for MIP in the FTOF scintillators
+		// dEdxMIP: dEdx for muon MIP, dEMIP: MIP energy for paddle
 		double dEdxMIP;
+		double dEMIP[3];
 	
 		// minimum ionizing calibration peak
 		vector<double> countsForMIP[6][3][2];
