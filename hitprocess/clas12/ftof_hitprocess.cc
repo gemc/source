@@ -33,6 +33,11 @@ static ftofConstants initializeFTOFConstants(int runno)
 	ftc.npaddles[0] = 23;
 	ftc.npaddles[1] = 62;
 	ftc.npaddles[2] = 5;
+
+	// Paddle thickness (cm) for MIP peak energy
+	ftc.thick[0] = 5.0;
+	ftc.thick[1] = 6.0;
+	ftc.thick[2] = 5.0; 
 	
 	vector<vector<double> > data;
 	
@@ -87,9 +92,12 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.twlk[isec-1][ilay-1][5].push_back(data[row][8]);
 	}
 	
-	// de/dx = 2MeV / g/ cm3 for MIP in the FTOF scintillators
-	ftc.dEdxMIP = 2;
 
+	ftc.dEdxMIP = 1.956 ;  // MeV gm-1 cm-3 (polyvinyltoluene)
+	ftc.dEMIP[0] = ftc.thick[0]*ftc.dEdxMIP;
+	ftc.dEMIP[1] = ftc.thick[1]*ftc.dEdxMIP;
+	ftc.dEMIP[2] = ftc.thick[2]*ftc.dEdxMIP;
+	
 	// time resolution
 	for(int p=0; p<3; p++)
 	{
@@ -147,8 +155,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double gainRight = gainLeft;
 	
 	// multiple of MIP energy attenuated
-	double eneL = (tInfos.eTot/ftc.dEdxMIP)*attLeft;
-	double eneR = (tInfos.eTot/ftc.dEdxMIP)*attRight;
+	double eneL = (tInfos.eTot/ftc.dEMIP[panel-1])*attLeft;
+	double eneR = (tInfos.eTot/ftc.dEMIP[panel-1])*attRight;
 	
 	// Attenuated energy converted to ADC counts
 	double adcl = ftc.countsForMIP[sector-1][panel-1][0][paddle-1]*eneL/gainLeft;
