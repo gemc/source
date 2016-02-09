@@ -14,7 +14,7 @@ class ftofConstants
 		string variation;
 		string date;
 		string connection;
-		string database;
+		char database[80];
 
 	
 		// There are 3 FTOF panels, 6 sectors so the constants are organized in
@@ -22,6 +22,7 @@ class ftofConstants
 	
 		// number of paddles in each panel, in order p1a, p1b, p2
 		int npaddles[3];
+		int thick[3];
 	
 		// status:
 		//	0 - fully functioning
@@ -32,22 +33,22 @@ class ftofConstants
 		vector<int> status[6][3][2];
 	
 		// effective velocity
-		vector<double> veff[6][3];
+		vector<double> veff[6][3][2];
 	
 		// attenuation length comes from a linear parameterization
 		// based on the counter length in cm
 		// depends on the panel
-		double attLengthPars[2][3];
+		vector<double> attlen[6][3][2];
 	
-		// de/dx = 2MeV / g/ cm3 for MIP in the FTOF scintillators
+		// dEdxMIP: dEdx for muon MIP, dEMIP: MIP energy for paddle
 		double dEdxMIP;
+		double dEMIP[3];
 	
 		// minimum ionizing calibration peak
-		vector<double> countsForAMinimumIonizing[6][3][2];
+		vector<double> countsForMIP[6][3][2];
 	
 		// time walk correction is parameterized with two coefficients
-		vector<double> twlk_A0[6][3][2];
-		vector<double> twlk_A1[6][3][2];
+		vector<double> twlk[6][3][6];
 	
 		// time resolution parameterized as sigma0^2 + sigma1^2/N
 		// where N is number of photoelectrons reaching the PTMS
