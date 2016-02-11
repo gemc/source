@@ -89,11 +89,11 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// Identifying the fastest - given by time + doca(s) / drift velocity
 	// trackId Strong and Weak in case the track does or does not deposit enough energy
-	int trackIds, trackIdw  = -1;
+	int trackIds = -1;
+ 	int trackIdw = -1;
 	double minTime  = 10000;
 	double signal_t = 0;
 
-	// calculating doca
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
@@ -124,6 +124,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z());
+		
 		if(DOCA.mag() <= doca && stepTrackId[s] == trackIds )
 		{
 			doca = DOCA.mag();
@@ -135,9 +136,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// smeading doca
 	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, dcc.docaSmearing));  ///< smeared by 300 microns for now
 	
-	
 	// distance-dependent efficiency as a function of doca
-	
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 	double ddEff = dcc.P1/pow(X*X + dcc.P2, 2) + dcc.P3/pow( (1-X) + dcc.P4, 2);
 	double random = G4UniformRand();
