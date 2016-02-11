@@ -264,10 +264,7 @@ runWeights::runWeights(goptions opts)
 			}
 		}
 	}
-	
-	// initializing runNo to zero so isNewRun is true for the first event
-	// runNo = 0;
-	
+		
 	cout << " > Run weights table loaded: " << endl;
 	for(map<int, double>::iterator it = w.begin(); it != w.end(); it++)
 		cout << "    - run: " << it->first << "\t weight: " << w[it->first] << "\t  n. events: " << n[it->first] << endl;

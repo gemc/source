@@ -624,19 +624,7 @@ void goptions::setGoptions()
 	optMap["DF"].name  = "Detector System and Factory type.";
 	optMap["DF"].type  = 1;
 	optMap["DF"].ctgr  = "general";
-	
- 	optMap["DC_MSTAG_R3"].arg  = 0.0;
-	optMap["DC_MSTAG_R3"].help = "Mini Stagger for Region 3. Each layer will alternate +- |this value|";
-	optMap["DC_MSTAG_R3"].name = "Mini Stagger for Region 3. Each layer will alternate +- |this value|";
-	optMap["DC_MSTAG_R3"].type = 0;
-	optMap["DC_MSTAG_R3"].ctgr = "general";
-	
-	optMap["DC_MSTAG_R2"].arg  = 0.0;
-	optMap["DC_MSTAG_R2"].help = "Mini Stagger for Region 2. Each layer will alternate +- |this value|";
-	optMap["DC_MSTAG_R2"].name = "Mini Stagger for Region 2. Each layer will alternate +- |this value|";
-	optMap["DC_MSTAG_R2"].type = 0;
-	optMap["DC_MSTAG_R2"].ctgr = "general";
-	
+		
 }
 
 

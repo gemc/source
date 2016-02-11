@@ -4,9 +4,34 @@
 // gemc headers
 #include "HitProcess.h"
 
-// CLHEP units
-#include "CLHEP/Units/PhysicalConstants.h"
-using namespace CLHEP;
+// constants to be used in the digitization routine
+// warning: since NWIRES and ministagger are also used by processID, the plugin loading
+// has to happen before the first event is processed. In other words,
+// initializeDCConstants(1) - or remove the 	if(runno == -1) return dcc;
+class dcConstants
+{
+	public:
+	
+		// database
+		int    runNo;
+		string variation;
+		string date;
+		string connection;
+
+		double driftVelocity[6];
+		double miniStagger[6];
+		double docaSmearing;
+		double dcThreshold;
+		int NWIRES;
+	
+		double P1, P2, P3, P4;  // efficiency parameters
+		double dLayer[6];       // ~cell size in each superlayer - one of Mac's core parameters
+
+};
+
+
+
+
 
 // Class definition
 class dc_HitProcess : public HitProcess
@@ -14,15 +39,6 @@ class dc_HitProcess : public HitProcess
 	public:
 	
 		~dc_HitProcess(){;}
-	
-		// initialize private vars
-		 dc_HitProcess()
-		{
-			mini_stagger_shift_R2 = gemcOpt.optMap["DC_MSTAG_R2"].arg*mm;   // Mini Stagger shift for Region 2
-			mini_stagger_shift_R3 = gemcOpt.optMap["DC_MSTAG_R3"].arg*mm;   // Mini Stagger shift for Region 3
-		
-			NWIRES = 113;
-		}
 	
 		// - integrateDgt: returns digitized information integrated over the hit
 		map<string, double> integrateDgt(MHit*, int);
@@ -37,12 +53,12 @@ class dc_HitProcess : public HitProcess
 		// creates the HitProcess
 		static HitProcess *createHitClass() {return new dc_HitProcess;}
 
-
 	private:
-		double mini_stagger_shift_R2;   // Mini Stagger shift for Region 2
-		double mini_stagger_shift_R3;   // Mini Stagger shift for Region 3
-
-		double NWIRES;
+	
+		// constants initialized with initWithRunNumber
+		static dcConstants dcc;
+	
+		void initWithRunNumber(int runno);
 
 };
 
