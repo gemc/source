@@ -17,7 +17,7 @@ class ecConstants
 		char   database[80];
 		
 		double NSTRIPS;                 // Number of strips
-		double attlen[3][36][2][3][6];  // Attenuation Length (mm)
+		vector<double> attlen[6][9][3];         // Attenuation Length (mm)
 		double attl;
 		double TDC_time_to_evio;        // Conversion from time (ns) to EVIO TDC format
 		double ADC_MeV_to_evio;         // Conversion from energy (MeV) to EVIO FADC250 format
