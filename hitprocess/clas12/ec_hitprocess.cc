@@ -12,15 +12,13 @@ using namespace ccdb;
 
 static ecConstants initializeECConstants(int runno)
 {
-	
 	ecConstants ecc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ecc;
 	
-	int isec,isla,ilay,istr;
-	double par[8];
+	int isec,ilay,istr;
 	
 	// database
 	ecc.runNo      = runno;
@@ -29,35 +27,26 @@ static ecConstants initializeECConstants(int runno)
 	ecc.variation  = "default";
 	
 	ecc.NSTRIPS             = 36;
+	
 	ecc.attl                = 3760.;  // Attenuation Length (mm)
 	ecc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
 	ecc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
 	ecc.PE_yld              = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	ecc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-	
+
+	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
 	
 	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo);
-	vector<vector<double> > data; calib->GetCalib(data,ecc.database);
+	data.clear(); calib->GetCalib(data,ecc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
 	{
-		isec   = data[row][0];
-		isla   = data[row][1];
-		ilay   = data[row][2];
-		istr   = data[row][3];
-		par[0] = data[row][4];
-		par[1] = data[row][5]*10.0;
-		par[2] = data[row][6];
-		
-		if (isla==2||isla==3)
-		{
-			ecc.attlen[0][istr-1][isla-2][ilay-1][isec-1] = par[0];
-			ecc.attlen[1][istr-1][isla-2][ilay-1][isec-1] = par[1];
-			ecc.attlen[2][istr-1][isla-2][ilay-1][isec-1] = par[2];
-//			cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
-//			cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
-		}
+	  isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+	  ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
+	  ecc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
+	  ecc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
+
 	}
 	
 	return ecc;
@@ -85,6 +74,8 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int stack  = identity[1].id;
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
+	int layer  = (stack-1)*3+view+3; // layer=1-3 (PCAL) 4-9 (ECAL)
+	  
 	trueInfos tInfos(aHit);
 	
 	
@@ -105,9 +96,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double att;
 	
-	double A = ecc.attlen[0][strip-1][stack-1][view-1][sector-1];
-	double B = ecc.attlen[1][strip-1][stack-1][view-1][sector-1];
-	double C = ecc.attlen[2][strip-1][stack-1][view-1][sector-1];
+	double A = ecc.attlen[sector-1][layer-1][0][strip-1];
+	double B = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
+	double C = ecc.attlen[sector-1][layer-1][2][strip-1];
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
