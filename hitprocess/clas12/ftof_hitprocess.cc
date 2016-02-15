@@ -93,7 +93,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	}
 	
 
-	ftc.dEdxMIP = 1.956 ;  // MeV gm-1 cm-3 (polyvinyltoluene)
+	ftc.dEdxMIP = 1.956 ;  // MeV gm-1 cm-3 (muons in polyvinyltoluene)
 	ftc.dEMIP[0] = ftc.thick[0]*ftc.dEdxMIP;
 	ftc.dEMIP[1] = ftc.thick[1]*ftc.dEdxMIP;
 	ftc.dEMIP[2] = ftc.thick[2]*ftc.dEdxMIP;

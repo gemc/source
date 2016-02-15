@@ -17,7 +17,7 @@ class pcConstants
 		string connection;
 		char   database[80];
 	
-		double attlen[3][68][3][6];  // Attenuation Length (mm)
+		vector<double> attlen[6][9][3];  // Attenuation Length (mm)
 		double attl;
 		double TDC_time_to_evio;     // Conversion from time (ns) to EVIO TDC format
 		double ADC_MeV_to_evio;      // Conversion from energy (MeV) to EVIO FADC250 format

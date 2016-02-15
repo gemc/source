@@ -20,8 +20,7 @@ static pcConstants initializePCConstants(int runno)
 	if(runno == -1) return pcc;
 	
 	
-	int isec,isla,ilay,istr;
-	double par[8];
+	int isec,ilay,istr;
 	
 	// database
 	pcc.runNo      = runno;
@@ -34,31 +33,20 @@ static pcConstants initializePCConstants(int runno)
 	pcc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
 	pcc.PE_yld              = 11.5 ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-	
+
+	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
 	
 	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
-	vector<vector<double> > data; calib->GetCalib(data,pcc.database);
+	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
 	{
-		isec   = data[row][0];
-		isla   = data[row][1];
-		ilay   = data[row][2];
-		istr   = data[row][3];
-		par[0] = data[row][4];
-		par[1] = data[row][5]*10.0;
-		par[2] = data[row][6];
-		
-		if (isla==1)
-		{
-			pcc.attlen[0][istr-1][ilay-1][isec-1] = par[0];
-			pcc.attlen[1][istr-1][ilay-1][isec-1] = par[1];
-			pcc.attlen[2][istr-1][ilay-1][isec-1] = par[2];
-//			cout << "Sector: "<<isec<<" SLayer: "<<isla<<" Layer: "<<ilay<<" Strip: "<<istr<<endl;
-//			cout << "A: "<<par[0]<<" B: "<<par[1]<<" C: "<<par[2]<<endl;
-		}
-	}
+	  isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+	  pcc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
+	  pcc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
+	  pcc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
+        }
 	
 	return pcc;
 }
@@ -103,10 +91,11 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double att;
 	
-	double A = pcc.attlen[0][strip-1][view-1][sector-1];
-	double B = pcc.attlen[1][strip-1][view-1][sector-1];
-	double C = pcc.attlen[2][strip-1][view-1][sector-1];
-	
+	double A = pcc.attlen[sector-1][view-1][0][strip-1];
+	double B = pcc.attlen[sector-1][view-1][1][strip-1]*10.;
+	double C = pcc.attlen[sector-1][view-1][2][strip-1];
+
+	//cout<<"sector "<<sector<<"view "<<view<<"strip "<<strip<<"B "<<B<<endl;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
@@ -116,7 +105,6 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==1) latt=pDx2+xlocal;
 			if(view==2) latt=pDx2+xlocal;
 			if(view==3) latt=pDx2+xlocal;
-			//cout<<"xlocal="<<xlocal<<" ylocal="<<ylocal<<" view="<<view<<" strip="<<strip<<" latt="<<latt<<endl;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
 			Ttota = Ttota + latt/pcc.veff;
