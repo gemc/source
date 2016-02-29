@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+2/29/16
+ - removed obsolete cpp materials
+ - added button to write single volumes or all volumes to WRL
+
 2/9/16
  - added muPairProd to the map of processes in the output
  - added buttons to export a detector or the whole root in gdml format
@@ -626,6 +630,28 @@ Changelog for GEMC
          Gas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2);
 
  - Air > G4_AIR as default Air material
+
+
+
+3/23/2014
+ - FT process routine fixed
+
+3/12/2014
+ - CTOF fixes:
+ - forgot to change x to y when calculating tdc
+ - fixed length from trapezoid in ctof hit process
+ - fixed length from trapezoid in ctof hit process
+
+3/4/2014
+ - fixed bug that caused gemc to ask for graphic display even in batch mode.
+
+
+
+
+
+
+
+
 
 
 

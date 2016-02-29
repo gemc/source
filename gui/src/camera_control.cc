@@ -203,8 +203,6 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	// slices group
 	QGroupBox *sliceGroup = new QGroupBox(tr("Slices   [mm]"));
 	sliceGroup->setLayout(sliceLayout);
-
-
 	
 	
 	QLabel *antialiasingLabel = new QLabel(tr("Anti-Aliasing"));
@@ -218,11 +216,11 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	
 	QLabel *sides_per_circlesLabel = new QLabel(tr("Sides per circle"));
 	sides_per_circle = new QComboBox;
+	sides_per_circle->addItem(tr("25"));
 	sides_per_circle->addItem(tr("50"));
 	sides_per_circle->addItem(tr("100"));
 	sides_per_circle->addItem(tr("200"));
-	sides_per_circle->addItem(tr("500"));
-	sides_per_circle->setCurrentIndex(1);
+	sides_per_circle->setCurrentIndex(0);
 	QHBoxLayout *sides_per_circleLayout = new QHBoxLayout;
 	sides_per_circleLayout->addWidget(sides_per_circlesLabel);
 	sides_per_circleLayout->addWidget(sides_per_circle);
@@ -473,7 +471,7 @@ void camera_control::switch_auxiliary_edges(int index)
 void camera_control::switch_sides_per_circle(int index)
 {
 	char command[100];
-	int sides[4] = { 50,   100,  200, 500};
+	int sides[4] = { 25, 50,   100,  200};
 	
 	sprintf(command,"/vis/viewer/set/lineSegmentsPerCircle %d ", sides[index]);
 	UImanager->ApplyCommand(command);

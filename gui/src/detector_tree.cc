@@ -62,6 +62,7 @@ detector_tree::detector_tree(QWidget *parent, goptions Opts, G4RunManager* RM, m
 	treeWidget-> addAction( Switch_wiresolid );
 	treeWidget-> addAction( Switch_color );
 	treeWidget-> addAction( Write_GDML_File );
+	treeWidget-> addAction( Write_WRL_File );
 	connect(treeWidget, SIGNAL(itemSelectionChanged ()), this, SLOT(show_detector()));
 
 	// detector infos
@@ -75,27 +76,53 @@ detector_tree::detector_tree(QWidget *parent, goptions Opts, G4RunManager* RM, m
 	QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->addWidget(treeWidget);
 	
+
+	// writing single volumes in GDML or WRL
+	QHBoxLayout *writeSingleVolumeButtons = new QHBoxLayout();
+
 	writeToGDML = new QPushButton(tr("detector to gdml"));
 	writeToGDML->setEnabled(false);
-
 	writeToGDML->setToolTip("Creates a gdml file for the highlighted detector");
 	writeToGDML->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	connect ( writeToGDML , SIGNAL(clicked()), this, SLOT( set_gdml_name() ));
-	leftLayout->addWidget(writeToGDML);
+	writeSingleVolumeButtons->addWidget(writeToGDML);
 
-	QPushButton *writeToGDMLA = new QPushButton(tr("all detectors to gdml"));
+	writeToWRL = new QPushButton(tr("detector to wrl"));
+	writeToWRL->setEnabled(false);
+	writeToWRL->setToolTip("Creates a gdml file for the highlighted detector");
+	writeToWRL->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( writeToWRL , SIGNAL(clicked()), this, SLOT( set_wrl_name() ));
+	writeSingleVolumeButtons->addWidget(writeToWRL);
+
+	
+	// writing all volumes in GDML or WRL
+	QHBoxLayout *writeAllVolumeButtons = new QHBoxLayout();
+	
+	QPushButton *writeToGDMLA = new QPushButton(tr("all to gdml"));
 	writeToGDMLA->setToolTip("Creates a gdml file for all detectors");
 	writeToGDMLA->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	connect ( writeToGDMLA , SIGNAL(clicked()), this, SLOT( set_gdml_nameAll() ));
-	leftLayout->addWidget(writeToGDMLA);
+	writeAllVolumeButtons->addWidget(writeToGDMLA);
 
+	QPushButton *writeToWRLA = new QPushButton(tr("all to wrl"));
+	writeToWRLA->setToolTip("Creates a wrl file for all detectors");
+	writeToWRLA->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( writeToWRLA , SIGNAL(clicked()), this, SLOT( set_wrl_nameAll() ));
+	writeAllVolumeButtons->addWidget(writeToWRLA);
+	
+	// inspect detectors will open a new window
 	showDetInNewWindow= new QPushButton(tr("inspect detector"));
 	showDetInNewWindow->setEnabled(false);
 	showDetInNewWindow->setToolTip("Creates a gdml file for all detectors");
 	showDetInNewWindow->setIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
 	connect ( showDetInNewWindow , SIGNAL(clicked()), this, SLOT( inspectDetector() ) );
-	leftLayout->addWidget(showDetInNewWindow);
 
+	
+	// adding all together on the left layout
+	leftLayout->addLayout(writeSingleVolumeButtons);
+	leftLayout->addLayout(writeAllVolumeButtons);
+	leftLayout->addWidget(showDetInNewWindow);
+	
 	
 	QWidget *rightWidget = new QWidget(splitter);
 	QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
@@ -303,6 +330,9 @@ void detector_tree::inspectDetector()
 }
 
 
+
+
+
 void detector_tree::switch_wiresolid()
 {
 	string name  = qs_tostring(treeWidget->currentItem()->text(0));
@@ -338,6 +368,7 @@ void detector_tree::show_detector()
 	dTab->update_detector(&detect);
 
 	writeToGDML->setEnabled(true);
+	writeToWRL->setEnabled(true);
 	showDetInNewWindow->setEnabled(true);
 
 	
@@ -370,9 +401,20 @@ void detector_tree::set_gdml_name()
 {
 	write_gdml_file(qs_tostring(treeWidget->currentItem()->text(0)));
 }
+
 void detector_tree::set_gdml_nameAll()
 {
 	write_gdml_file("root");
+}
+
+void detector_tree::set_wrl_name()
+{
+	write_wrl_file(qs_tostring(treeWidget->currentItem()->text(0)));
+}
+
+void detector_tree::set_wrl_nameAll()
+{
+	write_wrl_file("root");
 }
 
 
@@ -394,6 +436,25 @@ void detector_tree::write_gdml_file(string name)
 	
 	G4GDMLParser parser;
 	parser.Write(fileout.c_str(),detect.GetPhysical(),false);	
+}
+
+
+
+void detector_tree::write_wrl_file(string name)
+{
+	char command[100];
+
+	if(name != "root")
+	{
+		sprintf(command, "/vis/specify %s", name.c_str());
+		UImanager->ApplyCommand(command);
+	}
+
+	sprintf(command, "/vis/open VRML2FILE");
+	UImanager->ApplyCommand(command);
+	
+	sprintf(command, "/vis/viewer/flush");
+	UImanager->ApplyCommand(command);
 }
 
 
@@ -434,7 +495,14 @@ void detector_tree::createActions()
 	Write_GDML_File = new QAction(tr("Write GDML File"), this);
 	Write_GDML_File->setShortcut(tr("Ctrl+G"));
 	Write_GDML_File->setStatusTip(tr("Write file name.gdml to current directory"));
-	connect(Write_GDML_File,SIGNAL(triggered()), this, SLOT(set_gdml_name()));
+	connect(Write_GDML_File, SIGNAL(triggered()), this, SLOT(set_gdml_name()));
+
+	// Write WRL File
+	Write_WRL_File = new QAction(tr("Write WRL File"), this);
+	Write_WRL_File->setShortcut(tr("Ctrl+R"));
+	Write_WRL_File->setStatusTip(tr("Write file g4_#.wrl to current directory"));
+	connect(Write_WRL_File, SIGNAL(triggered()), this, SLOT(set_wrl_name()));
+
 }
 
 

@@ -64,7 +64,7 @@ class descriptionTab : public QWidget
 	
 	private slots:
 		void change_placement();                ///< changes coordinates/rotation of the detector
-		void change_dimension();              ///< changes the detector dimensions
+		void change_dimension();                ///< changes the detector dimensions
 
 	public slots:
 		void update_detector(detector *Det);    ///< change tab according to detector

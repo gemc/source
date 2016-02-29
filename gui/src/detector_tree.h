@@ -73,7 +73,7 @@ class detector_tree : public QWidget
 		
 		descriptionTab  *dTab;
 	
-		QPushButton *writeToGDML, *showDetInNewWindow;
+		QPushButton *writeToGDML, *writeToWRL, *showDetInNewWindow;
 	
 		
 	private:
@@ -83,7 +83,8 @@ class detector_tree : public QWidget
 		QAction *Switch_wiresolid;
 		QAction *Switch_color;
 		QAction *Write_GDML_File;
-		
+		QAction *Write_WRL_File;
+	
 		// passing G4 managers to QT so we can delete them when QT quits
 		// and can access directly the UImanager
 		G4RunManager *runManager;
@@ -95,9 +96,18 @@ class detector_tree : public QWidget
 		void switch_wiresolid();
 		void switch_color();
 		void show_detector();
+	
+		// writing to gdml
 		void write_gdml_file(string);
 		void set_gdml_name();
 		void set_gdml_nameAll();
+	
+		// writing to wrl
+		void write_wrl_file(string);
+		void set_wrl_name();
+		void set_wrl_nameAll();
+	
+	
 		void inspectDetector();
 		void change_placement();                ///< changes coordinates/rotation of the detector
 
