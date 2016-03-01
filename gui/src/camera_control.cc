@@ -203,6 +203,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	// slices group
 	QGroupBox *sliceGroup = new QGroupBox(tr("Slices   [mm]"));
 	sliceGroup->setLayout(sliceLayout);
+
 	
 	
 	QLabel *antialiasingLabel = new QLabel(tr("Anti-Aliasing"));

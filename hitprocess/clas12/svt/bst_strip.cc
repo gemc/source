@@ -52,8 +52,8 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 	// local z position in the module: need to add 1/2 active area + 1(2) full sensor lengths if on sensor 2(3)
 	double lz = Lxyz.z() + SensorLength/2.0 - DZ_inWidth + (isens-1)*(SensorLength + intersensors) ;
 	
-	// particle must be in the z active area of the sensor
-	if( fabs(Lxyz.z()) < (SensorLength/2.0 - DZ_inWidth))
+	// particle must be in the z and x active area of the sensor
+	if( fabs(Lxyz.z()) < (SensorLength/2.0 - DZ_inWidth) && fabs(Lxyz.x()) < (SensorWidth/2.0 - DZ_inLength))
 	{
 		
 		
@@ -100,9 +100,11 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 	
 	if(StripHit != -1)
 	{
+		
+
+		
 		// correcting for z positioning inside the module
 		double dpitch = pitch + lz*tan(dalpha/rad);
-		
 		
 		// for even layers x is proportional to strip number.
 		// for odd layers x is inversly proportional to strip number
@@ -122,8 +124,12 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 		{
 			strip_id.push_back(StripHit);
 			strip_id.push_back(0.45);
-			strip_id.push_back(StripHit + moduleDirection);
-			strip_id.push_back(0.45);
+			if(StripHit + moduleDirection != 0)
+			{
+				strip_id.push_back(StripHit + moduleDirection);
+				strip_id.push_back(0.45);
+			}
+			//if(StripHit == 1) cout << "charged shared with " << StripHit + moduleDirection << endl;
 		}
 		// two hits, on the left of the strip (right if odd layers)
 		// 10% loss due to capacitance between strip and backplane
@@ -131,13 +137,17 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 		{
 			strip_id.push_back(StripHit);
 			strip_id.push_back(0.45);
-			strip_id.push_back(StripHit - moduleDirection);
-			strip_id.push_back(0.45);
+			if(StripHit - moduleDirection != 0)
+			{
+				strip_id.push_back(StripHit - moduleDirection);
+				strip_id.push_back(0.45);
+			}
+			//if(StripHit == 1) cout << "charged shared with " << StripHit + moduleDirection << endl;
 		}
 	}
 	else
 	{
-		strip_id.push_back(-1);
+		strip_id.push_back(-5);
 		strip_id.push_back(1);
 	}
 	return strip_id;

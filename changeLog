@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/1/16
+ - added 100 segments lines per circle when inspecting a detector
+ - fixed strip identification for bst routine
+
 2/29/16
  - removed obsolete cpp materials
  - added button to write single volumes or all volumes to WRL
@@ -644,14 +648,6 @@ Changelog for GEMC
 
 3/4/2014
  - fixed bug that caused gemc to ask for graphic display even in batch mode.
-
-
-
-
-
-
-
-
 
 
 
