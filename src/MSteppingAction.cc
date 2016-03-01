@@ -23,7 +23,6 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 	G4ThreeVector   pos   = aStep->GetPostStepPoint()->GetPosition();      ///< Global Coordinates of interaction
 	G4Track*        track = aStep->GetTrack();
-	//string          volname(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName());
 	
 	if(fabs(pos.x()) > max_x_pos ||
 	   fabs(pos.y()) > max_y_pos ||
@@ -50,8 +49,13 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
             track->SetTrackStatus(fStopAndKill);
 	}
 	
-	//	cout << " track id " << track->GetTrackID() << endl;
-	
+	// limiting steps in one volume to 10000
+	// it may be the new version of geant4, or
+	// accurate magnetic fields, but it does happen that sometimes
+	// a track get stuck into a magnetic field infinite loop
+	if(track->GetCurrentStepNumber() > 10000)
+		track->SetTrackStatus(fStopAndKill);
+
 	
 //	// checking if a step is stuck in the same position
 //	// for more than 10 steps

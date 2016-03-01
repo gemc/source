@@ -4,6 +4,8 @@ Changelog for GEMC
 3/1/16
  - added 100 segments lines per circle when inspecting a detector
  - fixed strip identification for bst routine
+ - added max number of steps for a track: 10,000. Apparently there are situations where
+   particles loop too much in a magnetic field
 
 2/29/16
  - removed obsolete cpp materials
@@ -635,10 +637,16 @@ Changelog for GEMC
 
  - Air > G4_AIR as default Air material
 
-
+3/31/2014
+ - bug fix in the dtheta setting line 127. All the rest is tab formatting changes
 
 3/23/2014
  - FT process routine fixed
+ - Very minor, better include statement for types.h
+
+3/22/2014
+ - add scalefactor for multipole field
+
 
 3/12/2014
  - CTOF fixes:

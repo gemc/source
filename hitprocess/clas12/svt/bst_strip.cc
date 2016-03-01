@@ -55,8 +55,6 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 	// particle must be in the z and x active area of the sensor
 	if( fabs(Lxyz.z()) < (SensorLength/2.0 - DZ_inWidth) && fabs(Lxyz.x()) < (SensorWidth/2.0 - DZ_inLength))
 	{
-		
-		
 		// looping over all strips to find the closest
 		// to the point
 		for(int k=0; k<Nstrips; k++)
@@ -100,9 +98,6 @@ vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVec
 	
 	if(StripHit != -1)
 	{
-		
-
-		
 		// correcting for z positioning inside the module
 		double dpitch = pitch + lz*tan(dalpha/rad);
 		
