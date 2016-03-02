@@ -6,11 +6,11 @@
 
 
 // Class definition
-class LTCC_HitProcess : public HitProcess
+class ltcc_HitProcess : public HitProcess
 {
 	public:
 		
-		~LTCC_HitProcess(){;}
+		~ltcc_HitProcess(){;}
 	
 		// - integrateDgt: returns digitized information integrated over the hit
 		map<string, double> integrateDgt(MHit*, int);
@@ -23,7 +23,7 @@ class LTCC_HitProcess : public HitProcess
 		vector<identifier> processID(vector<identifier>, G4Step*, detector);
 	
 		// creates the HitProcess
-		static HitProcess *createHitClass() {return new LTCC_HitProcess;}
+		static HitProcess *createHitClass() {return new ltcc_HitProcess;}
 };
 
 #endif

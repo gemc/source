@@ -15,6 +15,7 @@
 #include "clas12/ft_hodo_hitprocess.h"          ///< Forward Tagger Hodoscope
 #include "clas12/micromegas/ftm_hitprocess.h"   ///< Forward Tagger Micromegas
 #include "clas12/htcc_hitprocess.h"             ///< High Threshold Cherenkov Counter
+#include "clas12/ltcc_hitprocess.h"             ///< Low Threshold Cherenkov Counter
 #include "clas12/micromegas/FMT_hitprocess.h"   ///< forward micromegas
 #include "clas12/micromegas/BMT_hitprocess.h"   ///< barrel micromegas
 #include "clas12/pcal_hitprocess.h"             ///< Pre-shower calorimeter
@@ -68,6 +69,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ft_cal"]   = &ft_cal_HitProcess::createHitClass;
 			hitMap["ft_hodo"]  = &ft_hodo_HitProcess::createHitClass;
 			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
+			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
 			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
 			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
 			hitMap["ftm"]      = &FTM_HitProcess::createHitClass;

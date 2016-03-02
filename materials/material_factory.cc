@@ -388,7 +388,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 					
 					// scintillationyield
 					if(it->second.scintillationyield != -1)
-						optTable.back()->AddConstProperty("SCINTILLATIONYIELD", it->second.scintillationyield/MeV);
+						optTable.back()->AddConstProperty("SCINTILLATIONYIELD", it->second.scintillationyield);
 					
 					// resolutionscale
 					if(it->second.resolutionscale != -1)

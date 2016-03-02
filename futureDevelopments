@@ -36,6 +36,7 @@ Code Improvements:
 - add /tracking/storeTrajectory 4 button
 - add track verbosity output
 - add options for particles color
+- is atof thread safe?
 
 Add production cut verbosity?
 
