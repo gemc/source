@@ -1,3 +1,4 @@
+
 // G4 headers
 #include "G4Poisson.hh"
 #include "Randomize.hh"
@@ -54,7 +55,6 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
      //PMT
     double sensor_surface;   // area of photo sensor
     double sensor_effective_area; // considering only a fraction of the photocathod
-    double optical_coupling;
     double sensor_qe;                     // photo sensor quantum efficiency
     double sensor_gain;         // pmt gain x electron charge in pC (2.2x10^6)x(1.6x10^-7) -> ~0.36pC or 1 to have pe
     double light_coll; // ratio of photo_sensor area over paddle section ~ light collection efficiency
@@ -68,11 +68,11 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // Outer veto
     if(veto_id==2)
     {
+        double optical_coupling[13]= {0., 0.94,0.57, 0.35, 0.7, 0.094, 0.177, 0.52, 0.75, 0.52, 0.52, 0.38, 1.0 };
+        for (int s=0; s<13; s++) optical_coupling[s] = optical_coupling[s]*0.68;
         light_yield=9200/MeV;
         veff=13*cm/ns    ;
         sensor_effective_area=0.9;
-        optical_coupling=0.8;
-        
         sensor_qe=0.25;
         sensor_gain=1.;
 
@@ -86,17 +86,17 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
             paddle_surface = 2*s1*2*s2;
             sensor_surface=pow(2.5*cm,2)*pi; // 2" pmt R-> (2*2.5/2 TBC)
             att_length=350*cm;
-            light_guide_att=0.4;
+            light_guide_att=1.0;
            // cout << " lenght: " << length    <<  " optical-coupled surface: " <<  paddle_surface   <<endl;
         }
         if(channel==5 || channel==6)
         {
             double s1=aHit->GetDetector().dimensions[0];
-            double s2=aHit->GetDetector().dimensions[1];
-            paddle_surface = 2*s1*2*s2;
-            sensor_surface=pow((2.5/2)*cm,2)*pi; // 1" pmt R-> (1*2.5/2 TBC)
+            double s2=aHit->GetDetector().dimensions[3];
+            paddle_surface = 2*s1*2*s2;// surface perpendicular to the pmt position Surf=XxZ
+            sensor_surface=pow((2.5/2)*cm,2)*pi; //
             att_length=400*cm; // longer att lenght to take into account the perpendicular readout
-            light_guide_att=1.0; // no light guide
+            light_guide_att=0.19; // no light guide
            // cout << " lenght: " << length    <<  " optical-coupled surface: " <<  paddle_surface   <<endl;
         }
         if(channel==7 || channel==8 || channel==9 || channel ==10 || channel ==11 || channel ==12 )
@@ -108,13 +108,13 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
             sensor_surface=pow(2.5*cm,2)*pi; // 2" pmt R-> (2*2.5/2 TBC)
             paddle_surface = 2*s1*2*s2;
             att_length=350*cm;
-            light_guide_att=0.35;
+            light_guide_att=1.0;
            // cout << " lenght: " << length    <<  " optical-coupled surface: " <<  paddle_surface   <<endl;
         }
         
         light_coll=sensor_surface/paddle_surface;
         if (sensor_surface>paddle_surface) light_coll=1.;   // no more than the PMT size
-        light_coll=optical_coupling*light_coll*sensor_effective_area*light_guide_att;             // Including the coupling efficiency and the pc effective area
+        light_coll=optical_coupling[channel]*light_coll*sensor_effective_area*light_guide_att;             // Including the coupling efficiency and the pc effective area
         //cout << " light collo " << light_coll     <<endl;
 	
 	// Get info about detector material to eveluate Birks effect
@@ -368,6 +368,9 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     //starting paddles
     if(veto_id==3)
     {
+            double optical_coupling[3]= {0., 1.,0.37 };
+        for (int s=0; s<3; s++) optical_coupling[s] = optical_coupling[s]*0.34;
+
         light_yield=9200/MeV;
         veff=13*cm/ns    ;
         sensor_surface=pow(1.27*cm,2)*pi; // 1" pmt R-> (2.5/2 TBC)
@@ -375,14 +378,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         
         sensor_qe=0.25;
         sensor_gain=1.;
-        if(channel==1)// paddle_up
-        {
-            optical_coupling=0.8;
-        }
-        else// paddle_down
-        {
-            optical_coupling=0.8*0.35;
-        }
+
 
          // Get the paddle length: in veto paddles are along z
          length = aHit->GetDetector().dimensions[2];
@@ -390,13 +386,13 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
           double s2=aHit->GetDetector().dimensions[1];
           paddle_surface = 2*s1*2*s2;
           att_length=350*cm;
-          light_guide_att=0.2;
+          light_guide_att=1.;
         //cout << " lenght: " << length    <<  " optical-coupled surface: " <<  paddle_surface   <<endl;
         
         light_coll=sensor_surface/paddle_surface;
         if (sensor_surface>paddle_surface) light_coll=1.;   // no more than the PMT size
-        light_coll=optical_coupling*light_coll*sensor_effective_area*light_guide_att;             // Including the coupling efficiency and the pc effective area
-       // cout << " channel,veto: " << channel << " " << veto_id    <<  " optical-couping: " <<  optical_coupling  <<  " light coll: " <<  light_coll  <<endl;
+        light_coll=optical_coupling[channel]*light_coll*sensor_effective_area*light_guide_att;             // Including the coupling efficiency and the pc effective area
+       // cout << " channel,veto: " << channel << " " << veto_id    <<  " optical-couping: " <<  optical_coupling[channel]  <<  " light coll: " <<  light_coll  <<endl;
         //cout << " light collo " << light_coll     <<endl;
         
         // Get info about detector material to eveluate Birks effect
@@ -479,8 +475,8 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
             
             double sigmaTL=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peL+1.));
             double sigmaTR=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peR+1.));
-            sigmaTL=0;
-            sigmaTR=0;
+//            sigmaTL=0;
+//            sigmaTR=0;
             tL=(time_min[0]+G4RandGauss::shoot(0.,sigmaTL))*1000.;//time in ps
             tR=(time_min[1]+G4RandGauss::shoot(0.,sigmaTR))*1000.;// time in ps
             // Digitization for ADC and QDC not used
