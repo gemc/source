@@ -258,13 +258,18 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	explodeSlider->setRange(0, 30);
 	connect ( explodeSlider , SIGNAL( valueChanged(int) ), this, SLOT( explode(int) ) );
 	
-	QPushButton *screenShotPNG = new QPushButton(tr("PNG screenshot"));
+	QPushButton *screenShotPNG = new QPushButton(tr("PNG"));
 	screenShotPNG->setToolTip("Print a screenshot to a PNG file");
 	screenShotPNG->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	connect ( screenShotPNG , SIGNAL(clicked()), this, SLOT( printPNG() ));
 	
-	QPushButton *screenShotPDF = new QPushButton(tr("EPS screenshot"));
-	screenShotPDF->setToolTip("Print a screenshot to a encapsulated poscript file");
+	QPushButton *screenShotEPS = new QPushButton(tr("EPS"));
+	screenShotEPS->setToolTip("Print a screenshot to a encapsulated poscript file");
+	screenShotEPS->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	connect ( screenShotEPS , SIGNAL(clicked()), this, SLOT( printEPS() ));
+	
+	QPushButton *screenShotPDF = new QPushButton(tr("PDF"));
+	screenShotPDF->setToolTip("Print a screenshot to PDF");
 	screenShotPDF->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	connect ( screenShotPDF , SIGNAL(clicked()), this, SLOT( printPDF() ));
 	
@@ -273,6 +278,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	explodeLayout->addWidget(explodeSlider);
 	explodeLayout->addWidget(screenShotPNG);
 	explodeLayout->addWidget(screenShotPDF);
+	explodeLayout->addWidget(screenShotEPS);
 
 	QGroupBox *explodeGroup = new QGroupBox(tr("Explode"));
 	explodeGroup->setLayout(explodeLayout);
@@ -298,19 +304,26 @@ void camera_control::printPNG()
 	char command[100];
 	sprintf(command, "/vis/ogl/export gemc.png");
 	UImanager->ApplyCommand(command);
-
 }
 
 
-void camera_control::printPDF()
+void camera_control::printEPS()
 {
 	char command[100];
 	sprintf(command, "/vis/ogl/set/printMode vectored");
 	UImanager->ApplyCommand(command);
 	sprintf(command, "/vis/ogl/printEPS");
 	UImanager->ApplyCommand(command);
-	
 }
+
+void camera_control::printPDF()
+{
+	char command[100];
+	sprintf(command, "/vis/ogl/export gemc.pdf");
+	UImanager->ApplyCommand(command);
+}
+
+
 
 void camera_control::slice()
 {

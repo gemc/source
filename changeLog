@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/4/16
+ - fixed bst routine
+ - added export to PDF button
+
 3/2/16
  - removed CCGas from hardcoded cpp materials, added in ltcc system
  - refurbished ltcc hit process routine. Added nphotonarrived variables as opposed to detected.
