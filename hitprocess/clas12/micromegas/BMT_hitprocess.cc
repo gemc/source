@@ -31,7 +31,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
-	dgtz["Edep"] = tInfos.eTot;
+	dgtz["Edep"]   = tInfos.eTot;
 	return dgtz;
 }
 

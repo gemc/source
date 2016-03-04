@@ -27,10 +27,6 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[4].id;
 	
 	trueInfos tInfos(aHit);
-	// the energy deposited from a mip is 80 KeV
-	// The max value of the ADC is 2.5V
-	// We set for now 3 values of mip inside the 2.5V.
-	// So ~250 KeV = 2.5V, or 0.10 MeV = 1 Volt.
 	
    // 1 DAC is 0.87 keV
    // If deposited energy is below 26.1 keV there is no hit.
@@ -41,11 +37,6 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
    double minHit = 0.0261*MeV;
    double maxHit = 0.11747*MeV;
    double deltaADC = maxHit - minHit;
-   
-//	double maxV = 2.5;
-//	double etoV = 0.1;
-//	double vout = tInfos.eTot/etoV;
-//	double vrat = vout / maxV;
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
    int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
 	
