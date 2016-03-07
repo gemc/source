@@ -204,7 +204,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
 			}
 			// now generating random momentum, cos(theta)
-			double cosmicProb = G4UniformRand();
+			// the maximum of the distribution is the lowest momentum and 0 theta
+			// normalizing by that number
+			double cosmicProb = G4UniformRand()*cosmicBeam(0, cminp/GeV);
 			
 			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
 			double thisthe = pi*G4UniformRand()/2.0;

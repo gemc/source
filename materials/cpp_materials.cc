@@ -149,15 +149,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	Aerogel->AddMaterial(matman->FindOrBuildMaterial("G4_Si"), 30.*perCent);
 	Aerogel->AddMaterial(matman->FindOrBuildMaterial("G4_O"),  70.*perCent);
 	
-	G4Material *CCGas = new G4Material("CCGas",       density= 0.01012*g/cm3, nel=2);
-	CCGas->AddElement(F, 70.*perCent);
-	CCGas->AddMaterial(matman->FindOrBuildMaterial("G4_C"), 30.*perCent);
-	
-	
-	
-	
-	
-	
+
 	
 	
 	G4Isotope* D  = new G4Isotope("Deuteron", zz=1, nn=2, a= 2.0141018*g/mole);
@@ -502,7 +494,6 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	MMats["C5F12"]          = C5F12;
 	MMats["C6F14"]          = C6F14;
 	MMats["Carbon"]         = Carbon;
-	MMats["CCGas"]          = CCGas;
 	MMats["Concrete"]       = matman->FindOrBuildMaterial("G4_CONCRETE");       // concrete
 	MMats["Copper"]         = matman->FindOrBuildMaterial("G4_Cu");
 	MMats["DCgas"]          = DCgas;
@@ -713,21 +704,6 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	
 	MMats["Water"]->SetMaterialPropertiesTable(Water_MPT);
 	MMats["H2O"]->SetMaterialPropertiesTable(Water_MPT);
-	
-	
-	// Cerenkov Gas properties
-	const G4int nEntries_CCGas = 2;
-	G4double PhotonEnergy_CCGas[nEntries_CCGas]    = { 2.034*eV, 4.136*eV };
-	G4double RefractiveIndex_CCGas[nEntries_CCGas] = { 1.001331  , 1.00143   };
-	G4double Absorption_CCGas[nEntries_CCGas]      = { 10*m ,  3*m };
-	
-	G4MaterialPropertiesTable* CCGas_MPT = new G4MaterialPropertiesTable();
-	CCGas_MPT->AddProperty("RINDEX",        PhotonEnergy_CCGas, RefractiveIndex_CCGas, nEntries_CCGas);
-	CCGas_MPT->AddProperty("ABSLENGTH",     PhotonEnergy_CCGas, Absorption_CCGas,      nEntries_CCGas);
-	CCGas_MPT->AddConstProperty("SCINTILLATIONYIELD", 10./MeV);
-	CCGas_MPT->AddConstProperty("RESOLUTIONSCALE",    1.0);
-	CCGas_MPT->AddConstProperty("YIELDRATIO",         0.8);
-	MMats["CCGas"]->SetMaterialPropertiesTable(CCGas_MPT);
 	
 	
 	// Aerogel properties

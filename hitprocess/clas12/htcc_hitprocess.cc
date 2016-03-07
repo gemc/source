@@ -27,6 +27,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // if anything else than a photon hits the PMT
     // the nphe is the particle id
     // and identifiers are negative
+	 // this should be changed, what if we still have a photon later?
     dgtz["sector"] = -idsector;
     dgtz["ring"]   = -idring;
     dgtz["half"]   = -idhalf;
@@ -34,10 +35,8 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     dgtz["time"]   = tInfos.time;
     dgtz["hitn"]   = hitn;
 
-	
     
-    
-	// if the particle is not an opticalphoton return empty bank
+	// if the particle is not an opticalphoton return bank filled with negative identifiers
 	if(thisPid != 0)
         return dgtz;
 	
@@ -54,9 +53,11 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<double> photon_energies;
 	
 	vector<double> Energies = aHit->GetEs();
-	unsigned nsteps = tids.size();
 	
-	for(unsigned int s=0; s<nsteps; s++)
+	
+	// this needs to be optimized
+	// uaing the return value of insert is unnecessary
+	for(unsigned int s=0; s<tids.size(); s++)
 	{
 		// selecting optical photons
 		if(pids[s] == 0)
@@ -70,23 +71,6 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-
-	
-	// if identifiers for theta and phi indices have been defined, use them.
-	// otherwise, calculate itheta and iphi from the (mandatory) pmt index
-	// assuming the default configuration:
-	int isector=-1, iring=-1, ihalf=-1;
-	
-	
-	// what is going on here i dont think this is right
-	// double check!!
-	if( idsector >= 0 && idring >= 0 && idhalf >= 0 )
-	{
-		isector = identity[idsector].id;
-		iring   = identity[idring].id;
-		ihalf  = identity[idhalf].id;
-	}
-	else return dgtz; // no valid ID
 	
 	// here is the fun part: figure out the number of photons we detect based
 	// on the quantum efficiency of the photocathode material, if defined:
@@ -109,7 +93,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		//loop over all unique photons contributing to the hit:
 		if( gotefficiency )
 		{
-			//If the material of this detector has a material properties table
+			// If the material of this detector has a material properties table
 			// with "EFFICIENCY" defined, then "detect" this photon with probability = efficiency
 			bool outofrange = false;
 			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) )
@@ -126,7 +110,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 		else
 		{
-			//No efficiency definition, "detect" all photons
+			// No efficiency definition, "detect" all photons
 			ndetected++;
 		}
 	}
@@ -134,7 +118,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(verbosity>4)
 	{
 	
-		cout <<  log_msg << " (sector, ring, half)=(" << isector << ", " << iring << ", " << ihalf << ")"
+		cout <<  log_msg << " (sector, ring, half)=(" << idsector << ", " << idring << ", " << idhalf << ")"
 		     << " x=" << tInfos.x/cm << " y=" << tInfos.y/cm << " z=" << tInfos.z/cm << endl;
 	}
 

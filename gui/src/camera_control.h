@@ -68,6 +68,7 @@ class camera_control : public QWidget
 		void explode(int);
 		
 		void printPNG();
+		void printEPS();
 		void printPDF();
 	
 		void set_perspective(int);

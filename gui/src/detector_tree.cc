@@ -321,6 +321,8 @@ void detector_tree::inspectDetector()
 	string name  = qs_tostring(treeWidget->currentItem()->text(0));
 	
 	char command[100];
+	sprintf(command,"/vis/viewer/set/lineSegmentsPerCircle 100 ");
+	UImanager->ApplyCommand(command);
 	sprintf(command, "/vis/open OGL");
 	UImanager->ApplyCommand(command);
 	sprintf(command, "/vis/specify %s", name.c_str());

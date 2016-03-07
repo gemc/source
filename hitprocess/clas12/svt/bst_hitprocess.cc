@@ -6,6 +6,9 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// geant4
+#include "Randomize.hh"
+
 map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -27,18 +30,29 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[4].id;
 	
 	trueInfos tInfos(aHit);
-	// the energy deposited from a mip is 80 KeV
-	// The max value of the ADC is 2.5V
-	// We set for now 3 values of mip inside the 2.5V.
-	// So ~250 KeV = 2.5V, or 0.10 MeV = 1 Volt.
 	
-	double maxV = 2.5;
-	double etoV = 0.1;
-	double vout = tInfos.eTot/etoV;
-	double vrat = vout / maxV;
-	int adc     = floor(vrat*8);
-	if(adc >7) adc = 7;
-		
+   // 1 DAC is 0.87 keV
+   // If deposited energy is below 26.1 keV there is no hit.
+   // If deposited energy is above 117.47 keV the hit will be in the last ADC bin
+   // (from 117.47 keV to infinity), which means overflow.
+   // I.e. there are 7 bins plus an overflow bin.
+   
+   double minHit = 0.0261*MeV;
+   double maxHit = 0.11747*MeV;
+   double deltaADC = maxHit - minHit;
+	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
+   int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
+	
+   if(tInfos.eTot>maxHit)
+   {
+      adc   = 7;
+      adchd = 8196;
+   }
+   if(tInfos.eTot<minHit)
+   {
+      adc   = -5;
+      adchd = -5000;
+   }
 	if(verbosity>4)
 	{
 		trueInfos tInfos(aHit);
@@ -51,8 +65,9 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = adc;
-	dgtz["vout"]   = vout;
-	dgtz["bco"]    = tInfos.time;
+   dgtz["ADCHD"]  = adchd;
+	dgtz["time"]   = tInfos.time;
+	dgtz["bco"]    = (int) 255*G4UniformRand();
 	
 	return dgtz;
 }
