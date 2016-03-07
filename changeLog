@@ -3,6 +3,7 @@ Changelog for GEMC
 
 3/7/16
  - added time to bst digitized info. bco is a random number between 0 and 255.
+ - normalizing cosmics distribution to lower momentum limit
 
 3/4/16
  - fixed bst routine
