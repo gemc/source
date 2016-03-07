@@ -6,6 +6,9 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// geant4
+#include "Randomize.hh"
+
 map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -63,7 +66,8 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = adc;
    dgtz["ADCHD"]  = adchd;
-	dgtz["bco"]    = tInfos.time;
+	dgtz["time"]   = tInfos.time;
+	dgtz["bco"]    = (int) 255*G4UniformRand();
 	
 	return dgtz;
 }
