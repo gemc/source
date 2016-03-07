@@ -215,8 +215,8 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		double sigmaTL=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peL+1.));
 		double sigmaTR=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peR+1.));
-		sigmaTL=0;
-		sigmaTR=0;
+		//sigmaTL=0;
+		//sigmaTR=0;
 		tL=(time_min[0]+G4RandGauss::shoot(0.,sigmaTL))*1000.;//time in ps
 		tR=(time_min[1]+G4RandGauss::shoot(0.,sigmaTR))*1000.;// time in ps
         // Digitization for ADC and QDC not used
@@ -479,6 +479,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 //            sigmaTR=0;
             tL=(time_min[0]+G4RandGauss::shoot(0.,sigmaTL))*1000.;//time in ps
             tR=(time_min[1]+G4RandGauss::shoot(0.,sigmaTR))*1000.;// time in ps
+          //  cout << " tL " << tL   <<  " ; timeL" <<  timeL <<endl;
             // Digitization for ADC and QDC not used
             //TDC1=(int) (tL * tdc_conv);
             //TDC2=(int) (tR * tdc_conv);
@@ -575,7 +576,54 @@ double* veto_HitProcess::IVresponse(int channel, double xx, double yy,double zz)
         //cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
 
     }
-    if (channel==5)//Right
+    else if (channel==2)//bottom
+    {// Assuming an overall size of 42.8 cm with 4 bars of
+        double x=-(xx-428/2)/10;
+        double y=(1058/2.-zz)/10.;
+        
+        
+        for(unsigned int s=0; s<4; s++) response[s] =0.;
+        if (x<10)           response[0]= (-0.000303034)*y*y + (0.00658939)*y + 32.4847; //D1
+        if (x>10 & x <20 ) response[1]=   (0.00301674)*y*y + (-0.446544)*y + 27.6374; //D4
+        if (x>20 & x <32.8 ) response[2]= (-0.000275694)*y*y + (0.00124251)*y + 18.8999; //D3
+        if (x>32.8 & x <42.8 ) response[3]= (-0.00139525)*y*y + (0.104993)*y + 18.1047; //D2
+        
+            // cout <<  " x: " << x <<  " y: " << y << " zz: " << zz << endl ;
+      //  cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
+        
+    }
+    else if (channel==3)// Side Upstream
+    {// Assuming an overall size of 42.8 cm with 4 bars of
+        double x=-xx/10;
+        double y=(yy+346./2)/10.;
+        
+        double parm[4]={-0.04, -0.05, 1.4, 85.};
+           
+        
+        for(unsigned int s=0; s<4; s++) response[s] =0.;
+        response[0] = parm[0]*x*x + parm[1]*y*y + parm[2]*y + parm[3];
+
+        // cout <<  " x: " << x <<  " y: " << y << " yy: " << yy << endl ;
+         // cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
+        
+    }
+    else if (channel==4)// Side Downstream
+    {// Assuming an overall size of 42.8 cm with 4 bars of
+        double x=xx/10;
+        double y=(yy+346./2)/10.;
+        
+        double parm[4]={-0.04, -0.05, 1.4, 75.};  
+        
+        
+        for(unsigned int s=0; s<4; s++) response[s] =0.;
+        response[0] = parm[0]*x*x + parm[1]*y*y + parm[2]*y + parm[3];
+        
+        //cout <<  " x: " << x <<  " y: " << y << " yy: " << yy << endl ;
+        //cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
+        
+    }
+
+    else if (channel==5)//Right
     {
         double x=-yy/10.;
         double y=(1058/2.-zz)/10.;
@@ -595,7 +643,7 @@ double* veto_HitProcess::IVresponse(int channel, double xx, double yy,double zz)
         //cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
        
     }
-    if (channel==6)//Left
+    else if (channel==6)//Left
     {
         double x=-yy/10.;
         double y=(1058/2.-zz)/10.;
