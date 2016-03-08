@@ -190,6 +190,21 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		// paper: A. Dar, Phys.Rev.Lett, 51,3,p.227 (1983)
 		else
 		{
+            bool cosmicNeutrons;
+            cosmicNeutrons=true;
+            
+            double thisMom;
+            double thisthe;
+            double thisPhi;
+            double akine;
+            G4bool   GoodEnergy;
+            G4bool   GoodAngle;
+            G4double fE;
+            G4double cT;
+            G4double fT;
+            G4double E0;
+
+            
 			// first randomly pick a number inside the sphere
 			double cosmicVX = 100000;
 			double cosmicVY = 100000;
@@ -203,21 +218,49 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				cosmicVY = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
 				cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
 			}
+            
+            if(cosmicNeutrons) {
+                //cout<< cminp<<endl;
+                if (cminp<0.1 || cmaxp>10000) cout <<"WARNING !!!! COSMIC MUONS E is OUT OF THE VALID RANGE !!!"<<endl;
+                G4double A = 1.006*pow(10,-6)*800;
+                G4double B = 1.011*pow(10,-3)*800;
+                G4double y;
+                GoodEnergy=false;
+                while(!GoodEnergy)
+                {
+                    E0=G4UniformRand()*(cmaxp-cminp)+cminp;  // The model is valid in the range  0.1 MeV - 10 GeV
+                    fE= A*exp(2.1451*log(E0)-0.35*pow(log(E0),2))+B*exp(-0.667*log(E0)-0.4106*pow(log(E0),2));
+                    y= G4UniformRand();
+                    akine=E0;
+                    if(y<fE) GoodEnergy=true;
+                }
+                //cout << akine<< endl;
+                GoodAngle = false;
+                while(!GoodAngle)
+                {
+                    cT=G4UniformRand();
+                    fT=cT*cT*cT; // cos^3 distribution
+                    if(G4UniformRand()<fT) GoodAngle=true;
+                }
+                thisthe = acos(cT);
+            }
+            else {//muons
 			// now generating random momentum, cos(theta)
 			// the maximum of the distribution is the lowest momentum and 0 theta
 			// normalizing by that number
 			double cosmicProb = G4UniformRand()*cosmicBeam(0, cminp/GeV);
-			
-			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
-			double thisthe = pi*G4UniformRand()/2.0;
+			thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+			thisthe = pi*G4UniformRand()/2.0;
 			while (cosmicBeam(thisthe, thisMom/GeV) < cosmicProb)
 			{
 				thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
 				thisthe = pi*G4UniformRand()/2.0;
 			}
-			// isotropic in phi
-			double thisPhi = -pi + 2*pi*G4UniformRand();
-			
+            }
+            // isotropic in phi
+            thisPhi = -pi + 2*pi*G4UniformRand();
+            
+            
 			// now finding the vertex. Assuming twice the radius as starting point
 			// attention:
 			// axis transformation, z <> y,  x <> -x
@@ -228,17 +271,22 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticlePosition(G4ThreeVector(pvx, pvy, pvz));
 
 			
-			// choosing charge of the muons
+           if(cosmicNeutrons) {
+               Particle= particleTable->FindParticle("neutron");
+               
+           }
+            else{//muons
+            // choosing charge of the muons
 			string muonType = "mu+";
 			if(G4UniformRand() <= 0.5)
 				muonType = "mu-";
 				
 			Particle = particleTable->FindParticle(muonType);
 			double mass = Particle->GetPDGMass();
-			double akine = sqrt(thisMom*thisMom + mass*mass) - mass ;
-
+			akine = sqrt(thisMom*thisMom + mass*mass) - mass ;
+            }
+            
 			particleGun->SetParticleDefinition(Particle);
-
 			// when assigning momentum the direction is reversed
 			G4ThreeVector beam_dir(cos(thisPhi)*sin(thisthe), -cos(thisthe), -sin(thisPhi)*sin(thisthe));
 			
