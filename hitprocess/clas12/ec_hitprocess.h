@@ -10,19 +10,27 @@ class ecConstants
 {
 	public:
 		// runNo is mandatory variable to keep track of run number changes
-		int runNo;
+		int    runNo;
 		string variation;
 		string date;
 		string connection;
 		char   database[80];
+
+		// For strip dependent constants read from CCDB
+		// Array [6][9][3] -> sector,layer,view sector=1-6 layer=1-3 (PCAL) 4-6 (ECinner) 7-9 (ECouter) view=1-3 (U,V,W)
+
+		//attlen: attenuation length
+		vector<double> attlen[6][9][3];
 		
-		double NSTRIPS;                 // Number of strips
-		vector<double> attlen[6][9][3];         // Attenuation Length (mm)
-		double attl;
-		double TDC_time_to_evio;        // Conversion from time (ns) to EVIO TDC format
-		double ADC_MeV_to_evio;         // Conversion from energy (MeV) to EVIO FADC250 format
-		double PE_yld;                  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
-		double veff;                    // Effective velocity of scintillator light (mm/ns)
+		double NSTRIPS;             // Number of strips
+		double TDC_time_to_evio;    // Conversion from time (ns) to EVIO TDC format
+		double ADC_MeV_to_evio;     // Conversion from energy (MeV) to EVIO FADC250 format
+		double veff;                // Effective velocity of scintillator light (mm/ns)
+		double pmtPEYld;            // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+		double pmtQE;               // Quantum efficiency of PMT
+		double pmtDynodeGain;       // PMT dynode gain
+		double pmtDynodeK;          // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential) 
+		double pmtFactor;           // Contribution to FWHM from PMT statistical fluctuations.		  
 };
 
 

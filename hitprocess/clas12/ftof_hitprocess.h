@@ -9,60 +9,57 @@ class ftofConstants
 {
 	public:
 
-		// database
+		// Database parameters
 		int    runNo;	
 		string variation;
 		string date;
 		string connection;
-		char database[80];
+		char   database[80];
 
-	
-		// There are 3 FTOF panels, 6 sectors so the constants are organized in
-		// 6 + 3 dimensional arrays + 2 for Left and Right
-	
-		// number of paddles in each panel, in order p1a, p1b, p2
-		int npaddles[3];
-		int thick[3];
-	
+		// For paddle dependent constants read from CCDB
+		// Array [6][3][2] -> sector,panel,LR
+		
 		// status:
 		//	0 - fully functioning
 		//	1 - noADC
 		//	2 - noTDC
-		//	3 - noADC, noTDC(PMTisdead)
-		//  5 - any other reconstruction problem
+		//	3 - noADC, noTDC (PMT is dead)
+		//      5 - any other reconstruction problem
 		vector<int> status[6][3][2];
 	
-		// effective velocity
+		// veff: effective velocity
 		vector<double> veff[6][3][2];
 	
-		// attenuation length comes from a linear parameterization
-		// based on the counter length in cm
-		// depends on the panel
+		// attlen: attenuation length 
 		vector<double> attlen[6][3][2];
 	
-		// dEdxMIP: dEdx for muon MIP, dEMIP: MIP energy for paddle
-		double dEdxMIP;
-		double dEMIP[3];
-	
-		// minimum ionizing calibration peak
+		// countsForMIP: Desired ADC channel for MIP peak calibration
 		vector<double> countsForMIP[6][3][2];
 	
-		// time walk correction is parameterized with two coefficients
+		// twlk: Time walk correction, 3 constants each for L and R
 		vector<double> twlk[6][3][6];
 	
-		// time resolution parameterized as sigma0^2 + sigma1^2/N
-		// where N is number of photoelectrons reaching the PTMS
-		double sigma0[3], sigma1[3];
-		double nphePerMevReachingPMT;
+		// tres: Gaussian sigma for smearing time resolution
+		vector<double> tres[3];
+		
+		int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
+		int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
+		double dEdxMIP;      // Nominal MIP specific energy loss (MeV/gm/cm2)
+		double dEMIP[3];     // Nominal MIP energy loss (MeV) for Panel 1A, 1B and 2.
 	
+		double pmtPEYld;      // Photoelectron yield (p.e./MeV)
+		double pmtQE;         // Quantum efficiency of PMT
+		double pmtDynodeGain; // PMT dynode gain
+		double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential) 
+		double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations. 
+		double tdcLSB;        // Conversion from ns to TDC channel.
 };
 
 
 // Class definition
 /// \class ftof_HitProcess
 /// <b> Forward Time of Flight Hit Process Routine</b>\n\n
-/// The Calibration Constants are:\n
-/// - VEF is the effective velocity of propogation in the scintillator
+
 class ftof_HitProcess : public HitProcess
 {
 	public:

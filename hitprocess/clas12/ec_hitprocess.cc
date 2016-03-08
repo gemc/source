@@ -27,13 +27,20 @@ static ecConstants initializeECConstants(int runno)
 	ecc.variation  = "default";
 	
 	ecc.NSTRIPS             = 36;
+	ecc.TDC_time_to_evio    = 1000.; // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	ecc.ADC_MeV_to_evio     = 10.  ; // MIP based calibration is nominally 10 channels/MeV
+	ecc.veff                = 160. ; // Effective velocity of scintillator light (mm/ns)
+	ecc.pmtPEYld            = 3.5  ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	ecc.pmtQE               = 0.27 ; 
+	ecc.pmtDynodeGain       = 4.0  ; 
+        ecc.pmtDynodeK          = 0.5  ; // K=0 (Poisson) K=1(exponential)
+	//  Fluctuations in PMT gain distributed using Gaussian with
+	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
+	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
+	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
+	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).	
+	ecc.pmtFactor           = sqrt(1-ecc.pmtQE+(ecc.pmtDynodeK*ecc.pmtDynodeGain+1)/(ecc.pmtDynodeGain-1));
 	
-	ecc.attl                = 3760.;  // Attenuation Length (mm)
-	ecc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
-	ecc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
-	ecc.PE_yld              = 3.5  ;  // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
-	ecc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-
 	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
 	
@@ -46,7 +53,6 @@ static ecConstants initializeECConstants(int runno)
 	  ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
 	  ecc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
 	  ecc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
-
 	}
 	
 	return ecc;
@@ -77,8 +83,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int layer  = (stack-1)*3+view+3; // layer=1-3 (PCAL) 4-9 (ECAL)
 	  
 	trueInfos tInfos(aHit);
-	
-	
+		
 	// Get scintillator mother volume dimensions (mm)
 	double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
@@ -126,21 +131,20 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int TDC = 0;
 	
 	// simulate the adc value.
-	if (Etota > 0)
-	{
-		double EC_npe = G4Poisson(Etota*ecc.PE_yld); //number of photoelectrons
-																	//  Fluctuations in PMT gain distributed using Gaussian with
-																	//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-																	//  algorithm, values, and comment above taken from gsim.
-		double sigma = sqrt(EC_npe)/1.22;
-		double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ADC_MeV_to_evio/ecc.PE_yld;
-		if (EC_MeV <= 0) EC_MeV = 0.0; // guard against weird, rare events.
-		ADC = (int) EC_MeV;
+	if (Etota > 0) {
+	  double EC_npe = G4Poisson(Etota*ecc.pmtPEYld); //number of photoelectrons
+	  if (EC_npe>0) {
+	    double sigma  = ecc.pmtFactor/sqrt(EC_npe);
+	    double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ADC_MeV_to_evio/ecc.pmtPEYld;
+	    if (EC_MeV>0) {
+	      ADC = (int) EC_MeV;
+	      TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio);
+	    }
+	  }
 	}
 	
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 1.4 us.  This offset is omitted in the simulation.
-	TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio);
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
