@@ -25,12 +25,39 @@
 #include "MPrimaryGeneratorAction.h"
 
 
+/// \class BGParts
+/// <b> BGParts: (background) Particles that produce hits </b>\n\n
+/// Contains:
+/// - pid.
+/// - vertex.\n
+/// - momentum.\n
+/// This class is meant to keep in a map<pid, BGParts> all particles that create
+/// a hit in any detector. If a mother create a hit as well, the daughter won't be kept in the map
+/// If requested by the user, this particles are saved in a LUND format so they can be merged
+/// to a generator - instead of regenerating beam on target
+class BGParts
+{
+	public:
+		BGParts(){;}
+		BGParts(int partid, G4ThreeVector vtx, G4ThreeVector mom)
+		{
+			pid = partid;
+			v    = vtx;
+			p    = mom;
+		}
+		~BGParts(){;}
+	
+	public:
+		int pid;
+		G4ThreeVector v; // vertex
+		G4ThreeVector p; // momentum
+};
+
+
 /// \class TInfos
 /// <b> TInfos: Track information of particles in sensitive detectors1 </b>\n\n
 /// Contains:
-/// - particle ID (int from PDG encoding).
 /// - mother particle ID.
-/// - vertex
 /// - mother particle vertex.\n
 /// For ions:
 /// Nuclear codes are given as 10-digit numbers +-100ZZZAAAI.\n
@@ -100,13 +127,18 @@ class MEventAction : public G4UserEventAction
 		int    Modulo;          ///< Print Log Event every Modulo
 		double VERB;            ///< Event Verbosity
 		string catch_v;         ///< Print Log for volume
-		int   SAVE_ALL_MOTHERS; ///< Loops over the stored trajectories to store mother vertex and pid in the output
+		int   SAVE_ALL_MOTHERS; ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
 		int   MAXP;             ///< Max number of generated particles to save on output stream
 		string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
 		string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
 		string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
 		string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
-		
+	
+		// save particles that produced a hit onto LUND format
+		void saveBGPartsToLund();
+		ofstream *lundOutput;
+		map<int, BGParts> bgMap;
+	
 	public:
 		void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
 		void EndOfEventAction(const G4Event*);              ///< Routine at the end of each event

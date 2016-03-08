@@ -412,7 +412,9 @@ void goptions::setGoptions()
 	
 	optMap["SAVE_ALL_MOTHERS"].arg = 0;
 	optMap["SAVE_ALL_MOTHERS"].name = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage";
-	optMap["SAVE_ALL_MOTHERS"].help = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage. Default is 0.\n";
+	optMap["SAVE_ALL_MOTHERS"].help  = "Set to 1 to save mother vertex and pid infos in output. High Memory Usage. Default is 0.\n";
+	optMap["SAVE_ALL_MOTHERS"].help += "Set to 2 to save in LUND format particles that generate hits (unless mother also generate hits)\n";
+	optMap["SAVE_ALL_MOTHERS"].help += "Set to 3 to save in LUND format particles that generate hits (even if mother also generate hits)\n";
 	optMap["SAVE_ALL_MOTHERS"].type = 0;
 	optMap["SAVE_ALL_MOTHERS"].ctgr = "control";
 	

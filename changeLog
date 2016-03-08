@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+3/8/16
+ - parsing micromegas hit process routine
+ - with SAVE_ALL_MOTHERS set to 2, all particles generating hits are saved in LUND format
+   exception: if the mother also is a particle generating hit, only the mother is saved - unless SAVE_ALL_MOTHERS is set to 3
+	Implementation not complete on 3/8/16
+
 3/7/16
  - added time to bst digitized info. bco is a random number between 0 and 255.
  - normalizing cosmics distribution to lower momentum limit
@@ -712,9 +718,24 @@ Changelog for GEMC
  - material i/o changes. Changelog updated for upcoming beta3
 
 
+1/14/2014
+ - add multipole field by Zhiwen Zhao
 
 
+1/13/2014
+ - Removing the 1000 steps limitation as it create problems with large volumes with magnetic fields
 
+11/21/2013
+ - experimental hall dimensions can be set with options. Default: 40mx40mx40m
+ - typo fixed in the help for DF option
+ - adding drag and drop capability for configuration files (gcard). Adding full LUND header in the output stream
+
+11/1/2013
+ - adding icon for doxygen documentation. Preparing to drag and drop gcard file to gemc app
+
+
+10/31/2013
+ - added c++ detector factory from a library plugin. Clara can use this plugin for geometry.
 
 
 

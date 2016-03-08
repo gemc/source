@@ -92,16 +92,25 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	WRITE_INTRAW     = replaceCharWithChars(gemcOpt.optMap["INTEGRATEDRAW"].args, ",", "  ");
 	WRITE_INTDGT     = replaceCharWithChars(gemcOpt.optMap["INTEGRATEDDGT"].args, ",", "  ");
 	SIGNALVT         = replaceCharWithChars(gemcOpt.optMap["SIGNALVT"].args, ",", "  ");
+	
+	if(SAVE_ALL_MOTHERS>1)
+	{
+		lundOutput = new ofstream("background.dat");
+		cout << " > Opening background.dat file to save background particles in LUND format." << endl;
+	}
+	
 }
 
 MEventAction::~MEventAction()
 {
-	;
+	if(SAVE_ALL_MOTHERS>1)
+		lundOutput->close();
 }
 
 void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
 	rw.getRunNumber(evtN);
+	bgMap.clear();
 	
 	if(evtN%Modulo == 0 )
 	{
@@ -123,7 +132,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
 	
 	
-	// building the tracks database with all the tracks in all the hits
+	// building the tracks set database with all the tracks in all the hits
 	// if SAVE_ALL_MOTHERS is set
 	set<int> track_db;
 	if(SAVE_ALL_MOTHERS)
@@ -136,11 +145,24 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			
 			for(int h=0; h<nhits; h++)
 			{
-				vector<int> tids = (*MHC)[h]->GetTIds();
+				vector<int>           tids = (*MHC)[h]->GetTIds();
+				
 				for(unsigned int t=0; t<tids.size(); t++)
 					track_db.insert(tids[t]);
+				
+				
+				if(SAVE_ALL_MOTHERS>1)
+				{
+					vector<int>           pids = (*MHC)[h]->GetPIDs();
+					// getting the position of the hit, not vertex of track
+					vector<G4ThreeVector> vtxs = (*MHC)[h]->GetPos();
+					vector<G4ThreeVector> mmts = (*MHC)[h]->GetMoms();
+					for(unsigned int t=0; t<tids.size(); t++)
+						bgMap[tids[t]] = BGParts(pids[t], vtxs[t], mmts[t]);
+				}
 			}
 		}
+	
 	
 	// now filling the map of tinfos with tracks infos from the track_db database
 	// this won't get the mother particle infos except for their track ID
@@ -157,7 +179,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		
 		if(VERB>3)
 			cout << " >> Total number of tracks " << trajectoryContainer->size() << endl;
-
+		
 		while(trajectoryContainer && track_db.size())
 		{
 			// looping over all tracks
@@ -193,7 +215,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			int ancestor = itm->first;
 			if(momDaugther[ancestor] == 0)
 				hierarchy[itm->first] = itm->first;
-
+			
 			while (momDaugther[ancestor] != 0)
 			{
 				hierarchy[itm->first] = momDaugther[ancestor];
@@ -219,6 +241,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		}
 	}
 	
+	
+	
+	
+	
 	// Making sure the output routine exists in the ProcessOutput map
 	// If no output selected, or HitProcess not found, end current event
 	map<string, outputFactoryInMap>::iterator ito = outputFactoryMap->find(outContainer->outType);
@@ -226,8 +252,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	{
 		if(outContainer->outType != "no")
 			cout << hd_msg << " Warning: output type <" << outContainer->outType
-			     << "> is not registered in the outContainerput Factory. " << endl
-			     << "      This event will not be written out." << endl;
+			<< "> is not registered in the outContainerput Factory. " << endl
+			<< "      This event will not be written out." << endl;
 		evtN++;
 		return;
 	}
@@ -242,21 +268,19 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	header["runNo"]    = rw.runNo;
 	header["evn"]      = evtN;
 	header["evn_type"] = -1;  // physics event. Negative is MonteCarlo event
+	header["beamPol"]  = gen_action->getBeamPol();
 	
-	header["beamPol"]    = gen_action->getBeamPol();
-
 	for(unsigned i=0; i<gen_action->lundUserDefined.size(); i++)
 	{
 		string tmp = "var" + stringify((int) i+1);
 		header[tmp] = gen_action->lundUserDefined[i];
 	}
-
+	
 	// write event header bank
 	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
 	
 	// Getting Generated Particles info
-	// Are these loops necessary, revisit later
-	
+	// Are these loops necessary, revisit later1
 	vector<generatedParticle> MPrimaries;
 	for(int pv=0; pv<evt->GetNumberOfPrimaryVertex() && pv<MAXP; pv++)
 	{
@@ -273,12 +297,14 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		MPrimaries.push_back(Mparticle)  ;
 	}
 	
+	if(SAVE_ALL_MOTHERS>1)
+		saveBGPartsToLund();
 	
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHC = it->second->GetMHitCollection();
 		nhits = MHC->GetSize();
-				
+		
 		// The same ProcessHit Routine must apply to all the hits  in this HitCollection.
 		// Instantiating the ProcessHitRoutine only once for the first hit.
 		if(nhits)
@@ -304,6 +330,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// creating summary information for each generated particle
 			for(unsigned pi = 0; pi<MPrimaries.size(); pi++)
 				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
+			
 			
 			for(int h=0; h<nhits; h++)
 			{
@@ -372,7 +399,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				
 				if(WRITE_TRUE_ALL)
 					thisHitOutput.setAllRaws(hitProcessRoutine->allRaws(aHit, h+1));
-			
+				
 				
 				allRawOutput.push_back(thisHitOutput);
 				
@@ -401,7 +428,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(WRITE_TRUE_ALL)
 				processOutputFactory->writeG4RawAll(outContainer, allRawOutput, hitType, banksMap);
 			
-
+			
 			
 			if(VERB > 4)
 				for(unsigned pi = 0; pi<MPrimaries.size(); pi++)
@@ -424,17 +451,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(WRITE_INTDGT.find(hitType) == string::npos)
 			{
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
-
+				
 				vector<hitOutput> allDgtOutput;
 				for(int h=0; h<nhits; h++)
 				{
-
+					
 					hitOutput thisHitOutput;
 					MHit* aHit = (*MHC)[h];
 					
 					thisHitOutput.setDgtz(hitProcessRoutine->integrateDgt(aHit, h+1));
 					allDgtOutput.push_back(thisHitOutput);
-										
+					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
 					if(VERB > 4 || vname.find(catch_v) != string::npos)
 					{
@@ -444,9 +471,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
 						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
 					}
-				} 
+				}
 				processOutputFactory->writeG4DgtIntegrated(outContainer, allDgtOutput, hitType, banksMap);
-								
+				
 			} // end of geant4 integrated digitized information
 			
 			
@@ -462,13 +489,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				{
 					hitOutput thisHitOutput;
 					
-					MHit* aHit = (*MHC)[h];					
+					MHit* aHit = (*MHC)[h];
 					
 					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit));
 					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit));
 					
 					allVTOutput.push_back(thisHitOutput);
-	
+					
 					// this is not written out yet
 					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
@@ -482,23 +509,23 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 				}
 			}
-	
+			
 			delete hitProcessRoutine;
 		}
 	}
 	// writing out generated particle infos
 	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap);
-
+	
 	processOutputFactory->writeEvent(outContainer);
 	delete processOutputFactory;
 	
-
+	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;
-
+	
 	// Increase event number. Notice: this is different than evt->GetEventID()
 	evtN++;
-
+	
 	return;
 }
 
@@ -506,6 +533,21 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 
 
+void MEventAction::saveBGPartsToLund()
+{
+	// for lund format see documentation at gemc.jlab.org:
+	// https://gemc.jlab.org/gemc/html/documentation/generator/lund.html
+
+	// this should work also for no hits, map size will be zero.
+	
+	*lundOutput << (int) bgMap.size() << "\t" << evtN <<  "\t 0 0 0 0 0 0 0 0 " << endl;
+	
+	int i = 1;
+	for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
+		*lundOutput << i++ << "\t0\t1\t" << it->second.pid << "\t0\t" << it->first << "\t"
+		<< it->second.p.x()/GeV << "\t" << it->second.p.y()/GeV << "\t" << it->second.p.z()/GeV << "\t0\t0\t"
+		<< it->second.v.x()/cm  << "\t" << it->second.v.y()/cm  << "\t" << it->second.v.z()/cm << endl;
+}
 
 
 
