@@ -22,9 +22,6 @@ static ftofConstants initializeFTOFConstants(int runno)
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ftc;
 
-	int isec,ilay,istr;
-	
-	// database
 	ftc.runNo      = runno;
 	ftc.date       = "2015-11-29";
 	ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
@@ -34,15 +31,41 @@ static ftofConstants initializeFTOFConstants(int runno)
 	ftc.npaddles[1] = 62;
 	ftc.npaddles[2] = 5;
 
-	// Paddle thickness (cm) for MIP peak energy
 	ftc.thick[0] = 5.0;
 	ftc.thick[1] = 6.0;
 	ftc.thick[2] = 5.0; 
 	
+	ftc.dEdxMIP       = 1.956;  // muons in polyvinyltoluene
+	ftc.pmtPEYld      = 500;
+	ftc.pmtQE         = 0.27;
+	ftc.pmtDynodeGain = 4.0; 
+        ftc.pmtDynodeK    = 0.5; 
+	ftc.pmtFactor     = sqrt(1-ftc.pmtQE+(ftc.pmtDynodeK*ftc.pmtDynodeGain+1)/(ftc.pmtDynodeGain-1));
+	ftc.tdcLSB        = 41.6667;
+	
+	cout<<"FTOF:Setting time resolution"<<endl;
+	for(int p=0; p<3; p++)
+	{
+	  for(int c=1; c<ftc.npaddles[p]+1;c++)
+	    {
+	      if(p==0) ftc.tres[p].push_back(c*5.45+74.55);
+	      if(p==1) ftc.tres[p].push_back(c*0.90+29.10);
+	      if(p==2) ftc.tres[p].push_back(c*5.00+145.0);
+	    }
+	}
+	
+	ftc.dEMIP[0] = ftc.thick[0]*ftc.dEdxMIP;
+	ftc.dEMIP[1] = ftc.thick[1]*ftc.dEdxMIP;
+	ftc.dEMIP[2] = ftc.thick[2]*ftc.dEdxMIP;
+	
+	int isec,ilay,istr;
+	
 	vector<vector<double> > data;
 	
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftc.connection));
-	
+        cout<<"Connecting to "<<ftc.connection<<"/calibration/ftof"<<endl;
+
+	cout<<"FTOF:Getting attenuation"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/attenuation:%d",ftc.runNo);
 	data.clear(); calib->GetCalib(data,ftc.database);	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -52,6 +75,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
 	}
 	
+        cout<<"FTOF:Getting effective_velocity"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/effective_velocity:%d",ftc.runNo);
 	data.clear(); calib->GetCalib(data,ftc.database);	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -60,7 +84,8 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.veff[isec-1][ilay-1][0].push_back(data[row][3]);
 	  ftc.veff[isec-1][ilay-1][1].push_back(data[row][4]);
 	}
-	
+
+	cout<<"FTOF:Getting status"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/status:%d",ftc.runNo);
 	data.clear() ; calib->GetCalib(data,ftc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -70,6 +95,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.status[isec-1][ilay-1][1].push_back(data[row][4]);
 	}
 
+	cout<<"FTOF:Getting gain_balance"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/gain_balance:%d",ftc.runNo);
 	data.clear() ; calib->GetCalib(data,ftc.database);	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -79,6 +105,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.countsForMIP[isec-1][ilay-1][1].push_back(data[row][4]);
 	}
 
+	cout<<"FTOF:Getting time_walk"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/time_walk:%d",ftc.runNo);
 	data.clear() ; calib->GetCalib(data,ftc.database);	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -91,22 +118,6 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.twlk[isec-1][ilay-1][4].push_back(data[row][7]);
 	  ftc.twlk[isec-1][ilay-1][5].push_back(data[row][8]);
 	}
-	
-
-	ftc.dEdxMIP = 1.956 ;  // MeV gm-1 cm-3 (muons in polyvinyltoluene)
-	ftc.dEMIP[0] = ftc.thick[0]*ftc.dEdxMIP;
-	ftc.dEMIP[1] = ftc.thick[1]*ftc.dEdxMIP;
-	ftc.dEMIP[2] = ftc.thick[2]*ftc.dEdxMIP;
-	
-	// time resolution
-	for(int p=0; p<3; p++)
-	{
-		ftc.sigma0[p] = 0.5 ;
-		ftc.sigma1[p] = 0.5 ;
-	}
-	
-	// number of photoelectrons reaching PMT is ~10K / MeV / 4
-	ftc.nphePerMevReachingPMT = 2500;
 	
 	return ftc;
 }
@@ -131,7 +142,6 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int panel  = identity[1].id;
 	int paddle = identity[2].id;
 	trueInfos tInfos(aHit);
-
 	
 	// Get the paddle length: in ftof paddles are boxes, the length the x
 	double length = aHit->GetDetector().dimensions[0];
@@ -148,42 +158,68 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attLeft  = exp(-dLeft/cm/attlenL);
 	double attRight = exp(-dRight/cm/attlenR);
 
-	// gain factor to simulate PMT gain matching algorithm
-	// i.e.- L,R PMTs are not gain matched to each other, but adjusted so geometeric mean sqrt(L*R)
-	// is independent of counter length
+	// Gain factors to simulate FTOF PMT gain matching algorithm.
+	// i.e.- L,R PMTs are not gain matched to each other,
+	// but adjusted so geometeric mean sqrt(L*R) is independent of counter length
 	double gainLeft  = sqrt(attLeft*attRight);
 	double gainRight = gainLeft;
-	
-	// multiple of MIP energy attenuated
-	double eneL = (tInfos.eTot/ftc.dEMIP[panel-1])*attLeft;
-	double eneR = (tInfos.eTot/ftc.dEMIP[panel-1])*attRight;
-	
-	// Attenuated energy converted to ADC counts
-	double adcl = ftc.countsForMIP[sector-1][panel-1][0][paddle-1]*eneL/gainLeft;
-	double adcr = ftc.countsForMIP[sector-1][panel-1][1][paddle-1]*eneR/gainRight;
 
-	// timewalk depends on adc values
-	double timeWalkLeft  = ftc.twlk[sector-1][panel-1][0][paddle-1]/(1 + ftc.twlk[sector-1][panel-1][1][paddle-1]*sqrt(adcl));
-	double timeWalkRight = ftc.twlk[sector-1][panel-1][0][paddle-1]/(1 + ftc.twlk[sector-1][panel-1][1][paddle-1]*sqrt(adcr));
-	
-	// Unsmeared time at each end using effective velocity and with timewalk correction
-	double tLeftU  = tInfos.time/ns + dLeft  / ftc.veff[sector-1][panel-1][0][paddle-1] + timeWalkLeft;
-	double tRightU = tInfos.time/ns + dRight / ftc.veff[sector-1][panel-1][1][paddle-1] + timeWalkRight;
+	// Attenuated light at PMT
+	double eneL = tInfos.eTot*attLeft;
+	double eneR = tInfos.eTot*attRight;
 
-	// Fluctuate the light measured by the PMT with Poisson distribution for emitted photoelectrons
-	double npheL = G4Poisson(eneL*ftc.nphePerMevReachingPMT);
-	double npheR = G4Poisson(eneL*ftc.nphePerMevReachingPMT);
+	double adcl=0;
+	double adcr=0;
+	double tdcl=0;
+	double tdcr=0;
+	double tdclu=0;
+	double tdcru=0;
 	
-	// Smear the time with a gaussian using sigma = A0*A0 + A1*A1/nphe
-	double tLeft  = G4RandGauss::shoot(tLeftU,  sqrt(ftc.sigma0[panel-1]*ftc.sigma0[panel-1] + ftc.sigma1[panel-1]*ftc.sigma1[panel-1]/npheL));
-	double tRight = G4RandGauss::shoot(tRightU, sqrt(ftc.sigma0[panel-1]*ftc.sigma0[panel-1] + ftc.sigma1[panel-1]*ftc.sigma1[panel-1]/npheR));
+	// Fluctuate the light measured by the PMT with
+	// Poisson distribution for emitted photoelectrons
+	// Treat L and R separately, in case nphe=0
 
+	double npheL = G4Poisson(eneL*ftc.pmtPEYld);
+	eneL = npheL/ftc.pmtPEYld;
+
+	// For future use to smear single or several p.e. response
+	//if (npheL>0) {
+	//  double sigmaL = ftc.pmtFactor/sqrt(npheL);
+	//  eneL = G4RandGauss::shoot(npheL,sigmaL)/ftc.pmtPEYld;
+	//	}
 	
-	double tdclu = tLeftU;
-	double tdcru = tRightU;
-	double tdcl  = tLeft;
-	double tdcr  = tRight;
+        if (eneL>0) {
+	                 adcl = eneL*ftc.countsForMIP[sector-1][panel-1][0][paddle-1]/ftc.dEMIP[panel-1]/gainLeft;
+	  double            A = ftc.twlk[sector-1][panel-1][0][paddle-1];
+	  double            B = ftc.twlk[sector-1][panel-1][1][paddle-1];
+	  double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
+	  double timeWalkLeft = A/(B+C*sqrt(adcl));
+	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
+	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);
+	                tdclu = tLeftU*ftc.tdcLSB;
+	                 tdcl = tLeft*ftc.tdcLSB;
+	}  
+	
+	double npheR = G4Poisson(eneR*ftc.pmtPEYld);
+	eneR = npheR/ftc.pmtPEYld;
 
+	// For future use to smear single or several p.e. response
+	//if (npheR>0) {
+	//  double sigmaR = ftc.pmtFactor/sqrt(npheR);
+	//  eneR = G4RandGauss::shoot(npheR,sigmaR)/ftc.pmtPEYld;
+	//	}
+
+	if (eneR>0) {
+	                  adcr = eneR*ftc.countsForMIP[sector-1][panel-1][1][paddle-1]/ftc.dEMIP[panel-1]/gainRight;
+	  double             A = ftc.twlk[sector-1][panel-1][3][paddle-1];
+	  double             B = ftc.twlk[sector-1][panel-1][4][paddle-1];
+	  double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
+	  double timeWalkRight = A/(B+C*sqrt(adcr));	
+	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;	
+	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);	
+	                 tdcru = tRightU*ftc.tdcLSB;
+	                  tdcr = tRight*ftc.tdcLSB;
+	}
 	
 	// applying status
 	switch (ftc.status[sector-1][panel-1][0][paddle-1])
