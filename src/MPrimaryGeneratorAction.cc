@@ -451,7 +451,61 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	// merging (background) events from LUND format
 	if(background_gen != "no")
 	{
+		int nparticles;
+		double tmp;
 		
+		bgif >> nparticles ;
+		for(unsigned i=0; i<9; i++)
+			bgif >> tmp;
+		
+		for(int p=0; p<nparticles; p++)
+		{
+			double px, py, pz;
+			int pdef, pindex;
+			double time;
+			double Vx, Vy, Vz;
+			bgif >> pindex >> tmp >> tmp >> pdef >> tmp >> tmp >> px >> py >> pz >> time >> tmp >> Vx >> Vy >> Vz;
+			if(pindex == p+1)
+			{
+				// Primary Particle
+				Particle = particleTable->FindParticle(pdef);
+				if(!Particle)
+				{
+					cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
+					
+					return;
+				}
+				particleGun->SetParticleDefinition(Particle);
+				
+				// 4-momenta
+				G4ThreeVector pmom(px*GeV, py*GeV, pz*GeV);
+				double Mom = pmom.mag();
+				double Phi   = pmom.getPhi();
+				double Theta = pmom.getTheta();
+				double mass = Particle->GetPDGMass();
+				double akine = sqrt(Mom*Mom + mass*mass) - mass ;
+				
+				particleGun->SetParticleEnergy(akine);
+				particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad)));
+				
+				// vertex
+				G4ThreeVector beam_vrt(Vx*cm, Vy*cm, Vz*cm);
+				particleGun->SetParticlePosition(beam_vrt);
+				
+				
+				// Primary particle generated int the middle of Time window
+				particleGun->SetParticleTime(time);
+				particleGun->GeneratePrimaryVertex(anEvent);
+				if(GEN_VERBOSITY > 3)
+					cout << hd_msg << " Merged Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+					<< "  Vertex=" << beam_vrt << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+			}
+			else if(pindex != p+1)
+				if(GEN_VERBOSITY > 3)
+					cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
+			
+		}
+
 	}
 	
 	// Luminosity Particles
@@ -674,7 +728,6 @@ void MPrimaryGeneratorAction::setBeam()
 				input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
 	{
 		// StdHep is an (old like LUND) MC generator format in binary form.
-		//
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
 		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
 		cout << hd_msg << "StdHEP: Opening  " << gformat << " file: " << TrimSpaces(gfilename).c_str() << endl;
@@ -713,13 +766,16 @@ void MPrimaryGeneratorAction::setBeam()
 	// merging (background) events from LUND format
 	if(background_gen != "no")
 	{
-		bgif.open(TrimSpaces(background_gen).c_str());
-		if(!bgif)
+		// file may be already opened cause setBeam is called again in graphic mode
+		if(!bgif.is_open() )
 		{
-			cerr << hd_msg << " Can't open background input file " << TrimSpaces(background_gen).c_str() << ". Exiting. " << endl;
-			exit(1);
+			bgif.open(TrimSpaces(background_gen).c_str());
+			if(!bgif)
+			{
+				cerr << hd_msg << " Can't open background input file >" << TrimSpaces(background_gen).c_str() << "<. Exiting. " << endl;
+				exit(1);
+			}
 		}
-
 	}
 	
 	

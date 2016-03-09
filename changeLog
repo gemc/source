@@ -6,6 +6,7 @@ Changelog for GEMC
  - saving time information of the track
  - adding MERGE_LUND_BG option to merge events from the LUND format.
    This includes timing information.
+ - MERGE_LUND_BG option is now operative
 
 3/8/16
  - parsing micromegas hit process routine
