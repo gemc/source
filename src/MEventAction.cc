@@ -157,8 +157,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					// getting the position of the hit, not vertex of track
 					vector<G4ThreeVector> vtxs = (*MHC)[h]->GetPos();
 					vector<G4ThreeVector> mmts = (*MHC)[h]->GetMoms();
+					// only put the first step of a particular track
+					// (don't fill if track exist already)
 					for(unsigned int t=0; t<tids.size(); t++)
-						bgMap[tids[t]] = BGParts(pids[t], vtxs[t], mmts[t]);
+						if(bgMap.find(tids[t]) == bgMap.end())
+							bgMap[tids[t]] = BGParts(pids[t], vtxs[t], mmts[t]);
 				}
 			}
 		}
@@ -175,7 +178,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	if(SAVE_ALL_MOTHERS)
 	{
 		trajectoryContainer = evt->GetTrajectoryContainer();
-		momDaugther.clear();
+		momDaughter.clear();
 		
 		if(VERB>3)
 			cout << " >> Total number of tracks " << trajectoryContainer->size() << endl;
@@ -191,8 +194,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				
 				// adding track in mom daughter relationship
 				// for all tracks
-				if(momDaugther.find(tid) == momDaugther.end())
-					momDaugther[tid] = trj->GetParentID();
+				if(momDaughter.find(tid) == momDaughter.end())
+					momDaughter[tid] = trj->GetParentID();
 				
 				// is this track involved in a hit?
 				// if yes, add it to the track map db
@@ -210,16 +213,16 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		
 		// building the hierarchy map
 		// for all secondary tracks
-		for(map<int, int>::iterator itm = momDaugther.begin(); itm != momDaugther.end(); itm++)
+		for(map<int, int>::iterator itm = momDaughter.begin(); itm != momDaughter.end(); itm++)
 		{
 			int ancestor = itm->first;
-			if(momDaugther[ancestor] == 0)
+			if(momDaughter[ancestor] == 0)
 				hierarchy[itm->first] = itm->first;
 			
-			while (momDaugther[ancestor] != 0)
+			while (momDaughter[ancestor] != 0)
 			{
-				hierarchy[itm->first] = momDaugther[ancestor];
-				ancestor = momDaugther[ancestor];
+				hierarchy[itm->first] = momDaughter[ancestor];
+				ancestor = momDaughter[ancestor];
 			}
 		}
 		
@@ -236,6 +239,38 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				{
 					tinfos[(*itm).first].mpid   = trj->GetPDGEncoding();
 					tinfos[(*itm).first].mv     = trj->GetPoint(0)->GetPosition();
+				}
+			}
+		}
+		// removing daughter tracks if mother also gave hits
+		if(SAVE_ALL_MOTHERS>2)
+		{
+			vector<int> bgtIDs;
+			for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
+				bgtIDs.push_back(it->first);
+		
+			for(unsigned i=0; i<bgtIDs.size(); i++)
+			{
+				int daughter = bgtIDs[i];
+				int momCheck = 0;
+				if(momDaughter.find(daughter) != momDaughter.end())
+					momCheck = momDaughter[daughter];
+				
+				while(momCheck != 0)
+				{
+					// mom has a hit
+					if(bgMap.find(momCheck) != bgMap.end())
+					{
+						// so if daughter is found, delete it
+						// daughter may already be deleted before
+						if(bgMap.find(daughter) != bgMap.end())
+							bgMap.erase(bgMap.find(daughter));
+					}
+					// going up one generation
+					if(momDaughter.find(momCheck) != momDaughter.end())
+						momCheck = momDaughter[momCheck];
+					else
+						momCheck = 0;
 				}
 			}
 		}

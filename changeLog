@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/9/16
+ - finalized background saving algorithm
+
+
 3/8/16
  - parsing micromegas hit process routine
  - with SAVE_ALL_MOTHERS set to 2, all particles generating hits are saved in LUND format

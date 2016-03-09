@@ -118,7 +118,7 @@ class MEventAction : public G4UserEventAction
 		MPrimaryGeneratorAction          *gen_action;       ///< Generator Action
     
 		map<int, int> hierarchy;                     ///< Hierarchy map
-		map<int, int> momDaugther;                   ///< mom - daughter relationship
+		map<int, int> momDaughter;                   ///< mom - daughter relationship
 		vector<int> vector_otids(vector<int> tids);  ///< return original track id of a vector of tid
 
 	
