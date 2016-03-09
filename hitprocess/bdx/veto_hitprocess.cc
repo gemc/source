@@ -81,7 +81,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         {
             // Get the paddle length: in veto paddles are along z
             length = aHit->GetDetector().dimensions[2];
-            double s1=aHit->GetDetector().dimensions[0];
+             double s1=aHit->GetDetector().dimensions[0];
             double s2=aHit->GetDetector().dimensions[1];
             paddle_surface = 2*s1*2*s2;
             sensor_surface=pow(2.5*cm,2)*pi; // 2" pmt R-> (2*2.5/2 TBC)
