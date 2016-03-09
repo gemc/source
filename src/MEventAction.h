@@ -39,16 +39,18 @@ class BGParts
 {
 	public:
 		BGParts(){;}
-		BGParts(int partid, G4ThreeVector vtx, G4ThreeVector mom)
+		BGParts(int partid, double t, G4ThreeVector vtx, G4ThreeVector mom)
 		{
 			pid = partid;
 			v    = vtx;
 			p    = mom;
+			time = t;
 		}
 		~BGParts(){;}
 	
 	public:
 		int pid;
+		double time;
 		G4ThreeVector v; // vertex
 		G4ThreeVector p; // momentum
 };

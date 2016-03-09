@@ -7,8 +7,6 @@ New features:
 - multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
-- add to gdml button
-- add to vrml button
 
 
 Code Improvements:
@@ -16,27 +14,24 @@ Code Improvements:
 
 - physics details choices (disable some physics, etc on the GUI)
 - culling options combobox
-- clone viewer: add viewer with specific detectors
 - move timewindow to general generator tab - make all other the same
 - remove obsolete cpp materials
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
   check performance hit
-- speed up the search for same identifier start with 
+- speed up the search for same identifier
 - add generic "system" that contains a list detectors, sensitive det, materials?
 - optimize eventaction - too many vector<hitOutput> definitions? Can they br grouped?
 - add DEBUG ifdefs for debugging part of code
 - general color map to be used by geant4 / gui , maybe part of options?
-- reorg splitters in various gui
 - bring some guis out of main gui, pop up windows?
-- re-organize primary generator, use external library project?
 - re-define and document all verbosities
 - get screen resolution and adjust gui dimensions to that
 - match detector types to geant4
-- make mysql material factory back-ward compatible
 - add /tracking/storeTrajectory 4 button
 - add track verbosity output
 - add options for particles color
 - is atof thread safe?
+
 
 Add production cut verbosity?
 
@@ -75,4 +70,5 @@ Code Reorganization:
 - bring output structure out of gemc - general library
 - bring options out of gemc - general library 
 - bring splash screen out of gemc - general library
+- re-organize primary generator, use external library project
 

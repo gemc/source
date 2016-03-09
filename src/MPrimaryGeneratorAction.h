@@ -35,12 +35,12 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		}
     
 		// LUND information
-		int nparticles;
 		vector<double> lundUserDefined;   ///< user defined infos in the LUND header
 	
 	
 	private:
 		string input_gen;                 ///< Input Option: internal or external
+		string background_gen;            ///< Input Option: background from file in LUND format
 		string cosmics;                   ///< cosmic ray option
 		string hd_msg;                    ///< Head Message Log
 		G4ParticleTable* particleTable;   ///< Geant4 Particle Table
@@ -63,8 +63,9 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	
 		// Generators Input Files
 		ifstream  gif;                    ///< Generator Input File
+		ifstream  bgif;                   ///< Background Generator Input File
 		string    gformat;                ///< Generator Format. Supported: LUND.
-		string    gfilename;              ///< Input Filename
+		string    gfilename;              ///< Input Filename for main events
     	double    beamPol;                ///< Beam Polarization as from the LUND format, it
 	
 		lStdHep   *stdhep_reader;         /// Handle to the object for reading StdHep files.

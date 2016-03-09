@@ -3,7 +3,9 @@ Changelog for GEMC
 
 3/9/16
  - finalized background saving algorithm
-
+ - saving time information of the track
+ - adding MERGE_LUND_BG option to merge events from the LUND format.
+   This includes timing information.
 
 3/8/16
  - parsing micromegas hit process routine
@@ -615,6 +617,8 @@ Changelog for GEMC
  - Changes to geometry service api
  - Renamed LUND header names
  - Added optical properties in the API
+ - added <unistd.h> needed for get_pid
+
 
 4/23/2014
  - Added Total Edep, Fastest time, to generated particle information in both EVIO and TXT output factories
@@ -653,10 +657,11 @@ Changelog for GEMC
  1. molecular. Example::
 
      H2O->AddElement(H, natoms=2);
-         H2O->AddElement(O, natoms=1);
+	  H2O->AddElement(O, natoms=1);
+
  2. by mass fraction. Example::
 
-         Gas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2);
+	  Gas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2);
 
  - Air > G4_AIR as default Air material
 
@@ -721,6 +726,9 @@ Changelog for GEMC
  - adding warning for TEXT and MYSQL factory if a detector already exist in the current factory
  - material i/o changes. Changelog updated for upcoming beta3
 
+1/15/2014
+ - saving polarization for first particle
+
 
 1/14/2014
  - add multipole field by Zhiwen Zhao
@@ -743,9 +751,63 @@ Changelog for GEMC
 
 
 
+7/29/2013
+ - Modular physics list added.
+
+   User can choose among several hadronic physics list, e.m. physics list,
+   to activate or not high precision cross sections or optical physics.
+
+   The option is::
+
+     -PHYSICS="HADRONIC + <EM> + <HP> + <OPTICAL>"
+
+   Where Hadronic can be:
+
+    - CHIPS
+    - FTFP_BERT
+    - FTFP_BERT_TRV
+    - FTFP_BERT_HP
+    - FTF_BIC
+    - LHEP
+    - QGSC_BERT
+    - QGSP
+    - QGSP_BERT
+    - QGSP_BERT_CHIPS
+    - QGSP_BERT_HP
+    - QGSP_BIC
+    - QGSP_BIC_HP
+    - QGSP_FTFP_BERT
+    - QGS_BIC
+    - QGSP_INCLXX
+
+   EM is standard STD by default, it's optional and can be:
+    - STD
+    - EMV
+    - EMX
+    - EMY
+    - EMZ
+    - LIV
+    - PEN
 
 
+7/26/2013
+ - progress toward modular physics for the new geant4
 
+
+7/25/2013
+ - modula physics progress
+ - adding physics list interface GUI
+ - adding source button image for physics
+
+
+7/24/2013
+ - adding GUI for physics. Adding Physics list messenger. Re-organizing physics list with modular physics
+
+7/2/2013
+ - modified SConstruct - libraries organized in categories.
+ - adding devel source in phys12 repo
+ - moving io to new location
+ - Added devel directory for gemc
 
 
 

@@ -70,6 +70,15 @@ void goptions::setGoptions()
 	optMap["INPUT_GEN_FILE"].type = 1;
 	optMap["INPUT_GEN_FILE"].ctgr = "generator";
 	
+	optMap["MERGE_LUND_BG"].args = "no";
+	optMap["MERGE_LUND_BG"].help = "LUND Input file to merge background events\n";
+	optMap["MERGE_LUND_BG"].help += "      example: -MERGE_LUND_BG=\"background.dat\" \n";
+	optMap["MERGE_LUND_BG"].name = "LUND Input file to merge background events";
+	optMap["MERGE_LUND_BG"].type = 1;
+	optMap["MERGE_LUND_BG"].ctgr = "generator";
+	
+
+	
 	optMap["NGENP"].arg  = 10;
 	optMap["NGENP"].help = "Max Number of Generated Particles to save in the Output.";
 	optMap["NGENP"].name = "Max Number of Generated Particles to save in the Output";

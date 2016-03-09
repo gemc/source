@@ -8,7 +8,7 @@
 
 // gemc headers
 #include "MPrimaryGeneratorAction.h"
-#include "detector.h"
+#include "string_utilities.h"
 
 // C++ headers
 #include <iostream>
@@ -21,11 +21,12 @@ using namespace CLHEP;
 MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 {
 	gemcOpt = opts;
-	hd_msg        = gemcOpt->optMap["LOG_MSG"].args + " Beam Settings >> " ;
-	input_gen     = gemcOpt->optMap["INPUT_GEN_FILE"].args;
-	cosmics       = gemcOpt->optMap["COSMICRAYS"].args;
-	string cArea  = gemcOpt->optMap["COSMICAREA"].args;
-	GEN_VERBOSITY = gemcOpt->optMap["GEN_VERBOSITY"].arg;
+	hd_msg         = gemcOpt->optMap["LOG_MSG"].args + " Beam Settings >> " ;
+	input_gen      = gemcOpt->optMap["INPUT_GEN_FILE"].args;
+	background_gen = gemcOpt->optMap["MERGE_LUND_BG"].args;
+	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
+	string cArea   = gemcOpt->optMap["COSMICAREA"].args;
+	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
 	
 	
 	particleTable = G4ParticleTable::GetParticleTable();
@@ -255,8 +256,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticleMomentumDirection(beam_dir);
 			
 			particleGun->GeneratePrimaryVertex(anEvent);
-
-			
 		}
 	}
 	else
@@ -274,7 +273,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		// type is 1 for particles in the detector
 		if((gformat == "LUND" || gformat == "lund") && !gif.eof())
 		{
-			lundUserDefined.clear();			
+			lundUserDefined.clear();
+			int nparticles;
+
 			gif >> nparticles ;
 			for(unsigned i=0; i<9; i++)
 			{
@@ -447,6 +448,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 	
+	// merging (background) events from LUND format
+	if(background_gen != "no")
+	{
+		
+	}
 	
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
@@ -467,42 +473,35 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	L_vy = L_beam_vrt.y()/mm + L_VR*sin(L_PHI);
 	L_vz = L_beam_vrt.z()/mm + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
 
-	
+	// all particles in a bunch are identical
 	for(int b=0; b<NBUNCHES; b++)
 	{
-		//	for(int p=0; p<PBUNCH; p++)
+		// spread momentum if needed
+		if(L_dmom > 0)
 		{
-			
-			// spread momentum if needed
-			if(L_dmom > 0)
-			{
-				L_Mom   = L_mom   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
-				L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
-				L_Phi   = L_phi   + (2.0*G4UniformRand()-1.0)*L_dphi/rad;
-				L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
-			}
-			
-			if(L_dvz > 0)
-			{
-				L_vz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
-			}
-			
-			particleGun->SetParticleEnergy(L_akine);
-			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L_Phi/rad)*sin(L_Theta/rad), sin(L_Phi/rad)*sin(L_Theta/rad), cos(L_Theta/rad)));
-
-			
-			G4ThreeVector LUMI_V(L_vx, L_vy, L_vz);
-			particleGun->SetParticlePosition(LUMI_V);
-			
-			particleGun->  SetParticleTime(TBUNCH*b);
-			particleGun->GeneratePrimaryVertex(anEvent);
-			particleGun->SetNumberOfParticles(PBUNCH);
-			
-			
-//			if(GEN_VERBOSITY > 5)
-//				cout << " Bunch " << b << "  particle no. " << p << endl;
-
+			L_Mom   = L_mom   + (2.0*G4UniformRand()-1.0)*L_dmom/MeV;
+			L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta/rad;
+			L_Phi   = L_phi   + (2.0*G4UniformRand()-1.0)*L_dphi/rad;
+			L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
 		}
+		
+		if(L_dvz > 0)
+		{
+			L_vz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz/mm;
+		}
+		
+		particleGun->SetParticleEnergy(L_akine);
+		particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L_Phi/rad)*sin(L_Theta/rad), sin(L_Phi/rad)*sin(L_Theta/rad), cos(L_Theta/rad)));
+		
+		
+		G4ThreeVector LUMI_V(L_vx, L_vy, L_vz);
+		particleGun->SetParticlePosition(LUMI_V);
+		
+		particleGun->  SetParticleTime(TBUNCH*b);
+		particleGun->GeneratePrimaryVertex(anEvent);
+		particleGun->SetNumberOfParticles(PBUNCH);
+		
+		
 	}
 	
 	
@@ -658,7 +657,7 @@ void MPrimaryGeneratorAction::setBeam()
 		}
 	}
 	
-	else  if( input_gen.compare(0,4,"LUND")==0 || input_gen.compare(0,4,"lund")==0 )
+	else if( input_gen.compare(0,4,"LUND")==0 || input_gen.compare(0,4,"lund")==0 )
 	{
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
 		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
@@ -670,7 +669,6 @@ void MPrimaryGeneratorAction::setBeam()
 			exit(1);
 		}
 	}
-	
 	
 	else if( input_gen.compare(0,6,"stdhep")==0 || input_gen.compare(0,6,"STDHEP")==0 ||
 				input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
@@ -708,6 +706,19 @@ void MPrimaryGeneratorAction::setBeam()
 		units = TrimSpaces(values[2]);
 		dvr = get_number(values[0] + "*" + units);
 		dvz = get_number(values[1] + "*" + units);
+
+	}
+	
+	
+	// merging (background) events from LUND format
+	if(background_gen != "no")
+	{
+		bgif.open(TrimSpaces(background_gen).c_str());
+		if(!bgif)
+		{
+			cerr << hd_msg << " Can't open background input file " << TrimSpaces(background_gen).c_str() << ". Exiting. " << endl;
+			exit(1);
+		}
 
 	}
 	
@@ -830,6 +841,7 @@ MPrimaryGeneratorAction::~MPrimaryGeneratorAction()
 {
 	delete particleGun;
 	gif.close();
+	bgif.close();
 }
 
 

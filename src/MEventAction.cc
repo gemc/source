@@ -157,11 +157,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					// getting the position of the hit, not vertex of track
 					vector<G4ThreeVector> vtxs = (*MHC)[h]->GetPos();
 					vector<G4ThreeVector> mmts = (*MHC)[h]->GetMoms();
+					vector<double>        tims = (*MHC)[h]->GetTime();
 					// only put the first step of a particular track
 					// (don't fill if track exist already)
 					for(unsigned int t=0; t<tids.size(); t++)
 						if(bgMap.find(tids[t]) == bgMap.end())
-							bgMap[tids[t]] = BGParts(pids[t], vtxs[t], mmts[t]);
+							bgMap[tids[t]] = BGParts(pids[t], tims[t], vtxs[t], mmts[t]);
 				}
 			}
 		}
@@ -580,7 +581,7 @@ void MEventAction::saveBGPartsToLund()
 	int i = 1;
 	for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
 		*lundOutput << i++ << "\t0\t1\t" << it->second.pid << "\t0\t" << it->first << "\t"
-		<< it->second.p.x()/GeV << "\t" << it->second.p.y()/GeV << "\t" << it->second.p.z()/GeV << "\t0\t0\t"
+		<< it->second.p.x()/GeV << "\t" << it->second.p.y()/GeV << "\t" << it->second.p.z()/GeV << "\t" << it->second.time << "\t0\t"
 		<< it->second.v.x()/cm  << "\t" << it->second.v.y()/cm  << "\t" << it->second.v.z()/cm << endl;
 }
 
