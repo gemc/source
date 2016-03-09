@@ -49,8 +49,7 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double timeF = 0;
 	int ADCB = 0;
 	int ADCF = 0;
-	int TDCB = 4096;
-	int TDCF = 4096;
+
  
     // Parameter for BaBar Crystal
     double integration_frac=1.; // integration time SEE DIGI ROUTINE = 1us 67% of the all signal (0.8us->58% 1us->67% 2us->92% 3us->100%)
@@ -65,27 +64,27 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double sensor_pe_crs=20; //20mV*100ns/50Ohm/2 -> 1 pe = 20 pC
     double sensor_gain_crs=1;
     // ! requires to be matched with the Babar crystal individual geometry (32,5 cm)
-	double length_crs = 32.5*cm;
+    double length_crs;
     double etotL_crs = 0; //L= Large side redout
     double etotR_crs = 0; //R= short side redout
     double timeL_crs = 0;
     double timeR_crs = 0;
-    double veff_crs=10*cm/ns;                     // light velocity in scintillator
+    double veff_crs=30/1.8*cm/ns;                     // light velocity in crystal
     double adc_conv_crs=1;                       // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
     double adc_ped_crs=0;                         // ADC Pedestal
     double tdc_conv_crs=1./ns;               // TDC conversion factor
-    double  T_offset_crs=50*ns;
-    int ADCL_crs = 0;
-    int ADCR_crs = 0;
-    int TDCL_crs = 4096;
-    int TDCR_crs = 4096;
-  
+    double  T_offset_crs=0*ns;
+    double ADCL_crs = 0;
+    double ADCR_crs = 0;
+    double TDCL_crs = 4096;
+    double TDCR_crs = 4096;
+    double TDCB = 4096;
     
     
     
 	// Get the paddle length: in crs paddles are along y
 //	double length = aHit->GetDetector().dimensions[2];
-	double length = 20*cm;
+	//double length = 20*cm;
 	
 	// Get info about detector material to eveluate Birks effect
 	double birks_constant=aHit->GetDetector().GetLogical()->GetMaterial()->GetIonisation()->GetBirksConstant();
@@ -97,37 +96,39 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double time_min[4] = {0,0,0,0};
     double time_min_crs[4] = {0,0,0,0};
 	
-	vector<G4ThreeVector> pos = aHit->GetPos();
+	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	vector<G4double>      Edep = aHit->GetEdep();
 	vector<G4double>      Dx   = aHit->GetDx();
+    length_crs = aHit->GetDetector().dimensions[4];
+    //cout<<length_crs<< endl;
+    
 	// Charge for each step
 	vector<int> charge = aHit->GetCharges();
 	vector<G4double> times = aHit->GetTime();
     //vector<string> theseMats = aHit->GetMaterials();
 	
 	unsigned int nsteps = Edep.size();
-	double       Etot   = 0;
+//	double       Etot   = 0;
     double       Etot_crs   = 0;
     {
         for(unsigned int s=0; s<nsteps; s++)
         {
-        Etot = Etot + Edep[s];
+//        Etot = Etot + Edep[s];
         Etot_crs = Etot_crs + Edep[s];
         }
     }
     
     double Etot_B_crs=0;
-	if(Etot>0)
+	if(Etot_crs>0)
 	{
 	  for(unsigned int s=0; s<nsteps; s++)
 		{
-			// Distances from left, right
-			double dLeft  = length + pos[s].x();
-			double dRight = length - pos[s].x();
-
-            double dLeft_crs  = length_crs + pos[s].x();
-            double dRight_crs = length_crs - pos[s].x();
-
+			// Distances from Downstrem (R), Upstream (L)
+            // Sipm's on D side (R)
+            double dLeft_crs  = length_crs + Lpos[s].z();//Upstream
+            double dRight_crs = length_crs - Lpos[s].z();//Downstream
+            //cout<<length_crs<<"  "<< Lpos[s].z()<< endl;
+            //cout<<dLeft_crs<<"  "<< dRight_crs<< endl;
             
 //            cout << " material " << theseMats[s] << endl;
             
@@ -144,48 +145,49 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 //				stepl = sqrt(pow((Lpos[s].x() - Lpos[s-1].x()),2) + pow((Lpos[s].y() - Lpos[s-1].y()),2) + pow((Lpos[s].z() - Lpos[s-1].z()),2));
 //			}
 			
-			double Edep_B = BirksAttenuation(Edep[s],Dx[s],charge[s],birks_constant);
+//			double Edep_B = BirksAttenuation(Edep[s],Dx[s],charge[s],birks_constant);
+            
             double Edep_B_crs = BirksAttenuation(Edep[s],Dx[s],charge[s],birks_constant);
             Etot_B_crs = Etot_B_crs + Edep_B_crs;
 
 			// cout << "\t Birks Effect: " << " Edep=" << Edep[s] << " StepL=" << stepl
 			//	  << " PID =" << pids[s] << " charge =" << charge[s] << " Edep_B=" << Edep_B << endl;
 			
-			if (light_coll > 1) light_coll = 1.;     // To make sure you don't miraculously get more energy than you started with
+//			if (light_coll > 1) light_coll = 1.;     // To make sure you don't miraculously get more energy than you started with
 			if (light_coll_crs > 1) light_coll_crs = 1.;
             
-			etotL = etotL + Edep_B/2 * exp(-dLeft/att_length) * light_coll;
-			etotR = etotR + Edep_B/2 * exp(-dRight/att_length) * light_coll;
+//			etotL = etotL + Edep_B/2 * exp(-dLeft/att_length) * light_coll;
+//			etotR = etotR + Edep_B/2 * exp(-dRight/att_length) * light_coll;
 
             etotL_crs = etotL_crs + Edep_B_crs/2 * exp(-dLeft_crs/att_length_crs) * light_coll_crs;
             etotR_crs = etotR_crs + Edep_B_crs/2 * exp(-dRight_crs/att_length_crs) * light_coll_crs;
 
             
-			etotB = etotB + Edep[s]/2 * exp(-dLeft/att_length) * light_coll;
-			etotF = etotF + Edep[s]/2 * exp(-dRight/att_length) * light_coll;
+//			etotB = etotB + Edep[s]/2 * exp(-dLeft/att_length) * light_coll;
+//			etotF = etotF + Edep[s]/2 * exp(-dRight/att_length) * light_coll;
 			
 			//  cout << "step: " << s << " etotL, etotR, etotB, etotF: " << etotL << ", " << etotR << ", " << etotB << ", " << etotF << endl;
 			
 			// timeL= timeL + (times[s] + dLeft/veff) / nsteps;
 			// timeR= timeR + (times[s] + dRight/veff) / nsteps;
 			
-			timeL= timeL + (times[s] + dLeft/veff) / nsteps;
-			timeR= timeR + (times[s] + dRight/veff) / nsteps;
+//			timeL= timeL + (times[s] + dLeft/veff) / nsteps;
+//			timeR= timeR + (times[s] + dRight/veff) / nsteps;
 
             
             timeL_crs= timeL_crs + (times[s] + dLeft_crs/veff_crs) / nsteps;
             timeR_crs= timeR_crs + (times[s] + dRight_crs/veff_crs) / nsteps;
 
-			timeB= timeB + (times[s] + dLeft/veff) / nsteps;
-			timeF= timeF + (times[s] + dRight/veff) / nsteps;
+//			timeB= timeB + (times[s] + dLeft/veff) / nsteps;
+//			timeF= timeF + (times[s] + dRight/veff) / nsteps;
 			
-			if(etotL > 0.) {
-				if(s==0 || (time_min[0]>(times[s]+dLeft/veff))) time_min[0]=times[s]+dLeft/veff;
-			}
+//			if(etotL > 0.) {
+//				if(s==0 || (time_min[0]>(times[s]+dLeft/veff))) time_min[0]=times[s]+dLeft/veff;
+//			}
 		//.q	      cout << "min " << time_min[0] << "min " << times[s]+dLeft/veff << endl;
-			if(etotR > 0.) {
-				if(s==0 || (time_min[1]>(times[s]+dRight/veff))) time_min[1]=times[s]+ dRight/veff;
-			}
+//			if(etotR > 0.) {
+//				if(s==0 || (time_min[1]>(times[s]+dRight/veff))) time_min[1]=times[s]+ dRight/veff;
+//			}
             
             
             if(etotL_crs > 0.) {
@@ -196,27 +198,27 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
                 if(s==0 || (time_min_crs[1]>(times[s]+dRight_crs/veff_crs))) time_min_crs[1]=times[s]+ dRight_crs/veff_crs;
             }
           
-            
+            //cout<<time_min_crs[1]<<"  "<< dRight_crs<< endl;
 		
-			if(etotB > 0.) {
-				if(s==0 || (time_min[2]>(times[s]+dLeft/veff))) time_min[2]=times[s]+ dLeft/veff;
-			}
-			if(etotF > 0.) {
-				if(s==0 || (time_min[3]>(times[s]+dRight/veff))) time_min[3]=times[s]+ dRight/veff;
-			}
-			
+//			if(etotB > 0.) {
+//				if(s==0 || (time_min[2]>(times[s]+dLeft/veff))) time_min[2]=times[s]+ dLeft/veff;
+//			}
+//			if(etotF > 0.) {
+//				if(s==0 || (time_min[3]>(times[s]+dRight/veff))) time_min[3]=times[s]+ dRight/veff;
+//			}
+//
 		}
 	 
         // cout << "Etot " << Etot_crs  << " EtotB " << Etot_B_crs  << " steps " << nsteps<< endl;
-		double peL=G4Poisson(etotL*light_yield*sensor_qe);
-		double peR=G4Poisson(etotR*light_yield*sensor_qe);
-        double sigmaTL=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peL+1.));
-        double sigmaTR=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peR+1.));
+//		double peL=G4Poisson(etotL*light_yield*sensor_qe);
+//		double peR=G4Poisson(etotR*light_yield*sensor_qe);
+//        double sigmaTL=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peL+1.));
+//        double sigmaTR=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peR+1.));
 
-        double peL_crs=G4Poisson(etotL_crs*light_yield_crs*sensor_qe_crs*optical_coupling);
-        double peR_crs=G4Poisson(etotR_crs*light_yield_crs*sensor_qe_crs*optical_coupling);
-        double sigmaTL_crs=sqrt(pow(5.*nanosecond,2.)+pow(10.*nanosecond,2.)/(peL_crs/10.+1.));
-        double sigmaTR_crs=sqrt(pow(5.*nanosecond,2.)+pow(10.*nanosecond,2.)/(peR_crs/10.+1.));
+        // Keeping the L side for future pindiode parametrization
+        //double peL_crs=G4Poisson(etotL_crs*light_yield_crs*sensor_qe_crs*optical_coupling);
+        //double sigmaTL_crs=sqrt(pow(5.*nanosecond,2.)+pow(10.*nanosecond,2.)/(peL_crs/10.+1.));
+        // All time spread added in the function WaveForm
         
         // sampling the short side readout and getting timing out of the digitized WF
 
@@ -225,55 +227,81 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         
 	//	  double sigmaTL=0;
 	//	  double sigmaTR=0;
-		TDCL=(int) ((time_min[0]+G4RandGauss::shoot(0.,sigmaTL)) * tdc_conv);
-		TDCR=(int) ((time_min[1]+G4RandGauss::shoot(0.,sigmaTR)) * tdc_conv);
-		if(TDCL<0) TDCL=0;
-		if(TDCR<0) TDCR=0;
-		ADCL=(int) (peL*sensor_gain*adc_conv + adc_ped);
-		ADCR=(int) (peR*sensor_gain*adc_conv + adc_ped);
+//		TDCL=(int) ((time_min[0]+G4RandGauss::shoot(0.,sigmaTL)) * tdc_conv);
+//		TDCR=(int) ((time_min[1]+G4RandGauss::shoot(0.,sigmaTR)) * tdc_conv);
+//		if(TDCL<0) TDCL=0;
+//		if(TDCR<0) TDCR=0;
+//		ADCL=(int) (peL*sensor_gain*adc_conv + adc_ped);
+//		ADCR=(int) (peR*sensor_gain*adc_conv + adc_ped);
 	//	  cout << "ADCL: " << ADCL << " " << peL << " " << sensor_gain << " " << adc_conv << endl;
 
         
         
-        TDCL_crs=(int) ((time_min_crs[0]+T_offset_crs+G4RandGauss::shoot(0.,sigmaTL_crs)) * tdc_conv_crs);
-        TDCR_crs=(int) ((time_min_crs[1]+T_offset_crs+G4RandGauss::shoot(0.,sigmaTR_crs)) * tdc_conv_crs);
-        if(TDCL_crs<0) TDCL_crs=0;
-        if(TDCR_crs<0) TDCR_crs=0;
-        ADCL_crs=(int) (peL_crs*sensor_gain_crs*adc_conv_crs + adc_ped_crs);
-        ADCR_crs=(int) (peR_crs*sensor_gain_crs*adc_conv_crs + adc_ped_crs);
-
+//        TDCL_crs=(int) ((time_min_crs[0]+T_offset_crs+G4RandGauss::shoot(0.,sigmaTL_crs)) * tdc_conv_crs);
+//        TDCR_crs=(int) ((time_min_crs[1]+T_offset_crs+G4RandGauss::shoot(0.,sigmaTR_crs)) * tdc_conv_crs);
+//        if(TDCL_crs<0) TDCL_crs=0;
+//        if(TDCR_crs<0) TDCR_crs=0;
+//        ADCL_crs=(int) (peL_crs*sensor_gain_crs*adc_conv_crs + adc_ped_crs);
+//        ADCR_crs=(int) (peR_crs*sensor_gain_crs*adc_conv_crs + adc_ped_crs);
+        
+        // Crystal readout
         //double test=WaveForm(peR_crs,TDCR_crs);
         double* test;
-        
         double tim;
+        double peR_int_crs;
+        double peR_crs;
+        int Nsamp_int=250;  // 1us
+        
+        //      SIPM 1
+        peR_crs=G4Poisson(etotR_crs*light_yield_crs*sensor_qe_crs*optical_coupling);
         test=WaveForm(peR_crs,&tim);
         // integrating over the integration time (each sample 4.ns, see digi routine)
         //for(unsigned int s=0; s<1000; s++)cout << s  << " " <<  test[s] << endl ;
-        int Nsamp_int=250;  // 1us
-        double peR_int_crs=0.;
-        
+        peR_int_crs=0.;
         for(unsigned int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
-        
         //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
-        
         TDCR_crs=int(tim);
         ADCR_crs=int(peR_int_crs);
         //ADCL_crs=etotR_crs*1000;
         //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
         
+        //Assigning to TDCB the usual timing seen by sipm1 (TDCR)
+        double sigmaTR_crs=sqrt(pow(5.*nanosecond,2.)+pow(10.*nanosecond,2.)/(peR_crs/10.+1.));
+        sigmaTR_crs=0.;
+        TDCB=((time_min_crs[1]+T_offset_crs+G4RandGauss::shoot(0.,sigmaTR_crs)) * tdc_conv_crs);
+        //cout <<time_min_crs[1]<<"  "<<TDCB<<endl;
         
-		double peB=G4Poisson(etotB*light_yield*sensor_qe);
-		double peF=G4Poisson(etotF*light_yield*sensor_qe);
-		double sigmaTB=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peB+1.));
-		double sigmaTF=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peF+1.));
+        
+        //      SIPM 2
+        double sensor_qe_crs_sipm2=0.35;//PDE sipm2
+        double optical_coupling_sipm2=optical_coupling;// assuming the two optical coupling are the same
+        peR_crs=G4Poisson(etotR_crs*light_yield_crs*sensor_qe_crs_sipm2*optical_coupling_sipm2);
+        test=WaveForm(peR_crs,&tim);
+        // integrating over the integration time (each sample 4.ns, see digi routine)
+        //for(unsigned int s=0; s<1000; s++)cout << s  << " " <<  test[s] << endl ;
+        peR_int_crs=0.;
+        for(unsigned int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
+        //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
+        TDCL_crs=int(tim); // assigning to L the sipm2
+        ADCL_crs=int(peR_int_crs);// assigning to L the sipm2
+        //ADCL_crs=etotR_crs*1000;
+        //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
+        
+       
+        
+        
+//		double peB=G4Poisson(etotB*light_yield*sensor_qe);
+//		double peF=G4Poisson(etotF*light_yield*sensor_qe);
+//		double sigmaTB=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peB+1.));
+//		double sigmaTF=sqrt(pow(0.2*nanosecond,2.)+pow(1.*nanosecond,2.)/(peF+1.));
 	//	  double sigmaTB=0;
 	//	  double sigmaTF=0;
-		TDCB=(int) ((time_min[2] + G4RandGauss::shoot(0.,sigmaTB)) * tdc_conv);
-		TDCF=(int) ((time_min[3] + G4RandGauss::shoot(0.,sigmaTF)) * tdc_conv);
-		if(TDCB<0) TDCB=0;
-		if(TDCF<0) TDCF=0;
-		ADCB=(int) (G4Poisson(etotB*light_yield*sensor_qe)*sensor_gain*adc_conv + adc_ped);
-		ADCF=(int) (G4Poisson(etotF*light_yield*sensor_qe)*sensor_gain*adc_conv + adc_ped);
+//		TDCB=(int) ((time_min[2] + G4RandGauss::shoot(0.,sigmaTB)) * tdc_conv);
+//		TDCF=(int) ((time_min[3] + G4RandGauss::shoot(0.,sigmaTF)) * tdc_conv);
+//		if(TDCB<0) TDCB=0;
+//		if(TDCF<0) TDCF=0;
+//		ADCB=(int) (G4Poisson(etotB*light_yield*sensor_qe)*sensor_gain*adc_conv + adc_ped);
+//		ADCF=(int) (G4Poisson(etotF*light_yield*sensor_qe)*sensor_gain*adc_conv + adc_ped);
 
 	  //cout << "energy right: " << ADCR / (adc_conv*sensor_gain*sensor_qe*light_yield) << " E left: " << ADCL / (adc_conv*sensor_gain*sensor_qe*light_yield) << endl;
 	  //cout << "energy forw: " << ADCF / (adc_conv*sensor_gain*sensor_qe*light_yield) << " E back: " << ADCB / (adc_conv*sensor_gain*sensor_qe*light_yield) << endl;
@@ -286,23 +314,23 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(verbosity>4)
 	{
 	  cout <<  log_msg << " xch: " << xch    << ", ych: " << ych ;
-	  cout <<  log_msg << " Etot=" << Etot/MeV << endl;
-	  cout <<  log_msg << " TDCL=" << TDCL     << " TDCR=" << TDCR    << " ADCL=" << ADCL << " ADCR=" << ADCR << endl;
-	  cout <<  log_msg << " TDCB=" << TDCB     << " TDCF=" << TDCF    << " ADCB=" << ADCB << " ADCF=" << ADCF << endl;
+	  cout <<  log_msg << " Etot=" << Etot_crs/MeV << endl;
+	  cout <<  log_msg << " TDCL=" << TDCL_crs     << " TDCR=" << TDCR_crs    << " ADCL=" << ADCL_crs << " ADCR=" << ADCR_crs << endl;
+	  //cout <<  log_msg << " TDCB=" << TDCB     << " TDCF=" << TDCF    << " ADCB=" << ADCB << " ADCF=" << ADCF << endl;
 	}
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
 	dgtz["xch"]  = xch;
 	dgtz["ych"] = ych;
-	dgtz["adcl"]   = ADCL_crs;
-	dgtz["adcr"]   = ADCR_crs;
-	dgtz["tdcl"]   = TDCL_crs;
-	dgtz["tdcr"]   = TDCR_crs;
-	dgtz["adcb"]   = Etot_crs;
-	dgtz["adcf"]   = Etot_B_crs;
-	dgtz["tdcb"]   = TDCB;
-	dgtz["tdcf"]   = TDCF;
+	dgtz["adcl"]   = ADCL_crs;//Downstream side large cell sipm
+	dgtz["adcr"]   = ADCR_crs;//Downstream side small cell sipm
+	dgtz["tdcl"]   = TDCL_crs;//Downstream side large cell sipm
+	dgtz["tdcr"]   = TDCR_crs;//Downstream side small cell sipm
+	dgtz["adcb"]   = 0;
+	dgtz["adcf"]   = 0;
+	dgtz["tdcb"]   = TDCB*1000.;//original time in ps
+	dgtz["tdcf"]   = 0;
 	
 	return dgtz;
 }
@@ -383,7 +411,7 @@ double* crs_HitProcess::WaveForm(double npe, double* time)
     double threshold=10.*1./area/smp_t/1000.; //time threshold in pe - 1/55.41/smp_t*1000. is the funct max -
 
     
-    double t_spread= 1.*0.030;// pream time spread in us
+    double t_spread= 1.*0.000;// pream time spread in us
     double A_spread= 1.*0.05*A;// pream amp spread (in fraction of 1pe amplitude = A)
     double func=0.;
     // Building the waveform
@@ -437,20 +465,33 @@ double* crs_HitProcess::WaveForm(double npe, double* time)
       }
      }
     
-    //for(unsigned int s=0; s<1000; s++) cout << s  << " " <<  WFsample[s] << endl ;
+    //for(unsigned int s=0; s<200; s++) cout << s  << " " <<  WFsample[s] << endl ;
 
-    
+        // mimicking a CF discriminatorm at 1/3 of the max signal
     *time=0.;
+    double time_max=-100;
+    int s=0;
+    int s_time_max=0;
+    while (time_max<WFsample[s]){
+        time_max=1/2.*(WFsample[s+1]+WFsample[s]);
+        s_time_max=s;
+        *time=1000.*smp_t*s_time_max/3.;
+        s++;
+    }
+   // cout<<s_time_max<<"  "<< time_max<< "  "<<*time <<endl;
+    
+/* // mimicking a FixedT discriminatorm
      for(unsigned int s=0; s<1000; s++)
      {
       //cout << s  << " " <<  WFsample[s] << endl ;
-
+         //look for the max
+         
          if(WFsample[s]>threshold)
          {*time=1000.*s*smp_t; //time in ns
              break;
          }
     }
-    
+ */
     
     // get timing from digitized WF
     
