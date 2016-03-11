@@ -53,9 +53,9 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
       adc   = -5;
       adchd = -5000;
    }
+		
 	if(verbosity>4)
 	{
-		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Card: " << card <<  "  Strip: " << strip
 			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}

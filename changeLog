@@ -12,7 +12,7 @@ Changelog for GEMC
  - parsing micromegas hit process routine
  - with SAVE_ALL_MOTHERS set to 2, all particles generating hits are saved in LUND format
    exception: if the mother also is a particle generating hit, only the mother is saved - unless SAVE_ALL_MOTHERS is set to 3
-	Implementation not complete on 3/8/16
+   Implementation not complete on 3/8/16
 
 3/7/16
  - added time to bst digitized info. bco is a random number between 0 and 255.
@@ -810,10 +810,94 @@ Changelog for GEMC
  - moving io to new location
  - Added devel directory for gemc
 
+4/29/2013
+ - removed obsolete SECONDARIES option
+
+1/24/2013
+ - using string utilities to get luminosity info
+ - improved get_number routine - this will be ported to 2.0 also. Still some
+   small quircks when the GUI overwrite beam values
+
+1/23/2013
+ - propagating the magnetic field to the whole genealogy - building root mother volume in detector io.
+   These changes are propagated in 2.0 also
+
+12/11/2012
+ - fixed bug in calculating dipole field for maps.
+
+.. Note::
+   12/06/2012 gemc 1.8 released!
+
+|
+
+12/03/2012
+ - removed Obsolete methods Get/SetModel() in preparation for 4.9.6. Default model is defined in the constructor anyway
+
+11/15/2012
+ - Improve QT path handling for plugins. Fix issues with Aprime hitprocessing.
+
+.. Note::
+   10/24/2012 gemc 1.7 released!
+
+|
 
 
+10/24/2012
+ - Introducing a new option ALIGN_ZAXIS to align z axis to a custom direction. Options:
+
+   - "beamp"  aligns z axis to the beam directions specified by BEAM_P.
+   - "custom, theta*unit, phi*unit" aligns z axis to a custom direction, changes BEAM_P reference frame.
+
+   With the new option the SPREAD_P will use the new coordinate system.
+
+10/23/2012
+
+ - Adding styles to the GUI:
+
+   - QPlastiqueStyle
+   - QCleanlooksStyle
+   - QMacStyle (soon removed as not present on some machines)
+   - QWindowsStyle
+   - QMotifStyle
+
+   Selectable at command line with the QTSTYLE option. Example: -QTSTYLE=QWindowsStyle
+
+ - Adding shared object .os in the pedit ignore of svn
+ - Added LIBRARY command line option to compile gemc as a static or shared library
+ - Fixed Set function in G4TrajectoryDrawByParticleID - passing particle name instead of charge
+ - Fixed typo introduced with previous commit
+ - Explicit double > int conversion to make compiler happy
+ - More utilities moved to string_utilities.
+ - Fixed get_strings routine not to discard last element in the vector.
+ - Fixed mysql i/o routine to account for get_string change
+ - Improved routines run_control and MPrimaryGeneratorAction to read parameters
+   from command line or gcard.
+ - copy_parameters and copy_materials now working with GEMC_USER env. variable
 
 
+10/22/2012
+
+ - This commit is brings some code clean up:
+
+   1. New file string_utilities has been added. All string manipulations function
+      is being moved here. All headers are modified accordingly
+   2. In the process of cleaning up code, removing obsolete functions and make better comments
+   3. By default the values of MAX_[XYZ]_POS variable has been set to 30m instead of 7m.
+      This allows for bigger setups than CLAS.
+
+
+10/16/2012
+ - using vrml2 as output format instead of vrml1
+
+10/12/2012
+ - Compatibility with clang compiler, you cannot create an array of non POD (plain old data) objects without using new.
+ - Added energy sharing in HS hit process for aprime experiment
+
+10/11/2012
+ - Added scintillator light attenuation for ADC digitization using lambda=376 cm.
+ - Tweaked photoelectron statistics to match PCAL measurements.
+ - Made digitization code same as for EC for now to simplify.
+ - Tweaked photoelectron statistics to match cosmic ray data MIP peak sigmas.
 
 
 
