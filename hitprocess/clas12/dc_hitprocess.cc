@@ -27,21 +27,27 @@ static dcConstants initializeDCConstants(int runno)
 	
 	// database
 	dcc.runNo = runno;
-	dcc.date       = "2015-11-15";
-	dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	dcc.date       = "2016-03-15";
+	//	dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	dcc.connection = "sqlite://clas12.sqlite";
 	
 	dcc.variation  = "main";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 	
 	// reading efficiency function
-	string database   = "/calibration/drift_chamber/distance_dependent_inefficiency";
-	auto_ptr<Assignment> ddiModel(calib->GetAssignment(database));
-	// third column of this table is the eff pars
-	dcc.P1 = ddiModel->GetValueDouble(0, 2);
-	dcc.P2 = ddiModel->GetValueDouble(1, 2);
-	dcc.P3 = ddiModel->GetValueDouble(2, 2);
-	dcc.P4 = ddiModel->GetValueDouble(3, 2);
+	string database   = "/calibration/dc/signal_generation/intrinsic_inefficiency";
+	vector<vector<double> > data;
+	calib->GetCalib(data, database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		int sl = data[row][0] - 1;
+		dcc.P1[sl]     = data[row][1];
+		dcc.P2[sl]     = data[row][2];
+		dcc.P3[sl]     = data[row][3];
+		dcc.P4[sl]     = data[row][4];
+		dcc.iScale[sl] = data[row][5];
+	}
 	
 	// reading DC core parameters
 	database   = "/geometry/dc/superlayer";
@@ -138,7 +144,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// distance-dependent efficiency as a function of doca
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
-	double ddEff = dcc.P1/pow(X*X + dcc.P2, 2) + dcc.P3/pow( (1-X) + dcc.P4, 2);
+	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
 	double fired = 1;

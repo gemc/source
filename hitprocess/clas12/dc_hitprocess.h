@@ -24,8 +24,8 @@ class dcConstants
 		double dcThreshold;
 		int NWIRES;
 	
-		double P1, P2, P3, P4;  // efficiency parameters
-		double dLayer[6];       // ~cell size in each superlayer - one of Mac's core parameters
+		double P1[6], P2[6], P3[6], P4[6], iScale[6];  // efficiency parameters for each superlayer
+		double dLayer[6];                              // ~cell size in each superlayer - one of Mac's core parameters
 
 };
 
