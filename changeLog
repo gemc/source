@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/11/16
+ - removed unnecessary trueInfos instantiation in bst hit process
+
 3/9/16
  - finalized background saving algorithm
  - saving time information of the track
@@ -898,6 +901,42 @@ Changelog for GEMC
  - Tweaked photoelectron statistics to match PCAL measurements.
  - Made digitization code same as for EC for now to simplify.
  - Tweaked photoelectron statistics to match cosmic ray data MIP peak sigmas.
+
+10/8/2012
+
+ - Increased ROOT volume to 120m
+	This should be an external parameter actually. Added feature request on mantis
+
+
+8/31/2012
+ - Code now gets digitization parameters from the gpars array instead of being hardwired.
+
+
+8/16/2012
+ - Commented out a rogue print statement.
+ - Added file for ECwithG4strips to hit process file list.
+ - Add bank for ECwithG4strips which is the bank for the EC using individual
+   strips in the scintillator layer instead of a single large slab. The bank structure is the same as the EC.
+ - Added ECwithG4strips to list of banks.
+ - Cleaned up code and added some more comments.
+
+7/31/2012
+ - Check to make sure that JLAB_ROOT is set.
+
+7/25/2012
+ - move out of gemc old svn tree
+
+7/10/2012
+ - moving gemc to new svn directory
+ - reformatted table list for better visualization
+
+
+
+
+
+
+
+
 
 
 
