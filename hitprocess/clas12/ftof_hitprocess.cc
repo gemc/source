@@ -193,7 +193,7 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double            A = ftc.twlk[sector-1][panel-1][0][paddle-1];
 	  double            B = ftc.twlk[sector-1][panel-1][1][paddle-1];
 	  //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
-	  double timeWalkLeft = A/(adcl)**B;
+	  double timeWalkLeft = A/pow(adcl,B);
 	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
 	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);
 	                tdclu = tLeftU*ftc.tdcLSB;
@@ -214,7 +214,7 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double             A = ftc.twlk[sector-1][panel-1][3][paddle-1];
 	  double             B = ftc.twlk[sector-1][panel-1][4][paddle-1];
 	  //double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
-	  double timeWalkRight = A/(adcr)**B;	
+	  double timeWalkRight = A/pow(adcr,B);	
 	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;	
 	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);	
 	                 tdcru = tRightU*ftc.tdcLSB;
