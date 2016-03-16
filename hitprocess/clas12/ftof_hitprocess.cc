@@ -192,8 +192,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	                 adcl = eneL*ftc.countsForMIP[sector-1][panel-1][0][paddle-1]/ftc.dEMIP[panel-1]/gainLeft;
 	  double            A = ftc.twlk[sector-1][panel-1][0][paddle-1];
 	  double            B = ftc.twlk[sector-1][panel-1][1][paddle-1];
-	  double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
-	  double timeWalkLeft = A/(B+C*sqrt(adcl));
+	  //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
+	  double timeWalkLeft = A/(adcl)**B;
 	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
 	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);
 	                tdclu = tLeftU*ftc.tdcLSB;
@@ -213,8 +213,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	                  adcr = eneR*ftc.countsForMIP[sector-1][panel-1][1][paddle-1]/ftc.dEMIP[panel-1]/gainRight;
 	  double             A = ftc.twlk[sector-1][panel-1][3][paddle-1];
 	  double             B = ftc.twlk[sector-1][panel-1][4][paddle-1];
-	  double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
-	  double timeWalkRight = A/(B+C*sqrt(adcr));	
+	  //double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
+	  double timeWalkRight = A/(adcr)**B;	
 	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;	
 	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);	
 	                 tdcru = tRightU*ftc.tdcLSB;
