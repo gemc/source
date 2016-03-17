@@ -161,13 +161,15 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
 	
 	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF));
-		
+	
 	// distance-dependent efficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
 	double wirene = nwire;
 	if(random < ddEff || X > 1) nwire = -5;
+	
+	cout << doca << " " << dcc.dLayer[SLI] << " " << dcc.P3[SLI] << endl;
 	
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
@@ -180,7 +182,6 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sdoca"]      = sdoca;
 	dgtz["time"]       =  doca/dcc.driftVelocity[SLI];
 	dgtz["stime"]      = sdoca/dcc.driftVelocity[SLI];
-	dgtz["wirene"]     = wirene;
 	
 	return dgtz;
 }
