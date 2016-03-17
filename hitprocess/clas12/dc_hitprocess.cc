@@ -25,6 +25,9 @@ static dcConstants initializeDCConstants(int runno)
 	// with the proper run number coming from options or run table
 	if(runno == -1) return dcc;
 	
+	dcc.NWIRES = 113;
+	dcc.dcThreshold  = 50;  // eV
+
 	// database
 	dcc.runNo = runno;
 	dcc.date       = "2016-03-15";
@@ -35,7 +38,7 @@ static dcConstants initializeDCConstants(int runno)
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 	
-	// reading efficiency function
+	// reading efficiency parameters
 	string database   = "/calibration/dc/signal_generation/intrinsic_inefficiency";
 	vector<vector<double> > data;
 	calib->GetCalib(data, database);
@@ -49,17 +52,28 @@ static dcConstants initializeDCConstants(int runno)
 		dcc.iScale[sl] = data[row][5];
 	}
 	
+	// reading smearing parameters
+	database   = "/calibration/dc/signal_generation/dc_resolution";
+	data.clear();
+	calib->GetCalib(data, database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		int sec = data[row][0] - 1;
+		int sl  = data[row][1] - 1;
+		dcc.smearP1[sec][sl]    = data[row][2];
+		dcc.smearP2[sec][sl]    = data[row][3];
+		dcc.smearP3[sec][sl]    = data[row][4];
+		dcc.smearP4[sec][sl]    = data[row][5];
+		dcc.smearScale[sec][sl] = 1;
+	}
+
+	
 	// reading DC core parameters
 	database   = "/geometry/dc/superlayer";
 	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(database));
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++)
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
-
 	
-	dcc.NWIRES = 113;
-	
-	dcc.docaSmearing = 0.3; // mm
-	dcc.dcThreshold  = 50;  // eV
 	dcc.driftVelocity[0] = dcc.driftVelocity[1] = 0.053;  ///< drift velocity is 53 um/ns for region1
 	dcc.driftVelocity[2] = dcc.driftVelocity[3] = 0.026;  ///< drift velocity is 26 um/ns for region2
 	dcc.driftVelocity[4] = dcc.driftVelocity[5] = 0.036;  ///< drift velocity is 36 um/ns for region3
@@ -77,6 +91,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
+	int SECI  = identity[0].id - 1;
 	int SLI   = identity[1].id - 1;
 	int nwire = identity[3].id;
 	
@@ -139,16 +154,21 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	// smeading doca
-	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, dcc.docaSmearing));  ///< smeared by 300 microns for now
+	// percentage distance from the wire
+	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
+
+	// smeading doca by DOCA dependent function
+	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
+	
+	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF));
+	if(sdoca > dcc.dLayer[SLI]/2) sdoca = dcc.dLayer[SLI]/2;
 	
 	// distance-dependent efficiency as a function of doca
-	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
-	double fired = 1;
-	if(random < ddEff || X > 1) fired = 0;
+	double wirene = nwire;
+	if(random < ddEff || X > 1) nwire = -5;
 	
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
@@ -161,7 +181,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sdoca"]      = sdoca;
 	dgtz["time"]       =  doca/dcc.driftVelocity[SLI];
 	dgtz["stime"]      = sdoca/dcc.driftVelocity[SLI];
-	dgtz["fired"]      = fired;
+	dgtz["wirene"]     = wirene;
 	
 	return dgtz;
 }
