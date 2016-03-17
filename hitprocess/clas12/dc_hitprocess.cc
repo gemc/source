@@ -161,8 +161,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
 	
 	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF));
-	if(sdoca > dcc.dLayer[SLI]/2) sdoca = dcc.dLayer[SLI]/2;
-	
+		
 	// distance-dependent efficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
