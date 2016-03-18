@@ -273,6 +273,7 @@ map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
 	
 	
 	// leaving the zeros until the first entry in the voltage signal
+	// attention: looks like this can go on forever in some cases?
 	while (qsi->first < vti->first)
 	{
 		//		cout << qsi->first << " " << vti->first << endl;
