@@ -1,6 +1,18 @@
 Changelog for GEMC
 ==================
 
+3/18/16
+ - to physics catalogue:
+ - hPairProd
+ - ionIon
+ - tInelastic
+ - kaon-Inelastic
+ - added notice in V(t) routine
+
+3/17/16
+ - Modified time-walk functional to follow Haiyun's recommendation
+
+
 3/11/16
  - removed unnecessary trueInfos instantiation in bst hit process
 
@@ -930,8 +942,29 @@ Changelog for GEMC
  - moving gemc to new svn directory
  - reformatted table list for better visualization
 
+6/22/2012
+ - Fixed par type for PARAMETERDB.
+ - Implemented Simulation Condition for TEXT output.
+ - Added EVIO support for simulation conditions.
+   This finalize the writing of condition in the data file, as a bank of strings.
 
+   Example::
 
+    option: LUMI_P:  e-, 11*GeV, 0*deg, 0*deg
+
+ - Added option RUNNO to tag the geometry
+ - Implemented gcard rotation
+ - Added map with simulation conditions (parameters, shifts and rotations from nominal geometry) to be stored in the output file
+
+6/14/2012
+ - Documentation written on the MM digitization routine
+
+6/7/2012
+ - Documentation for BST hit process
+
+6/4/2012
+ - Added capability to perform Boolean operations on solids assuming coordinates and
+   rotations of both solids are given with respect to the common mother volume of both solids.
 
 
 

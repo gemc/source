@@ -280,6 +280,8 @@ MHit*  sensitiveDetector::find_existing_hit(vector<identifier> PID)  ///< return
 	return NULL;
 }
 
+// to check process name go to $G4ROOT/$GEANT4_VERSION/source/geant$GEANT4_VERSION/source/processes/
+// mgrep "const G4String&" | grep process
 
 int sensitiveDetector::processID(string procName)
 {
@@ -304,6 +306,10 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "Cerenkov")         return 19;
 	if(procName == "dInelastic")       return 20;
 	if(procName == "muPairProd")       return 21;
+	if(procName == "ionIoni")          return 22;
+	if(procName == "hPairProd")        return 23;
+	if(procName == "tInelastic")       return 24;
+	if(procName == "kaon-Inelastic")   return 25;
 	
 	if(procName == "na")            return 90;
 	
