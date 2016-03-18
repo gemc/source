@@ -7,7 +7,7 @@ New features:
 - multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
-
+- proMC output
 
 Code Improvements:
 ==================

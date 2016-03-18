@@ -8,6 +8,7 @@ Changelog for GEMC
  - tInelastic
  - kaon-Inelastic
  - added notice in V(t) routine
+ - implemented rayleigh scattering in the material properties.
 
 3/17/16
  - Modified time-walk functional to follow Haiyun's recommendation
@@ -966,8 +967,25 @@ Changelog for GEMC
  - Added capability to perform Boolean operations on solids assuming coordinates and
    rotations of both solids are given with respect to the common mother volume of both solids.
 
+5/16/2012
+ - allowing for beam energies up to 100 GeV, vertexes range of 100m  in the GUI
 
+5/15/2012
+ - Event Action:
 
+   Limiting loop on NGENP option number of generated particle.
+   This should speed up considerably the simulation in case of high luminosity beams.
+
+   WARNING: I tested this for very high luminosity. Turns out that GEANT4 has some (already documented)
+   memory leak in G4PrimaryParticle destructor, see "Particle" forum thread 405.
+
+ - materials: added vacuum at 10^-9
+
+5/14/2012
+ - added access to PCAL parameters in hitprocess
+
+5/8/2012
+ - reinserted default charge sharing for PCAL
 
 
 

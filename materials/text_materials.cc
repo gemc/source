@@ -60,7 +60,6 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			}
 
 			
-			
 			if(!IN)
 			{
 				if(verbosity>1)
@@ -105,6 +104,7 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 				thisMat.fasttimeconstant   = get_number(gt.data[14]);
 				thisMat.slowtimeconstant   = get_number(gt.data[15]);
 				thisMat.yieldratio         = get_number(gt.data[16]);
+				thisMat.opticalsFromString(             gt.data[17], "rayleigh");
 			}
 			mymats[thisMat.name] = thisMat;
 			
