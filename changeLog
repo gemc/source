@@ -8,7 +8,9 @@ Changelog for GEMC
  - tInelastic
  - kaon-Inelastic
  - added notice in V(t) routine
- - implemented rayleigh scattering in the material properties.
+ - implemented rayleigh scattering in the material properties, both mysql and text factories
+ - fixed luminosity bug in setting number of particles
+ - fixed luminosity bug in setting vertex spread properly
 
 3/17/16
  - Modified time-walk functional to follow Haiyun's recommendation
