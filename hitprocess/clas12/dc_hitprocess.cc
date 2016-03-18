@@ -64,7 +64,15 @@ static dcConstants initializeDCConstants(int runno)
 		dcc.smearP2[sec][sl]    = data[row][3];
 		dcc.smearP3[sec][sl]    = data[row][4];
 		dcc.smearP4[sec][sl]    = data[row][5];
-		dcc.smearScale[sec][sl] = 1;
+		dcc.smearScale[sec][sl] = data[row][6];
+		
+		if(dcc.smearScale[sec][sl] > 1)
+		{
+			cout << "  !!!! DC Warning: the smearing parameter is greater than one for sector " << sec << " sl " << sl
+			<< ". That means that the DC response in GEMC will have"
+			<< " worse resoultion than the data. " << endl;
+		}
+
 	}
 
 	
@@ -160,17 +168,15 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// smeading doca by DOCA dependent function
 	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
 	
-	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF));
+	
+	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF*dcc.smearScale[SECI][SLI]));
 	
 	// distance-dependent efficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
-	double wirene = nwire;
 	if(random < ddEff || X > 1) nwire = -5;
-	
-	cout << doca << " " << dcc.dLayer[SLI] << " " << dcc.P3[SLI] << endl;
-	
+		
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
 	dgtz["sector"]     = identity[0].id;
