@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/21/16
+ - adding verbosity to map field loading routines 
+
 3/18/16
  - to physics catalogue:
  - hPairProd
@@ -988,6 +991,29 @@ Changelog for GEMC
 
 5/8/2012
  - reinserted default charge sharing for PCAL
+
+
+4/26/2012
+ - keeping beam and target polarizations in the output stream
+ - macros to rotate, zoom in steps
+
+
+4/24/2012
+ - added new hit type (FTH), bank (FTH) and related hit process routine for Forward Tagger Hodoscope
+ - no hardcoded number in the micromegas hit process routines
+
+
+4/23/2012
+ - change HTCC last identifier to nphe_pmt so the GUI can catch the nphe
+ - added optical properties to hit process routines
+
+4/20/2012
+ - lab char size was too small
+ - making compiler happy - updated revision number
+ -  GEMC can now read geant4 optical properties from a MYSQL DB. The MYSQL material factory is now equivalent to the CPP one.
+ - Added utility function get_strings that will return a vector<string> from a string using the stringsteam method
+ - Warning fixed in the HTCC process routines
+ - Changed name of material maps from MMats to mats
 
 
 

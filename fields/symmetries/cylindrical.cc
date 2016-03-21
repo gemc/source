@@ -11,7 +11,7 @@
 // The field is two dimensional, ordered in the class as B1=BT, B2=BL
 
 // from fieldFactory:  load field map
-void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
+void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 {
 	setlocale(LC_NUMERIC, "en_US");
 
@@ -22,7 +22,7 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 	double cell1 = (map->getCoordinateWithSpeed(0).max - min1)/(np_1 - 1);
 	double cell2 = (map->getCoordinateWithSpeed(1).max - min2)/(np_2 - 1);
 
-  // Allocate memory. [LONGI][TRANSVERSE]
+   // Allocate memory. [LONGI][TRANSVERSE]
 	// as initialized in the map
 	map->B1_2D = new double*[map->np[0]];
 	map->B2_2D = new double*[map->np[0]];
@@ -66,6 +66,9 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double v)
 			b1 *= scale;
 			b2 *= scale;
 
+			if(verbosity>4)
+				cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   values: (" << b1 << ", " << b2 << ")." << endl;
+			
 			// checking map consistency for first coordinate
 			if( (min1  + i1*cell1 - d1)/d1 > 0.001)
 			{
