@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+3/22/16
+ - when background is being saved, all tracks passing by detectors
+   are saved even if they do not deposit energy
+
+
 3/21/16
  - adding verbosity to map field loading routines 
 
@@ -1010,12 +1015,23 @@ Changelog for GEMC
 4/20/2012
  - lab char size was too small
  - making compiler happy - updated revision number
- -  GEMC can now read geant4 optical properties from a MYSQL DB. The MYSQL material factory is now equivalent to the CPP one.
+ - GEMC can now read geant4 optical properties from a MYSQL DB. The MYSQL material factory is now equivalent to the CPP one.
  - Added utility function get_strings that will return a vector<string> from a string using the stringsteam method
  - Warning fixed in the HTCC process routines
  - Changed name of material maps from MMats to mats
 
+4/19/2012
+ - added MYSQL interface to optical properties, cleaned up cpp material factory
 
+4/18/2012
+ - Added template for optical properties upload.
+ - Refining geant4 material definition. Cleaning up code.
+
+4/16/2012
+ - fixed problem with field-separating tab characters
+ - Added case where the g4signal display optical photon hits instead of energy hits
+ - Removed number of segments in HIGH_RES running.
+   One can still set it in the GUI
 
 
 
