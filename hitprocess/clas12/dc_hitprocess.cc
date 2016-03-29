@@ -175,7 +175,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
-	if(random < ddEff || X > 1) nwire = -5;
+	int ineff = 1;
+	if(random < ddEff || X > 1) ineff = -1;
 		
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
@@ -186,8 +187,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
-	dgtz["time"]       =  doca/dcc.driftVelocity[SLI];
-	dgtz["stime"]      = sdoca/dcc.driftVelocity[SLI];
+	dgtz["time"]       = ineff *doca/dcc.driftVelocity[SLI];
+	dgtz["stime"]      = ineff*sdoca/dcc.driftVelocity[SLI];
 	
 	return dgtz;
 }
