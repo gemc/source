@@ -173,6 +173,7 @@ gemc_sources = Split("""
 	src/MDetectorMessenger.cc
 	src/MEventAction.cc
 	src/MPrimaryGeneratorAction.cc
+	src/ActionInitialization.cc
 	src/MSteppingAction.cc""")
 
 env.Append(LIBPATH = ['lib'])

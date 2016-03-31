@@ -1,10 +1,13 @@
 Changelog for GEMC
 ==================
 
+3/31/16
+ - moved user actions initializations to ActionInitialization
+ - added EVTN option to set event number
+
 3/22/16
  - when background is being saved, all tracks passing by detectors
    are saved even if they do not deposit energy
-
 
 3/21/16
  - adding verbosity to map field loading routines 
@@ -1032,6 +1035,78 @@ Changelog for GEMC
  - Added case where the g4signal display optical photon hits instead of energy hits
  - Removed number of segments in HIGH_RES running.
    One can still set it in the GUI
+
+4/12/2012
+ - Material properties log only if verbosity activated.
+ - Removed automatic rotation for "Beam every 2 seconds" button
+
+ - A new factory has been introduced: "parameters".
+   This factory stores the geometry parameters and make them available to the reconstruction routines.
+   This factory currently support MYSQL.
+
+   Inside each hit process routine, parameters can now be accessed with the "gpars" map,
+   using the detector name and parameter name. For example::
+
+    gpars["BST/nregions"] is equal to 4
+
+4/9/2012
+ - Added Mirrors in the hit definition list
+ - Added sensitive detector: "Mirrors" with FLUX associated hit process routine.
+   This will allow mirrors to use identifiers w/o recording the unnecessary hits on them.
+
+   By default it will not record the particles hitting it.
+   To record, use the option::
+
+    -RECORD_MIRRORS=1
+
+4/6/2012
+ - added validation scripts to test compilation, running, geometry, etc
+ - correcting cpp material factory: molecules can (and should) be formed by molecular components not fractional masses
+
+4/5/2012
+ - Migrating from custome element definitions to G4 Material database, both in CPP and MYSQL material factory.
+   MYSQL factory finalized with:
+
+   * custom elements
+   * G4 material database components
+
+   TODO:
+
+   * Property Tables (for optical physics)
+   * Make sure materials of materials is handled properly
+
+
+4/4/2012
+ - added start of mysql material factory. Added script to copy materials to clas12_geometry.
+ - removed compiler warning. Added run_condition class as argument to material factory
+ - DB interface to write materials to DB is completed
+
+4/3/2012
+ - added scripts to upload materials to DB
+ - added explicit units for molar mass (g/mol)
+ - Added elements file, perl scripts to upload elements materials in mysql DB
+ - (Puckett) With this update, HTCC_hitprocess looks for the property "EFFICIENCY" to be defined for the
+   material of the detector; e.g., a PMT photocathode. If it is found, then each optical photon
+   is detected with probability corresponding to the efficiency. If the property "EFFICIENCY"
+   has not been defined for the material of this sensitive detector, then all optical photons are detected.
+ - (Puckett) In the processing of mirror definitions, I added the capability to use the optical properties
+   of a pre-existing material instead of properties defined in the detector identifiers. This allows more
+   flexible (wavelength-dependent) optical properties to be used for mirror surfaces. To use this functionality,
+   the detector identifiers must contain: "WithMaterial: [material name] dummy" where [material name]
+   is the name of a pre-existing material with defined optical properties and dummy is the integer "id"
+   required to read in the "identifiers" line from the database. In this context "id" is a dummy variable
+   that has no effect, but must be included or the database io will fail.
+ - Added Materials factories: MYSQL, CPP, GDML
+
+
+
+
+
+
+
+
+
+
 
 
 

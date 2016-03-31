@@ -99,6 +99,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 		cout << " > Opening background.dat file to save background particles in LUND format." << endl;
 	}
 	
+	evtN = gemcOpt.optMap["EVTN"].arg;
 }
 
 MEventAction::~MEventAction()

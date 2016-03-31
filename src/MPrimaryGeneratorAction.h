@@ -1,7 +1,7 @@
 #ifndef MPrimaryGeneratorAction_h
 #define MPrimaryGeneratorAction_h 1
 
-// G4 headers
+// Geant4
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "G4Event.hh"
@@ -11,10 +11,10 @@
 using namespace UTIL;
 
 
-// gemc headers
+// gemc
 #include "options.h"
 
-// C++ headers
+// C++
 #include <fstream>
 
 

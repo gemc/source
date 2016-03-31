@@ -31,7 +31,12 @@ Code Improvements:
 - add track verbosity output
 - add options for particles color
 - is atof thread safe?
-
+- move all user actions in their directory:
+  ActionInitialization
+  PrimaryGenerator
+  SteppingAction
+- gemcOptions make it a library, pass it by reference not value!
+  make calls like gemcOpt->get3Vector("BEAM_V")
 
 Add production cut verbosity?
 
