@@ -74,6 +74,6 @@ Code Reorganization:
 
 - bring output structure out of gemc - general library
 - bring options out of gemc - general library 
-- bring splash screen out of gemc - general library
+- bring splash screen out of util - general library
 - re-organize primary generator, use external library project
 

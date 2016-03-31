@@ -60,12 +60,9 @@ const char *GEMC_VERSION = "gemc 2.3";
 #include "gemc_MainGui.h"
 #include "gbank.h"
 #include "MDetectorConstruction.h"
-#include "MEventAction.h"
 #include "outputFactory.h"
 #include "HitProcess.h"
 #include "PhysicsList.h"
-#include "MPrimaryGeneratorAction.h"
-#include "MSteppingAction.h"
 #include "options.h"
 #include "dmesg_init.h"
 #include "run_conditions.h"
@@ -84,7 +81,7 @@ const char *GEMC_VERSION = "gemc 2.3";
 /// <b> Main Program </b>
 /////////////////////////
 ///  -# Sets the goptions\n
-///  -# Starts QT application if USE_GUI=1
+///  -# Starts QT application if USE_GUI=1 or 2
 ///  -# Starts the CLHEP random engine
 ///  -# Instantiates the Geant4 Run Manager
 ///  -# Builds detector map object from database
@@ -92,8 +89,7 @@ const char *GEMC_VERSION = "gemc 2.3";
 ///  -# Builds Materials Map
 ///  -# Builds G4 Physical Volumes
 ///  -# Initialize Physics List
-///  -# Initialize Generator
-///  -# Initialize Event Action
+///  -# Initialize Generator, Event and Stepping Actions
 ///  -# Initialize G4Qt User Interface if USE_GUI>0
 ///  -# Initialize Visualization Manager if USE_GUI>0
 
@@ -246,26 +242,6 @@ int main( int argc, char **argv )
 	ActionInitialization* gActions = new ActionInitialization(&gemcOpt, &gParameters);
 	runManager->SetUserInitialization(gActions);
 
-	
-//	// Generator
-//	gemc_splash.message(" Initializing Primary Generator Action...");
-//	MPrimaryGeneratorAction* gen_action = new MPrimaryGeneratorAction(&gemcOpt);
-//	runManager->SetUserAction(gen_action);
-//	
-//	// Event Action
-//	gemc_splash.message(" Initializing Event Action...");
-//	MEventAction* event_action = new MEventAction(gemcOpt, gParameters);
-//	event_action->SetEvtNumber((int) gemcOpt.optMap["EVN"].arg);     ///< Sets event number from OPTION
-//	runManager->SetUserAction(event_action);
-//	
-//	// Stepping Action
-//	gemc_splash.message(" Initializing Stepping Action...");
-//	MSteppingAction* SteppingAction = new MSteppingAction(gemcOpt);
-//	runManager->SetUserAction(SteppingAction);
-	
-	
-	
-	
 	///< User Interface manager
 	gemc_splash.message(" Initializing User Interface...");
 	G4UIsession *session = NULL;

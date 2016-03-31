@@ -1099,6 +1099,39 @@ Changelog for GEMC
  - Added Materials factories: MYSQL, CPP, GDML
 
 
+3/30/2012
+ - added material factory to load materials from cpp_file, databases, gdml file
+ - added limit of 1000 steps in one volume
+ - added button to get events ever 2 seconds (for 4 hours) while camera rotates
+
+3/23/2012
+ - added phi-simmetric cylindrical coordinates around x or y axis
+ - set process verbosity to zero by default
+
+3/14/2012
+ - Fixed bug that was deleting parameters.txt
+ - Added starting angle for optical photon beam test
+ - Corrected Vertex Spread to generate a uniform distribution on the raster circle, as opposed of uniform in R
+
+3/9/2012
+ - New digitization routine for BMT
+ - New digitization routine for FMT
+ - New digitization routine for FTM
+
+
+3/9/2012
+ - Fixed a typo "Operation:" was supposed to read "Operation:~"
+	when support was added for operations with translation happening before the rotation
+
+3/1/2012
+ - Added gemc banks content
+
+
+
+
+
+
+
 
 
 
