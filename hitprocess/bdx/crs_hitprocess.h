@@ -1,15 +1,15 @@
-#ifndef veto_HITPROCESS_H
-#define veto_HITPROCESS_H 1
+#ifndef crs_HITPROCESS_H
+#define crs_HITPROCESS_H 1
 
 // gemc headers
 #include "HitProcess.h"
 
 // Class definition
-class veto_HitProcess : public HitProcess
+class crs_HitProcess : public HitProcess
 {
 	public:
 	
-		~veto_HitProcess(){;}
+		~crs_HitProcess(){;}
 	
 		// - integrateDgt: returns digitized information integrated over the hit
 		map<string, double> integrateDgt(MHit*, int);
@@ -21,12 +21,14 @@ class veto_HitProcess : public HitProcess
 		// containing hit sharing information
 		vector<identifier> processID(vector<identifier>, G4Step*, detector);
 
-		// creates the HitProcess
-		static HitProcess *createHitClass() {return new veto_HitProcess;}
+		// creates the HitProcess 
+		static HitProcess *createHitClass() {return new crs_HitProcess;}
 
 		double BirksAttenuation(double,double,int,double);
 		double BirksAttenuation2(double,double,int,double);
-		double* IVresponse(int, double, double, double);
+        double* WaveForm(double,double*);
+
+
 };
 
 #endif
