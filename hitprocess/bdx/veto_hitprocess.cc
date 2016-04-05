@@ -23,9 +23,9 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
     
 
-	double adc_conv=10;                 // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
-	double adc_ped=0;                   // ADC Pedestal
-	double tdc_conv=1*ns;               // TDC conversion factor
+//	double adc_conv=10;                 // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
+//	double adc_ped=0;                   // ADC Pedestal
+//	double tdc_conv=1*ns;               // TDC conversion factor
 	
 	
 	// initialize ADC and TDC
@@ -61,7 +61,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double light_guide_att;
     double tL;
     double tR;
-    double peL;
+    double peL=0.;
     double peR;
     double etot_g4=0.;
 
@@ -289,7 +289,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         double sy=aHit->GetDetector().dimensions[1];
         double sz=aHit->GetDetector().dimensions[2];
         
-        double time_min[4] = {0,0,0,0};
+//        double time_min[4] = {0,0,0,0};
         
         vector<G4ThreeVector> Lpos = aHit->GetLPos();
         vector<G4double>      Edep = aHit->GetEdep();
@@ -589,11 +589,11 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     {
         double veff=13*cm/ns    ;// TO BE CHECKED
         // scintillator sizes
-        double sx=aHit->GetDetector().dimensions[0];
-        double sy=aHit->GetDetector().dimensions[1];
+//        double sx=aHit->GetDetector().dimensions[0];
+//        double sy=aHit->GetDetector().dimensions[1];
         double sz=aHit->GetDetector().dimensions[2];
         
-        double time_min[4] = {0,0,0,0};
+//        double time_min[4] = {0,0,0,0};
         
         vector<G4ThreeVector> Lpos = aHit->GetLPos();
         vector<G4double>      Edep = aHit->GetEdep();
