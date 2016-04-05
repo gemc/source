@@ -26,7 +26,11 @@ static ctofConstants initializeCTOFConstants(int runno)
 
 	ctc.runNo      = runno;
 	ctc.date       = "2015-11-29";
-	ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ctc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	
 	ctc.variation  = "default";
 
 	ctc.npaddles   = 48;

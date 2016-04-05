@@ -24,7 +24,10 @@ static ftofConstants initializeFTOFConstants(int runno)
 
 	ftc.runNo      = runno;
 	ftc.date       = "2015-11-29";
-	ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ftc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	ftc.variation  = "default";
 
 	ftc.npaddles[0] = 23;

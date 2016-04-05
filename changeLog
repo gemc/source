@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+4/5/16
+ - reading CCDB_CONNECTION env variable to connect various hit process routine
+	to CCDB. This can be set to a mysqlite file. If env is not set, reverting to jlab server.
+
+
 3/31/16
  - moved user actions initializations to ActionInitialization
  - added EVTN option to set event number
@@ -1127,8 +1132,31 @@ Changelog for GEMC
  - Added gemc banks content
 
 
+2/29/2012
+ - Fixed bug for operations with "~" (translation occurs before rotation)
 
+2/24/2012
+ - Added G4Paraboloid and G4Hype
 
+2/20/2012
+ - Corrected and improved bst strip finding routine
+
+2/10/2012
+ - Added units to parameter files perl functions
+ - Added perl mysql database paramters i/o
+
+2/9/2012
+ - better mysql security
+
+2/3/2012
+ - Checking that Hit Collection exists before getting hits in the signal gui
+ - Improved MDetector construction
+ - Building operands of sold operations or copies first. Users do not need anymore to order them in alphabetical order.
+
+.. Note::
+   1/26/2012 working gemc version 1.6 revision 5588
+
+|
 
 
 

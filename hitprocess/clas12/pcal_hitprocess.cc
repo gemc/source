@@ -24,7 +24,10 @@ static pcConstants initializePCConstants(int runno)
 	// database
 	pcc.runNo      = runno;
 	pcc.date       = "2015-11-29";
-	pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		pcc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	pcc.variation  = "default";
 	
 	pcc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
