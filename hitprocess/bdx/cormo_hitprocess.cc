@@ -10,7 +10,7 @@
 using namespace CLHEP;
 
 map<string, double> cormo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
-{
+{ 
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 
@@ -65,7 +65,7 @@ map<string, double> cormo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double time_min[4] = {0,0,0,0};
 	
-	vector<G4ThreeVector> pos = aHit->GetPos();
+	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	vector<G4double>      Edep = aHit->GetEdep();
 	vector<G4double>      Dx   = aHit->GetDx();
 	// Charge for each step
@@ -81,8 +81,8 @@ map<string, double> cormo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  for(unsigned int s=0; s<nsteps; s++)
 		{
 			// Distances from left, right
-			double dLeft  = length + pos[s].x();
-			double dRight = length - pos[s].x();
+			double dLeft  = length + Lpos[s].y();
+			double dRight = length - Lpos[s].y();
 			
 			// cout << "\n Distances: " << endl;
 			// cout << "\t dLeft, dRight, dBack, dFwd: " << dLeft << ", " << dRight << ", " << dBack << ", " << dFwd << endl;
