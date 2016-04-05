@@ -16,40 +16,40 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	int sector = identity[0].id; 
 	int xch  = identity[1].id;
-	int ych = identity[2].id;
+	int ych = identity[2].id; 
 		
 	// Digitization Parameters
-	double light_yield=1600/MeV;             // number of optical photons pruced in the scintillator per MeV of deposited energy
-	double att_length=108*cm;                 // light at tenuation length
-	double sensor_surface=pow(3.5*cm,2)*pi;   // area of photo sensor
-	double paddle_surface=pow(10*cm,2);       // paddle surface
-	double light_coll=sensor_surface/paddle_surface;  // ratio of photo_sensor area over paddle section ~ light collection efficiency
+//	double light_yield=1600/MeV;             // number of optical photons pruced in the scintillator per MeV of deposited energy
+//	double att_length=108*cm;                 // light at tenuation length
+//	double sensor_surface=pow(3.5*cm,2)*pi;   // area of photo sensor
+//	double paddle_surface=pow(10*cm,2);       // paddle surface
+//	double light_coll=sensor_surface/paddle_surface;  // ratio of photo_sensor area over paddle section ~ light collection efficiency
 
-	double sensor_qe=0.15;                     // photo sensor quantum efficiency
-	double sensor_gain=0.472*1.6*1.275;         // pmt gain x electron charge in pC (4x10^6)x(1.6x10^-7) ->val * 1.6 * 0.6 = 0,963   modifica 21/01/10 
-	double adc_conv=10;                       // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
-	double adc_ped=0;                         // ADC Pedestal
-	double veff=13*cm/ns;                     // light velocity in scintillator
-	double tdc_conv=1/0.001/ns;               // TDC conversion factor
+//	double sensor_qe=0.15;                     // photo sensor quantum efficiency
+//	double sensor_gain=0.472*1.6*1.275;         // pmt gain x electron charge in pC (4x10^6)x(1.6x10^-7) ->val * 1.6 * 0.6 = 0,963   modifica 21/01/10
+//	double adc_conv=10;                       // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
+//	double adc_ped=0;                         // ADC Pedestal
+//	double veff=13*cm/ns;                     // light velocity in scintillator
+//	double tdc_conv=1/0.001/ns;               // TDC conversion factor
 	
 	
 	// initialize ADC and TDC
-	double etotL = 0;
-	double etotR = 0;
-	double timeL = 0;
-	double timeR = 0;
-	int ADCL = 0; 
-	int ADCR = 0;
-	int TDCL = 4096;
-	int TDCR = 4096;
+//	double etotL = 0;
+//	double etotR = 0;
+//	double timeL = 0;
+//	double timeR = 0;
+//	int ADCL = 0;
+//	int ADCR = 0;
+//	int TDCL = 4096;
+//	int TDCR = 4096;
 	
-	double etotB = 0; // signal propagating to backward end of paddle hit happened in
-	double etotF = 0; // signal propagating to forward end of the paddle the hit happened in, round u-turn and along neighbouring paddle
-	double timeB = 0;
-	double timeF = 0;
-	int ADCB = 0;
-	int ADCF = 0;
-
+//	double etotB = 0; // signal propagating to backward end of paddle hit happened in
+//	double etotF = 0; // signal propagating to forward end of the paddle the hit happened in, round u-turn and along neighbouring paddle
+//	double timeB = 0;
+//	double timeF = 0;
+//	int ADCB = 0;
+//	int ADCF = 0;
+ 
  
     // Parameter for BaBar Crystal
     double integration_frac=1.; // integration time SEE DIGI ROUTINE = 1us 67% of the all signal (0.8us->58% 1us->67% 2us->92% 3us->100%)
@@ -61,8 +61,8 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double redout_surface_crs=pow(4.7*cm,2);
     double light_coll_crs=sensor_surface_crs/redout_surface_crs;
     double sensor_qe_crs=0.22; // 24% sipm 100um 22% sipm 25um 35% sipm 50um
-    double sensor_pe_crs=20; //20mV*100ns/50Ohm/2 -> 1 pe = 20 pC
-    double sensor_gain_crs=1;
+//    double sensor_pe_crs=20; //20mV*100ns/50Ohm/2 -> 1 pe = 20 pC
+//    double sensor_gain_crs=1;
     // ! requires to be matched with the Babar crystal individual geometry (32,5 cm)
     double length_crs;
     double etotL_crs = 0; //L= Large side redout
@@ -70,8 +70,8 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double timeL_crs = 0;
     double timeR_crs = 0;
     double veff_crs=30/1.8*cm/ns;                     // light velocity in crystal
-    double adc_conv_crs=1;                       // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
-    double adc_ped_crs=0;                         // ADC Pedestal
+//    double adc_conv_crs=1;                       // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
+//    double adc_ped_crs=0;                         // ADC Pedestal
     double tdc_conv_crs=1./ns;               // TDC conversion factor
     double  T_offset_crs=0*ns;
     double ADCL_crs = 0;
@@ -93,7 +93,7 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // forcing Birks for CsI(Tl) from arxiv.org/pdf/0911.3041 and checked with alpha
     birks_constant=3.2e-3;
 	
-	double time_min[4] = {0,0,0,0};
+//	double time_min[4] = {0,0,0,0};
     double time_min_crs[4] = {0,0,0,0};
 	
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
@@ -390,7 +390,7 @@ map< string, vector <int> >  crs_HitProcess :: multiDgt(MHit* aHit, int hitn)
 double* crs_HitProcess::WaveForm(double npe, double* time)
 {
     double c=exp(-2.);
-    double Time;
+//    double Time;
     double t; // time in usec
     double WF;
     double y;
@@ -408,7 +408,7 @@ double* crs_HitProcess::WaveForm(double npe, double* time)
     double t0=0.01; // t0 starting time (in ns)
     double area=(tau/c/2.);
     double A=1./area; // amplitude at mnax (55.41 to have it normalized to integral=1, otherwise the max is at 1)
-    double threshold=10.*1./area/smp_t/1000.; //time threshold in pe - 1/55.41/smp_t*1000. is the funct max -
+//    double threshold=10.*1./area/smp_t/1000.; //time threshold in pe - 1/55.41/smp_t*1000. is the funct max -
 
     
     double t_spread= 1.*0.000;// pream time spread in us
