@@ -3,6 +3,10 @@ Changelog for GEMC
 
 4/6/16
  - fixed bdx hit process warnings
+ - dc smearing / inefficiency:
+   * smearing parameters, including scale, in database
+   * inefficiency function, including scale, in database
+   * if a wire is inefficient, its index is negative
 
 4/5/16
  - reading CCDB_CONNECTION env variable to connect various hit process routine
