@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+4/6/16
+ - fixed bdx hit process warnings
+
 4/5/16
  - reading CCDB_CONNECTION env variable to connect various hit process routine
 	to CCDB. This can be set to a mysqlite file. If env is not set, reverting to jlab server.
@@ -1159,9 +1162,17 @@ Changelog for GEMC
 |
 
 
+ 1/26/2012
+ - Magnetic field location based on JLAB_ROOT env. variable. Maybe a MAG_FIELDS_DIR is better but let's go with this for now.
+ - Updated version on the doc tab
+ - Livermore low e.m. physics according to new G4 9.5
+ - Added id_sharing = 1 for all hit processes that do not share hit / step
+ - OpenGL immediate mode is the new default as stored mode is not working on Mac (G4 people working on it).
 
-
-
+1/12/2012
+ - Added multiple hits for a single step.
+ - Any number of hits can now be generated from a single geant4 step.
+ - Immediate applications: silicon and micromegas detector for charge sharing.
 
 
 

@@ -42,27 +42,27 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     int TDC3 = 4096;
     int TDC4 = 4096;
  
-    double length;
+    double length = 0;
     // From measurement
     // spe = 0.36pC
     // Cosmic = 84pC (~235pe)
     // Attenuation at 80cm: ~0.85 -> effective att lenght ~350cm
     //Plastic
-    double paddle_surface;        // paddle surface
-    double light_yield;  // number of optical photons pruced in the scintillator per MeV of deposited energy
-    double att_length       ;               // light at tenuation length
-    double veff;            // light velocity in scintillator
+    double paddle_surface = 0;        // paddle surface
+    double light_yield = 0;  // number of optical photons pruced in the scintillator per MeV of deposited energy
+    double att_length = 0;               // light at tenuation length
+    double veff = 0;            // light velocity in scintillator
      //PMT
-    double sensor_surface;   // area of photo sensor
-    double sensor_effective_area; // considering only a fraction of the photocathod
-    double sensor_qe;                     // photo sensor quantum efficiency
-    double sensor_gain;         // pmt gain x electron charge in pC (2.2x10^6)x(1.6x10^-7) -> ~0.36pC or 1 to have pe
-    double light_coll; // ratio of photo_sensor area over paddle section ~ light collection efficiency
-    double light_guide_att;
-    double tL;
-    double tR;
+    double sensor_surface = 0;   // area of photo sensor
+    double sensor_effective_area = 0; // considering only a fraction of the photocathod
+    double sensor_qe = 0;                     // photo sensor quantum efficiency
+    double sensor_gain = 0;         // pmt gain x electron charge in pC (2.2x10^6)x(1.6x10^-7) -> ~0.36pC or 1 to have pe
+    double light_coll = 0; // ratio of photo_sensor area over paddle section ~ light collection efficiency
+    double light_guide_att = 0;
+    double tL = 0;
+    double tR = 0;
     double peL=0.;
-    double peR;
+    double peR = 0;
     double etot_g4=0.;
 
     // Proposal
@@ -885,9 +885,9 @@ double* veto_HitProcess::IVresponse(int channel, double xx, double yy,double zz)
         
         for(unsigned int s=0; s<4; s++) response[s] =0.;
         if (x<10)           response[0]= (-0.000303034)*y*y + (0.00658939)*y + 32.4847; //D1
-        if (x>10 & x <20 ) response[1]=   (0.00301674)*y*y + (-0.446544)*y + 27.6374; //D4
-        if (x>20 & x <32.8 ) response[2]= (-0.000275694)*y*y + (0.00124251)*y + 18.8999; //D3
-        if (x>32.8 & x <42.8 ) response[3]= (-0.00139525)*y*y + (0.104993)*y + 18.1047; //D2
+        if (x>10 && x <20 ) response[1]=   (0.00301674)*y*y + (-0.446544)*y + 27.6374; //D4
+        if (x>20 && x <32.8 ) response[2]= (-0.000275694)*y*y + (0.00124251)*y + 18.8999; //D3
+        if (x>32.8 && x <42.8 ) response[3]= (-0.00139525)*y*y + (0.104993)*y + 18.1047; //D2
         
             // cout <<  " x: " << x <<  " y: " << y << " zz: " << zz << endl ;
       //  cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;
@@ -1005,9 +1005,9 @@ double* veto_HitProcess::IVresponseProposal(int channel, double xx, double yy,do
         
         for(unsigned int s=0; s<4; s++) response[s] =0.;
         if (x<10)           response[0]= (-0.000303034)*y*y + (0.00658939)*y + 32.4847; //D1
-        if (x>10 & x <20 ) response[1]=   (0.00301674)*y*y + (-0.446544)*y + 27.6374; //D4
-        if (x>20 & x <32.8 ) response[2]= (-0.000275694)*y*y + (0.00124251)*y + 18.8999; //D3
-        if (x>32.8 & x <42.8 ) response[3]= (-0.00139525)*y*y + (0.104993)*y + 18.1047; //D2
+        if (x>10 && x <20 ) response[1]=   (0.00301674)*y*y + (-0.446544)*y + 27.6374; //D4
+        if (x>20 && x <32.8 ) response[2]= (-0.000275694)*y*y + (0.00124251)*y + 18.8999; //D3
+        if (x>32.8 && x <42.8 ) response[3]= (-0.00139525)*y*y + (0.104993)*y + 18.1047; //D2
         
         // cout <<  " x: " << x <<  " y: " << y << " zz: " << zz << endl ;
         //  cout <<  " res[0]: " << response[0] <<  " res[1]: " << response[1]<<  " res[2]: " << response[2]<<  " res[3]: " << response[3]  << endl ;

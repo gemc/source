@@ -258,7 +258,7 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         // integrating over the integration time (each sample 4.ns, see digi routine)
         //for(unsigned int s=0; s<1000; s++)cout << s  << " " <<  test[s] << endl ;
         peR_int_crs=0.;
-        for(unsigned int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
+        for(int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
         //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
         TDCR_crs=int(tim);
         ADCR_crs=int(peR_int_crs);
@@ -280,7 +280,7 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         // integrating over the integration time (each sample 4.ns, see digi routine)
         //for(unsigned int s=0; s<1000; s++)cout << s  << " " <<  test[s] << endl ;
         peR_int_crs=0.;
-        for(unsigned int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
+        for(int s=0; s<Nsamp_int; s++) peR_int_crs=peR_int_crs+test[s];
         //cout << "TDCR: " << tim << " Npe before digi " << peR_crs<< " Npe avter digi " <<peR_int_crs <<endl;
         TDCL_crs=int(tim); // assigning to L the sipm2
         ADCL_crs=int(peR_int_crs);// assigning to L the sipm2
@@ -437,7 +437,7 @@ double* crs_HitProcess::WaveForm(double npe, double* time)
     
     //Npe=1.;
     //Npe=Npe/100.;
-    for(unsigned int s=1; s<=Npe; s++){
+    for(int s=1; s<=Npe; s++){
      y=1.;
      WF=0.;
      while (y > WF) {
@@ -457,7 +457,7 @@ double* crs_HitProcess::WaveForm(double npe, double* time)
      if (t<0.) t=0.;
      it=t/smp_t;
 //      cout << "t " << t << "it " << it        << endl;
-     for(unsigned int s=0; s<80; s++)
+     for(int s=0; s<80; s++)
       { t=1000.*s*smp_t;
           func=AmpWF[s];
           func=G4RandGauss::shoot(func,A_spread);
