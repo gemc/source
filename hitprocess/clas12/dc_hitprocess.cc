@@ -31,8 +31,10 @@ static dcConstants initializeDCConstants(int runno)
 	// database
 	dcc.runNo = runno;
 	dcc.date       = "2016-03-15";
-	//	dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	dcc.connection = "sqlite://clas12.sqlite";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		dcc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
 	dcc.variation  = "main";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));

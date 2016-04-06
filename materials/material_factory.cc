@@ -386,6 +386,18 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 						optTable.back()->AddProperty("SLOWCOMPONENT", penergy, slowc, nopts );
 					}
 					
+					// rayleigh scattering
+					if(it->second.rayleigh.size() == nopts)
+					{
+						double ray[nopts];
+						for(unsigned i=0; i<nopts; i++)
+							ray[i] = it->second.rayleigh[i];
+						
+						optTable.back()->AddProperty("RAYLEIGH", penergy, ray, nopts);
+					}
+					
+
+					
 					// scintillationyield
 					if(it->second.scintillationyield != -1)
 						optTable.back()->AddConstProperty("SCINTILLATIONYIELD", it->second.scintillationyield);
@@ -405,7 +417,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 					// yieldratio
 					if(it->second.yieldratio != -1)
 						optTable.back()->AddConstProperty("YIELDRATIO", it->second.yieldratio);
-					
+
 					mats[it->first]->SetMaterialPropertiesTable(optTable.back());
 				}
 			

@@ -7,7 +7,7 @@ New features:
 - multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
-
+- proMC output
 
 Code Improvements:
 ==================
@@ -31,7 +31,12 @@ Code Improvements:
 - add track verbosity output
 - add options for particles color
 - is atof thread safe?
-
+- move all user actions in their directory:
+  ActionInitialization
+  PrimaryGenerator
+  SteppingAction
+- gemcOptions make it a library, pass it by reference not value!
+  make calls like gemcOpt->get3Vector("BEAM_V")
 
 Add production cut verbosity?
 
@@ -69,6 +74,6 @@ Code Reorganization:
 
 - bring output structure out of gemc - general library
 - bring options out of gemc - general library 
-- bring splash screen out of gemc - general library
+- bring splash screen out of util - general library
 - re-organize primary generator, use external library project
 

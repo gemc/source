@@ -10,7 +10,7 @@
 // The values are indexed as B1_2D[longi][transverse]
 
 // from fieldFactory:  load field map
-void asciiField::loadFieldMap_Dipole(gMappedField* map, double v)
+void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 {
 	setlocale(LC_NUMERIC, "en_US");
 
@@ -64,6 +64,10 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double v)
 			d2 *= unit2;
 						
 			b  *= scale;
+			
+			if(verbosity>4)
+				cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   value: " << b << endl;
+
 			
 			// checking map consistency for first coordinate
 			if( (min1  + i1*cell1 - d1)/d1 > 0.001)

@@ -16,7 +16,7 @@
 /// - Banks Format.
 /// - Materials.
 /// \section platforms Platforms Supported:
-/// - <i> Windows 7 to come October 2013 </i>
+/// - <i> Windows 7 to come October 2016 </i>
 /// - Linux (32, 64)
 /// - Mac OS X
 /// \section docs Documentation:
@@ -60,12 +60,9 @@ const char *GEMC_VERSION = "gemc 2.3";
 #include "gemc_MainGui.h"
 #include "gbank.h"
 #include "MDetectorConstruction.h"
-#include "MEventAction.h"
 #include "outputFactory.h"
 #include "HitProcess.h"
 #include "PhysicsList.h"
-#include "MPrimaryGeneratorAction.h"
-#include "MSteppingAction.h"
 #include "options.h"
 #include "dmesg_init.h"
 #include "run_conditions.h"
@@ -75,6 +72,7 @@ const char *GEMC_VERSION = "gemc 2.3";
 #include "parameter_factory.h"
 #include "string_utilities.h"
 #include "utils.h"
+#include "ActionInitialization.h"
 
 // c++ headers
 #include <unistd.h>  // needed for get_pid
@@ -83,7 +81,7 @@ const char *GEMC_VERSION = "gemc 2.3";
 /// <b> Main Program </b>
 /////////////////////////
 ///  -# Sets the goptions\n
-///  -# Starts QT application if USE_GUI=1
+///  -# Starts QT application if USE_GUI=1 or 2
 ///  -# Starts the CLHEP random engine
 ///  -# Instantiates the Geant4 Run Manager
 ///  -# Builds detector map object from database
@@ -91,8 +89,7 @@ const char *GEMC_VERSION = "gemc 2.3";
 ///  -# Builds Materials Map
 ///  -# Builds G4 Physical Volumes
 ///  -# Initialize Physics List
-///  -# Initialize Generator
-///  -# Initialize Event Action
+///  -# Initialize Generator, Event and Stepping Actions
 ///  -# Initialize G4Qt User Interface if USE_GUI>0
 ///  -# Initialize Visualization Manager if USE_GUI>0
 
@@ -120,6 +117,8 @@ int main( int argc, char **argv )
 {
 	clock_t startTime = clock();
 	cout << endl;
+	
+	
 	goptions gemcOpt;
 	gemcOpt.setGoptions();
 	gemcOpt.setOptMap(argc, argv);
@@ -237,23 +236,12 @@ int main( int argc, char **argv )
 	if(max_step != 0)
 		G4TransportationManager::GetTransportationManager()->GetPropagatorInField()->SetLargestAcceptableStep(max_step);
 	
-	// Generator
-	gemc_splash.message(" Initializing Primary Generator Action...");
-	MPrimaryGeneratorAction* gen_action = new MPrimaryGeneratorAction(&gemcOpt);
-	runManager->SetUserAction(gen_action);
 	
-	
-	// Event Action
-	gemc_splash.message(" Initializing Event Action...");
-	MEventAction* event_action = new MEventAction(gemcOpt, gParameters);
-	event_action->SetEvtNumber((int) gemcOpt.optMap["EVN"].arg);     ///< Sets event number from OPTION
-	runManager->SetUserAction(event_action);
-	
-	// Stepping Action
-	gemc_splash.message(" Initializing Stepping Action...");
-	MSteppingAction* SteppingAction = new MSteppingAction(gemcOpt);
-	runManager->SetUserAction(SteppingAction);
-	
+	// User action initialization
+	gemc_splash.message(" Initializing User Actions...");
+	ActionInitialization* gActions = new ActionInitialization(&gemcOpt, &gParameters);
+	runManager->SetUserInitialization(gActions);
+
 	///< User Interface manager
 	gemc_splash.message(" Initializing User Interface...");
 	G4UIsession *session = NULL;
@@ -262,7 +250,10 @@ int main( int argc, char **argv )
 	G4VisManager *visManager = NULL;
 	if(use_gui)
 	{
-		visManager = new G4VisExecutive;
+		// G4VisManager* visManager = new G4VisExecutive;
+  		// G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
+
+		visManager = new G4VisExecutive("Quiet");
 		visManager->Initialize();
 	}
 
@@ -322,12 +313,12 @@ int main( int argc, char **argv )
 	}
 	
 
-	event_action->outContainer     = &outContainer;
-	event_action->outputFactoryMap = &outputFactoryMap;
-	event_action->hitProcessMap    = &hitProcessMap;
-	event_action->SeDe_Map         = ExpHall->SeDe_Map;
-	event_action->banksMap         = &banksMap;
-	event_action->gen_action       = gen_action;
+	gActions->evtAction->outContainer     = &outContainer;
+	gActions->evtAction->outputFactoryMap = &outputFactoryMap;
+	gActions->evtAction->hitProcessMap    = &hitProcessMap;
+	gActions->evtAction->SeDe_Map         = ExpHall->SeDe_Map;
+	gActions->evtAction->banksMap         = &banksMap;
+	gActions->evtAction->gen_action       = gActions->genAction;
  	
 	///< passing output process factory to sensitive detectors
 	map<string, sensitiveDetector*>::iterator it;

@@ -1,6 +1,25 @@
 Changelog for GEMC
 ==================
 
+4/6/16
+ - fixed bdx hit process warnings
+
+4/5/16
+ - reading CCDB_CONNECTION env variable to connect various hit process routine
+	to CCDB. This can be set to a mysqlite file. If env is not set, reverting to jlab server.
+
+
+3/31/16
+ - moved user actions initializations to ActionInitialization
+ - added EVTN option to set event number
+
+3/22/16
+ - when background is being saved, all tracks passing by detectors
+   are saved even if they do not deposit energy
+
+3/21/16
+ - adding verbosity to map field loading routines 
+
 3/18/16
  - to physics catalogue:
  - hPairProd
@@ -8,6 +27,9 @@ Changelog for GEMC
  - tInelastic
  - kaon-Inelastic
  - added notice in V(t) routine
+ - implemented rayleigh scattering in the material properties, both mysql and text factories
+ - fixed luminosity bug in setting number of particles
+ - fixed luminosity bug in setting vertex spread properly
 
 3/17/16
  - Modified time-walk functional to follow Haiyun's recommendation
@@ -965,6 +987,193 @@ Changelog for GEMC
 6/4/2012
  - Added capability to perform Boolean operations on solids assuming coordinates and
    rotations of both solids are given with respect to the common mother volume of both solids.
+
+5/16/2012
+ - allowing for beam energies up to 100 GeV, vertexes range of 100m  in the GUI
+
+5/15/2012
+ - Event Action:
+
+   Limiting loop on NGENP option number of generated particle.
+   This should speed up considerably the simulation in case of high luminosity beams.
+
+   WARNING: I tested this for very high luminosity. Turns out that GEANT4 has some (already documented)
+   memory leak in G4PrimaryParticle destructor, see "Particle" forum thread 405.
+
+ - materials: added vacuum at 10^-9
+
+5/14/2012
+ - added access to PCAL parameters in hitprocess
+
+5/8/2012
+ - reinserted default charge sharing for PCAL
+
+
+4/26/2012
+ - keeping beam and target polarizations in the output stream
+ - macros to rotate, zoom in steps
+
+
+4/24/2012
+ - added new hit type (FTH), bank (FTH) and related hit process routine for Forward Tagger Hodoscope
+ - no hardcoded number in the micromegas hit process routines
+
+
+4/23/2012
+ - change HTCC last identifier to nphe_pmt so the GUI can catch the nphe
+ - added optical properties to hit process routines
+
+4/20/2012
+ - lab char size was too small
+ - making compiler happy - updated revision number
+ - GEMC can now read geant4 optical properties from a MYSQL DB. The MYSQL material factory is now equivalent to the CPP one.
+ - Added utility function get_strings that will return a vector<string> from a string using the stringsteam method
+ - Warning fixed in the HTCC process routines
+ - Changed name of material maps from MMats to mats
+
+4/19/2012
+ - added MYSQL interface to optical properties, cleaned up cpp material factory
+
+4/18/2012
+ - Added template for optical properties upload.
+ - Refining geant4 material definition. Cleaning up code.
+
+4/16/2012
+ - fixed problem with field-separating tab characters
+ - Added case where the g4signal display optical photon hits instead of energy hits
+ - Removed number of segments in HIGH_RES running.
+   One can still set it in the GUI
+
+4/12/2012
+ - Material properties log only if verbosity activated.
+ - Removed automatic rotation for "Beam every 2 seconds" button
+
+ - A new factory has been introduced: "parameters".
+   This factory stores the geometry parameters and make them available to the reconstruction routines.
+   This factory currently support MYSQL.
+
+   Inside each hit process routine, parameters can now be accessed with the "gpars" map,
+   using the detector name and parameter name. For example::
+
+    gpars["BST/nregions"] is equal to 4
+
+4/9/2012
+ - Added Mirrors in the hit definition list
+ - Added sensitive detector: "Mirrors" with FLUX associated hit process routine.
+   This will allow mirrors to use identifiers w/o recording the unnecessary hits on them.
+
+   By default it will not record the particles hitting it.
+   To record, use the option::
+
+    -RECORD_MIRRORS=1
+
+4/6/2012
+ - added validation scripts to test compilation, running, geometry, etc
+ - correcting cpp material factory: molecules can (and should) be formed by molecular components not fractional masses
+
+4/5/2012
+ - Migrating from custome element definitions to G4 Material database, both in CPP and MYSQL material factory.
+   MYSQL factory finalized with:
+
+   * custom elements
+   * G4 material database components
+
+   TODO:
+
+   * Property Tables (for optical physics)
+   * Make sure materials of materials is handled properly
+
+
+4/4/2012
+ - added start of mysql material factory. Added script to copy materials to clas12_geometry.
+ - removed compiler warning. Added run_condition class as argument to material factory
+ - DB interface to write materials to DB is completed
+
+4/3/2012
+ - added scripts to upload materials to DB
+ - added explicit units for molar mass (g/mol)
+ - Added elements file, perl scripts to upload elements materials in mysql DB
+ - (Puckett) With this update, HTCC_hitprocess looks for the property "EFFICIENCY" to be defined for the
+   material of the detector; e.g., a PMT photocathode. If it is found, then each optical photon
+   is detected with probability corresponding to the efficiency. If the property "EFFICIENCY"
+   has not been defined for the material of this sensitive detector, then all optical photons are detected.
+ - (Puckett) In the processing of mirror definitions, I added the capability to use the optical properties
+   of a pre-existing material instead of properties defined in the detector identifiers. This allows more
+   flexible (wavelength-dependent) optical properties to be used for mirror surfaces. To use this functionality,
+   the detector identifiers must contain: "WithMaterial: [material name] dummy" where [material name]
+   is the name of a pre-existing material with defined optical properties and dummy is the integer "id"
+   required to read in the "identifiers" line from the database. In this context "id" is a dummy variable
+   that has no effect, but must be included or the database io will fail.
+ - Added Materials factories: MYSQL, CPP, GDML
+
+
+3/30/2012
+ - added material factory to load materials from cpp_file, databases, gdml file
+ - added limit of 1000 steps in one volume
+ - added button to get events ever 2 seconds (for 4 hours) while camera rotates
+
+3/23/2012
+ - added phi-simmetric cylindrical coordinates around x or y axis
+ - set process verbosity to zero by default
+
+3/14/2012
+ - Fixed bug that was deleting parameters.txt
+ - Added starting angle for optical photon beam test
+ - Corrected Vertex Spread to generate a uniform distribution on the raster circle, as opposed of uniform in R
+
+3/9/2012
+ - New digitization routine for BMT
+ - New digitization routine for FMT
+ - New digitization routine for FTM
+
+
+3/9/2012
+ - Fixed a typo "Operation:" was supposed to read "Operation:~"
+	when support was added for operations with translation happening before the rotation
+
+3/1/2012
+ - Added gemc banks content
+
+
+2/29/2012
+ - Fixed bug for operations with "~" (translation occurs before rotation)
+
+2/24/2012
+ - Added G4Paraboloid and G4Hype
+
+2/20/2012
+ - Corrected and improved bst strip finding routine
+
+2/10/2012
+ - Added units to parameter files perl functions
+ - Added perl mysql database paramters i/o
+
+2/9/2012
+ - better mysql security
+
+2/3/2012
+ - Checking that Hit Collection exists before getting hits in the signal gui
+ - Improved MDetector construction
+ - Building operands of sold operations or copies first. Users do not need anymore to order them in alphabetical order.
+
+.. Note::
+   1/26/2012 working gemc version 1.6 revision 5588
+
+|
+
+
+ 1/26/2012
+ - Magnetic field location based on JLAB_ROOT env. variable. Maybe a MAG_FIELDS_DIR is better but let's go with this for now.
+ - Updated version on the doc tab
+ - Livermore low e.m. physics according to new G4 9.5
+ - Added id_sharing = 1 for all hit processes that do not share hit / step
+ - OpenGL immediate mode is the new default as stored mode is not working on Mac (G4 people working on it).
+
+1/12/2012
+ - Added multiple hits for a single step.
+ - Any number of hits can now be generated from a single geant4 step.
+ - Immediate applications: silicon and micromegas detector for charge sharing.
+
 
 
 

@@ -10,7 +10,7 @@
 // The field is two dimensional, ordered in the class as B1=BT, B2=BL
 
 // from fieldFactory:  load field map
-void asciiField::loadFieldMap_phiSegmented(gMappedField* map, double v)
+void asciiField::loadFieldMap_phiSegmented(gMappedField* map, double verbosity)
 {
 	setlocale(LC_NUMERIC, "en_US");
 
@@ -103,7 +103,9 @@ void asciiField::loadFieldMap_phiSegmented(gMappedField* map, double v)
 					<< " but it's  " << d2 << " instead." << endl;
 				}
 				
-				
+				if(verbosity>4)
+					cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ", " << d3 << ")   values: (" << b1 << ", " << b2 << ", " << b3 << ")." << endl;
+
 				// calculating index
 				unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
 				unsigned t2 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;

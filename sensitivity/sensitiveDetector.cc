@@ -26,6 +26,11 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
 	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
 	
+	// when background is being saved, all tracks passing by detectors
+	// are saved even if they do not deposit energy
+	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3)
+		RECORD_PASSBY = 1;
+		
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
 }
 

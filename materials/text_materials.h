@@ -9,12 +9,12 @@ class text_materials : public materials
 		~text_materials(){}
 	
 		map<string, G4Material*> initMaterials(runConditions, goptions);  // Method to define the G4 Materials
-  
-	  static materials *createMaterials() 
-	  {
-		return new text_materials;
-	  }
-
+	
+		static materials *createMaterials()
+		{
+			return new text_materials;
+		}
+	
 };
 
 

@@ -23,7 +23,10 @@ static ecConstants initializeECConstants(int runno)
 	// database
 	ecc.runNo      = runno;
 	ecc.date       = "2015-11-29";
-	ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ecc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	ecc.variation  = "default";
 	
 	ecc.NSTRIPS             = 36;

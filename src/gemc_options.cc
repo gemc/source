@@ -62,6 +62,13 @@ void goptions::setGoptions()
 	optMap["N"].type = 0;
 	optMap["N"].ctgr = "generator";
 	
+	optMap["EVTN"].arg  = 1;
+	optMap["EVTN"].help = "Starting Event Number";
+	optMap["EVTN"].name = "Starting Event Number";
+	optMap["EVTN"].type = 0;
+	optMap["EVTN"].ctgr = "generator";
+
+	
 	optMap["INPUT_GEN_FILE"].args = "gemc_internal";
 	optMap["INPUT_GEN_FILE"].help = "Generator Input. Current availables file formats:\n";
 	optMap["INPUT_GEN_FILE"].help += "      LUND. \n";

@@ -86,6 +86,7 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 			thisMat.fasttimeconstant   =             q.value(14).toDouble(); // fasttimeconstant
 			thisMat.slowtimeconstant   =             q.value(15).toDouble(); // slowtimeconstant
 			thisMat.yieldratio         =             q.value(16).toDouble(); // yieldratio
+			thisMat.opticalsFromString(qv_tostring(  q.value(17)), "rayleigh");
 			
 			mymats[thisMat.name] = thisMat;
 			

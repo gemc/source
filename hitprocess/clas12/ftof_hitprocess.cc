@@ -24,7 +24,10 @@ static ftofConstants initializeFTOFConstants(int runno)
 
 	ftc.runNo      = runno;
 	ftc.date       = "2015-11-29";
-	ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ftc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	ftc.variation  = "default";
 
 	ftc.npaddles[0] = 23;
@@ -37,20 +40,16 @@ static ftofConstants initializeFTOFConstants(int runno)
 	
 	ftc.dEdxMIP       = 1.956;  // muons in polyvinyltoluene
 	ftc.pmtPEYld      = 500;
-	ftc.pmtQE         = 0.27;
-	ftc.pmtDynodeGain = 4.0; 
-        ftc.pmtDynodeK    = 0.5; 
-	ftc.pmtFactor     = sqrt(1-ftc.pmtQE+(ftc.pmtDynodeK*ftc.pmtDynodeGain+1)/(ftc.pmtDynodeGain-1));
-	ftc.tdcLSB        = 41.6667;
+	ftc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
 	
 	cout<<"FTOF:Setting time resolution"<<endl;
 	for(int p=0; p<3; p++)
 	{
 	  for(int c=1; c<ftc.npaddles[p]+1;c++)
 	    {
-	      if(p==0) ftc.tres[p].push_back(c*5.45+74.55);
-	      if(p==1) ftc.tres[p].push_back(c*0.90+29.10);
-	      if(p==2) ftc.tres[p].push_back(c*5.00+145.0);
+	      if(p==0) ftc.tres[p].push_back(1e-3*(c*5.45+74.55)); //ps to ns
+	      if(p==1) ftc.tres[p].push_back(1e-3*(c*0.90+29.10)); //ps to ns
+	      if(p==2) ftc.tres[p].push_back(1e-3*(c*5.00+145.0)); //ps to ns
 	    }
 	}
 	
@@ -143,7 +142,7 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int paddle = identity[2].id;
 	trueInfos tInfos(aHit);
 	
-	// Get the paddle length: in ftof paddles are boxes, the length the x
+	// Get the paddle half-length 
 	double length = aHit->GetDetector().dimensions[0];
 	
 	// Distances from left, right
@@ -159,8 +158,9 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attRight = exp(-dRight/cm/attlenR);
 
 	// Gain factors to simulate FTOF PMT gain matching algorithm.
-	// i.e.- L,R PMTs are not gain matched to each other,
-	// but adjusted so geometeric mean sqrt(L*R) is independent of counter length
+	// Each L,R PMT pair has HV adjusted so geometeric mean sqrt(L*R)
+	// is independent of counter length, which compensates for
+	// the factor exp(-L/2/attlen) where L=full length of bar.
 	double gainLeft  = sqrt(attLeft*attRight);
 	double gainRight = gainLeft;
 
@@ -182,12 +182,6 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double npheL = G4Poisson(eneL*ftc.pmtPEYld);
 	eneL = npheL/ftc.pmtPEYld;
 
-	// For future use to smear single or several p.e. response
-	//if (npheL>0) {
-	//  double sigmaL = ftc.pmtFactor/sqrt(npheL);
-	//  eneL = G4RandGauss::shoot(npheL,sigmaL)/ftc.pmtPEYld;
-	//	}
-	
         if (eneL>0) {
 	                 adcl = eneL*ftc.countsForMIP[sector-1][panel-1][0][paddle-1]/ftc.dEMIP[panel-1]/gainLeft;
 	  double            A = ftc.twlk[sector-1][panel-1][0][paddle-1];
@@ -195,19 +189,13 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
 	  double timeWalkLeft = A/pow(adcl,B);
 	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
-	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);
+	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]);
 	                tdclu = tLeftU*ftc.tdcLSB;
 	                 tdcl = tLeft*ftc.tdcLSB;
 	}  
 	
 	double npheR = G4Poisson(eneR*ftc.pmtPEYld);
 	eneR = npheR/ftc.pmtPEYld;
-
-	// For future use to smear single or several p.e. response
-	//if (npheR>0) {
-	//  double sigmaR = ftc.pmtFactor/sqrt(npheR);
-	//  eneR = G4RandGauss::shoot(npheR,sigmaR)/ftc.pmtPEYld;
-	//	}
 
 	if (eneR>0) {
 	                  adcr = eneR*ftc.countsForMIP[sector-1][panel-1][1][paddle-1]/ftc.dEMIP[panel-1]/gainRight;
@@ -216,12 +204,12 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  //double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
 	  double timeWalkRight = A/pow(adcr,B);	
 	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;	
-	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]*1e-3);	
+	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]);	
 	                 tdcru = tRightU*ftc.tdcLSB;
 	                  tdcr = tRight*ftc.tdcLSB;
 	}
 	
-	// applying status
+	// Status flags
 	switch (ftc.status[sector-1][panel-1][0][paddle-1])
 	{
 		case 0:
