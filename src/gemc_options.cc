@@ -24,6 +24,7 @@ void goptions::setGoptions()
 	optMap["SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["SPREAD_P"].help  = "Spread Primary Particle energy and angles (in respect of z-axis). \n";
 	optMap["SPREAD_P"].help += "      Example: -SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
+	optMap["SPREAD_P"].help += "      If the word flat is added to the option, theta is flat instead of cos(theta). \n";
 	optMap["SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["SPREAD_P"].type  = 1;
 	optMap["SPREAD_P"].ctgr  = "generator";
@@ -133,6 +134,7 @@ void goptions::setGoptions()
 	optMap["LUMI_SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["LUMI_SPREAD_P"].help  = "Spread Luminosity Particle energy and angles (in respect of z-axis). \n";
 	optMap["LUMI_SPREAD_P"].help += "      Example: -LUMI_SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
+	optMap["LUMI_SPREAD_P"].help += "      If the word flat is added to the option, theta is flat instead of cos(theta). \n";
 	optMap["LUMI_SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["LUMI_SPREAD_P"].type  = 1;
 	optMap["LUMI_SPREAD_P"].ctgr  = "generator";
@@ -167,6 +169,7 @@ void goptions::setGoptions()
 	optMap["LUMI2_SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["LUMI2_SPREAD_P"].help  = "Spread Luminosity Particle 2 energy and angles (in respect of z-axis). \n";
 	optMap["LUMI2_SPREAD_P"].help += "      Example: -LUMI2_SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
+	optMap["LUMI2_SPREAD_P"].help += "      If the word flat is added to the option, theta is flat instead of cos(theta). \n";
 	optMap["LUMI2_SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["LUMI2_SPREAD_P"].type  = 1;
 	optMap["LUMI2_SPREAD_P"].ctgr  = "generator";
