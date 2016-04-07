@@ -167,10 +167,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
-	// smeading doca by DOCA dependent function
+	// smeading doca by DOCA dependent function. This is the sigma of doca.
 	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
 	
-	
+	// smearing doca with a gaussian around doca and sigma defined above
 	double sdoca = fabs(CLHEP::RandGauss::shoot(doca, smearF*dcc.smearScale[SECI][SLI]));
 	
 	// distance-dependent efficiency as a function of doca

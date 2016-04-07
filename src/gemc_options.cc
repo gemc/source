@@ -327,7 +327,8 @@ void goptions::setGoptions()
 	optMap["EXEC_MACRO"].name = "Executes commands in macro file";
 	optMap["EXEC_MACRO"].type = 1;
 	optMap["EXEC_MACRO"].ctgr = "control";
-	
+	optMap["EXEC_MACRO"].repe  = 1;
+
 	optMap["CHECK_OVERLAPS"].arg  = 0;
 	optMap["CHECK_OVERLAPS"].help  = "Checks Overlapping Volumes:\n";
 	optMap["CHECK_OVERLAPS"].help += "      1.  Check Overlaps at Construction Time\n";
@@ -596,7 +597,8 @@ void goptions::setGoptions()
 	optMap["NO_FIELD"].name = "Sets Magnetic Field of a volume to zero. \"all\" means no magnetic field at all ";
 	optMap["NO_FIELD"].type = 1;
 	optMap["NO_FIELD"].ctgr = "physics";
-	
+	optMap["NO_FIELD"].repe  = 1;
+
 	optMap["PHYS_VERBOSITY"].arg = 0;
 	optMap["PHYS_VERBOSITY"].help = "Physics List Verbosity";
 	optMap["PHYS_VERBOSITY"].name = "Physics List Verbosity";
@@ -619,12 +621,14 @@ void goptions::setGoptions()
 	optMap["SCALE_FIELD"].name  = "Electro-Magnetic Field scale";
 	optMap["SCALE_FIELD"].type  = 1;
 	optMap["SCALE_FIELD"].ctgr  = "physics";
+	optMap["SCALE_FIELD"].repe  = 1;
 	
 	optMap["ACTIVEFIELDS"].args  = "none";
 	optMap["ACTIVEFIELDS"].help  = "List of activated fields\n";
 	optMap["ACTIVEFIELDS"].name  = "List of activated fields";
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "physics";
+	optMap["ACTIVEFIELDS"].repe  = 1;
 
 	optMap["PRODUCTIONCUT"].arg   = 10;
 	optMap["PRODUCTIONCUT"].help  = "Production cut for root, in mm\n";
@@ -642,7 +646,8 @@ void goptions::setGoptions()
 	optMap["DF"].name  = "Detector System and Factory type.";
 	optMap["DF"].type  = 1;
 	optMap["DF"].ctgr  = "general";
-		
+	optMap["DF"].repe  = 1;
+
 }
 
 

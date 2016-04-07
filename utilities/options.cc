@@ -348,9 +348,12 @@ int goptions::setOptMap(int argc, char **argv)
 		}
 	}
 	
+	// resetting option repetition if so directed
+	// if repe is 1, options can be accumulated from the gcard
 	map<string, int> count;
 	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-		count[itm->first] = 0;
+		if(itm->second.repe == 0)
+			count[itm->first] = 0;
 	
 	for(int i=1; i<argc; i++)
 	{

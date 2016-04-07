@@ -128,7 +128,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			
 			// 4-momenta
 			double Mom   = mom/MeV   + (2.0*G4UniformRand()-1.0)*dmom/MeV;
-			double Theta = theta/rad + (2.0*G4UniformRand()-1.0)*dtheta/rad;
+			double Theta = acos(G4UniformRand()*(cos(theta/rad-dtheta/rad)-cos(theta/rad+dtheta/rad)) + cos(theta/rad+dtheta/rad))/rad;
+			if(primaryFlat)
+			 Theta = theta/rad + (2.0*G4UniformRand()-1.0)*dtheta/rad;
+			
 			double Phi   = phi/rad   + (2.0*G4UniformRand()-1.0)*dphi/rad;
 			double mass = Particle->GetPDGMass();
 			double akine = sqrt(Mom*Mom + mass*mass) - mass ;
@@ -533,7 +536,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			if(L_dmom > 0)
 			{
 				L_Mom   += (2.0*G4UniformRand()-1.0)*L_dmom;
-				L_Theta += (2.0*G4UniformRand()-1.0)*L_dtheta;
+				L_Theta = acos(G4UniformRand()*(cos(theta/rad-dtheta/rad)-cos(theta/rad+dtheta/rad)) + cos(theta/rad+dtheta/rad))/rad;
+				if(lumiFlat)
+					L_Theta += (2.0*G4UniformRand()-1.0)*L_dtheta;
+
 				L_Phi   += (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
 			double L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
@@ -582,7 +588,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			if(L2_dmom > 0)
 			{
 				L2_Mom   += (2.0*G4UniformRand()-1.0)*L2_dmom;
-				L2_Theta += (2.0*G4UniformRand()-1.0)*L2_dtheta;
+				L2_Theta = acos(G4UniformRand()*(cos(theta/rad-dtheta/rad)-cos(theta/rad+dtheta/rad)) + cos(theta/rad+dtheta/rad))/rad;
+				if(lumi2Flat)
+					L2_Theta += (2.0*G4UniformRand()-1.0)*L_dtheta;
 				L2_Phi   += (2.0*G4UniformRand()-1.0)*L2_dphi;
 			}
 			double L2_akine = sqrt(L2_Mom*L2_Mom + L2_mass*L2_mass) - L2_mass ;
@@ -667,10 +675,14 @@ void MPrimaryGeneratorAction::setBeam()
 			}
 			
 			// Getting momentum spread from option value
+			primaryFlat = 0;
 			values = get_info(gemcOpt->optMap["SPREAD_P"].args);
 			dmom   = get_number(values[0]);
 			dtheta = get_number(values[1]);
 			dphi   = get_number(values[2]);
+			if(values.size() == 4)
+				if(TrimSpaces(values[3]) == "flat")
+					primaryFlat = 1;
 			
 			// Getting vertex from option value
 			values = get_info(gemcOpt->optMap["BEAM_V"].args);
@@ -805,10 +817,14 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	
 	// Getting momentum spread from option value
+	lumiFlat = 0;
 	values = get_info(gemcOpt->optMap["LUMI_SPREAD_P"].args);
 	L_dmom   = get_number(values[0]);
 	L_dtheta = get_number(values[1]);
 	L_dphi   = get_number(values[2]);
+	if(values.size() == 4)
+		if(TrimSpaces(values[3]) == "flat")
+			lumiFlat = 1;
 
 	
 	// making sure the particle exists
@@ -861,10 +877,14 @@ void MPrimaryGeneratorAction::setBeam()
 	L2_phi          = get_number(values[3]);
 	
 	// Getting momentum spread from option value
+	lumi2Flat = 0;
 	values = get_info(gemcOpt->optMap["LUMI2_SPREAD_P"].args);
 	L2_dmom   = get_number(values[0]);
 	L2_dtheta = get_number(values[1]);
 	L2_dphi   = get_number(values[2]);
+	if(values.size() == 4)
+		if(TrimSpaces(values[3]) == "flat")
+			lumi2Flat = 1;
 
 	
 	// making sure the particle exists

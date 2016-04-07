@@ -85,14 +85,12 @@ void mergeMaps(map<string, string>& lhs, const map<string, string>& rhs)
 G4RotationMatrix calc_rotation(string r, string dname)
 {
 	G4RotationMatrix rot(G4ThreeVector(1, 0, 0),
-						 G4ThreeVector(0, 1, 0),
-						 G4ThreeVector(0, 0, 1));
+								G4ThreeVector(0, 1, 0),
+								G4ThreeVector(0, 0, 1));
 	
 	stringstream vars(r);
 	string var;
 	vars >> var;
-	
-	//	cout << dname
 	
 	if(var != "ordered:")
 	{

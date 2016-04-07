@@ -55,6 +55,7 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double polDeg, polTheta, polPhi;  ///< Polarization degree and  direction
 		double ctheta;                    ///< customized theta direction for the z axis
 		double cphi;                      ///< customize phi direction for the z axis
+		double primaryFlat;               ///< if this is set to 1, spread flat in theta, not cos(theta)
 	
 		double cosmicA, cosmicB, cosmicC; ///< cosmic ray model parameters
 		double cminp, cmaxp, cMom;        ///< minimum and maximum cosmic ray momentum
@@ -80,7 +81,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		int NP;                            ///< Number of Luminosity Particles per event
 		double TWINDOW;                    ///< Time Window
 		double TBUNCH;                     ///< Time Between Bunches
-	
+		double lumiFlat;                   ///< if this is set to 1, spread flat in theta, not cos(theta)
+
 		// Luminosity Beam2
 		G4ParticleDefinition *L2_Particle;    ///< Luminosity Particle type
 		double L2_mom, L2_dmom;               ///< Luminosity beam momentum, delta momentum
@@ -90,7 +92,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double L2_dvr, L2_dvz;                ///< Luminosity Deltas Beam Vertex: Radius and z-vertex
 		int NP2;                              ///< Number of Luminosity Particles per event
 		double TBUNCH2;                       ///< Time Between Bunches
-	
+		double lumi2Flat;                     ///< if this is set to 1, spread flat in theta, not cos(theta)
+
 		G4ParticleGun* particleGun;
 		void setBeam();
 	
