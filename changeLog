@@ -6,6 +6,7 @@ Changelog for GEMC
    if repe is 1, options can be accumulated from the gcard
  - defaulting SPREAD to phasespace, cos(theta) is flat, not theta, unless flag "flat" is given to the SPREAD option
  - better comments for SPREAD_P
+ - fixes to luminosity theta spread
 
 4/6/16
  - fixed bdx hit process warnings
