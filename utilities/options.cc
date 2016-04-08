@@ -54,8 +54,8 @@ void goptions::scanGcard(string file)
 	
 	map<string, int> count;
 	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-		count[itm->first] = 0;
-	
+			count[itm->first] = 0;
+
 	///< looping over options
 	n = docElem.firstChild();
 	while(!n.isNull())
@@ -78,7 +78,7 @@ void goptions::scanGcard(string file)
 						// first time it finds it
 						if(count[itm->first] == 1)
 						{
-							itm->second.args =      e.attributeNode("value").value().toStdString();
+							itm->second.args =                e.attributeNode("value").value().toStdString();
 							itm->second.arg  = stringToDouble(e.attributeNode("value").value().toStdString());
 
 							itm->second.printSetting();
@@ -93,6 +93,7 @@ void goptions::scanGcard(string file)
 							optMap[new_opt].help = itm->second.help;
 							optMap[new_opt].type = itm->second.type;
 							optMap[new_opt].ctgr = itm->second.ctgr;
+							optMap[new_opt].repe = count[itm->first];
 							optMap[new_opt].printSetting();
 						}
 						break;
@@ -352,8 +353,12 @@ int goptions::setOptMap(int argc, char **argv)
 	// if repe is 1, options can be accumulated from the gcard
 	map<string, int> count;
 	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
+	{
 		if(itm->second.repe == 0)
 			count[itm->first] = 0;
+		else
+			count[itm->first] = itm->second.repe;
+	}
 	
 	for(int i=1; i<argc; i++)
 	{
@@ -362,6 +367,7 @@ int goptions::setOptMap(int argc, char **argv)
 		for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
 		{
 			string com = "-" + itm->first + "=";
+			
 			string comp;
 			comp.assign(arg, 0, arg.find("=") + 1);
 			
@@ -369,8 +375,6 @@ int goptions::setOptMap(int argc, char **argv)
 			ifstream my_file(argv[i]);
 			if(my_file)
 				found = 1;
-
-			
 			
 			if(comp == com)
 			{
@@ -398,9 +402,11 @@ int goptions::setOptMap(int argc, char **argv)
 					optMap[new_opt].help  = itm->second.help;
 					optMap[new_opt].type  = itm->second.type;
 					optMap[new_opt].ctgr  = itm->second.ctgr;
+					optMap[new_opt].repe  = count[itm->first];
 					optMap[new_opt].printSetting();
 				}
-				break;
+				// why break here I forgot
+				// break;
 			}
 		}
 		

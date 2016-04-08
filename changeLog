@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+4/8/16
+ - fixed option repetition bug
+
 4/7/16
  - resetting option repetition if so directed
    if repe is 1, options can be accumulated from the gcard
@@ -1184,6 +1187,43 @@ Changelog for GEMC
  - Added multiple hits for a single step.
  - Any number of hits can now be generated from a single geant4 step.
  - Immediate applications: silicon and micromegas detector for charge sharing.
+
+
+12/22/2011
+ - Updated RICH hitprocess with pixel information and quantum efficiency.
+ - Added wavelength dependent reflectivity for RICH mirrors.
+
+12/2/2011
+ - fix bug in B x dr calculation
+
+11/29/2011
+ - Propagating "exist" to second and third generation
+
+11/17/2011
+ - Checking existance of "mother" volume before asking for the exist flag
+ - Unsigned int i changed to ir to avoid possible conflicts with the map iterator
+ - Improvement in the handling of mirrors. Cosmetic improvements in the log. Peek material refined
+
+10/25/2011
+ - new light transmission efficiency, new APD q.e.,gain and noise, new preamp noise
+
+10/7/2011
+ - light yield changed to typeII crystals and apd size to large areas
+
+9/22/2011
+ - Fixed option repetition bug
+
+9/19/2011
+ - Added capability to scale multiple magnetic fields separately
+
+9/12/2011
+ - Added support for multiple instances of options in command line argument and in the gcard.
+
+9/2/2011
+ - Increased icon space for linux GUI
+
+
+
 
 
 
