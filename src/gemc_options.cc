@@ -600,7 +600,7 @@ void goptions::setGoptions()
 	optMap["NO_FIELD"].name = "Sets Magnetic Field of a volume to zero. \"all\" means no magnetic field at all ";
 	optMap["NO_FIELD"].type = 1;
 	optMap["NO_FIELD"].ctgr = "physics";
-	optMap["NO_FIELD"].repe  = 1;
+	optMap["NO_FIELD"].repe  = 0;
 
 	optMap["PHYS_VERBOSITY"].arg = 0;
 	optMap["PHYS_VERBOSITY"].help = "Physics List Verbosity";

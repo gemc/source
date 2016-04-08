@@ -144,10 +144,10 @@ void gsignal::createHitListTree()
 					
 					string hitindex = "Hit n. " + stringify(h+1) + "  nsteps: " +  stringify(nsteps) ;
 				
-					// if last sensitive element is nphe_pmt then writing number of photo-electrons
 					if(!it->second->SDID.identifiers.size())
 						cout << "   !!! Error: no identifiers found for SD >" << it->second->SDID.name  << "<" << endl;
 					
+					// if last sensitive element is nphe_pmt then writing number of photo-electrons
 					if(it->second->SDID.identifiers.back().find("nphe") != string::npos)
 						hitindex = "Hit n. " + stringify(h+1) + "  nphe: " +  stringify(nsteps) ;
 					
