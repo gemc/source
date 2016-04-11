@@ -83,6 +83,7 @@ vector<string> init_dmesg(goptions gemcOpt)
 		
 		commands.push_back("/vis/open DAWNFILE");
 		commands.push_back("/vis/drawVolume");
+		commands.push_back("/vis/scene/add/axes 0 0 0 2 m");
 		commands.push_back("/vis/scene/add/trajectories rich smooth");
 		commands.push_back("/vis/scene/add/hits");
 		commands.push_back("/vis/scene/endOfEventAction accumulate -1");
@@ -116,10 +117,11 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	else if(use_gui==2)
 		commands.push_back("/vis/open OGLIQt " + gemcOpt.optMap["geometry"].args + newpos);
 	
- 	commands.push_back("/vis/viewer/set/autoRefresh 1");
+	commands.push_back("/vis/viewer/set/autoRefresh 1");
 		
 	if(HIGH_RES==1)
 	{
+		commands.push_back("/vis/scene/add/axes 0 0 0 2 m");
 		commands.push_back("/vis/scene/add/trajectories rich smooth");
 		commands.push_back("/vis/viewer/set/background .8 .9 .98 1");   // 205, 230, 251 = CD, E6, FA
 		commands.push_back("/vis/scene/add/hits");
@@ -133,6 +135,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	}
 	else
 	{
+		commands.push_back("/vis/scene/add/axes 0 0 0 2 m");
 		commands.push_back("/vis/scene/add/trajectories");
 		commands.push_back("/vis/scene/add/hits");
 		commands.push_back("/vis/scene/endOfEventAction accumulate -1");
@@ -155,7 +158,15 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	gemcColorIDModel->Set("pi+",     "magenta");
 	gemcColorIDModel->Set("pi-",     "yellow");
 	gemcColorIDModel->Set("proton",  G4Colour(0.95, 0.6, 0.3));  // orange
-	
+	gemcColorIDModel->Set("e+",  G4Colour(0., 0.8, 0.8));  // darkCyan 
+	gemcColorIDModel->Set("mu-", G4Colour(0.8, 0.6, 1.));  // violet
+	gemcColorIDModel->Set("mu+", G4Colour(0.5, 0., 1.));   // darkViolet
+	gemcColorIDModel->Set("nu_mu", G4Colour(1., 0.8, 1.));  // pink 
+	gemcColorIDModel->Set("anti_nu_mu", G4Colour(0.8, 0., 0.8));  // darkPink
+	gemcColorIDModel->Set("nu_e", G4Colour(0.6, 0.8, 1.));  // azure
+	gemcColorIDModel->Set("anti_nu_e", G4Colour(0.2, 0.6, 1.));  // darkAzure
+
+
 	G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
 	for(int i=0; i<particleTable->entries(); i++)
 	{
@@ -167,7 +178,14 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		   pname !=  "e-"      &&
 		   pname !=  "pi+"     &&
 		   pname !=  "pi-"     &&
-		   pname !=  "proton"    )
+		   pname !=  "proton"  &&
+  		   pname !=  "e+"      &&
+		   pname !=  "mu-"     &&
+		   pname !=  "mu+"     &&
+		   pname !=  "nu_mu"     &&
+		   pname !=  "anti_nu_mu"     &&
+		   pname !=  "nu_e"     &&
+		   pname !=  "anti_nu_e" )
 		{
 			if(charge>0)
 				gemcColorIDModel->Set(pname,  "red");
