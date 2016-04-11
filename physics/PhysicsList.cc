@@ -10,6 +10,16 @@
 #include <iostream>
 using namespace std;
 
+#include "globals.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4ParticleTypes.hh"
+#include "G4ParticleTable.hh"
+
+#include "G4Material.hh"
+#include "G4MaterialTable.hh"
+#include "G4ProcessManager.hh"
+#include "G4ProcessVector.hh"
+
 // gemc headers
 #include "PhysicsList.h"
 #include "PhysicsListMessenger.h"
@@ -42,6 +52,12 @@ using namespace std;
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
+
+#include "G4DecayTable.hh"                                                     
+#include "G4MuonRadiativeDecayChannelWithSpin.hh"
+#include "G4MuonDecayChannelWithSpin.hh"
+#include "G4DecayWithSpin.hh"
+#include "G4ProcessTable.hh"
 
 PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 {
@@ -329,12 +345,48 @@ void PhysicsList::cookPhysics()
 void PhysicsList::ConstructParticle()
 {
 	g4ParticleList->ConstructParticle();
+	string cosmics =  gemcOpt.optMap["COSMICRAYS"].args;
+	vector<string> csettings = get_info(cosmics, string(",\""));
+	string decayType = "default";
+	int len = csettings.size();
+	if(csettings[0] == "default"){
+	  if(len>4) decayType = csettings[4];
+	}else{
+	  if(len>6) decayType = csettings[6];
+	}
+	
+	G4Electron::ElectronDefinition();
+	G4Positron::PositronDefinition();
+	G4NeutrinoE::NeutrinoEDefinition();
+	G4AntiNeutrinoE::AntiNeutrinoEDefinition();
+	G4MuonPlus::MuonPlusDefinition();
+	G4MuonMinus::MuonMinusDefinition();
+	G4NeutrinoMu::NeutrinoMuDefinition();
+	G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();
+	
+	G4DecayTable* MuonPlusDecayTable = new G4DecayTable();
+	G4DecayTable* MuonMinusDecayTable = new G4DecayTable();
+	
+	if(decayType == "radiative"){
+	  MuonPlusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu+",1.00));
+	  MuonMinusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu-",1.00));
+	}else{ // default
+	  MuonPlusDecayTable -> Insert(new G4MuonDecayChannelWithSpin("mu+",0.986));
+	  MuonPlusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu+",0.014));
+	  MuonMinusDecayTable -> Insert(new G4MuonDecayChannelWithSpin("mu-",0.986));
+	  MuonMinusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu-",1.00));
+	}
+	G4MuonPlus::MuonPlusDefinition() -> SetDecayTable(MuonPlusDecayTable);
+	G4MuonMinus::MuonMinusDefinition() -> SetDecayTable(MuonMinusDecayTable);
 }
 
 
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
+	theDecayProcess = new G4DecayWithSpin();
+	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
+	G4VProcess* decay;
 	g4EMPhysics->ConstructProcess();
 	g4ParticleList->ConstructProcess();
 	for(size_t i=0; i<g4HadronicPhysics.size(); i++)
@@ -349,7 +401,8 @@ void PhysicsList::ConstructProcess()
 	{
 		G4ParticleDefinition* particle = theParticleIterator->value();
 		G4ProcessManager*     pmanager = particle->GetProcessManager();
-	    string                pname    = particle->GetParticleName();
+		string                pname    = particle->GetParticleName();
+		decay = processTable->FindProcess("Decay",particle);  
 	
 		// Adding Step Limiter
 		if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
@@ -359,6 +412,39 @@ void PhysicsList::ConstructProcess()
 			
 			pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
 		}
+
+		if (theDecayProcess->IsApplicable(*particle)) {
+		  if(decay) pmanager->RemoveProcess(decay);
+		  pmanager->AddProcess(theDecayProcess);
+		  pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
+		  pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+		}
+		/*
+		// uncomment of other processes involving muons need to be added 
+		G4MuIonisation *theMuPlusIonisation = new G4MuIonisation();
+		G4MuMultipleScattering *theMuPlusMultipleScattering = new G4MuMultipleScattering();
+		G4MuBremsstrahlung *theMuPlusBremsstrahlung=new G4MuBremsstrahlung();
+		G4MuPairProduction *theMuPlusPairProduction= new G4MuPairProduction();
+		
+		G4MuIonisation *theMuMinusIonisation = new G4MuIonisation();
+		G4MuMultipleScattering *theMuMinusMultipleScattering = new G4MuMultipleScattering;
+		G4MuBremsstrahlung *theMuMinusBremsstrahlung = new G4MuBremsstrahlung();
+		G4MuPairProduction *theMuMinusPairProduction = new G4MuPairProduction();
+		
+		// Muon Plus Physics
+		pmanager = G4MuonPlus::MuonPlus()->GetProcessManager();
+		pmanager->AddProcess(theMuPlusMultipleScattering,-1,  1, 1);
+		pmanager->AddProcess(theMuPlusIonisation,        -1,  2, 2);
+		pmanager->AddProcess(theMuPlusBremsstrahlung,    -1,  3, 3);
+		pmanager->AddProcess(theMuPlusPairProduction,    -1,  4, 4);
+		
+		// Muon Minus Physics
+		pmanager = G4MuonMinus::MuonMinus()->GetProcessManager();
+		pmanager->AddProcess(theMuMinusMultipleScattering,-1,  1, 1);
+		pmanager->AddProcess(theMuMinusIonisation,        -1,  2, 2);
+		pmanager->AddProcess(theMuMinusBremsstrahlung,    -1,  3, 3);
+		pmanager->AddProcess(theMuMinusPairProduction,    -1,  4, 4);  
+		*/
 
 	}
 
