@@ -1,5 +1,5 @@
 /// \mainpage
-/// \htmlonly <center><img src="gemc_logo.gif" width="130"></center>\endhtmlonly
+/// \htmlonly <center><img src="gemc_logo.gif" width="230"></center>\endhtmlonly
 /// \section overview Overview
 /// gemc (<b>GE</b>ant4 <b>M</b>onte<b>C</b>arlo) GEMC is a C++ framework
 /// based on <a href="http://geant4.web.cern.ch/geant4/"> Geant4 </a>
@@ -21,14 +21,6 @@
 /// - Mac OS X
 /// \section docs Documentation:
 /// - <a href="http://gemc.jlab.org">  gemc website </a>
-/// \section dependencies Dependencies
-/// - geant4 (simulation libraries)
-/// - clhep  (random generators, physics vectors, geometry and linear algebra libraries)
-/// - qt4 (graphic libraries)
-/// - mysql
-/// - scons (build system)
-/// - xercesc
-/// \image html gemc_logo.gif
 /// \n\n
 /// \author \n &copy; Maurizio Ungaro
 /// \author e-mail: ungaro@jlab.org\n\n\n

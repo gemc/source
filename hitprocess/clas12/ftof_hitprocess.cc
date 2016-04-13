@@ -168,17 +168,26 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double eneL = tInfos.eTot*attLeft;
 	double eneR = tInfos.eTot*attRight;
 
-	double adcl=0;
-	double adcr=0;
-	double tdcl=0;
-	double tdcr=0;
-	double tdclu=0;
-	double tdcru=0;
+	double adcl  = 0;
+	double adcr  = 0;
+	double adclu = 0;
+	double adcru = 0;
+	double tdcl  = 0;
+	double tdcr  = 0;
+	double tdclu = 0;
+	double tdcru = 0;
 	
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat L and R separately, in case nphe=0
 
+	if (eneL>0)
+		adclu = eneL*ftc.countsForMIP[sector-1][panel-1][0][paddle-1]/ftc.dEMIP[panel-1]/gainLeft;
+	
+	if (eneR>0)
+		adcru = eneR*ftc.countsForMIP[sector-1][panel-1][1][paddle-1]/ftc.dEMIP[panel-1]/gainRight;
+	
+	
 	double npheL = G4Poisson(eneL*ftc.pmtPEYld);
 	eneL = npheL/ftc.pmtPEYld;
 
@@ -263,8 +272,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADCR"]   = adcr;
 	dgtz["TDCL"]   = tdcl;
 	dgtz["TDCR"]   = tdcr;
-	dgtz["ADCLu"]  = adcl;
-	dgtz["ADCRu"]  = adcr;
+	dgtz["ADCLu"]  = adclu;
+	dgtz["ADCRu"]  = adcru;
 	dgtz["TDCLu"]  = tdclu;
 	dgtz["TDCRu"]  = tdcru;
 	

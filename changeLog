@@ -1,6 +1,8 @@
 Changelog for GEMC
 ==================
 
+
+
 4/8/16
  - fixed option repetition bug
  - NO_FIELD repetitions set to zero
@@ -251,10 +253,14 @@ Changelog for GEMC
 
 5/26/15
  - improved log for LUND format
+ - improved ftof digitization routines
  - added runWeights class. This class reads a text file with two columns: run and weight
    The class contain a map<int, int> which contains the number of events for each run number.
-   The number of events is randomized based on the number of events desired by the user and the weight table.
- - improved ftof digitization routines
+   The number of events is based on the number of events desired by the user and the weight table.
+ - added RUN_WEIGHTS option. The argument is a text file with two columns: run number and its luminosity
+   weight. GEMC will distribute the number of events requested among the run list according to their weight.
+   The calibration constants, including status, are re-read from the user databases at each run number change.
+
 
 5/20/15
  - added active fields in the option map so they are written in the output (as simulation conditions)
@@ -1222,14 +1228,66 @@ Changelog for GEMC
 
 9/2/2011
  - Increased icon space for linux GUI
+ - Typo on Luminosity Tab
+ - Corrected help for hit process: lists are separated by spaces, not commas
+
+8/31/2011
+ - gemc logo on a place w/o certificate so it's visible in the "about" tab
+ - Added HTML option table with the option: -help-html
 
 
+8/5/2011
+ - Filter out "-psn" for argument. This is added on Mac when launching an app.
+
+7/29/2011
+ - GL path removed, added on scons script - some system have it some do not
+ - Fixed Sensitive detector edep bug (was not recording any output)
+
+7/27/2011
+ - Added GDML support
+
+7/25/2011
+ - Added button jpg, corrected atomic weight of chlorine
+
+.. Note::
+   7/25/2011 working gemc version 1.5 revision 4756
+
+|
 
 
+7/19/2011
+ - **signal interface**
+   For now it will display the single step informations for each hit, and graphs of energy deposited.
+
+   In the future it will display the signal in volt versus time.
+
+   By default the tracks passing through a material without depositing any energy will not be recored.
+   The flag RECORD_PASSBY can be set to 1 if you want to record these.
+
+ - Corrected "about" page.
 
 
+6/14/2011
+ - improved magnetic field log
+
+5/15/2011
+ - add "solid" hit processes list
+
+5/13/2011
+ - Step size to define a track as "stuck" decreased to  0.00001 mm
+
+5/12/2011
+ - Added UImanager->SetCoutDestination(NULL);
+   this will redirect all cout and G4out to the screen.
+
+ - "pick" command is now available.
 
 
+5/10/2011
+ - Added SkinSurface myrror type.
+ - Added SemiReflective mirrors "SemiMirror"
+ - In SteppingAction: kill optical photons generated in semimirror (or they reflect forever because of refraction indexes)
+ - In StepngAction: kill tracks that do not change position after 10 steps
 
 
 
