@@ -10,10 +10,10 @@ collaborations as any change in the models can be tested and used immediately by
 
 
 <p align="center">
-	<img src="https://gemc.jlab.org/gemc/html/_images/beam.png"        height="170" width="170">
-	<img src="https://gemc.jlab.org/gemc/html/_images/clas12.png"        height="170" width="170">
-	<img src="https://gemc.jlab.org/gemc/html/_images/eic.png"       height="170" width="170">
-	<img src="https://gemc.jlab.org/gemc/html/_images/bubble.png" height="170" width="170">
+	<img src="http://gemc.jlab.org/gemc/html/_images/beam.png"        height="170" width="170">
+	<img src="http://gemc.jlab.org/gemc/html/_images/clas12.png"        height="170" width="170">
+	<img src="http://gemc.jlab.org/gemc/html/_images/eic.png"       height="170" width="170">
+	<img src="http://gemc.jlab.org/gemc/html/_images/bubble.png" height="170" width="170">
 </p>
 <i> examples of experiments using gemc. From left to right: Clas12 beamline event; CLAS12 central detector. Solid Experiment setup; 
 a DVCS event in the CLAS12 Central detector at Jefferson Lab</i>
