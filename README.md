@@ -5,35 +5,32 @@
 passage of particles through matter.
 
 
-
 The simulation models are stored on databases (MYSQL for example). This makes <b>gemc</b> ideal for 
 collaborations as any change in the models can be tested and used immediately by all users.
 
 
 <p align="center">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/eic.jpg"        height="170" width="170">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/hps.jpg"        height="170" width="170">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/htcc.jpg"       height="170" width="170">
-<img src="https://github.com/gemc/gemc.github.io/blob/master/img/dvcs_event.jpg" height="170" width="170">
+	<img src="https://gemc.jlab.org/gemc/html/_images/beam.png"        height="170" width="170">
+	<img src="https://gemc.jlab.org/gemc/html/_images/clas12.png"        height="170" width="170">
+	<img src="https://gemc.jlab.org/gemc/html/_images/eic.png"       height="170" width="170">
+	<img src="https://gemc.jlab.org/gemc/html/_images/bubble.png" height="170" width="170">
 </p>
-<i> examples of experiments using gemc. From left to right: Electron Ion Collider beamline; Heavy Photon Search; 
-Cherenkov light focusing in a High Threshold Cherenkov Counter; a DVCS event in the CLAS12 Central detector at Jefferson Lab</i>
+<i> examples of experiments using gemc. From left to right: Clas12 beamline event; CLAS12 central detector. Solid Experiment setup; 
+a DVCS event in the CLAS12 Central detector at Jefferson Lab</i>
 
 ========
 
 
 ### Overview:
 
-All the simulation parameters (geometry, fields, sensitivity, etc) are defined in external 
-databases (MYSQL, TXT), At run time, options can be given to tilt objects, set conditions, etc. 
+gemc tries to make easy things easy and hard things possible.
 
-![](https://github.com/gemc/gemc.github.io/blob/master/img/gemcAbstract.png)
+Users can build and run complex setups even with no C++ or geant4 knowledge.
 
-The API to build the model is based on simple scripts. No previous knowledge of C++ or geant4 is required, 
-even for the most complex simulations:  the users can focus solely on the models geometry, materials, etc. 
+The upload/download of the parameters to/from databases (available: MYSQL or ASCII) is automatic.
 
-Any change in the model is reflected immediately in the databses, and can be tested w/o having to re-compile code. 
-In fact the same <b>gemc</b> executable is used for many different experiments.
+
+![](https://gemc.jlab.org/gemc/html/_images/gemcArchitecture.png)
 
 
 ========
