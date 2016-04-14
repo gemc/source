@@ -29,8 +29,9 @@ Users can build and run complex setups even with no C++ or geant4 knowledge.
 
 The upload/download of the parameters to/from databases (available: MYSQL or ASCII) is automatic.
 
-
-![ScreenShot]("https://github.com/gemc/docs/blob/master/webPage/source/gemcArchitecture.png")
+<p align="center">
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/gemcArchitecture.png" width="90%">
+</p>
 
 
 ========
