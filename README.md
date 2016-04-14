@@ -8,19 +8,15 @@ passage of particles through matter.
 The simulation models are stored on databases (MYSQL for example). This makes <b>gemc</b> ideal for 
 collaborations as any change in the models can be tested and used immediately by all users.
 
-![ScreenShot](https://gemc.jlab.org/gemc/html/_images/beam.png)
 
 <p align="center">
-	![ScreenShot](http://gemc.jlab.org/gemc/html/_images/beam.png)
-
-
-	<img src="http://gemc.jlab.org/gemc/html/_images/beam.png"   height="170" width="170">
-	<img src="http://gemc.jlab.org/gemc/html/_images/clas12.png" height="170" width="170">
-	<img src="http://gemc.jlab.org/gemc/html/_images/eic.png"    height="170" width="170">
-	<img src="http://gemc.jlab.org/gemc/html/_images/bubble.png" height="170" width="170">
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/beam.png"   height="170" width="170">
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/clas12.png" height="170" width="170">
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/eic.png"    height="170" width="170">
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/bubble.png" height="170" width="170">
 </p>
 <i> examples of experiments using gemc. From left to right: Clas12 beamline event; CLAS12 central detector. Solid Experiment setup; 
-a DVCS event in the CLAS12 Central detector at Jefferson Lab</i>
+10,000 electrons producing photons in the 6mm collimator in the bubble experiments at Jefferson Lab.</i>
 
 ========
 
@@ -34,7 +30,7 @@ Users can build and run complex setups even with no C++ or geant4 knowledge.
 The upload/download of the parameters to/from databases (available: MYSQL or ASCII) is automatic.
 
 
-![ScreenShot](http://gemc.jlab.org/gemc/html/_images/gemcArchitecture.png)
+![ScreenShot]("https://github.com/gemc/docs/blob/master/webPage/source/gemcArchitecture.png")
 
 
 ========
