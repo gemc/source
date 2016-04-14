@@ -8,6 +8,7 @@ passage of particles through matter.
 The simulation models are stored on databases (MYSQL for example). This makes <b>gemc</b> ideal for 
 collaborations as any change in the models can be tested and used immediately by all users.
 
+	![ScreenShot](http://gemc.jlab.org/gemc/html/_images/beam.png)
 
 <p align="center">
 	![ScreenShot](http://gemc.jlab.org/gemc/html/_images/beam.png)
