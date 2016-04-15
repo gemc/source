@@ -36,22 +36,17 @@ static ctofConstants initializeCTOFConstants(int runno)
 	ctc.npaddles   = 48;
 	ctc.thick      = 3.0;
 	
-	ctc.dEdxMIP       = 1.956;  // muons in polyvinyltoluene
+	ctc.dEdxMIP       = 1.956;   // muons in polyvinyltoluene
 	ctc.dEMIP         = ctc.thick*ctc.dEdxMIP;
-	ctc.pmtPEYld      = 243;
-	ctc.pmtQE         = 0.27;
-	ctc.pmtDynodeGain = 4.0; 
-        ctc.pmtDynodeK    = 0.5; 
-	ctc.pmtFactor     = sqrt(1-ctc.pmtQE+(ctc.pmtDynodeK*ctc.pmtDynodeGain+1)/(ctc.pmtDynodeGain-1));
-	ctc.tdcLSB        = 41.6667;
+	ctc.pmtPEYld      = 500;
+	ctc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
 	
 	cout<<"CTOF:Setting time resolution"<<endl;
 
 	for(int c=1; c<ctc.npaddles+1;c++)
 	{
-	  ctc.tres.push_back(60.);
+	  ctc.tres.push_back(1e-3*65.); //ps to ns
 	}
-	
 	
 	int isec,ilay,istr;
 	
@@ -156,6 +151,13 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attUp  = exp(-dUp/cm/attlenUp);
 	double attDn  = exp(-dDn/cm/attlenDn);
 
+	// Gain factors to simulate CTOF PMT gain matching algorithm.
+	// Each U,D PMT pair has HV adjusted so geometeric mean sqrt(U*D)
+	// is independent of counter length, which compensates for
+	// the factor exp(-L/2/attlen) where L=full length of bar.
+	double gainUp = sqrt(attUp*attDn);
+	double gainDn = gainUp;
+
 	// Attenuated light at PMT
 	double eneUp = tInfos.eTot*attUp;
 	double eneDn = tInfos.eTot*attDn;
@@ -164,23 +166,35 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double adcd = 0.;
         double tdcu = 0.;
 	double tdcd = 0.;
+	double adcuu = 0.;
+	double adcdu = 0.;
+	double tdcuu = 0.;
+	double tdcdu = 0.;
 
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat Up and Dn separately, in case nphe=0
 
+	if (eneUp>0)
+		adcuu = eneUp*ctc.countsForMIP[sector-1][panel-1][0][paddle-1]/ctc.dEMIP/gainUp;
+	
+	if (eneDn>0)
+		adcdu = eneDn*ctc.countsForMIP[sector-1][panel-1][1][paddle-1]/ctc.dEMIP/gainDn;
+
+
 	double npheUp = G4Poisson(eneUp*ctc.pmtPEYld);
 	eneUp = npheUp/ctc.pmtPEYld;
 
 	if (eneUp>0) {
-	                 adcu = eneUp*ctc.countsForMIP[sector-1][panel-1][0][paddle-1]/ctc.dEMIP;
+	                 adcu = eneUp*ctc.countsForMIP[sector-1][panel-1][0][paddle-1]/ctc.dEMIP/gainUp;
 	 //double            A = ctc.twlk[sector-1][panel-1][0][paddle-1];
          //double            B = ctc.twlk[sector-1][panel-1][1][paddle-1];
          //double            C = ctc.twlk[sector-1][panel-1][2][paddle-1];
 	 //double   timeWalkUp = A/(B+C*sqrt(adcu));
 	  double    timeWalkUp = 0.;
 	  double          tUpU = tInfos.time + dUp/ctc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkUp;
-	  double           tUp = G4RandGauss::shoot(tUpU,  sqrt(2)*ctc.tres[paddle-1]*1e-3);
+	  double           tUp = G4RandGauss::shoot(tUpU,  sqrt(2)*ctc.tres[paddle-1]);
+	                 tdcuu = tUpU*ctc.tdcLSB;
 	                  tdcu = tUp*ctc.tdcLSB;
 	}  
 	
@@ -188,23 +202,28 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	eneDn = npheDn/ctc.pmtPEYld;
 
 	if (eneDn>0) {
-	                 adcd = eneDn*ctc.countsForMIP[sector-1][panel-1][1][paddle-1]/ctc.dEMIP;
+	                 adcd = eneDn*ctc.countsForMIP[sector-1][panel-1][1][paddle-1]/ctc.dEMIP/gainDn;
 	 //double            A = ctc.twlk[sector-1][panel-1][3][paddle-1];
          //double            B = ctc.twlk[sector-1][panel-1][4][paddle-1];
          //double            C = ctc.twlk[sector-1][panel-1][5][paddle-1];
 	 //double   timeWalkDn = A/(B+C*sqrt(adcd));
 	  double    timeWalkDn = 0.;
 	  double          tDnU = tInfos.time + dDn/ctc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkDn;
-	  double           tDn = G4RandGauss::shoot(tDnU,  sqrt(2)*ctc.tres[paddle-1]*1e-3);
+	  double           tDn = G4RandGauss::shoot(tDnU,  sqrt(2)*ctc.tres[paddle-1]);
+	                 tdcdu = tDnU*ctc.tdcLSB;
 	                  tdcd = tDn*ctc.tdcLSB;
 	}  
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["paddle"] = paddle;
-	dgtz["ADCL"]   = (int) adcu;
-	dgtz["ADCR"]   = (int) adcd;
-	dgtz["TDCL"]   = (int) tdcu;
-	dgtz["TDCR"]   = (int) tdcd;
+	dgtz["ADCU"]   = (int) adcu;
+	dgtz["ADCD"]   = (int) adcd;
+	dgtz["TDCU"]   = (int) tdcu;
+	dgtz["TDCD"]   = (int) tdcd;
+	dgtz["ADCUu"]  = (int) adcuu;
+	dgtz["ADCDu"]  = (int) adcdu;
+	dgtz["TDCUu"]  = (int) tdcuu;
+	dgtz["TDCDu"]  = (int) tdcdu;
 	
 	return dgtz;
 }
