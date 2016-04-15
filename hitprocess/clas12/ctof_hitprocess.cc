@@ -45,9 +45,8 @@ static ctofConstants initializeCTOFConstants(int runno)
 
 	for(int c=1; c<ctc.npaddles+1;c++)
 	{
-	  ctc.tres.push_back(1e-3*65.);
+	  ctc.tres.push_back(1e-3*65.); //ps to ns
 	}
-	
 	
 	int isec,ilay,istr;
 	
@@ -153,7 +152,7 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attDn  = exp(-dDn/cm/attlenDn);
 
 	// Gain factors to simulate CTOF PMT gain matching algorithm.
-	// Each L,R PMT pair has HV adjusted so geometeric mean sqrt(L*R)
+	// Each U,D PMT pair has HV adjusted so geometeric mean sqrt(U*D)
 	// is independent of counter length, which compensates for
 	// the factor exp(-L/2/attlen) where L=full length of bar.
 	double gainUp = sqrt(attUp*attDn);
