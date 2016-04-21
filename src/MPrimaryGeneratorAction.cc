@@ -41,11 +41,17 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	{
 		vector<string> cvalues = get_info(gemcOpt->optMap["COSMICAREA"].args, string(",\""));
 	
-		if(cvalues.size() != 4)
+		if(cvalues.size() < 4)
 			cout << "  !!!  Warning:  COSMICAREA flag not set correctly. It should be 4 numbers: x,y,z and R." << endl;
 			
 		cosmicTarget = G4ThreeVector(get_number(cvalues[0]), get_number(cvalues[1]), get_number(cvalues[2]));
 		cosmicRadius = get_number(cvalues[3]);
+		if(cvalues.size() == 5){
+		  cosmicGeo = cvalues[4];
+		}else{
+		  cosmicGeo = "sph";
+		}
+
 
 		if(cosmics == "no")
 		{
@@ -71,6 +77,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " Momentum Range: [" << cminp/GeV << " - " << cmaxp/GeV << "] GeV" << endl ;
 			cout << hd_msg << " Cosmic Area :" << cosmicTarget << endl;
 			cout << hd_msg << " Cosmic Radius :" << cosmicRadius/cm << " cm " << endl;
+			cout << hd_msg << " Cosmic Surface Type: " << cosmicGeo << endl;
 		}
 	}
 	
@@ -203,16 +210,29 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			while( (cosmicVX - cosmicTarget.x() )*(cosmicVX - cosmicTarget.x() ) +
 				    (cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
 				    (cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius )
-			{
-				cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
-				cosmicVY = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
-				cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+		      {
+
+			// point generated inside spherical or cylindrical volume 
+			if(cosmicGeo == "sph" || cosmicGeo == "sphere"){
+			  // point inside spherical volume
+			  cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+			  cosmicVY = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+			  cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+			}else{
+			  // point inside a cylinder, height of the cylinder = cosmicRadius/2.
+			  double h = cosmicRadius/2.;
+			  cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+			  double sig=1.;
+			  if((2.*G4UniformRand()-1)<0) sig =-1.;
+			  cosmicVY = h*(2.*G4UniformRand()-1)*sig;
+			  cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();		  
 			}
+		      }
+
 			// now generating random momentum, cos(theta)
 			// the maximum of the distribution is the lowest momentum and 0 theta
 			// normalizing by that number
-			double cosmicProb = G4UniformRand()*cosmicBeam(0, cminp/GeV);
-			
+			double cosmicProb = G4UniformRand()*cosmicBeam(0, cminp/GeV);		  
 			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
 			double thisthe = pi*G4UniformRand()/2.0;
 			while (cosmicBeam(thisthe, thisMom/GeV) < cosmicProb)
