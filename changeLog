@@ -2,6 +2,19 @@ Changelog for GEMC
 ==================
 
 
+4/21/16
+ - fixed physics list to behaviour: if NO EM phys list is selected, then no EM phys is loaded.
+   By default STD is loaded.
+
+.. Note::
+	4/18/16 gemc 2.3 released!
+
+|
+
+
+
+4/15/16
+ - merging CTOF hit process changes from Cole Smith / Dan Carman
 
 4/8/16
  - fixed option repetition bug
@@ -1288,6 +1301,53 @@ Changelog for GEMC
  - Added SemiReflective mirrors "SemiMirror"
  - In SteppingAction: kill optical photons generated in semimirror (or they reflect forever because of refraction indexes)
  - In StepngAction: kill tracks that do not change position after 10 steps
+ - By default gemc will not save the mother particle vertex and pid infos anymore.
+   This will allow to:
+   1.  not store all the trajectories in memory, which is a huge overload
+   2.  not go through all the trajectories in MEventAction, which saves a lot of processing time
+   The infos can still be saved with the option::
+
+    -SAVE_ALL_MOTHERS=1
+
+5/9/2011
+ - RICH hit process routine (Ahmed, Argonne)
+ - Added right click menu to write out GDML file for selected detector.
+
+
+4/25/2011
+ - New Mirror mechanism implemented in gemc.
+ - Working on the documentation.
+
+4/22/2011
+ - Toward generalization of geant4 mirrors
+ - Default value for SCALE_FIELD was wrong... was causing to set the fields to zero.
+
+4/6/2011
+ - The read-back values from the sliders for the luminosity angles need to be divided by 20.0 before setting beam parameters.
+
+3/30/2011
+ - Cosmetic log msg fix
+ - Fixed bug that limited "type" to 70 chars instead of 200
+ - Compare Field Scale from gcard to existing fields, not viceversa
+
+
+3/15/2011
+ - Added "G4 dialog" GUI. Users can enter a command line manually or select a command from the help tree.
+
+3/9/2011
+ - Exiting gemc if a table doesn't exist, or query was not successful.
+
+3/4/2011
+ - Adding Intersection Solid
+
+3/3/2011
+ - Added HALL_FIELD option to allow for mag. field map locations different than G4DATA.
+
+3/1/2011
+ - Kryptonite material should be vacuum instead... so no secondaries are produced.
+
+
+
 
 
 

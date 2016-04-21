@@ -9,6 +9,10 @@ New features:
 - hit process routines > plugins to be stored with the geometry routines
 - proMC output
 
+
+- check  physics_lists/lists/src/G4PhysListFactory.cc for phys list, add some doc log in constructor
+
+
 Code Improvements:
 ==================
 

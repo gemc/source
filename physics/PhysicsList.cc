@@ -52,7 +52,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	
 	// default physics lists
 	hadronicPhys = "none";
-	EMPhys       = "STD";
+	EMPhys       = "none";
 	opticalPhys  = "none";
 	HPPhys       = "none";
 	
@@ -70,6 +70,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 		if(emstripped.size() == 2) stripped = TrimSpaces(emstripped[1]);
 		if(stripped != "")
 			g4EMList.push_back(stripped);
+		
 	}
 	
 	G4LossTableManager::Instance();
@@ -257,7 +258,7 @@ void PhysicsList::cookPhysics()
 	else if(EMPhys == "EMZ")  g4EMPhysics = new G4EmStandardPhysics_option4();
 	else if(EMPhys == "LIV")  g4EMPhysics = new G4EmLivermorePhysics();
 	else if(EMPhys == "PEN")  g4EMPhysics = new G4EmPenelopePhysics();				
-	else
+	else if(EMPhys != "none")
 	{
 		cout << " !! Wrong EMPhys " << EMPhys << endl << "Exiting." << endl;
 		exit(0);
@@ -335,8 +336,11 @@ void PhysicsList::ConstructParticle()
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
-	g4EMPhysics->ConstructProcess();
+	if(g4EMPhysics)
+		g4EMPhysics->ConstructProcess();
+	
 	g4ParticleList->ConstructProcess();
+	
 	for(size_t i=0; i<g4HadronicPhysics.size(); i++)
 		g4HadronicPhysics[i]->ConstructProcess();
 

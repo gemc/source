@@ -530,7 +530,7 @@ void goptions::setGoptions()
 	
 
 	// Physics
-	optMap["PHYSICS"].args = "FTFP_BERT";
+	optMap["PHYSICS"].args = "STD + FTFP_BERT";
 	optMap["PHYSICS"].help =  "    Physics List. The lists are modular and can be added together. \n";
 	optMap["PHYSICS"].help +=  "     For example, a choice could be 'QGSC_BERT + STD + HP + Optical'\n";
 	optMap["PHYSICS"].help +=  "     Possible Choices:\n";
