@@ -40,10 +40,14 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	contentsWidget->setMovement(QListView::Static);
 
 	// icon container sizes
-	contentsWidget->setMinimumWidth(76);
-	contentsWidget->setMaximumWidth(76);
-	contentsWidget->setMinimumHeight(600);
-	contentsWidget->setMaximumHeight(600);
+	// depends on the OS
+	// on linux platformName returns xcb
+	// see also QGuiApplication Class, property platformName
+	if( QGuiApplication::platformName().toStdString() == "cocoa")
+		contentsWidget->setFixedSize(76, 600);
+	else
+		contentsWidget->setFixedSize(74, 620);
+	
 	
 	// makes all icon the same size
 	contentsWidget->setUniformItemSizes(1);
@@ -68,10 +72,7 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	pagesWidget->addWidget(new g4dialog        (this, gemcOpt));
 	pagesWidget->addWidget(gsig  = new gsignal (this, gemcOpt, SDM));
 	pagesWidget->addWidget(gtrig = new gtrigger(this, gemcOpt, SDM));
-	pagesWidget->setMinimumWidth(550);
-	pagesWidget->setMaximumWidth(550);
-	pagesWidget->setMinimumHeight(600);
-	pagesWidget->setMaximumHeight(600);
+	pagesWidget->setFixedSize(550, 600);
 	
 	createIcons();
 	contentsWidget->setCurrentRow(0);

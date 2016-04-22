@@ -81,3 +81,15 @@ Code Reorganization:
 - bring splash screen out of util - general library
 - re-organize primary generator, use external library project
 
+
+
+Fixes
+=====
+
+Load path should be corrected /group still show /group even though it's loaded
+from a different path
+
+
+
+
+

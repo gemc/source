@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+4/22/16
+ - fixed linux gui icon sidebar size. Behaviour is platform dependent.
+ - added kaon+ and alpha proc catalogue
 
 4/21/16
  - fixed physics list to behaviour: if NO EM phys list is selected, then no EM phys is loaded.
