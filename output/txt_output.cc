@@ -120,7 +120,7 @@ void txt_output ::  writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 			for(unsigned int nh=0; nh<HO.size(); nh++)
 			{
 				map<string, double> theseRaws = HO[nh].getRaws();
-				*txtout << theseRaws[it->second] << "\t" ;
+				*txtout <<  std::setprecision(12) << theseRaws[it->second] << "\t" ;
 			}
 			*txtout << endl;
 		}
