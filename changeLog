@@ -1,6 +1,13 @@
 Changelog for GEMC
 ==================
 
+4/28/16
+ - added kaon0, lambda, sigma- inelastic
+
+4/25/16
+ - change txt output with 12 digit precision instead of default 6
+
+
 4/22/16
  - fixed linux gui icon sidebar size. Behaviour is platform dependent.
  - added kaon+ and alpha proc catalogue
@@ -1348,6 +1355,41 @@ Changelog for GEMC
 
 3/1/2011
  - Kryptonite material should be vacuum instead... so no secondaries are produced.
+
+2/28/2011
+ - FLUX ids for the PMTs
+ - fixed name tupo
+
+2/16/2011
+ - Kryptonite had to be defined as a real material in order for it to work.
+
+2/13/2011
+ - Adding Material "Kryptonite" - anything passing through it will be killed.
+
+2/11/2011
+ - PID, Vertex, Charge is set on MSensitive detector instead of MEvent Action.
+   This should save some memory at the end of the event.
+
+2/9/2011
+ - Modified some mysql routine to require GEMC_HOST < this is temporary until the new mysql API will be implemented
+ - Remove the comments and remove the ENGINE=MyISAM statement, which isn't really needed.
+
+2/8/2011
+ - Fixes for mag field definitions
+
+2/5/2011
+ - Alphabetical order no more needed for volume operations
+
+2/2/2011
+ - Added G4EllipticalTube
+
+2/1/2011
+ - Fix typo on the range for LUMI vertex z slider.
+
+
+
+
+
 
 
 
