@@ -1,8 +1,11 @@
 Changelog for GEMC
 ==================
 
+5/2/16
+ - added hBrems hadronic Bremsstrahlung to process catalogue
+
 4/28/16
- - added kaon0, lambda, sigma- inelastic
+ - added kaon0, lambda, sigma- inelastic to process catalogue
 
 4/25/16
  - change txt output with 12 digit precision instead of default 6
@@ -1206,7 +1209,7 @@ Changelog for GEMC
 |
 
 
- 1/26/2012
+1/26/2012
  - Magnetic field location based on JLAB_ROOT env. variable. Maybe a MAG_FIELDS_DIR is better but let's go with this for now.
  - Updated version on the doc tab
  - Livermore low e.m. physics according to new G4 9.5
@@ -1387,14 +1390,114 @@ Changelog for GEMC
  - Fix typo on the range for LUMI vertex z slider.
 
 
+1/30/2011
+ - Introduced MAX_X_POS (Y and Z too) to control the killing of tracks instead of hard-coding numbers.
+ - Detector Construction better logs
+
+1/25/2011
+ - Added momentum in FLUX bank
+
+1/21/2011
+ - Added GlueX-related hit processes to the build.
+ - Added an option -POLAR to set the polarization degree and the polarization angle of the beam particles.
+
+1/4/2011
+ - Even low res needs trajectories ;-)
+ - Adding a LOW RES mode
+ - Fixed map location in MagneticField.cc
+
+1/2/2011
+ - Added "option" condition on gcard elements for xml childs as well.
+
+12/28/2010
+ - The geometry option was not properly implemented in the options.
+ - Take out the Low EM debugging statements.
+
+12/27/2010
+ - Implement low energy E&M option, down to X-ray level.
+
+12/23/2010
+ - Added a -geometry=widthxheight flag to set the opengl window size
+
+12/3/2010
+ - Fixed memory leak in MEvent:
+ - ProcessHitRoutine was not deleted inside the sensitive detector loop
+ - Removed unnecessary evioDOMNode::createEvioDOMNode(1,  1) (this fixed another leak)
+ - Added DEFAULT_MATERIAL flag. If a material is not defined, the code will stop unless this flag is set to some existing material.
+   In that case any undefined material will be set to DEFAULT_MATERIAL.
+ - Removed unnecessary tmp file in RICH detector.
+
+11/30/2010
+ - Passing pointer of function map instead of copying it.
+ - Adding warning if map element doesn't exists.
+
+11/17/2010
+ - Added option::
+
+   -SCALE_FIELD
+
+  to scale at run time a particular magnetic field by a factor.
+
+  Example::
+
+   -SCALE_FIELD="srr-solenoid, 0.5"
 
 
+11/16/2010
+ - Reverting to default magnetic field step.
+   Use MAX_FIELD_STEP to control it from command line
+ - Added possibility to register multiple experiments hit processes routine.
+
+   Current experiments::
+
+    clas12
+    aprime
+
+   Default: *clas12*
+
+   Example to activate both hit process lists::
+
+    -HIT_PROCESS_LIST="clas12 aprime"
+
+11/15/2010
+ - Deleting ProcessHit pointers (making it also a class member) when not used.
+   This doesn't get rid of all memory leaks but it limits them.
+   More memory leaks are coming from copy constructors it seems.
+
+11/13/2010
+ - Preparing to accept multiple experiment hit processes.
 
 
+10/29/2010
+ - Changed the slider upper limit for momentum from 11 GeV to 20 GeV
+
+10/15/2010
+ - Implemented options to connect to MYSQL server with different usernames and passwords
+ - Added command line options for MySQL username and password DBUSER and DBPSWD
+
+10/2/2010
+ - Set the maximum tracking step in the magnetic field to 1mm. Without this the trajectories of the
+   charged particle in the vacuum in presence of a B-field seem to be very rugged. Looks smoother with 1mm limit.
+
+9/28/2010
+ - Added a possibility to switch the order of the rotation and translation when operating on
+   two volumes when using Operation keyword in the geometry database.
+   It turned out that the rotation is always performed with the resect to the
+   axis of the first volume, so the two transformations do not commute.
 
 
+9/20/2010
+ - Minor: Removing some compiler warnings
 
 
+9/16/2010
+ - Adding DAWN_N option to:
 
+   * use the DAWN driver
+   * run N events using the dawn driver
+
+
+9/10/2010
+ - Added DX info in MHit (vector<double> )
 
 

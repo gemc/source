@@ -320,6 +320,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "kaon0Inelastic")   return 28;
 	if(procName == "lambdaInelastic")  return 29;
 	if(procName == "sigma-Inelastic")  return 30;
+	if(procName == "hBrems")           return 31;
 	
 	if(procName == "na")            return 90;
 	
