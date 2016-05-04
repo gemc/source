@@ -61,6 +61,7 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double cminp, cmaxp, cMom;        ///< minimum and maximum cosmic ray momentum
 		G4ThreeVector cosmicTarget;       ///< Location of area of interest for cosmic rays
 		double cosmicRadius;              ///< radius of area of interest for cosmic rays
+		string cosmicGeo;                 ///< type of surface for cosmic ray generation (sphere || cylinder) 
 	
 		// Generators Input Files
 		ifstream  gif;                    ///< Generator Input File
