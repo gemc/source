@@ -369,7 +369,7 @@ void MDetectorConstruction::hasMagfield(detector detect)
 		activeFields.insert(magf);
 		detect.AssignMFM(itr->second.get_MFM());
 		
-		if(verbosity > 1 || detect.name.find(catch_v) != string::npos)
+		if((verbosity > 1 && verbosity != 99) || detect.name.find(catch_v) != string::npos )
 			cout << hd_msg  << " Field <" <<  magf << "> is built and assigned to " << detect.name << "." << endl;
 	}
 }

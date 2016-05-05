@@ -22,29 +22,29 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 	double max2  =  map->getCoordinateWithSpeed(1).max;
 	double cell1 = (max1 - min1)/(np_1 - 1);
 	double cell2 = (max2 - min2)/(np_2 - 1);
-	
+
 	// Allocate memory. [LONGI][TRANSVERSE]
 	// as initialized in the map
 	map->B1_2D = new double*[map->np[0]];
 	for (unsigned int i = 0; i < map->np[0]; ++i)
 		map->B1_2D[i] = new double[map->np[1]];
-	
+
 
 	double unit1 = get_number("1*" + map->getCoordinateWithSpeed(0).unit);
 	double unit2 = get_number("1*" + map->getCoordinateWithSpeed(1).unit);
-	
+
 	double scale = map->scaleFactor*get_number("1*" + map->unit);
-	
+
 	double d1, d2, b;
 
 	// progress bar
 	int barWidth = 50;
-	
+
 	// using fscanf instead of c++ to read file, this is a lot faster
 	char ctmp[100];
 	string tmp;
 	FILE *fp = fopen (map->identifier.c_str(), "r");
-	
+
 	// ignoring header
 	while(tmp != "</mfield>")
 	{
@@ -62,13 +62,13 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 
 			d1 *= unit1;
 			d2 *= unit2;
-						
-			b  *= scale;
-			
-			if(verbosity>4)
-				cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   value: " << b << endl;
 
-			
+			b  *= scale;
+
+			if(verbosity>4 && verbosity != 99)
+			cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   value: " << b << endl;
+
+
 			// checking map consistency for first coordinate
 			if( (min1  + i1*cell1 - d1)/d1 > 0.001)
 			{
@@ -81,22 +81,22 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 				cout << "   !! Error:  coordinate index wrong. Map second point should be " <<  min2  + i2*cell2
 				<< " but it's  " << d2 << " instead. Cell size: " << cell2 << "  min: " << min2 << " max : " << max2 << "  index: " << i2 << endl;
 			}
-			
+
 			// calculating index
 			unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
 			unsigned t2 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;
-			
+
 			// The values are indexed as B1_2D[longi][transverse]
 			if(   map->getCoordinateWithSpeed(0).name == "longitudinal"
-			   && map->getCoordinateWithSpeed(1).name == "transverse")
-				map->B1_2D[t1][t2] = b;
-			
+				&& map->getCoordinateWithSpeed(1).name == "transverse")
+			map->B1_2D[t1][t2] = b;
+
 			if(   map->getCoordinateWithSpeed(0).name == "transverse"
-			   && map->getCoordinateWithSpeed(1).name == "longitudinal")
-				map->B1_2D[t2][t1] = b;
-			
+				&& map->getCoordinateWithSpeed(1).name == "longitudinal")
+			map->B1_2D[t2][t1] = b;
+
 		}
-		
+
 		cout << "    [";
 		double progress = (double)i1/(double)np_1;
 		int pos = progress*barWidth;
@@ -107,10 +107,10 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 			else cout << " ";
 		}
 		cout << "] " << int(progress * 100.0) << " %\r";
-        cout.flush();
+		cout.flush();
 	}
 	fclose(fp);
-	
+
 	cout << endl;
 }
 
@@ -119,7 +119,7 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 {
 	double LC = 0;     	// longitudinal
 	double TC = 0;     	// transverse
-	
+
 	if(symmetry == "dipole-x")
 	{
 		TC  = x[1];
@@ -135,18 +135,18 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 		TC  = x[0];
 		LC  = x[1];
 	}
-	
+
 	// map indexes, bottom of the cell
 	unsigned int IL = floor( ( LC - startMap[0] ) / cellSize[0] );
 	unsigned int IT = floor( ( TC - startMap[1] ) / cellSize[1] );
-	
+
 	// checking if the point is closer to the top of the cell
 	if( fabs( startMap[0] + IL*cellSize[0] - LC) > fabs( startMap[0] + (IL+1)*cellSize[0] - LC)  ) IL++;
 	if( fabs( startMap[1] + IT*cellSize[1] - TC) > fabs( startMap[1] + (IT+1)*cellSize[1] - TC)  ) IT++;
-	
+
 	// outside map, returning no field
 	if(IL>=np[0] || IT>=np[1]) return;
-	
+
 	// no interpolation
 	if(interpolation == "none")
 	{
@@ -154,22 +154,22 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 		if(symmetry == "dipole-y") Bfield[1] = B1_2D[IL][IT];
 		if(symmetry == "dipole-z") Bfield[2] = B1_2D[IL][IT];
 	}
-	
+
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well
 	if(verbosity>3 && FIRST_ONLY != 99)
 	{
 		cout << "  > Track position in magnetic field: "
-			 << "("  << (x[0] + mapOrigin[0])/cm << ", "
-		             << (x[1] + mapOrigin[1])/cm << ", "
-		             << (x[2] + mapOrigin[2])/cm << ") cm,  " << endl;
+		<< "("  << (x[0] + mapOrigin[0])/cm << ", "
+		<< (x[1] + mapOrigin[1])/cm << ", "
+		<< (x[2] + mapOrigin[2])/cm << ") cm,  " << endl;
 		cout << "    Dipole: ";
 		cout << "loc. pos. = ("    << x[0]/cm << ", " << x[1]/cm << ", " << x[2]/cm << ") cm,  ";
 		cout << "IT="   << IT << "   ";
 		cout << "IL="   << IL << ",  ";
 		cout << "B = ("   << Bfield[0]/gauss << ",  " << Bfield[1]/gauss << ",  " << Bfield[2]/gauss << ") gauss " << endl;
-		
+
 	}
 }
 

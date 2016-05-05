@@ -1,6 +1,19 @@
 Changelog for GEMC
 ==================
 
+5/5/16
+ - fixed phi-segmented condition on map limits
+ - added (tri) linear interpolation for phi-segmented field
+ - fixed verbosity option 99
+
+5/4/16
+ - A. Filippi: The geometry parameters (x,y,z of the center, radiius) are steered by the
+   COSMICAREA card, the height is set to half the radius. The choice of the
+   cylindric geometry is steered from the last field (#5) of the COSMICAREA card:
+
+	* default: " " || "sph" || "sphere" for a sphere
+	* "cyl" for a cylinder
+
 5/2/16
  - added hBrems hadronic Bremsstrahlung to process catalogue
 
@@ -1499,5 +1512,54 @@ Changelog for GEMC
 
 9/10/2010
  - Added DX info in MHit (vector<double> )
+
+
+8/17/2010
+ - Do not check for vismanager, tracks are already kept with /tracking/storeTrajectory 2
+
+
+8/12/2010
+ - Completing the "per each step" Mhit infos.
+
+
+.. Note::
+   8/12/2010 working gemc version 1.4 revision 3553
+
+|
+
+8/11/2010
+ - Increased precisions of angle sliders from 1 degree to 0.05 degrees.
+ - gemc now keeps the following infos for **each step** in MHit (as opposed to the first step only)
+   * pid
+   * mother pid
+   * track id
+   * mother track id
+   * vert
+   * mother vert
+
+   in addition to the other quantities.
+
+ - The function to get the vector<int> trackID has changed name to GetTIds to make it consistent with all the other names
+
+
+8/10/2010
+ - Introducing mirrors to gemc.
+   The mirrors reflect optical photons with the usual fresnel equations.
+
+   To declare a volume "A" as mirror, the identifier must be set to::
+
+    Mirror:  <volume of surface>  <reflectivity index>
+
+   where the <volume of surface> is the name of the volume that borders with volume "A" and the reflectivity is a int number
+   percentage, from 0 to 100, 100 being completely reflective.
+
+   This is tested for the HTCC ellipsoid mirrors.
+
+
+
+
+
+
+
 
 
