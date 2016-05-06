@@ -1,6 +1,35 @@
 Changelog for GEMC
 ==================
 
+5/6/16
+ - Field map properties are now being set in the gcard / command line option::
+
+    > FIELD_PROPERTIES: Mapped field minimum step, integration method, interpolation
+
+    Usage:
+    -FIELD_PROPERTIES="fieldname, minStep, integralAlgorithm, (interpolationMethod)"
+
+    Example: -FIELD_PROPERTIES="srr-solenoid, 1*mm, ClassicalRK4, linear"
+
+    Available Intergration Methods:
+    - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields
+    - G4ClassicalRK4: Fourth Order Range Kutta. Robust for every field.
+    - G4SimpleHeum: Third order stepper.
+    - G4SimpleRunge: Simplified (second order) Range Kutta (faster).
+    - G4ImplicitEuler: Second order stepper, for faster varying fields.
+    - G4ExplicitEuler: First order stepper, for rough fields.
+    - G4HelixImplicitEuler: Second order, specialized for helix-like trakectories.
+    - G4HelixExplicitEuler: First order, specialized for helix-like trakectories.
+    - G4HelixSimpleRunge: Second order Range Kutta, specialized for helix-like trakectories.
+    - G4NystromRK4: provides accuracy near that of G4ClassicalRK4 with a significantly reduced cost in field evaluation.
+
+    Available Interpolation Methods:
+	 - none: closest grid point.
+    - linear: linear interpolation.
+
+    Note: specifying nterpolation method is optional. "linear" is the default.
+
+
 5/5/16
  - fixed phi-segmented condition on map limits
  - added (tri) linear interpolation for phi-segmented field

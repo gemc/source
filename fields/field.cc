@@ -9,8 +9,14 @@
 #include "G4ChordFinder.hh"
 #include "G4ClassicalRK4.hh"
 #include "G4HelixSimpleRunge.hh"
+#include "G4ImplicitEuler.hh"
+#include "G4ExplicitEuler.hh"
 #include "G4HelixImplicitEuler.hh"
 #include "G4HelixExplicitEuler.hh"
+#include "G4CashKarpRKF45.hh"
+#include "G4SimpleHeum.hh"
+#include "G4SimpleRunge.hh"
+#include "G4NystromRK4.hh"
 #include "G4CachedMagneticField.hh"
 
 // this class serves as a dispatcher for the
@@ -22,14 +28,14 @@ void gfield::create_MFM()
 {
 
 	// fields can be uniform, mapped
-	if (format == "simple" && symmetry == "uniform")
+	if(format == "simple" && symmetry == "uniform")
 		create_simple_MFM();
 
 	// fields can be multipole, mapped
-	if (format == "simple" && symmetry == "multipole")
+	if(format == "simple" && symmetry == "multipole")
 		create_simple_multipole_MFM();
 
-	if (format == "map")
+	if(format == "map")
 	{
 		fFactory->loadFieldMap(map, verbosity);
 
@@ -42,8 +48,8 @@ void gfield::create_MFM()
 		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, 1 * m);
 		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
 
-		G4double minEps= 0.1;  //   Minimum & value for smallest steps
-		G4double maxEps= 1.0;  //   Maximum & value for largest steps
+		G4double minEps = 0.1;  //   Minimum & value for smallest steps
+		G4double maxEps = 1.0;  //   Maximum & value for largest steps
 		
 		MFM->SetMinimumEpsilonStep( minEps );
 		MFM->SetMaximumEpsilonStep( maxEps );
@@ -103,10 +109,16 @@ void gfield::create_simple_multipole_MFM()
 
 G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 {
-	if (sname == "ClassicalRK4")	return new G4ClassicalRK4(ie);
-	if (sname == "RungeKutta")		return new G4HelixSimpleRunge(ie);
-	if (sname == "ImplicitEuler")	return new G4HelixImplicitEuler(ie);
-	if (sname == "ExplicitEuler")	return new G4HelixExplicitEuler(ie);
+	if (sname == "G4CashKarpRKF45")	      return new G4CashKarpRKF45(ie);
+	if (sname == "G4ClassicalRK4")	      return new G4ClassicalRK4(ie);
+	if (sname == "G4SimpleHeum")		      return new G4SimpleHeum(ie);
+	if (sname == "G4SimpleRunge")	         return new G4SimpleRunge(ie);
+	if (sname == "G4ImplicitEuler")	      return new G4ImplicitEuler(ie);
+	if (sname == "G4ExplicitEuler")	      return new G4ExplicitEuler(ie);
+	if (sname == "G4HelixImplicitEuler")	return new G4HelixImplicitEuler(ie);
+	if (sname == "G4HelixExplicitEuler")	return new G4HelixExplicitEuler(ie);
+	if (sname == "G4HelixSimpleRunge")	   return new G4HelixSimpleRunge(ie);
+	if (sname == "G4NystromRK4")	         return new G4NystromRK4(ie);
 
 	// if requested is not found return NULL
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;
@@ -116,18 +128,38 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 void gfield::initialize(goptions Opt)
 {
 	string hd_msg = "  >> fields Init: ";
-	vector<aopt> FIELD_SCALES_OPTION = Opt.getArgs("SCALE_FIELD");
 
+	vector<aopt> FIELD_SCALES_OPTION = Opt.getArgs("SCALE_FIELD");
 	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++)
 	{
 		vector < string > scales = get_strings(FIELD_SCALES_OPTION[f].args, ",");
-		if (scales.size() == 2)
+		if(scales.size() == 2)
 		{
 			if (scales[0].find(name) != string::npos)
 				scaleFactor = get_number(scales[1]);
 		}
 	}
-	if (map)
+
+	vector<aopt> FIELD_PROPERTIES = Opt.getArgs("FIELD_PROPERTIES");
+	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++)
+	{
+		vector < string > attributes = get_strings(FIELD_PROPERTIES[f].args, ",");
+		if(attributes.size() > 2)
+		{
+			if(attributes[0].find(name) != string::npos)
+			{
+				minStep = get_number(attributes[1]);
+				integration = TrimSpaces(attributes[2]);
+
+				if(map)
+					if(attributes.size() == 4)
+						map->interpolation = TrimSpaces(attributes[3]);
+			}
+		}
+	}
+
+
+	if(map)
 	{
 		map->scaleFactor = scaleFactor;
 		map->initializeMap();
@@ -138,14 +170,14 @@ void gfield::initialize(goptions Opt)
 ///< Overloaded "<<" for gfield class. Dumps infos on screen.
 ostream &operator<<(ostream &stream, gfield gf)
 {
-	cout << "  > Field name:           " << gf.name << endl;
-	cout << "    - factory:            " << gf.factory << endl;
-	cout << "    - comment:            " << gf.description << endl;
-	cout << "    - format:             " << gf.format << endl;
-	cout << "    - symmetry:           " << gf.symmetry << endl;
-	cout << "    - scale factor:       " << gf.scaleFactor << endl;
-	cout << "    - integration method: " << gf.integration << endl;
-	cout << "    - minimum Step:       " << gf.minStep << endl;
+	cout << "  > Field name:           "   << gf.name << endl;
+	cout << "    - factory:            "   << gf.factory << endl;
+	cout << "    - comment:            "   << gf.description << endl;
+	cout << "    - format:             "   << gf.format << endl;
+	cout << "    - symmetry:           "   << gf.symmetry << endl;
+	cout << "    - scale factor:       "   << gf.scaleFactor << endl;
+	cout << "    - integration method: "   << gf.integration << endl;
+	cout << "    - minimum Step:       "   << gf.minStep << " mm" << endl;
 	if (gf.dimensions != "na" && gf.format == "simple")
 		cout << "    - dimensions:         " << gf.dimensions << endl;
 

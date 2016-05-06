@@ -639,6 +639,30 @@ void goptions::setGoptions()
 	optMap["PRODUCTIONCUT"].type  = 0;
 	optMap["PRODUCTIONCUT"].ctgr  = "physics";
 	
+	optMap["FIELD_PROPERTIES"].args  = "no";
+	optMap["FIELD_PROPERTIES"].help  = "Mapped field minimum step, integration method, interpolation\n\n";
+	optMap["FIELD_PROPERTIES"].help += "      Usage:\n";
+	optMap["FIELD_PROPERTIES"].help += "      -FIELD_PROPERTIES=\"fieldname, minStep, integralAlgorithm, (interpolationMethod)\"\n\n";
+	optMap["FIELD_PROPERTIES"].help += "      Example: -FIELD_PROPERTIES=\"srr-solenoid, 1*mm, ClassicalRK4, linear\"\n\n";
+	optMap["FIELD_PROPERTIES"].help += "      Available Intergration Methods:\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4ClassicalRK4: Fourth Order Range Kutta. Robust for every field.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4SimpleHeum: Third order stepper.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4SimpleRunge: Simplified (second order) Range Kutta (faster).\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4ImplicitEuler: Second order stepper, for faster varying fields.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4ExplicitEuler: First order stepper, for rough fields.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4HelixImplicitEuler: Second order, specialized for helix-like trakectories.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4HelixExplicitEuler: First order, specialized for helix-like trakectories.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4HelixSimpleRunge: Second order Range Kutta, specialized for helix-like trakectories.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - G4NystromRK4: provides accuracy near that of G4ClassicalRK4 with a significantly reduced cost in field evaluation.\n\n";
+	optMap["FIELD_PROPERTIES"].help += "       Available Interpolation Methods:\n";
+	optMap["FIELD_PROPERTIES"].help += "       - none: closest grid point.\n";
+	optMap["FIELD_PROPERTIES"].help += "       - linear: linear interpolation.\n\n";
+	optMap["FIELD_PROPERTIES"].help += "       Note: specifying nterpolation method is optional. \"linear\" is the default.\n";
+	optMap["FIELD_PROPERTIES"].name  = "Mapped field minimum step, integration method, interpolation";
+	optMap["FIELD_PROPERTIES"].type  = 1;
+	optMap["FIELD_PROPERTIES"].ctgr  = "physics";
+	optMap["FIELD_PROPERTIES"].repe  = 1;
 
 	
 	// General

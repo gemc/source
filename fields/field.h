@@ -56,15 +56,15 @@ class gfield
 		gfield(goptions opts)
 		{
 			// initialize Magnetic Field Manager and Mapped field to NULL
-			MFM         = NULL;
-			map         = NULL;
-			symmetry    = "na";
-			format      = "na";
-			dimensions  = "na";
-			scaleFactor	= 1;
-			minStep     = 0.1*mm;
-			integration = "ClassicalRK4";
-			verbosity   = opts.optMap["FIELD_VERBOSITY"].arg;
+			MFM           = NULL;
+			map           = NULL;
+			symmetry      = "na";
+			format        = "na";
+			dimensions    = "na";
+			scaleFactor	  = 1;
+			minStep       = 1*mm;
+			integration   = "ClassicalRK4";
+			verbosity     = opts.optMap["FIELD_VERBOSITY"].arg;
 		}
 	 ~gfield(){}
 	
@@ -80,7 +80,7 @@ class gfield
 		double minStep;         ///< Minimum Step for the G4ChordFinder
 		string unit;            ///< Field Unit
 	
-		// Scale factor is set from options
+		// Scale factor, integration methods and map interpolations are set from options
 		double scaleFactor;     
 		void initialize(goptions);
 	

@@ -83,7 +83,7 @@ class gMappedField : public G4MagneticField
 			mapOrigin[2]  = 0;
 			scaleFactor   = 1;
 			unit          = "gauss";
-			interpolation = "none";
+			interpolation = "linear";
 			verbosity     = 0;
 		}
 	 ~gMappedField(){;}

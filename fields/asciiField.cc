@@ -64,9 +64,7 @@ gfield asciiField::loadField(string file, goptions opts)
 			{
 				gf.symmetry    = assignAttribute(e, "type",   "na");
 				gf.format      = assignAttribute(e, "format", "na");
-				gf.integration = assignAttribute(e, "integration", "na");
-				gf.minStep     = assignAttribute(e, "minStep", 0.01);
-			}	
+			}
 			
 			// simple symmetry, looking for uniform field definition
 			if(gf.format == "simple" && gf.symmetry == "uniform")
@@ -118,7 +116,6 @@ gfield asciiField::loadField(string file, goptions opts)
 												
 								if(eee.tagName().toStdString() == "first" || eee.tagName().toStdString() == "second" || eee.tagName().toStdString() == "third")
 								{
-									
 									string name = assignAttribute(eee, "name", "na");
 									int np      = (int) assignAttribute(eee, "npoints", 0);										
 									string unit = assignAttribute(eee, "units", "mm");	
@@ -145,11 +142,6 @@ gfield asciiField::loadField(string file, goptions opts)
 						if(ee.tagName().toStdString() == "field")   
 						{
 							gf.map->unit = assignAttribute(ee, "unit", "gauss");
-						}
-						/// selecting "interpolation" nodes. 
-						if(ee.tagName().toStdString() == "interpolation")   
-						{
-							gf.map->interpolation = assignAttribute(ee, "type", "none");
 						}
 						nn = nn.nextSibling();
 					}
@@ -217,55 +209,52 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 
 
 
+// Examples
 
-//
-//for clas12 solenoid:
-//
-//<mfield>
-//<description name="clas12-solenoid" factory="ASCII" comment="clas12 superconducting solenoid"/>
-//<symmetry type="cylindrical-z" format="map" integration="RungeKutta" minStep="0.01*mm"/>
-//<map>
-//<coordinate>
-//<first  name="transverse"    npoints="601"   min="0"  max="3" units="m"/>
-//<second name="longitudinal"  npoints="1201"  min="-3" max="3" units="m"/>
-//</coordinate>
-//<field unit="T"/>
-//<interpolation type="none"/>
-//</map>
-//</mfield>
-//
+/*
+ 
+clas12 solenoid:
 
-
-
-
-// for clas12 torus:
-//
-//<mfield>
-//<description name="clas12-torus" factory="ASCII" comment="clas12 superconducting torus"/>
-//<symmetry type="phi-segmented" format="map" integration="RungeKutta" minStep="1*mm"/>
-//<map>
-//<coordinate>
-//<first  name="azimuthal"     npoints="61"   min="0"   max="30"  units="deg"/>
-//<second name="transverse"    npoints="126"  min="0"   max="500" units="cm"/>
-//<third  name="longitudinal"  npoints="126"  min="100" max="600" units="cm"/>
-//</coordinate>
-//<field unit="kilogauss"/>
-//<interpolation type="none"/>
-//</map>
-//</mfield>
+<mfield>
+	<description name="clas12-solenoid" factory="ASCII" comment="clas12 superconducting solenoid"/>
+	<symmetry type="cylindrical-z" format="map"/>
+	<map>
+		<coordinate>
+			<first  name="transverse"    npoints="601"   min="0"  max="3" units="m"/>
+			<second name="longitudinal"  npoints="1201"  min="-3" max="3" units="m"/>
+		</coordinate>
+		<field unit="T"/>
+	</map>
+</mfield>
 
 
 
 
+clas12 torus:
 
-// Example of uniform field:
-// <mfield>
-// <description name="uniform" factory="ASCII" comment="Uniform 10 T Magnetic Field along x-axis"/>
-// <symmetry type="uniform" format="simple"/>
-// <dimension bx="10" by="0" bz="0" units="T"/>
-// </mfield>
-//
+<mfield>
+	<description name="clas12-torus" factory="ASCII" comment="clas12 superconducting torus"/>
+	<symmetry type="phi-segmented" format="map""/>
+	<map>
+		<coordinate>
+			<first  name="azimuthal"     npoints="61"   min="0"   max="30"  units="deg"/>
+			<second name="transverse"    npoints="126"  min="0"   max="500" units="cm"/>
+			<third  name="longitudinal"  npoints="126"  min="100" max="600" units="cm"/>
+		</coordinate>
+		<field unit="kilogauss"/>
+	</map>
+</mfield>
 
+
+Example of uniform field:
+
+ <mfield>
+	<description name="uniform" factory="ASCII" comment="Uniform 10 T Magnetic Field along x-axis"/>
+	<symmetry type="uniform" format="simple"/>
+	<dimension bx="10" by="0" bz="0" units="T"/>
+</mfield>
+
+ */
 
 
 
