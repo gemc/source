@@ -643,7 +643,7 @@ void goptions::setGoptions()
 	optMap["FIELD_PROPERTIES"].help  = "Mapped field minimum step, integration method, interpolation\n\n";
 	optMap["FIELD_PROPERTIES"].help += "      Usage:\n";
 	optMap["FIELD_PROPERTIES"].help += "      -FIELD_PROPERTIES=\"fieldname, minStep, integralAlgorithm, (interpolationMethod)\"\n\n";
-	optMap["FIELD_PROPERTIES"].help += "      Example: -FIELD_PROPERTIES=\"srr-solenoid, 1*mm, ClassicalRK4, linear\"\n\n";
+	optMap["FIELD_PROPERTIES"].help += "      Example: -FIELD_PROPERTIES=\"srr-solenoid, 1*mm, G4ClassicalRK4, linear\"\n\n";
 	optMap["FIELD_PROPERTIES"].help += "      Available Intergration Methods:\n";
 	optMap["FIELD_PROPERTIES"].help += "       - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields\n";
 	optMap["FIELD_PROPERTIES"].help += "       - G4ClassicalRK4: Fourth Order Range Kutta. Robust for every field.\n";
