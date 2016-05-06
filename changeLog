@@ -29,6 +29,7 @@ Changelog for GEMC
 
     Note: specifying nterpolation method is optional. "linear" is the default.
 
+ - A. Filippi: added neutrons model for cosmic rays
 
 5/5/16
  - fixed phi-segmented condition on map limits
