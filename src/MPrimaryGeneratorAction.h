@@ -61,7 +61,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double cminp, cmaxp, cMom;        ///< minimum and maximum cosmic ray momentum
 		G4ThreeVector cosmicTarget;       ///< Location of area of interest for cosmic rays
 		double cosmicRadius;              ///< radius of area of interest for cosmic rays
-		string cosmicGeo;                 ///< type of surface for cosmic ray generation (sphere || cylinder) 
+		string cosmicGeo;                 ///< type of surface for cosmic ray generation (sphere || cylinder)
+		string cosmicParticle;            ///< type of cosmic ray particle (muon || neutron)
 	
 		// Generators Input Files
 		ifstream  gif;                    ///< Generator Input File
@@ -98,7 +99,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		G4ParticleGun* particleGun;
 		void setBeam();
 	
-		double cosmicBeam(double, double);
+		double cosmicMuBeam(double, double);
+		double cosmicNeutBeam(double, double);
 	
 };
 

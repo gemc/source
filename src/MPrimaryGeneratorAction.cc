@@ -78,6 +78,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " Cosmic Area :" << cosmicTarget << endl;
 			cout << hd_msg << " Cosmic Radius :" << cosmicRadius/cm << " cm " << endl;
 			cout << hd_msg << " Cosmic Surface Type: " << cosmicGeo << endl;
+			cout << hd_msg << " Cosmic Particle Type: " << cosmicParticle << endl;
 		}
 	}
 	
@@ -202,6 +203,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		// paper: A. Dar, Phys.Rev.Lett, 51,3,p.227 (1983)
 		else
 		{
+		        bool cosmicNeutrons=false;
+			if(cosmicParticle != "muon") cosmicNeutrons=true;
+			double thisMom;
+			double thisthe;
+			double thisPhi;
+			double akine;
+
 			// first randomly pick a number inside the sphere
 			double cosmicVX = 100000;
 			double cosmicVY = 100000;
@@ -229,19 +237,36 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			}
 		      }
 
-			// now generating random momentum, cos(theta)
-			// the maximum of the distribution is the lowest momentum and 0 theta
-			// normalizing by that number
-			double cosmicProb = G4UniformRand()*cosmicBeam(0, cminp/GeV);		  
-			double thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
-			double thisthe = pi*G4UniformRand()/2.0;
-			while (cosmicBeam(thisthe, thisMom/GeV) < cosmicProb)
+	            if(cosmicNeutrons) {
+		      if (cminp<0.1 || cmaxp>10000) cout <<"WARNING !!!! COSMIC NEUTRONS E (MeV) is OUT OF THE VALID RANGE !!!"<<endl;
+		      // Model by Ashton (1973)
+		      // now generating random momentum, cos(theta)
+		      // the maximum of the distribution is the lowest momentum and 0 theta
+		      // normalizing by that number
+		      double cosmicProb = G4UniformRand()*cosmicNeutBeam(0., cminp/GeV);
+		      thisMom = cminp + (cmaxp-cminp)*G4UniformRand(); // momentum in MeV/c
+		      thisthe = pi*G4UniformRand()/2.0; // [0,pi/2] zenith angle
+		      while(cosmicNeutBeam(thisthe, thisMom/GeV) < cosmicProb){
+			thisMom = cminp + (cmaxp-cminp)*G4UniformRand();
+			thisthe = pi*G4UniformRand()/2.0;
+		      }
+		    }else{
+		      // muons
+		      // now generating random momentum, cos(theta)
+		      // the maximum of the distribution is the lowest momentum and 0 theta
+		      // normalizing by that number
+		      double cosmicProb = G4UniformRand()*cosmicMuBeam(0, cminp/GeV);		  
+		      thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+		      thisthe = pi*G4UniformRand()/2.0;
+		      while(cosmicMuBeam(thisthe, thisMom/GeV) < cosmicProb)
 			{
-				thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
-				thisthe = pi*G4UniformRand()/2.0;
+			  thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+			  thisthe = pi*G4UniformRand()/2.0;
 			}
-			// isotropic in phi
-			double thisPhi = -pi + 2*pi*G4UniformRand();
+		    }
+
+		       // isotropic in phi
+			thisPhi = -pi + 2*pi*G4UniformRand();
 			
 			// now finding the vertex. Assuming twice the radius as starting point
 			// attention:
@@ -252,15 +277,17 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			double pvz = cosmicVZ + 2*cosmicRadius*sin(thisthe)*sin(thisPhi);
 			particleGun->SetParticlePosition(G4ThreeVector(pvx, pvy, pvz));
 
-			
-			// choosing charge of the muons
-			string muonType = "mu+";
-			if(G4UniformRand() <= 0.5)
-				muonType = "mu-";
-				
-			Particle = particleTable->FindParticle(muonType);
+			if(cosmicNeutrons) {
+			  Particle= particleTable->FindParticle("neutron");
+			}else{
+			  // choosing charge of the muons
+			  string muonType = "mu+";
+			  if(G4UniformRand() <= 0.5)
+			    muonType = "mu-";
+			  Particle = particleTable->FindParticle(muonType);
+			}
 			double mass = Particle->GetPDGMass();
-			double akine = sqrt(thisMom*thisMom + mass*mass) - mass ;
+		        akine = sqrt(thisMom*thisMom + mass*mass) - mass ;
 
 			particleGun->SetParticleDefinition(Particle);
 
@@ -726,7 +753,7 @@ void MPrimaryGeneratorAction::setBeam()
 		else
 		{
 			vector<string> csettings = get_info(cosmics, string(",\""));
-			
+			int len = csettings.size();
 			// parsing information for COSMIC RAYS option
 			if(csettings[0] == "default")
 			{
@@ -739,6 +766,11 @@ void MPrimaryGeneratorAction::setBeam()
 				
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
+				if(len>3){
+				  cosmicParticle = csettings[3];
+				}else{
+				  cosmicParticle = "muon";
+				}
 			}
 			else
 			{
@@ -752,6 +784,12 @@ void MPrimaryGeneratorAction::setBeam()
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
 				
+				if(len>5){
+				  cosmicParticle = csettings[5];
+				}else{
+				  cosmicParticle = "muon";
+				}
+
 			}
 		}
 	}
@@ -954,11 +992,20 @@ MPrimaryGeneratorAction::~MPrimaryGeneratorAction()
 }
 
 
-double MPrimaryGeneratorAction::cosmicBeam(double t, double p)
+double MPrimaryGeneratorAction::cosmicMuBeam(double t, double p)
 {
 	return pow(cosmicA, cosmicB*cos(t))/(cosmicC*p*p);
 }
 
+double MPrimaryGeneratorAction::cosmicNeutBeam(double t, double p)
+{
+    // cosmic neutrons spectrum as a function of kinetic energy (GeV) and
+    // zenith angle
+    double massNeut = particleTable->FindParticle("neutron")->GetPDGMass()/GeV;
+    double En = sqrt(p*p+massNeut*massNeut)-massNeut;
+    double I0 = pow(En, -2.95);
+    return I0*pow(cos(t), 3.5);
+}
 
 
 
