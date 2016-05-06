@@ -658,7 +658,7 @@ void goptions::setGoptions()
 	optMap["FIELD_PROPERTIES"].help += "       Available Interpolation Methods:\n";
 	optMap["FIELD_PROPERTIES"].help += "       - none: closest grid point.\n";
 	optMap["FIELD_PROPERTIES"].help += "       - linear: linear interpolation.\n\n";
-	optMap["FIELD_PROPERTIES"].help += "       Note: specifying nterpolation method is optional. \"linear\" is the default.\n";
+	optMap["FIELD_PROPERTIES"].help += "       Note: specifying interpolation method is optional. \"linear\" is the default.\n";
 	optMap["FIELD_PROPERTIES"].name  = "Mapped field minimum step, integration method, interpolation";
 	optMap["FIELD_PROPERTIES"].type  = 1;
 	optMap["FIELD_PROPERTIES"].ctgr  = "physics";
