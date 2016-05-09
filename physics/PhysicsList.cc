@@ -22,6 +22,11 @@ using namespace std;
 #include "G4Electron.hh"
 #include "G4Positron.hh"
 #include "G4Proton.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4ParticleTypes.hh"
+#include "G4ParticleTable.hh"
+#include "G4DecayTable.hh"                                                     
+#include "G4ProcessTable.hh"
 
 // geant4 physics headers
 #include "G4DecayPhysics.hh"
@@ -38,6 +43,9 @@ using namespace std;
 #include "G4IonBinaryCascadePhysics.hh"
 #include "G4IonPhysics.hh"
 #include "G4NeutronTrackingCut.hh"
+#include "G4MuonRadiativeDecayChannelWithSpin.hh"
+#include "G4MuonDecayChannelWithSpin.hh"
+#include "G4DecayWithSpin.hh"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -329,13 +337,61 @@ void PhysicsList::cookPhysics()
 
 void PhysicsList::ConstructParticle()
 {
+	string cosmics =  gemcOpt.optMap["COSMICRAYS"].args;
+	vector<string> csettings = get_info(cosmics, string(",\""));
+	string decayType = "default";
+	string particleType;
+	int len = csettings.size();
+	if(csettings[0] == "default"){
+	  if(len>4){
+	    particleType = csettings[3];
+	    decayType = csettings[4];
+	  }
+	}else{
+	  if(len>6){
+	    particleType = csettings[5];
+	    decayType = csettings[6];
+	  }
+	}
+	// warn if muon radiative decay is selected but the simulated
+        // cosmic rays is not a muon
+	if(decayType=="radiative" && particleType!="muon") 
+	  cout << "!!! Check COSMICRAYS data card, muon radiative decay required but no muon being simulated " << endl;
+	
 	g4ParticleList->ConstructParticle();
+	G4Electron::ElectronDefinition();
+	G4Positron::PositronDefinition();
+	G4NeutrinoE::NeutrinoEDefinition();
+	G4AntiNeutrinoE::AntiNeutrinoEDefinition();
+	G4MuonPlus::MuonPlusDefinition();
+	G4MuonMinus::MuonMinusDefinition();
+	G4NeutrinoMu::NeutrinoMuDefinition();
+	G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();
+	
+	G4DecayTable* MuonPlusDecayTable = new G4DecayTable();
+	G4DecayTable* MuonMinusDecayTable = new G4DecayTable();
+	
+	if(decayType == "radiative"){
+	  MuonPlusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu+",1.00));
+	  MuonMinusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu-",1.00));
+	}else{ // default
+	  MuonPlusDecayTable -> Insert(new G4MuonDecayChannelWithSpin("mu+",0.986));
+	  MuonPlusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu+",0.014));
+	  MuonMinusDecayTable -> Insert(new G4MuonDecayChannelWithSpin("mu-",0.986));
+	  MuonMinusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu-",1.00));
+  }
+	G4MuonPlus::MuonPlusDefinition() -> SetDecayTable(MuonPlusDecayTable);
+	G4MuonMinus::MuonMinusDefinition() -> SetDecayTable(MuonMinusDecayTable);
 }
 
 
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
+	theDecayProcess = new G4DecayWithSpin();
+	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
+	G4VProcess* decay;
+
 	if(g4EMPhysics)
 		g4EMPhysics->ConstructProcess();
 	
@@ -351,9 +407,11 @@ void PhysicsList::ConstructProcess()
 
 	while( (*theParticleIterator)() )
 	{
+
 		G4ParticleDefinition* particle = theParticleIterator->value();
 		G4ProcessManager*     pmanager = particle->GetProcessManager();
-	    string                pname    = particle->GetParticleName();
+		string                pname    = particle->GetParticleName();
+		decay = processTable->FindProcess("Decay",particle);      
 	
 		// Adding Step Limiter
 		if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
@@ -364,10 +422,14 @@ void PhysicsList::ConstructProcess()
 			pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
 		}
 
+		if (theDecayProcess->IsApplicable(*particle)) {
+		  if(decay) pmanager->RemoveProcess(decay);
+		  pmanager->AddProcess(theDecayProcess);
+		  pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
+		  pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+		}
 	}
-
 }
-
 
 
 

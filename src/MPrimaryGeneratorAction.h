@@ -63,6 +63,7 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double cosmicRadius;              ///< radius of area of interest for cosmic rays
 		string cosmicGeo;                 ///< type of surface for cosmic ray generation (sphere || cylinder)
 		string cosmicParticle;            ///< type of cosmic ray particle (muon || neutron)
+		string muonDecay;                 ///< type of muon decay
 	
 		// Generators Input Files
 		ifstream  gif;                    ///< Generator Input File
