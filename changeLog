@@ -9,7 +9,7 @@ Changelog for GEMC
     Usage:
     -FIELD_PROPERTIES="fieldname, minStep, integralAlgorithm, (interpolationMethod)"
 
-    Example: -FIELD_PROPERTIES="srr-solenoid, 1*mm, ClassicalRK4, linear"
+    Example: -FIELD_PROPERTIES="srr-solenoid, 1*mm, G4ClassicalRK4, linear"
 
     Available Intergration Methods:
     - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields
@@ -29,7 +29,7 @@ Changelog for GEMC
 
     Note: specifying nterpolation method is optional. "linear" is the default.
 
- - A. Filippi: added neutrons model for cosmic rays
+ - A. Filippi: added neutrons model for cosmic rays.
 
 5/5/16
  - fixed phi-segmented condition on map limits
@@ -86,6 +86,7 @@ Changelog for GEMC
 4/6/16
  - fixed bdx hit process warnings
  - dc smearing / inefficiency:
+
    * smearing parameters, including scale, in database
    * inefficiency function, including scale, in database
    * if a wire is inefficient, its index is negative
@@ -1560,6 +1561,7 @@ Changelog for GEMC
 8/11/2010
  - Increased precisions of angle sliders from 1 degree to 0.05 degrees.
  - gemc now keeps the following infos for **each step** in MHit (as opposed to the first step only)
+
    * pid
    * mother pid
    * track id
@@ -1586,9 +1588,44 @@ Changelog for GEMC
    This is tested for the HTCC ellipsoid mirrors.
 
 
+7/30/2010
+ - Keep trajectory container to be accessible by G4Event
+ - Cosmetic changes while debugging some routines
+
+7/23/2010
+ - modified CN_hitprocess routine to include digitazione and evaluate ADc and TDC for left and right readout sensors.
+ - added ADCl,R and TDCL,R to CND bank
+ - modified cnd_build script and correspodning go_table to use ScintillatorB
+   (for future implemenation of birks effect) and have the possibiility of changing the shield material from the command line
+
+7/20/2010
+ - infos refinement
+
+7/16/2010
+ - Added images for new icons.
+
+7/13/2010
+ - Adding in-program gemc infos:
+
+   * About
+   * Particle color codes
+   * LUND format (started)
 
 
+7/12/2010
+ - Removing some unused variables warnings
+ - Removing Random Engine status visualization after each event (we don't really need that)
 
+
+7/9/2010
+ - Added OpenGL QT Stored mode.
+   Graphic options USE_QT are now:
+
+   * 0:  Don't use the graphical interface
+   * 1:  QT OpenGL Immediate mode (can interact with picture; sliders works well; slower than Stored mode)
+   * 2:  OpenGL Stored mode (can't interact with picture; sliders works well)
+   * 3:  OpenGL Immediate mode (can't interact with picture; sliders works well; slower than Stored mode)
+   * 4:  QT OpenGL Stored mode (can interact with picture; sliders works but picture needs to be updated by clicking on it)
 
 
 

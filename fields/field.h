@@ -63,7 +63,7 @@ class gfield
 			dimensions    = "na";
 			scaleFactor	  = 1;
 			minStep       = 1*mm;
-			integration   = "ClassicalRK4";
+			integration   = "G4ClassicalRK4";
 			verbosity     = opts.optMap["FIELD_VERBOSITY"].arg;
 		}
 	 ~gfield(){}
