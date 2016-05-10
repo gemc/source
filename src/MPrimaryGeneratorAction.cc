@@ -79,6 +79,8 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " Cosmic Radius :" << cosmicRadius/cm << " cm " << endl;
 			cout << hd_msg << " Cosmic Surface Type: " << cosmicGeo << endl;
 			cout << hd_msg << " Cosmic Particle Type: " << cosmicParticle << endl;
+			if(cosmicParticle == "muon")
+			  cout << hd_msg << " Muon decay Type: " << muonDecay << endl;
 		}
 	}
 	
@@ -766,8 +768,12 @@ void MPrimaryGeneratorAction::setBeam()
 				
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
+				
+				// select cosmic ray particle from data card
+				muonDecay = "default with spin";
 				if(len>3){
 				  cosmicParticle = csettings[3];
+				  if(len>4 && csettings[4]=="radiative") muonDecay = "radiative only with spin";
 				}else{
 				  cosmicParticle = "muon";
 				}
@@ -784,12 +790,14 @@ void MPrimaryGeneratorAction::setBeam()
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
 				
+				// select cosmic ray particle from data card
+				muonDecay = "default with spin";
 				if(len>5){
 				  cosmicParticle = csettings[5];
+				  if(len>6 && csettings[6] =="radiative") muonDecay = "radiative only with spin";
 				}else{
 				  cosmicParticle = "muon";
 				}
-
 			}
 		}
 	}
