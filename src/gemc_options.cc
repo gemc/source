@@ -120,7 +120,11 @@ void goptions::setGoptions()
 	optMap["COSMICAREA"].type = 1;
 	optMap["COSMICAREA"].ctgr = "generator";
 	
-
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].arg = 0;
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].help = "Force muon radiative decay";
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].name = "Muon rad decay BR 100%";
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].type = 0;
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].ctgr = "generator";
 	
 	// Luminosity Beam
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
@@ -607,7 +611,6 @@ void goptions::setGoptions()
 	optMap["PHYS_VERBOSITY"].name = "Physics List Verbosity";
 	optMap["PHYS_VERBOSITY"].type = 0;
 	optMap["PHYS_VERBOSITY"].ctgr = "physics";
-	
 	
 	// by default set max field step to 1 cm. Notice: it has to be greater than the min!
 	optMap["MAX_FIELD_STEP"].arg =  0;
