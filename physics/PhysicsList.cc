@@ -22,6 +22,8 @@ using namespace std;
 #include "G4Electron.hh"
 #include "G4Positron.hh"
 #include "G4Proton.hh"
+#include "G4DecayTable.hh"                                                     
+#include "G4ProcessTable.hh"
 
 // geant4 physics headers
 #include "G4DecayPhysics.hh"
@@ -38,6 +40,8 @@ using namespace std;
 #include "G4IonBinaryCascadePhysics.hh"
 #include "G4IonPhysics.hh"
 #include "G4NeutronTrackingCut.hh"
+#include "G4MuonRadiativeDecayChannelWithSpin.hh"
+#include "G4MuonDecayChannelWithSpin.hh"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -329,13 +333,28 @@ void PhysicsList::cookPhysics()
 
 void PhysicsList::ConstructParticle()
 {
+        muonRadDecay = 0;
+        muonRadDecay = gemcOpt.optMap["FORCE_MUON_RADIATIVE_DECAY"].arg;
+
 	g4ParticleList->ConstructParticle();
+	
+	if(muonRadDecay){
+	  G4DecayTable* MuonPlusDecayTable = new G4DecayTable();
+	  G4DecayTable* MuonMinusDecayTable = new G4DecayTable();
+	  MuonPlusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu+",1.00));
+	  MuonMinusDecayTable -> Insert(new G4MuonRadiativeDecayChannelWithSpin("mu-",1.00));
+	  G4MuonPlus::MuonPlusDefinition()->SetDecayTable(MuonPlusDecayTable);
+	  G4MuonMinus::MuonMinusDefinition()->SetDecayTable(MuonMinusDecayTable);
+	}
 }
 
 
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
+	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
+	G4VProcess* decay;
+
 	if(g4EMPhysics)
 		g4EMPhysics->ConstructProcess();
 	
@@ -344,16 +363,15 @@ void PhysicsList::ConstructProcess()
 	for(size_t i=0; i<g4HadronicPhysics.size(); i++)
 		g4HadronicPhysics[i]->ConstructProcess();
 
-
-
 	// PhysicsList contains theParticleIterator
 	theParticleIterator->reset();
 
 	while( (*theParticleIterator)() )
 	{
+
 		G4ParticleDefinition* particle = theParticleIterator->value();
 		G4ProcessManager*     pmanager = particle->GetProcessManager();
-	    string                pname    = particle->GetParticleName();
+		string                pname    = particle->GetParticleName();
 	
 		// Adding Step Limiter
 		if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
@@ -364,10 +382,19 @@ void PhysicsList::ConstructProcess()
 			pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
 		}
 
+		if(muonRadDecay){
+		  theDecayProcess = new G4DecayWithSpin();
+		  decay = processTable->FindProcess("Decay",particle);      
+		  if (theDecayProcess->IsApplicable(*particle)) {
+		    if(decay) pmanager->RemoveProcess(decay);
+		    pmanager->AddProcess(theDecayProcess);
+		    pmanager->SetProcessOrdering(theDecayProcess, idxPostStep);
+		    pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+		  }
+		}
+		  
 	}
-
 }
-
 
 
 

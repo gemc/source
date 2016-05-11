@@ -6,6 +6,7 @@
 
 // geant4 headers
 #include "G4VModularPhysicsList.hh"
+#include "G4DecayWithSpin.hh"
 
 // c++ headers
 #include <string>
@@ -55,14 +56,15 @@ private:
 	string EMPhys;
 	string opticalPhys;
 	string HPPhys;
+	int    muonRadDecay;
 	
 	vector<G4String> g4HadronicList;
 	vector<G4String> g4EMList;
-	
-	
+		
 	G4VPhysicsConstructor*  g4EMPhysics;
 	G4VPhysicsConstructor*  g4ParticleList;
 	vector<G4VPhysicsConstructor*>  g4HadronicPhysics;
+	G4DecayWithSpin*        theDecayProcess;
 
 	// build the geant4 physics
 	void cookPhysics();

@@ -28,7 +28,6 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	string cArea   = gemcOpt->optMap["COSMICAREA"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
 	
-	
 	particleTable = G4ParticleTable::GetParticleTable();
 	
 	beamPol  = 0;
@@ -766,6 +765,8 @@ void MPrimaryGeneratorAction::setBeam()
 				
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
+				
+				// select cosmic ray particle from data card
 				if(len>3){
 				  cosmicParticle = csettings[3];
 				}else{
@@ -784,12 +785,12 @@ void MPrimaryGeneratorAction::setBeam()
 				// model is valid only starting at 1 GeV for now
 				if(cminp < 1) cminp = 1;
 				
+				// select cosmic ray particle from data card
 				if(len>5){
 				  cosmicParticle = csettings[5];
 				}else{
 				  cosmicParticle = "muon";
 				}
-
 			}
 		}
 	}
