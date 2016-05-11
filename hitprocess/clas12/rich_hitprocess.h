@@ -1,6 +1,12 @@
 #ifndef RICH_HITPROCESS_H
 #define RICH_HITPROCESS_H 1
 
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <string>
+#include <functional>
+ 
 // gemc headers
 #include "HitProcess.h"
 
