@@ -312,36 +312,36 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
       }
     }
   
-    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
-    if(pVVisManager)
-      {
+    // G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
+    // if(pVVisManager)
+    //   {
 
-	G4Circle circle(xyz);
-	circle.SetFillStyle(G4Circle::filled);
-	circle.SetScreenSize(7);
+    // 	G4Circle circle(xyz);
+    // 	circle.SetFillStyle(G4Circle::filled);
+    // 	circle.SetScreenSize(7);
 
-	/* red hits are the good ones */
-	if (ijPMT > 0 && ijPMT < 65 ){
-	  G4Colour colour_touch (1.0, 0.0, 0.0);
-	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
-	} else if ( ijPMT > 100 && ijPMT < 200 ){
-	  /* draw in green pixels corresponding to photons that didn't pass the quantum efficiency*/
-	  G4Colour colour_touch (0.0, 1.0, 0.0);
-	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
-	  /* draw in gray pixels corresponding to photons hitting dead spaces */
-	} else if( ijPMT < 0 ){
-	  G4Colour colour_touch ( 0.5, 0.5, 0.5 );
-	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
-	} else {
+    // 	/* red hits are the good ones */
+    // 	if (ijPMT > 0 && ijPMT < 65 ){
+    // 	  G4Colour colour_touch (1.0, 0.0, 0.0);
+    // 	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
+    // 	} else if ( ijPMT > 100 && ijPMT < 200 ){
+    // 	  /* draw in green pixels corresponding to photons that didn't pass the quantum efficiency*/
+    // 	  G4Colour colour_touch (0.0, 1.0, 0.0);
+    // 	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
+    // 	  /* draw in gray pixels corresponding to photons hitting dead spaces */
+    // 	} else if( ijPMT < 0 ){
+    // 	  G4Colour colour_touch ( 0.5, 0.5, 0.5 );
+    // 	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
+    // 	} else {
 
-	  G4Colour colour_touch ( 0.0, 0.0, 1.0 );
-	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
+    // 	  G4Colour colour_touch ( 0.0, 0.0, 1.0 );
+    // 	  circle.SetVisAttributes(G4VisAttributes(colour_touch));
 
-	}
+    // 	}
 
-	pVVisManager->Draw(circle);
+    // 	pVVisManager->Draw(circle);
 
-      }
+    //   }
 
     id2[2].id = ijPMT;
     //cout << " Pixalization end   " << id2[0].id << " " << id2[1].id << " " << id2[2].id << endl;
