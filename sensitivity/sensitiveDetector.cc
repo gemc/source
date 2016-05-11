@@ -321,7 +321,8 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "lambdaInelastic")  return 29;
 	if(procName == "sigma-Inelastic")  return 30;
 	if(procName == "hBrems")           return 31;
-	
+	if(procName == "DecayWithSpin")    return 32;
+
 	if(procName == "na")            return 90;
 	
 	cout << " process name " << procName << " not catalogued." << endl;
