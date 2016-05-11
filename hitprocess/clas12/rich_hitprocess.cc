@@ -46,7 +46,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
   vector<identifier> id2 = id;
 
   G4StepPoint *prestep = aStep->GetPreStepPoint();
-  G4StepPoint *poststep = aStep->GetPostStepPoint();
+//  G4StepPoint *poststep = aStep->GetPostStepPoint();
   G4ThreeVector  xyz   = aStep->GetPostStepPoint()->GetPosition();
   G4ThreeVector Lxyz = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz);
   const double xpos = Lxyz.x();
@@ -111,16 +111,16 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
     0.00056,    0.00050,    0.00043,    0.00039,    0.00035,    0.00030,    0.00027,    0.00023,    0.00021,    0.00018, 
     0.00016};
 
-  static const int nPMTs=28;
+//  static const int nPMTs=28;
   /*static const double effPMT[nPMTs]={
     1.26314, 1.14882,  0.897036, 1.01661,  1.21187, 0.974241, 0.82433, 0.919741, 1.05825, 1.13679, 
     1.06701, 1.04444,  1.23772,  1.19244,  1.19432, 1.05544,  1.09541, 1.00884,  1.18319, 0.870763,
     1.01581, 0.974612, 0.841163, 0.922537, 1.10571, 0.905572, 1.12075, 1.16352};*/
-  static const double effPMT[nPMTs]={
-    1.24404, 1.15731,  0.891041, 1.02305,  1.16932, 0.970796, 0.779371, 0.936425, 1.06004, 1.11025,
-    1.0508,  1.06841,  1.23461,  1.19373,  1.18116, 1.08872,  1.06598,  1.02615,  1.18402, 0.891628,
-    1.04522, 0.986448, 0.856585, 0.9269,   1.0875,  0.918675, 1.134,    1.21063};
-  
+//  static const double effPMT[nPMTs]={
+//    1.24404, 1.15731,  0.891041, 1.02305,  1.16932, 0.970796, 0.779371, 0.936425, 1.06004, 1.11025,
+//    1.0508,  1.06841,  1.23461,  1.19373,  1.18116, 1.08872,  1.06598,  1.02615,  1.18402, 0.891628,
+//    1.04522, 0.986448, 0.856585, 0.9269,   1.0875,  0.918675, 1.134,    1.21063};
+	
   static const int    NIPXL   = 8 ;
   static const int    NJPXL   = 8 ;
 
@@ -139,8 +139,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
   static const double PXLDeadSpace_x(0.28);
   static const double PXLDeadSpace_y(0.28);
 
-  static const double PXLsize_x( ( PhCsize_x -7*PXLDeadSpace_x )/8 );
-  static const double PXLsize_y( ( PhCsize_y -7*PXLDeadSpace_y )/8 );
+ // static const double PXLsize_x( ( PhCsize_x -7*PXLDeadSpace_x )/8 );
+//  static const double PXLsize_y( ( PhCsize_y -7*PXLDeadSpace_y )/8 );
   
   //MC x axis is mirrored with respect the Lab reference system
   //shift the local reference center to up left corner (following configuration files)
@@ -241,7 +241,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
   }
 
   // find the pixel number
-  int ijPMT2 = NIPXL*(jPMT-1) + iPMT;
+//  int ijPMT2 = NIPXL*(jPMT-1) + iPMT;
 
   /* final pixel number */
   int ijPMT = NIPXL*( _icol - 1 ) + _iraw ;
@@ -257,7 +257,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
       // cout << ijPMT << endl ;
 
       /* start checking the photon range - if outside the range, pixel number is set to 0 */
-      if(Energy < pUV[0] && Energy >= pUV[ nbinsUV ]){
+      if(Energy < pUV[0] && Energy >= pUV[ nbinsUV -1]){
 	/* it was as below, but it seems to be wrong: && instead of || */
 	// if(Energy < pUV[0] && Energy >= pUV[nbinsUV-1])
 	double QE = -1;

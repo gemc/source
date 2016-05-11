@@ -1,6 +1,21 @@
 Changelog for GEMC
 ==================
 
+5/11/16
+ - S\. Pisano: new RICH process digitization routine.
+ - A\. Filippi: new option FORCE_MUON_RADIATIVE_DECAY to force muons to decay in the radiative channel::
+
+	With force radiative decay = 0 (default)
+	BR(mu->e+nu+antinu) = 98.6%
+	BR(mu->e+nu+antinu+gamma) = 1.4%
+	muon spin neglected
+	These are the GEANT4 standard em model defaults
+
+	With force radiative decay = 1 (or different from zero)
+	BR(mu-> e+nu+antinu+gamma) = 100%
+	muon spin (V-A) decay included
+
+
 5/6/16
  - Field map properties are now being set in the gcard / command line option::
 
@@ -29,7 +44,7 @@ Changelog for GEMC
 
     Note: specifying nterpolation method is optional. "linear" is the default.
 
- - A. Filippi: added neutrons model for cosmic rays.
+ - A\. Filippi: added neutrons model for cosmic rays.
 
 5/5/16
  - fixed phi-segmented condition on map limits
@@ -37,7 +52,7 @@ Changelog for GEMC
  - fixed verbosity option 99
 
 5/4/16
- - A. Filippi: The geometry parameters (x,y,z of the center, radiius) are steered by the
+ - A\. Filippi: The geometry parameters (x,y,z of the center, radiius) are steered by the
    COSMICAREA card, the height is set to half the radius. The choice of the
    cylindric geometry is steered from the last field (#5) of the COSMICAREA card:
 
