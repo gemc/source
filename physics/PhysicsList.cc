@@ -22,9 +22,6 @@ using namespace std;
 #include "G4Electron.hh"
 #include "G4Positron.hh"
 #include "G4Proton.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4ParticleTypes.hh"
-#include "G4ParticleTable.hh"
 #include "G4DecayTable.hh"                                                     
 #include "G4ProcessTable.hh"
 
@@ -45,7 +42,6 @@ using namespace std;
 #include "G4NeutronTrackingCut.hh"
 #include "G4MuonRadiativeDecayChannelWithSpin.hh"
 #include "G4MuonDecayChannelWithSpin.hh"
-#include "G4DecayWithSpin.hh"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -356,7 +352,6 @@ void PhysicsList::ConstructParticle()
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
-	theDecayProcess = new G4DecayWithSpin();
 	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
 	G4VProcess* decay;
 
@@ -367,8 +362,6 @@ void PhysicsList::ConstructProcess()
 	
 	for(size_t i=0; i<g4HadronicPhysics.size(); i++)
 		g4HadronicPhysics[i]->ConstructProcess();
-
-
 
 	// PhysicsList contains theParticleIterator
 	theParticleIterator->reset();
@@ -390,6 +383,7 @@ void PhysicsList::ConstructProcess()
 		}
 
 		if(muonRadDecay){
+		  theDecayProcess = new G4DecayWithSpin();
 		  decay = processTable->FindProcess("Decay",particle);      
 		  if (theDecayProcess->IsApplicable(*particle)) {
 		    if(decay) pmanager->RemoveProcess(decay);
