@@ -337,31 +337,10 @@ void PhysicsList::cookPhysics()
 
 void PhysicsList::ConstructParticle()
 {
-        int muonRadDecay = 0;
+        muonRadDecay = 0;
         muonRadDecay = gemcOpt.optMap["FORCE_MUON_RADIATIVE_DECAY"].arg;
-	string cosmics =  gemcOpt.optMap["COSMICRAYS"].args;
-	vector<string> csettings = get_info(cosmics, string(",\""));
-	string particleType;
-	int len = csettings.size();
-	if(csettings[0] == "default"){
-	  if(len>4) particleType = csettings[3];
-	}else{
-	  if(len>6) particleType = csettings[5];
-	}
-	// warn if muon radiative decay is selected but the simulated
-        // cosmic rays is not a muon
-	if(muonRadDecay && particleType!="muon") 
-	  cout << "!!! Check COSMICRAYS data card, muon radiative decay required but no muon being simulated " << endl;
-	
+
 	g4ParticleList->ConstructParticle();
-	G4Electron::ElectronDefinition();
-	G4Positron::PositronDefinition();
-	G4NeutrinoE::NeutrinoEDefinition();
-	G4AntiNeutrinoE::AntiNeutrinoEDefinition();
-	G4MuonPlus::MuonPlusDefinition();
-	G4MuonMinus::MuonMinusDefinition();
-	G4NeutrinoMu::NeutrinoMuDefinition();
-	G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();
 	
 	if(muonRadDecay){
 	  G4DecayTable* MuonPlusDecayTable = new G4DecayTable();
@@ -400,7 +379,6 @@ void PhysicsList::ConstructProcess()
 		G4ParticleDefinition* particle = theParticleIterator->value();
 		G4ProcessManager*     pmanager = particle->GetProcessManager();
 		string                pname    = particle->GetParticleName();
-		decay = processTable->FindProcess("Decay",particle);      
 	
 		// Adding Step Limiter
 		if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
@@ -411,12 +389,16 @@ void PhysicsList::ConstructProcess()
 			pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
 		}
 
-		if (theDecayProcess->IsApplicable(*particle)) {
-		  if(decay) pmanager->RemoveProcess(decay);
-		  pmanager->AddProcess(theDecayProcess);
-		  pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
-		  pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+		if(muonRadDecay){
+		  decay = processTable->FindProcess("Decay",particle);      
+		  if (theDecayProcess->IsApplicable(*particle)) {
+		    if(decay) pmanager->RemoveProcess(decay);
+		    pmanager->AddProcess(theDecayProcess);
+		    pmanager->SetProcessOrdering(theDecayProcess, idxPostStep);
+		    pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+		  }
 		}
+		  
 	}
 }
 

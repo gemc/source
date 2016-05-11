@@ -27,8 +27,6 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
 	string cArea   = gemcOpt->optMap["COSMICAREA"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
-	muonDecay = 0;
-	muonDecay      = gemcOpt->optMap["FORCE_MUON_RADIATIVE_DECAY"].arg;
 	
 	particleTable = G4ParticleTable::GetParticleTable();
 	
@@ -80,8 +78,6 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " Cosmic Radius :" << cosmicRadius/cm << " cm " << endl;
 			cout << hd_msg << " Cosmic Surface Type: " << cosmicGeo << endl;
 			cout << hd_msg << " Cosmic Particle Type: " << cosmicParticle << endl;
-			if(cosmicParticle == "muon" && muonDecay==1)
-			  cout << hd_msg << " radiative muon decay BR=100%" << endl;
 		}
 	}
 	

@@ -56,6 +56,7 @@ private:
 	string EMPhys;
 	string opticalPhys;
 	string HPPhys;
+	int    muonRadDecay;
 	
 	vector<G4String> g4HadronicList;
 	vector<G4String> g4EMList;
