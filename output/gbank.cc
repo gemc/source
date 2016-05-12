@@ -56,13 +56,15 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	
 	// generated particle infos
 	abank =  gBank(GENERATED_PARTICLES_BANK_TAG, "generated", "Generated Particles");
-	abank.load_variable("pid",    1,  "Ni", "Particle ID");
-	abank.load_variable("px",     2,  "Nd", "x component of momentum");
-	abank.load_variable("py",     3,  "Nd", "y component of momentum");
-	abank.load_variable("pz",     4,  "Nd", "z component of momentum");
-	abank.load_variable("vx",     5,  "Nd", "x component of vertex");
-	abank.load_variable("vy",     6,  "Nd", "y component of vertex");
-	abank.load_variable("vz",     7,  "Nd", "z component of vertex");
+	abank.load_variable("pid",           1,  "Ni", "Particle ID");
+	abank.load_variable("px",            2,  "Nd", "x component of momentum");
+	abank.load_variable("py",            3,  "Nd", "y component of momentum");
+	abank.load_variable("pz",            4,  "Nd", "z component of momentum");
+	abank.load_variable("vx",            5,  "Nd", "x component of vertex");
+	abank.load_variable("vy",            6,  "Nd", "y component of vertex");
+	abank.load_variable("vz",            7,  "Nd", "z component of vertex");
+	abank.load_variable("time",          8,  "Nd", "time");
+	abank.load_variable("multiplicity",  9,  "Ni", "number of particles at this vertex");
 	abank.orderNames();
 	banks["generated"] = abank;
 	

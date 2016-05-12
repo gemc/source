@@ -146,6 +146,8 @@ class generatedParticle
 		G4ThreeVector vertex;
 		G4ThreeVector momentum;
 		int PID;
+		double time;
+		int multiplicity;
 
 		// adding summary information for each detector.
 		vector<summaryForParticle> pSum;

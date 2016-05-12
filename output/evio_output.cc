@@ -74,7 +74,9 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> vx;
 	vector<double> vy;
 	vector<double> vz;
-	
+	vector<double> btime;
+	vector<double> multiplicity;
+
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++)
 	{
 		pid.push_back(MGP[i].PID);
@@ -84,19 +86,23 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vx.push_back(MGP[i].vertex.getX()/mm);
 		vy.push_back(MGP[i].vertex.getY()/mm);
 		vz.push_back(MGP[i].vertex.getZ()/mm);
+		btime.push_back(MGP[i].time);
+		multiplicity.push_back(MGP[i].multiplicity);
 	}
 	
 	// creating and inserting generated particles bank  >> TAG=10 NUM=0 <<
 	evioDOMNodeP generatedp = evioDOMNode::createEvioDOMNode(GENERATED_PARTICLES_BANK_TAG, 0);
 	
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("pid"), bank.getVarType("pid"), pid);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("px"),  bank.getVarType("px"),  px);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("py"),  bank.getVarType("py"),  py);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("pz"),  bank.getVarType("pz"),  pz);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vx"),  bank.getVarType("vx"),  vx);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vy"),  bank.getVarType("vy"),  vy);
-	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vz"),  bank.getVarType("vz"),  vz);
-	
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("pid"),           bank.getVarType("pid"), pid);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("px"),            bank.getVarType("px"),  px);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("py"),            bank.getVarType("py"),  py);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("pz"),            bank.getVarType("pz"),  pz);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vx"),            bank.getVarType("vx"),  vx);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vy"),            bank.getVarType("vy"),  vy);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vz"),            bank.getVarType("vz"),  vz);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("time"),          bank.getVarType("time"), btime);
+	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("multiplicity"),  bank.getVarType("multiplicity"), multiplicity);
+
 	if(SAVE_ALL_MOTHERS)
 	{
 		vector<string> dname;

@@ -561,12 +561,17 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
-	int PBUNCH     = (int) floor((double)NP/NBUNCHES);
-	
+	int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
+
+
+	// there will be some remaining particles, these will be added at the last bunch
+	int NREMAINING = NP - NBUNCHES*PBUNCH;
+
+	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << endl;
+
 	if(PBUNCH > 0)
 	{
 		particleGun->SetParticleDefinition(L_Particle);
-		particleGun->SetNumberOfParticles(PBUNCH);
 
 		// getting kinematics
 		double L_mass  = L_Particle->GetPDGMass();
@@ -577,35 +582,52 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		// all particles in a bunch are identical
 		for(int b=0; b<NBUNCHES; b++)
 		{
-			particleGun->SetParticleTime(TBUNCH*b);
 			// spread momentum if requested
 			if(L_dmom > 0)
 			{
-				L_Mom   += (2.0*G4UniformRand()-1.0)*L_dmom;
+				L_Mom   = L_mom + (2.0*G4UniformRand()-1.0)*L_dmom;
 				L_Theta = acos(G4UniformRand()*(cos(L_theta/rad-L_dtheta/rad)-cos(L_theta/rad+L_dtheta/rad)) + cos(L_theta/rad+L_dtheta/rad))/rad;
 				if(lumiFlat)
-					L_Theta += (2.0*G4UniformRand()-1.0)*L_dtheta;
+					L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
 
-				L_Phi   += (2.0*G4UniformRand()-1.0)*L_dphi;
+				L_Phi = L_phi + (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
 			double L_akine = sqrt(L_Mom*L_Mom + L_mass*L_mass) - L_mass ;
 			particleGun->SetParticleEnergy(L_akine);
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L_Phi/rad)*sin(L_Theta/rad), sin(L_Phi/rad)*sin(L_Theta/rad), cos(L_Theta/rad)));
 			
 			// luminosity vertex
-			double L_VR  = G4UniformRand()*L_dvr;
-			double L_PHI = 2.0*pi*G4UniformRand();
-			L_vx += L_VR*cos(L_PHI);
-			L_vy += L_VR*sin(L_PHI);
+			// vertex has uniform density across the cilinder
+			double lvx = L_vx;
+			double lvy = L_vy;
+
+			do {
+				lvx = L_vx - L_dvr + 2*G4UniformRand()*L_dvr;
+				lvy = L_vy - L_dvr + 2*G4UniformRand()*L_dvr;
+			} while (sqrt(lvx*lvx + lvy*lvy) > L_dvr);
+
+//			double L_VR  = G4UniformRand()*L_dvr;
+//			double L_PHI = 2.0*pi*G4UniformRand();
+//			double lvx = L_vx + L_VR*cos(L_PHI);
+//			double lvy = L_vy + L_VR*sin(L_PHI);
+			double lvz = L_vz;
 
 			// spread vertex if requested
 			if(L_dvz > 0)
 			{
-				L_vz += (2.0*G4UniformRand()-1.0)*L_dvz;
+				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
-			
-			particleGun->SetParticlePosition(G4ThreeVector(L_vx, L_vy, L_vz));
 
+			particleGun->SetNumberOfParticles(PBUNCH);
+
+			if(b == NBUNCHES-1)
+				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
+
+
+			// cout << " bunch " << b << " " << PBUNCH << endl;
+
+			particleGun->SetParticleTime(TBUNCH*b);
+			particleGun->SetParticlePosition(G4ThreeVector(lvx, lvy, lvz));
 			particleGun->GeneratePrimaryVertex(anEvent);
 		}
 	}

@@ -324,12 +324,16 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		generatedParticle Mparticle;
 		G4PrimaryVertex* MPV = evt->GetPrimaryVertex(pv);
 		Mparticle.vertex = MPV->GetPosition();
+		double thisTime = MPV->GetT0();
+		int thisMult    = MPV->GetNumberOfParticle();
+
 		for(int pp = 0; pp<MPV->GetNumberOfParticle() && pv<MAXP; pp++)
 		{
-			
-			G4PrimaryParticle *PP = MPV->GetPrimary(pp);
-			Mparticle.momentum    = PP->GetMomentum();
-			Mparticle.PID         = PP->GetPDGcode();
+			G4PrimaryParticle *PP  = MPV->GetPrimary(pp);
+			Mparticle.momentum     = PP->GetMomentum();
+			Mparticle.PID          = PP->GetPDGcode();
+			Mparticle.time         = thisTime;
+			Mparticle.multiplicity = thisMult;
 		}
 		MPrimaries.push_back(Mparticle)  ;
 	}

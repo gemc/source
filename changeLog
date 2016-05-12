@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+5/12/16
+ - luminosity raster:
+	- fixed bug that affect radius of distribution
+	- number of total particles will match the LUMI option (last bunch may have more particles)
+	- distribution has uniform density
+
 5/11/16
  - S\. Pisano: new RICH process digitization routine.
  - A\. Filippi: new option FORCE_MUON_RADIATIVE_DECAY to force muons to decay in the radiative channel::
@@ -27,7 +33,7 @@ Changelog for GEMC
     Example: -FIELD_PROPERTIES="srr-solenoid, 1*mm, G4ClassicalRK4, linear"
 
     Available Intergration Methods:
-    - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields
+    - G4CashKarpRKF45: Fifth Order Range Kutta, for very smooth fields.
     - G4ClassicalRK4: Fourth Order Range Kutta. Robust for every field.
     - G4SimpleHeum: Third order stepper.
     - G4SimpleRunge: Simplified (second order) Range Kutta (faster).
@@ -36,10 +42,11 @@ Changelog for GEMC
     - G4HelixImplicitEuler: Second order, specialized for helix-like trakectories.
     - G4HelixExplicitEuler: First order, specialized for helix-like trakectories.
     - G4HelixSimpleRunge: Second order Range Kutta, specialized for helix-like trakectories.
-    - G4NystromRK4: provides accuracy near that of G4ClassicalRK4 with a significantly reduced cost in field evaluation.
+    - G4NystromRK4: provides accuracy near that of G4ClassicalRK4 with a significantly
+      reduced cost in field evaluation.
 
     Available Interpolation Methods:
-	 - none: closest grid point.
+    - none: closest grid point.
     - linear: linear interpolation.
 
     Note: specifying nterpolation method is optional. "linear" is the default.
@@ -1641,6 +1648,83 @@ Changelog for GEMC
    * 2:  OpenGL Stored mode (can't interact with picture; sliders works well)
    * 3:  OpenGL Immediate mode (can't interact with picture; sliders works well; slower than Stored mode)
    * 4:  QT OpenGL Stored mode (can interact with picture; sliders works but picture needs to be updated by clicking on it)
+
+
+
+7/8/2010
+ - Removing from Sensitive Detector Routine and adding to Event Action:
+
+   * PID, vertex info
+   * Mother particle (this also fixes a bug): PID, vertex info
+ - Adding charge of the track in each step in MHit, retrievable with GetCharges (vector)
+   and GetCharge (int).
+
+
+6/15/2010
+ - Do not check for ID=0 if identifier type is "manual" - By Maurik Holtrop.
+
+6/9/2010
+ - Switching to MTwistEngine random engine, as bug was found by Maurik on RanecuEngine.
+ - Adding Engine Status in PRINT_EVENT statement.
+
+6/8/2010
+ - Removing stl maps access for every step in sensitive detector, and every event.
+ - Adding overlap checks::
+
+   -CHECK_OVERLAPS=#
+
+   1.  Check Overlaps at Construction Time
+   2.  Check Overlaps based on standard lines grid setup
+   3.  Check Overlaps by shooting lines according to a cylindrical pattern
+
+ - Validate the options, so that errors are caught.
+
+6/7/2010
+ - Added new option ENERGY_CUT to limit tracking to particles with more energy than cut.
+
+5/13/2010
+ - Introducing gemc_tostring because toStdString doesn't work on windows for long strings
+ - Including new evio header file
+
+5/7/2010
+ - Mods for Windows7 compilation
+ - Don't need mysql incs or libraries
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -70,18 +70,21 @@ map<string, outputFactoryInMap> registerOutputFactories()
 
 int generatedParticle::getVariableFromStringI(string what)
 {
-	if(what == "pid") return PID;
+		  if(what == "pid")          return PID;
+	else if(what == "multiplicity") return multiplicity;
+
 	return 0;
 }
 
 double generatedParticle::getVariableFromStringD(string what)
 {
-	if(what == "px") return momentum.x();
-	if(what == "py") return momentum.y();
-	if(what == "pz") return momentum.z();
-	if(what == "vx") return vertex.x();
-	if(what == "vy") return vertex.y();
-	if(what == "vz") return vertex.z();
+	     if(what == "px")   return momentum.x();
+	else if(what == "py")   return momentum.y();
+	else if(what == "pz")   return momentum.z();
+	else if(what == "vx")   return vertex.x();
+	else if(what == "vy")   return vertex.y();
+	else if(what == "vz")   return vertex.z();
+	else if(what == "time") return time;
 
 	return 0;
 }
