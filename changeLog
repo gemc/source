@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+5/13/16
+ - added low em physics process (code LEM)
+ - added em Livermore with polarisation physics process (code LVP)
+
 5/12/16
  - luminosity raster:
 	- fixed bug that affect radius of distribution

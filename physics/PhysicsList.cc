@@ -33,7 +33,9 @@ using namespace std;
 #include "G4EmStandardPhysics_option3.hh"
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4EmLivermorePhysics.hh"
+#include "G4EmLivermorePolarizedPhysics.hh"
 #include "G4EmPenelopePhysics.hh"
+#include "G4EmLowEPPhysics.hh"
 #include "G4EmExtraPhysics.hh"
 #include "G4HadronElasticPhysics.hh"
 #include "G4HadronElasticPhysicsHP.hh"
@@ -261,7 +263,9 @@ void PhysicsList::cookPhysics()
 	else if(EMPhys == "EMY")  g4EMPhysics = new G4EmStandardPhysics_option3();
 	else if(EMPhys == "EMZ")  g4EMPhysics = new G4EmStandardPhysics_option4();
 	else if(EMPhys == "LIV")  g4EMPhysics = new G4EmLivermorePhysics();
-	else if(EMPhys == "PEN")  g4EMPhysics = new G4EmPenelopePhysics();				
+	else if(EMPhys == "LVP")  g4EMPhysics = new G4EmLivermorePolarizedPhysics();
+	else if(EMPhys == "PEN")  g4EMPhysics = new G4EmPenelopePhysics();
+	else if(EMPhys == "LEM")  g4EMPhysics = new G4EmLowEPPhysics();
 	else if(EMPhys != "none")
 	{
 		cout << " !! Wrong EMPhys " << EMPhys << endl << "Exiting." << endl;
