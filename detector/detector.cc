@@ -758,7 +758,20 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	string defmat  = gemcOpt.optMap["DEFAULT_MATERIAL"].args;
-	
+
+	vector<aopt> changeMatOptions = gemcOpt.getArgs("SWITCH_MATERIALTO");
+	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
+	{
+		vector < string > oldNewMats = get_strings(changeMatOptions[f].args, ",");
+		if(oldNewMats.size() == 2)
+		{
+			// oldNewMats[0] = old
+			// oldNewMats[1] = new
+			if(material == TrimSpaces(oldNewMats[0]))
+				material = TrimSpaces(oldNewMats[1]);
+		}
+	}
+
 	// don't build the logical volumes for components or replicas
 	if(material == "Component" || material == "OfReplica")
 	{

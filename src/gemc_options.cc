@@ -580,7 +580,22 @@ void goptions::setGoptions()
 	optMap["DEFAULT_MATERIAL"].name = "Default material for missing material field";
 	optMap["DEFAULT_MATERIAL"].type = 1;
 	optMap["DEFAULT_MATERIAL"].ctgr = "physics";
-	
+
+	optMap["SWITCH_MATERIALTO"].args = "none";
+	optMap["SWITCH_MATERIALTO"].help = "Switches a material for another. Usage: -SWITCH_MATERIALTO=\"old, new\" \n";
+	optMap["SWITCH_MATERIALTO"].name = "Switches a material for another. ";
+	optMap["SWITCH_MATERIALTO"].type = 1;
+	optMap["SWITCH_MATERIALTO"].ctgr = "physics";
+	optMap["SWITCH_MATERIALTO"].repe  = 1;
+
+	optMap["CHANGEVOLUMEMATERIALTO"].args = "none";
+	optMap["CHANGEVOLUMEMATERIALTO"].help = "Changes a volume material. Usage: -CHANGEVOLUMEMATERIALTO=\"volume, new material\" \n";
+	optMap["CHANGEVOLUMEMATERIALTO"].name = "Changes a volume material. ";
+	optMap["CHANGEVOLUMEMATERIALTO"].type = 1;
+	optMap["CHANGEVOLUMEMATERIALTO"].ctgr = "physics";
+	optMap["CHANGEVOLUMEMATERIALTO"].repe  = 1;
+
+
 	optMap["HALL_FIELD"].args = "no";
 	optMap["HALL_FIELD"].help = "Magnetic Field of the Hall. \n";
 	optMap["HALL_FIELD"].name = "Magnetic Field of the Hall";

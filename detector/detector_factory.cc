@@ -275,6 +275,20 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 
 	// 8: Material
 	det.material =  gt.data[8];
+	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
+	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
+	{
+		vector < string > VolumeNewMats = get_strings(changeMatOptions[f].args, ",");
+		if(VolumeNewMats.size() == 2)
+		{
+			// VolumeNewMats[0] = volume name
+			// VolumeNewMats[1] = new material
+			if(det.name == TrimSpaces(VolumeNewMats[0]))
+				det.material = TrimSpaces(VolumeNewMats[1]);
+		}
+	}
+
+
 
 	// 9: Magnetic Field
 	det.magfield = gt.data[9];

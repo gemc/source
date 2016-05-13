@@ -4,6 +4,15 @@ Changelog for GEMC
 5/13/16
  - added low em physics process (code LEM)
  - added em Livermore with polarisation physics process (code LVP)
+ - added option "CHANGEVOLUMEMATERIALTO" to change a volume material::
+
+    Usage: -CHANGEVOLUMEMATERIALTO="volume, new material"
+
+ - added option "SWITCH_MATERIALTO" to change a material into another::
+
+     Usage: -SWITCH_MATERIALTO="oldmaterial, newmaterial"
+
+ - Both CHANGEVOLUMEMATERIALTO and SWITCH_MATERIALTO can be repeated.
 
 5/12/16
  - luminosity raster:
@@ -1694,10 +1703,42 @@ Changelog for GEMC
  - Mods for Windows7 compilation
  - Don't need mysql incs or libraries
 
+5/4/2010
+ - Sensitive volumes showing up in red in the detector tree
+
+4/28/2010
+ - gemc physics list can be used again with -USE_PHYSICSL=gemc
+
+4/27/2010
+ - Adding infos in the detector editor tab:
+   material, magnetic field, sensitivity, etc.
+
+4/23/2010
+ - Added pictures for missing solid type
+ - Added picture for detector copies, operations
+
+ - Added gemc particle tracks colours:
+
+   - neutrons   black
+   - photons    blue
+   - e-         cyan
+   - protons    orange
+   - pi+        magenta
+   - pi-        yellow
+
+  all other particle colours will be based on their charges:
+
+   - \+1  red
+   - 0  white
+   - \-1  green
 
 
+4/19/2010
+ - All database connections now obey the -DBHOST argument
 
-
+4/5/2010
+ - Using geant4 factory physics list
+ - Tracking Edep == 0
 
 
 
