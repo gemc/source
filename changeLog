@@ -4,6 +4,9 @@ Changelog for GEMC
 5/16/16
  - defaults to hit definitions if file is not found
  - added kaon0LInelastic process catalogue - re-ordered to put kaons together
+ - option REMOVESENSITIVITY to remove a volume sensitivity::
+
+    Usage: -REMOVESENSITIVITY="volumename1, volumename2, ..."
 
 5/13/16
  - added low em physics process (code LEM)
@@ -1744,13 +1747,37 @@ Changelog for GEMC
  - Using geant4 factory physics list
  - Tracking Edep == 0
 
+3/30/2010
+ - Increasing gemc EVIO buffer to 30M
 
+3/26/2010
+ - Added new routine to MHit class to get the charge from the PID number:
+   value is approximated for nuclei being charge set to 1 for all of them.
+ - Fixed bug in detector construction where it was only givin up on tries if verbosity was high enough.
+ - Fixed BST hit process routines to reflect geometry changes.
+ - Added new ScintillatorB material with Birks Constant set to 0.126mm/MeV but same density and chemichal composition as Scintillator
 
+3/24/2010
+ - UImanager does n0t need to be passed as argument using G4UImanager::GetUIpointer() instead.
+ - Exiting if mother volume of a detector is not found after 20 tries.
 
+3/10/2010
+ - Added Detector infos for each step.
 
+3/9/2010
+ - Added "Tesla" and "m" units for magnetic field definitions.
 
+3/8/2010
+ - Multiple detectors can be associated with the same identifier.
 
+   - Example: in the EC, all layers in INNER and OUTER are summed together.
+   - The "detector" information is then saved in the MHit class for each step in order not to
+     lose the original volume information.
+   - This is transparent to all users - GetDetector will still return the first volume hit (as before).
+   - The new function GetDetectors will return the whole vector<detector>
 
+3/2/2010
+ - Better style for doxygen
 
 
 

@@ -275,6 +275,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 
 	// 8: Material
 	det.material =  gt.data[8];
+	// resetting Material if asked
 	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
 	{
@@ -334,9 +335,20 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		// 17: identity
 		det.identity = get_identifiers(gt.data[17]);
 	}
+	// removing Sensitivity if asked
+	vector < string > vnames = get_strings(go.optMap["REMOVESENSITIVITY"].args, ",");
+	for(unsigned vtr = 0; vtr < vnames.size(); vtr++)
+	{
+		if(det.name == TrimSpaces(vnames[vtr]))
+		{
+			det.sensitivity = "no";
+			det.hitType = "";
+			det.identity.clear();
+		}
+	}
 
-	
-	
+
+
 	// 18 detector system
 	det.system  = gt.data[18];
 	det.factory = gt.data[19];

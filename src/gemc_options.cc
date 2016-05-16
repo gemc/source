@@ -682,7 +682,14 @@ void goptions::setGoptions()
 	optMap["FIELD_PROPERTIES"].ctgr  = "physics";
 	optMap["FIELD_PROPERTIES"].repe  = 1;
 
-	
+
+	optMap["REMOVESENSITIVITY"].args = "none";
+	optMap["REMOVESENSITIVITY"].help = "Removes a volumes sensitivity. Usage: -REMOVESENSITIVITY=volumename1, volumename2, ... \n";
+	optMap["REMOVESENSITIVITY"].name = "Changes a volumes sensitivity. ";
+	optMap["REMOVESENSITIVITY"].type = 1;
+	optMap["REMOVESENSITIVITY"].ctgr = "physics";
+
+
 	// General
 	optMap["DF"].args  = "no";
 	optMap["DF"].help  = "Selects Detector System and Factory type. \n";
