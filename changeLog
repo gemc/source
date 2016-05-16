@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/16/16
+ - defaults to hit definitions if file is not found
+
 5/13/16
  - added low em physics process (code LEM)
  - added em Livermore with polarisation physics process (code LVP)

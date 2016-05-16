@@ -48,71 +48,90 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 				if(!IN && verbosity > 2)
 				{
 					cout << "  !!! Error: Failed to open hit file " << fname << " for sensitive detector: >"
-					     << SD << "<. Maybe the filename doesn't exist? Exiting." << endl;
+					     << SD << "<. Maybe the filename doesn't exist?" << endl;
 				}
 			}
 			if(!IN && verbosity > 2)
 			{
 				cout << "  !!! Error: Failed to open hit file " << fname << " for sensitive detector: >"
-					 << SD << "<. Maybe the filename doesn't exist? Exiting." << endl;
+					 << SD << "<. Maybe the filename doesn't exist?" << endl;
 			}
 		}
-		
-		while(!IN.eof())
+
+		if(IN)
 		{
-			string dbline;
-			getline(IN, dbline);
-			
-			if(!dbline.size())
-				continue;
-			
-			gtable gt(get_strings(dbline, "|"));
-			
-			if(gt.data.size())
-				if(gt.data[0] == SD)
-				{
-					// Reading variables
-					// 0 is system name, by construction is SD
-					
-					// 1: description
-					description = gt.data[1];
-					
-					// 2: Identifiers
-					vector<string> ids = get_strings(gt.data[2]);
-					for(unsigned i=0; i<ids.size(); i++)
-						identifiers.push_back(ids[i]);
-					
-					// 3: Minimum Energy Cut for processing the hit
-					signalThreshold = get_number(gt.data[3], 1);
-					
-					// 4: Time Window
-					timeWindow = get_number(gt.data[4], 1);
-					
-					// 5: Production Threshold in the detector
-					prodThreshold = get_number(gt.data[5], 1);
-					
-					// 6: Maximum Acceptable Step in the detector
-					maxStep = get_number(gt.data[6], 1);
-					
-					// 7: rise time of the PMT signal
-					riseTime = get_number(gt.data[7], 1);
-					
-					// 8: fall time of the PMT signal
-					fallTime = get_number(gt.data[8], 1);
-					
-					// 9: from MeV to mV constant
-					mvToMeV = get_number(gt.data[9]);
-					
-					// 10: pedestal
-					pedestal = get_number(gt.data[10]);
-					
-					// 11: time from PMT face to signal
-					delay = get_number(gt.data[11]);
-					
-				}
+			while(!IN.eof())
+			{
+				string dbline;
+				getline(IN, dbline);
+
+				if(!dbline.size())
+					continue;
+
+				gtable gt(get_strings(dbline, "|"));
+
+				if(gt.data.size())
+					if(gt.data[0] == SD)
+					{
+						// Reading variables
+						// 0 is system name, by construction is SD
+
+						// 1: description
+						description = gt.data[1];
+
+						// 2: Identifiers
+						vector<string> ids = get_strings(gt.data[2]);
+						for(unsigned i=0; i<ids.size(); i++)
+							identifiers.push_back(ids[i]);
+
+						// 3: Minimum Energy Cut for processing the hit
+						signalThreshold = get_number(gt.data[3], 1);
+
+						// 4: Time Window
+						timeWindow = get_number(gt.data[4], 1);
+
+						// 5: Production Threshold in the detector
+						prodThreshold = get_number(gt.data[5], 1);
+
+						// 6: Maximum Acceptable Step in the detector
+						maxStep = get_number(gt.data[6], 1);
+
+						// 7: rise time of the PMT signal
+						riseTime = get_number(gt.data[7], 1);
+
+						// 8: fall time of the PMT signal
+						fallTime = get_number(gt.data[8], 1);
+
+						// 9: from MeV to mV constant
+						mvToMeV = get_number(gt.data[9]);
+
+						// 10: pedestal
+						pedestal = get_number(gt.data[10]);
+
+						// 11: time from PMT face to signal
+						delay = get_number(gt.data[11]);
+
+					}
+			}
+			IN.close();
 		}
-		IN.close();
+		// default values if file is not present
+		else
+		{
+			// 1: description
+			description     = "unknown";
+			signalThreshold = 1;
+			timeWindow      = 100;
+			prodThreshold   = 1;
+			maxStep         = 10;
+			riseTime        = 10;
+			fallTime        = 20;
+			mvToMeV         = 100;
+			pedestal        = 100;
+			delay           = 100;
+		}
 		if(verbosity > 3)
+			// this will print the sensitive detector properties
 			cout << *this << endl;;
 		
 		return;
