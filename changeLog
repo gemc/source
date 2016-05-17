@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/17/16
+ - added positronNuclear to processs catalogue
+
 5/16/16
  - defaults to hit definitions if file is not found
  - added kaon0LInelastic process catalogue - re-ordered to put kaons together
@@ -1779,9 +1782,21 @@ Changelog for GEMC
 3/2/2010
  - Better style for doxygen
 
+2/22/2010
+ - Added user_hits_def file
+ - Added hit commands for user_banks
 
+2/17/2010
+ - Added option to set fields to zero for a particular volume, or for all volumes.
 
+2/11/2010
+ - If it is flux detector, do not check on energy deposited as criteria to accept the hit
 
+2/2/2010
+ - New G4 comes with separate multiplescattering routines for e, mu and other ions
+ - G4MultipleScattering changed to G4eMultipleScattering for gemc physics list
+ - Max Track length in User Limit Constructor
+ 
 
 
 
