@@ -10,25 +10,25 @@ map<string, double> FTM_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-		
+
 	// FTM ID:
 	// layer, type, sector, strip
 
 	int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
-	
+
 	if(verbosity>4)
 	{
 		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
-			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
+		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	dgtz["hitn"]   = hitn;
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
-	
+
 	return dgtz;
 }
 
@@ -41,30 +41,30 @@ vector<identifier>  FTM_HitProcess :: processID(vector<identifier> id, G4Step* a
 	x = xyz.x()/mm;
 	y = xyz.y()/mm;
 	z = xyz.z()/mm;
-	
+
 	vector<identifier> yid = id;
 	class ftm_strip ftms;
 	ftms.fill_infos();
-	
+
 	int layer  = 2*yid[0].id + yid[1].id - 2 ;
-	
+
 	//yid[3].id = ftms.FindStrip(layer-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 	vector<double> multi_hit = ftms.FindStrip(layer-1, x, y, z, depe);
-	
+
 	int n_multi_hits = multi_hit.size()/2;
-	
+
 	// closest strip
 	//yid[4].id = (int) multi_hit[0];
 	yid[3].id = (int) multi_hit[0];
-	
+
 	yid[0].id_sharing = multi_hit[1];
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
 	// yid[4].id_sharing = multi_hit[1];
-	
+
 	// additional strip
 	for(int h=1; h<n_multi_hits; h++)
 	{
@@ -91,7 +91,7 @@ vector<identifier>  FTM_HitProcess :: processID(vector<identifier> id, G4Step* a
 		this_id.id_sharing = multi_hit[3];
 		yid.push_back(this_id);
 	}
-	
+
 	return yid;
 }
 
@@ -99,10 +99,26 @@ vector<identifier>  FTM_HitProcess :: processID(vector<identifier> id, G4Step* a
 map< string, vector <int> >  FTM_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
-	
+
 	return MH;
 }
 
+// - electronicNoise: returns a vector of hits generated / by electronics.
+vector<MHit*> FTM_HitProcess :: electronicNoise()
+{
+	vector<MHit*> noiseHits;
+
+	// loop over all detector individual cells
+	// for each cell calculate the probability of a noise hit of energy e
+	// instantiate hit with energy E, time T, identifier IDF:
+	//
+	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+
+	// push to noiseHits collection:
+	// noiseHits.push_back(thisNoiseHit)
+
+	return noiseHits;
+}
 
 
 

@@ -127,13 +127,14 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		for(int this_id = 0; this_id<singl_hit_size; this_id++)
 		{
 			identifier this_shit; // adding this single hit
-			this_shit.name       = PID[this_id + mh*singl_hit_size].name;
-			this_shit.rule       = PID[this_id + mh*singl_hit_size].rule;
-			this_shit.id         = PID[this_id + mh*singl_hit_size].id;
-			this_shit.time       = PID[this_id + mh*singl_hit_size].time;
-			this_shit.TimeWindow = PID[this_id + mh*singl_hit_size].TimeWindow;
-			this_shit.TrackId    = PID[this_id + mh*singl_hit_size].TrackId;
-			this_shit.id_sharing = PID[this_id + mh*singl_hit_size].id_sharing;
+			identifier thisPID = PID[this_id + mh*singl_hit_size];
+			this_shit.name       = thisPID.name;
+			this_shit.rule       = thisPID.rule;
+			this_shit.id         = thisPID.id;
+			this_shit.time       = thisPID.time;
+			this_shit.TimeWindow = thisPID.TimeWindow;
+			this_shit.TrackId    = thisPID.TrackId;
+			this_shit.id_sharing = thisPID.id_sharing;
 			mhPID.push_back(this_shit);
 		}
 		
@@ -272,6 +273,12 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 			}
 		}
 	}
+
+	// adding electronic noise to hits
+	vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
+	for(unsigned int h=0; h<noiseHits.size(); h++)
+		hitCollection->insert(noiseHits[h]);
+
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore
 	
 }

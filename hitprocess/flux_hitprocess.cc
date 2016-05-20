@@ -24,6 +24,12 @@ vector<identifier>  flux_HitProcess :: processID(vector<identifier> id, G4Step* 
 }
 
 
+// - electronicNoise: returns a vector of hits generated / by electronics.
+vector<MHit*> flux_HitProcess :: electronicNoise()
+{
+	vector<MHit*> noiseHits;
+	return noiseHits;
+}
 
 
 

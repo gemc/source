@@ -129,11 +129,27 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-
 	int sector = 1;
 	int panel  = 1;
 	int paddle = identity[0].id;
-	
+//
+//	if(aHit->isElectronicNoise)
+//	{
+//		dgtz["hitn"]   = -hitn;
+//		dgtz["paddle"] = paddle;
+//
+//		dgtz["ADCU"]   = (int) aHit->GetEdep()[0]*100;
+////		dgtz["ADCD"]   = (int) aHit->GetE()*100;
+////		dgtz["TDCU"]   = (int) aHit->GetE()*100;
+////		dgtz["TDCD"]   = (int) aHit->GetE()*100;
+////		dgtz["ADCUu"]  = (int) aHit->GetE()*100;
+////		dgtz["ADCDu"]  = (int) aHit->GetE()*100;
+////		dgtz["TDCUu"]  = (int) aHit->GetE()*100;
+////		dgtz["TDCDu"]  = (int) aHit->GetE()*100;
+//
+//		return dgtz;
+//	}
+
 	// Get the paddle length: in ctof paddles are boxes, the length is the y dimension
 	double length = aHit->GetDetector().dimensions[2];
 	
@@ -234,6 +250,38 @@ vector<identifier>  ctof_HitProcess :: processID(vector<identifier> id, G4Step* 
 	return id;
 }
 
+// - electronicNoise: returns a vector of hits generated / by electronics.
+vector<MHit*> ctof_HitProcess :: electronicNoise()
+{
+	vector<MHit*> noiseHits;
+
+	// loop over all detector individual cells
+	// for each cell calculate the probability of a noise hit of energy e
+	// instantiate hit with energy E, time T, identifier IDF:
+	//
+	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+
+	// push to noiseHits collection:
+	// noiseHits.push_back(thisNoiseHit)
+
+//	for(unsigned int p=1; p<10; p++)
+//	{
+//		vector<identifier> thisID;
+//
+//		// for paddle, identifier is only 1 dimensional: paddle ID
+//		identifier thisIdentifier;
+//		thisIdentifier.id = p;
+////		identifier.name = "ctofNoise";
+//
+//		thisID.push_back(thisIdentifier);
+//
+//		MHit* thisNoiseHit = new MHit(10.0*p, (double) p, thisID, p);
+//
+//		noiseHits.push_back(thisNoiseHit);
+//	}
+//
+	return noiseHits;
+}
 
 map< string, vector <int> >  ctof_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
@@ -244,3 +292,7 @@ map< string, vector <int> >  ctof_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 // this static function will be loaded first thing by the executable
 ctofConstants ctof_HitProcess::ctc = initializeCTOFConstants(-1);
+
+
+
+

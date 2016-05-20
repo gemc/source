@@ -18,6 +18,8 @@ MHit::MHit() : G4VHit()
 	colour_passby = G4Colour(0.0, 1.0, 0.0);
 	
 	hasTrigger = 0;
+	isElectronicNoise = 0;
+
 }
 
 MHit::~MHit() {;}
@@ -54,5 +56,14 @@ void MHit::Draw()
 		
 		pVVisManager->Draw(circle);
 	}
+}
+
+MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
+{
+	isElectronicNoise = 1;
+	edep.push_back(energy);
+	time.push_back(tim);
+	PID.push_back(pid);
+	identity = vid;
 }
 

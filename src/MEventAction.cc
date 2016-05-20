@@ -376,7 +376,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			for(int h=0; h<nhits; h++)
 			{
 				MHit* aHit = (*MHC)[h];
-				
+				if(aHit->isElectronicNoise)
+					continue;
+
 				hitOutput thisHitOutput;
 				
 				// mother particle infos

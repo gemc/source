@@ -1,17 +1,15 @@
 GEMC Future Development
 
-New features:
-=============
+Wanted features:
+================
 
 - hybrid banks (for FADC)
 - multihit
 - geant4 multithreading
 - hit process routines > plugins to be stored with the geometry routines
 - proMC output
-
-
-- check  physics_lists/lists/src/G4PhysListFactory.cc for phys list, add some doc log in constructor
-
+- check physics_lists/lists/src/G4PhysListFactory.cc for phys list, add some doc log in constructor
+- check primitive scorer quantities http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch04s04.html
 
 Code Improvements:
 ==================
@@ -19,9 +17,8 @@ Code Improvements:
 - physics details choices (disable some physics, etc on the GUI)
 - culling options combobox
 - move timewindow to general generator tab - make all other the same
-- remove obsolete cpp materials
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
-  check performance hit
+   check performance hit
 - speed up the search for same identifier
 - add generic "system" that contains a list detectors, sensitive det, materials?
 - optimize eventaction - too many vector<hitOutput> definitions? Can they br grouped?
@@ -30,7 +27,6 @@ Code Improvements:
 - bring some guis out of main gui, pop up windows?
 - re-define and document all verbosities
 - get screen resolution and adjust gui dimensions to that
-- match detector types to geant4
 - add /tracking/storeTrajectory 4 button
 - add track verbosity output
 - add options for particles color
@@ -40,7 +36,7 @@ Code Improvements:
   PrimaryGenerator
   SteppingAction
 - gemcOptions make it a library, pass it by reference not value!
-  make calls like gemcOpt->get3Vector("BEAM_V")
+- make calls like gemcOpt->get3Vector("BEAM_V")
 
 Add production cut verbosity?
 
@@ -77,7 +73,6 @@ Code Reorganization:
 ====================
 
 - bring output structure out of gemc - general library
-- bring options out of gemc - general library 
 - bring splash screen out of util - general library
 - re-organize primary generator, use external library project
 

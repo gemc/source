@@ -7,25 +7,29 @@
 // Class definition
 class cormo_HitProcess : public HitProcess
 {
-	public:
-	
-		~cormo_HitProcess(){;}
-	
-		// - integrateDgt: returns digitized information integrated over the hit
-		map<string, double> integrateDgt(MHit*, int);
-		
-		// - multiDgt: returns multiple digitized information / hit
-		map< string, vector <int> > multiDgt(MHit*, int);
-		
-		// The pure virtual method processID returns a (new) identifier
-		// containing hit sharing information
-		vector<identifier> processID(vector<identifier>, G4Step*, detector);
+public:
 
-		// creates the HitProcess
-		static HitProcess *createHitClass() {return new cormo_HitProcess;}
+	~cormo_HitProcess(){;}
 
-		double BirksAttenuation(double,double,int,double);
-		double BirksAttenuation2(double,double,int,double);
+	// - integrateDgt: returns digitized information integrated over the hit
+	map<string, double> integrateDgt(MHit*, int);
+
+	// - multiDgt: returns multiple digitized information / hit
+	map< string, vector <int> > multiDgt(MHit*, int);
+
+	// The pure virtual method processID returns a (new) identifier
+	// containing hit sharing information
+	vector<identifier> processID(vector<identifier>, G4Step*, detector);
+
+	// creates the HitProcess
+	static HitProcess *createHitClass() {return new cormo_HitProcess;}
+
+	double BirksAttenuation(double,double,int,double);
+	double BirksAttenuation2(double,double,int,double);
+
+	// - electronicNoise: returns a vector of hits generated / by electronics.
+	vector<MHit*> electronicNoise();
+
 };
 
 #endif

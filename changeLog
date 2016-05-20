@@ -1,6 +1,29 @@
 Changelog for GEMC
 ==================
 
+5/19/16
+ - speeding up sensitive detector by not looking up vector<identifier>
+ - added pure virtual function vector<MHit*> electronicNoise() to return a vector
+   of hits coming from electronic noise.
+   Each hit process routine must implement this function to provide electronic noise.
+   The user can loop over all possible detector elements::
+
+    vector<MHit*> noiseHits;
+
+    // loop over all detector individual cells
+    // for each cell calculate the probability of a noise hit of energy e
+    // instantiate hit with energy E, time T, identifier IDF:
+    //
+    // MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+
+    // push to noiseHits collection:
+    // noiseHits.push_back(thisNoiseHit)
+
+    return noiseHits;
+
+ - The electronic noise hits are then added to the normal geant4 hits. Each process routine
+   will have them available in the output.
+
 5/17/16
  - added positronNuclear to processs catalogue
 

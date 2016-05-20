@@ -170,6 +170,22 @@ vector<identifier>  pcal_HitProcess :: processID(vector<identifier> id, G4Step* 
 	return id;
 }
 
+// - electronicNoise: returns a vector of hits generated / by electronics.
+vector<MHit*> pcal_HitProcess :: electronicNoise()
+{
+	vector<MHit*> noiseHits;
+
+	// loop over all detector individual cells
+	// for each cell calculate the probability of a noise hit of energy e
+	// instantiate hit with energy E, time T, identifier IDF:
+	//
+	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+
+	// push to noiseHits collection:
+	// noiseHits.push_back(thisNoiseHit)
+
+	return noiseHits;
+}
 
 
 map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
@@ -178,6 +194,7 @@ map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	
 	return MH;
 }
+
 
 // this static function will be loaded first thing by the executable
 pcConstants pcal_HitProcess::pcc = initializePCConstants(-1);

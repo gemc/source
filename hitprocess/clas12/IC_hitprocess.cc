@@ -86,6 +86,22 @@ vector<identifier>  IC_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	id[id.size()-1].id_sharing = 1;
 	return id;
 }
+// - electronicNoise: returns a vector of hits generated / by electronics.
+vector<MHit*> IC_HitProcess :: electronicNoise()
+{
+	vector<MHit*> noiseHits;
+
+	// loop over all detector individual cells
+	// for each cell calculate the probability of a noise hit of energy e
+	// instantiate hit with energy E, time T, identifier IDF:
+	//
+	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+
+	// push to noiseHits collection:
+	// noiseHits.push_back(thisNoiseHit)
+
+	return noiseHits;
+}
 
 
 map< string, vector <int> >  IC_HitProcess :: multiDgt(MHit* aHit, int hitn)
