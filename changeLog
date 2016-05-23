@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/23/16
+ - better comments for electronic noise routines
+
 5/19/16
  - speeding up sensitive detector by not looking up vector<identifier>
  - added pure virtual function vector<MHit*> electronicNoise() to return a vector
@@ -10,9 +13,9 @@ Changelog for GEMC
 
     vector<MHit*> noiseHits;
 
-    // loop over all detector individual cells
+    // first, identify the cells that would have electronic noise
     // for each cell calculate the probability of a noise hit of energy e
-    // instantiate hit with energy E, time T, identifier IDF:
+    // then instantiate hit with energy E, time T, identifier IDF:
     //
     // MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
 
@@ -1819,11 +1822,29 @@ Changelog for GEMC
  - New G4 comes with separate multiplescattering routines for e, mu and other ions
  - G4MultipleScattering changed to G4eMultipleScattering for gemc physics list
  - Max Track length in User Limit Constructor
- 
 
+1/21/2010
+ - Explicit conversions to remove compiler warnings
+ - Added flux Hit Process
+ - Added bank specific to FLUX type detectors
 
+1/19/2010
+ - Removing bitcompressed ID from gemc output.
+ - Making all banks consistent, even generated particles bank::
 
+    - bank: tag = bank id, num=0
+    - bank of integers: tag = bank id, num = 100
+     > each variables has its own bank here, tag = bank id, num = variable id
+    - bank of doubles: tag = bank id, num = 200
+     > each variables has its own bank here, tag = bank id, num = variable id
 
+1/15/2010
+ - Making banks format consistent
+ - Removing bit compressed id from all banks - too much hassle for a tiny gain in space.
+
+1/13/2010
+ - Changing generated bank to tag 10 num 0
+ - Definitions of variables was wrong - fixed it
 
 
 

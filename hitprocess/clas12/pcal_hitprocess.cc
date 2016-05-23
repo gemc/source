@@ -175,9 +175,8 @@ vector<MHit*> pcal_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
 
-	// loop over all detector individual cells
-	// for each cell calculate the probability of a noise hit of energy e
-	// instantiate hit with energy E, time T, identifier IDF:
+	// first, identify the cells that would have electronic noise
+	// then instantiate hit with energy E, time T, identifier IDF:
 	//
 	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
 
