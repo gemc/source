@@ -515,7 +515,14 @@ void goptions::setGoptions()
 	optMap["SIGNALVT"].name = "Activates voltage (t) output for system(s). ";
 	optMap["SIGNALVT"].type = 1;
 	optMap["SIGNALVT"].ctgr = "output";
-	
+
+	// disabled by default
+	optMap["ELECTRONICNOISE"].args = "no";
+	optMap["ELECTRONICNOISE"].help = "Activates electronic noise routines for system(s). Example: -ELECTRONICNOISE=\"dc, ftof\"";
+	optMap["ELECTRONICNOISE"].name = "Activates electronic noise routines for system(s). ";
+	optMap["ELECTRONICNOISE"].type = 1;
+	optMap["ELECTRONICNOISE"].ctgr = "output";
+
 	// voltage versus time resolution, in ns
 	optMap["VTRESOLUTION"].arg = 0.1;
 	optMap["VTRESOLUTION"].help = "Voltage versus time resolution, in ns";

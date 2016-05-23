@@ -25,7 +25,8 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
 	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
-	
+	ELECTRONICNOISE  = replaceCharWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
+
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy
 	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3)
@@ -275,9 +276,13 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 	}
 
 	// adding electronic noise to hits
-	vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
-	for(unsigned int h=0; h<noiseHits.size(); h++)
-		hitCollection->insert(noiseHits[h]);
+	// only if requested by user
+	if(ELECTRONICNOISE.find(HCname) != string::npos)
+	{
+		vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
+		for(unsigned int h=0; h<noiseHits.size(); h++)
+			hitCollection->insert(noiseHits[h]);
+	}
 
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore
 	

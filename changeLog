@@ -3,6 +3,8 @@ Changelog for GEMC
 
 5/23/16
  - better comments for electronic noise routines
+ - added option ELECTRONICNOISE to select sensitive detectors that will produce eletronic noise.
+   The electronic noise is disabled by default
 
 5/19/16
  - speeding up sensitive detector by not looking up vector<identifier>
@@ -14,7 +16,6 @@ Changelog for GEMC
     vector<MHit*> noiseHits;
 
     // first, identify the cells that would have electronic noise
-    // for each cell calculate the probability of a noise hit of energy e
     // then instantiate hit with energy E, time T, identifier IDF:
     //
     // MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
