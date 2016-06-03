@@ -205,11 +205,13 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double            A = ftc.twlk[sector-1][panel-1][0][paddle-1];
 	  double            B = ftc.twlk[sector-1][panel-1][1][paddle-1];
 	  //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
-	  double timeWalkLeft = A/pow(adcl,B);
-	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
-	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]);
-	                tdclu = tLeftU*ftc.tdcLSB;
-	                 tdcl = tLeft*ftc.tdcLSB;
+	  double timeWalkLeftU = A/pow(adclu,B);
+          double timeWalkLeft  = A/pow(adcl,B);
+	  double       tLeftU  = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeftU;
+          double        tLeft  = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + timeWalkLeft;
+	                tLeft  = G4RandGauss::shoot(tLeft,  sqrt(2)*ftc.tres[panel-1][paddle-1]);
+	                tdclu  = tLeftU*ftc.tdcLSB;
+	                 tdcl  = tLeft*ftc.tdcLSB;
 	}  
 	
 	double npheR = G4Poisson(eneR*ftc.pmtPEYld);
@@ -220,11 +222,13 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double             A = ftc.twlk[sector-1][panel-1][3][paddle-1];
 	  double             B = ftc.twlk[sector-1][panel-1][4][paddle-1];
 	  //double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
-	  double timeWalkRight = A/pow(adcr,B);	
-	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;	
-	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]);	
-	                 tdcru = tRightU*ftc.tdcLSB;
-	                  tdcr = tRight*ftc.tdcLSB;
+	  double timeWalkRightU = A/pow(adcru,B);
+          double timeWalkRight  = A/pow(adcr,B);	
+	  double       tRightU  = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRightU;	
+          double       tRight   = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm + timeWalkRight;
+	               tRight  = G4RandGauss::shoot(tRight, sqrt(2)*ftc.tres[panel-1][paddle-1]);	
+	                 tdcru  = tRightU*ftc.tdcLSB;
+	                  tdcr  = tRight*ftc.tdcLSB;
 	}
 	
 	// Status flags
