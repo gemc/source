@@ -168,6 +168,15 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double eneL = tInfos.eTot*attLeft;
 	double eneR = tInfos.eTot*attRight;
 
+	// giving geantinos some energies
+	if(aHit->GetPID() == 0)
+	{
+		double gmomentum = aHit->GetMom().mag()/GeV;
+		eneL = gmomentum*attLeft;
+		eneR = gmomentum*attRight;
+
+	}
+		
 	double adcl  = 0;
 	double adcr  = 0;
 	double adclu = 0;
