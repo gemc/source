@@ -20,7 +20,7 @@ void ftm_strip::fill_infos()
   
   Rmin = 65.0;                 // inner radius of disks
   Rmax = 142.0;  // outer radius of disks
-  Z_1stlayer = 1763.-0.3/2.-0.1-0.015; // z position of the 1st layer : epoxy center - half epoxy Dz - PCB Dz - strips Dz
+  Z_1stlayer = 1773.-0.3/2.-0.1-0.015; // z position of the 1st layer : epoxy center - half epoxy Dz - PCB Dz - strips Dz
   
   // z of the upstream part of the layer
   Z0.push_back(Z_1stlayer);
