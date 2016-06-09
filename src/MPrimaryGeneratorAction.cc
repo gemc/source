@@ -391,7 +391,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					particleGun->GeneratePrimaryVertex(anEvent);
 					if(GEN_VERBOSITY > 3)
 						cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
-					         << "  Vertex=" << beam_vrt << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+					         << "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 				}
 				else if(pindex != p+1)
 					if(GEN_VERBOSITY > 3)

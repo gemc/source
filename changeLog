@@ -1,6 +1,16 @@
 Changelog for GEMC
 ==================
 
+6/9/16
+ - fixed log for vertex units for LUND format
+
+6/8/16
+ - fixed mismatch between ftm hitprocess and actual geometry
+
+
+6/3/16
+ - if the particle is a geantino the edep will be its momentum (ftof only for now)
+
 5/23/16
  - better comments for electronic noise routines
  - added option ELECTRONICNOISE to select sensitive detectors that will produce eletronic noise.

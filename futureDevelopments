@@ -3,11 +3,6 @@ GEMC Future Development
 Wanted features:
 ================
 
-- hybrid banks (for FADC)
-- multihit
-- geant4 multithreading
-- hit process routines > plugins to be stored with the geometry routines
-- proMC output
 - check physics_lists/lists/src/G4PhysListFactory.cc for phys list, add some doc log in constructor
 - check primitive scorer quantities http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch04s04.html
 
@@ -15,21 +10,15 @@ Code Improvements:
 ==================
 
 - physics details choices (disable some physics, etc on the GUI)
-- culling options combobox
-- move timewindow to general generator tab - make all other the same
 - "ahit" general function to get infos (with auto, c++11) getVector(string), get3Vector(string)
    check performance hit
 - speed up the search for same identifier
 - add generic "system" that contains a list detectors, sensitive det, materials?
 - optimize eventaction - too many vector<hitOutput> definitions? Can they br grouped?
 - add DEBUG ifdefs for debugging part of code
-- general color map to be used by geant4 / gui , maybe part of options?
-- bring some guis out of main gui, pop up windows?
-- re-define and document all verbosities
 - get screen resolution and adjust gui dimensions to that
 - add /tracking/storeTrajectory 4 button
 - add track verbosity output
-- add options for particles color
 - is atof thread safe?
 - move all user actions in their directory:
   ActionInitialization
@@ -66,15 +55,6 @@ GmCutsEnergy2RangeUA:  MATERIAL:  G4_WATER  PART: e-
 ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 0.134781
 GmCutsEnergy2RangeUA:  MATERIAL:  G4_WATER  PART: e+
 ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 0.137686
-
-
-
-Code Reorganization:
-====================
-
-- bring output structure out of gemc - general library
-- bring splash screen out of util - general library
-- re-organize primary generator, use external library project
 
 
 
