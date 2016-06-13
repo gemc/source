@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+6/13/16
+ - reinstated G4HadronPhysicsShielding
+ - update help on physics list
+
 6/9/16
  - fixed log for vertex units for LUND format
 
