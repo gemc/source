@@ -6,6 +6,11 @@ Wanted features:
 - check physics_lists/lists/src/G4PhysListFactory.cc for phys list, add some doc log in constructor
 - check primitive scorer quantities http://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch04s04.html
 
+- add help-html to webpage
+- add magnetic field lines: /vis/scene/add/magneticField 5
+(doesn't work for both fields why)
+
+
 Code Improvements:
 ==================
 
