@@ -52,11 +52,14 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		double phi,   dphi;               ///< phi, delta phi
 		double vx, vy, vz;                ///< Beam Vertex coordinates
 		double dvr, dvz;                  ///< Deltas Beam Vertex: Radius and z-vertex
+		double dvx, dvy ;                 ///< Deltas Beam Vertex: individual coordinates
+		int gaussOrFlatV;                 ///< 0 (default): flat distribution 1: gaussian distribution
+		int drdzOrdxdydz;                 ///< spread is in (dr, dz): 0. (dx, dy dz): 1
 		double polDeg, polTheta, polPhi;  ///< Polarization degree and  direction
 		double ctheta;                    ///< customized theta direction for the z axis
 		double cphi;                      ///< customize phi direction for the z axis
-		double primaryFlat;               ///< if this is set to 1, spread flat in theta, not cos(theta)
-	
+		double primaryFlat;               ///< if this is set to 1 spread flat in theta, not cos(theta)
+
 		double cosmicA, cosmicB, cosmicC; ///< cosmic ray model parameters
 		double cminp, cmaxp, cMom;        ///< minimum and maximum cosmic ray momentum
 		G4ThreeVector cosmicTarget;       ///< Location of area of interest for cosmic rays

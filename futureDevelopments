@@ -31,6 +31,7 @@ Code Improvements:
   SteppingAction
 - gemcOptions make it a library, pass it by reference not value!
 - make calls like gemcOpt->get3Vector("BEAM_V")
+- change primaryFlat to thetaGauss thetaUniform cthetaGauss cthetaUniform.
 
 Add production cut verbosity?
 
@@ -68,6 +69,39 @@ Fixes
 
 Load path should be corrected /group still show /group even though it's loaded
 from a different path
+
+
+
+
+
+Gemc Newsletter 7/2016
+----------------------
+
+Ladies and gentlemen, 240 years ago the founding fathers...
+
+hmm maybe too formal.
+
+Yo all...
+
+ok too informal...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,31 @@
 Changelog for GEMC
 ==================
 
+7/5/2016
+ - Additional optional string added to SPREAD_V:
+
+   - "gauss": spread quantities with a gaussian distribution
+   - "flat": default. spread quantities with a flat distribution.
+
+   For example::
+
+    - SPREAD_P="(1, 5)cm gauss"
+
+  will spread the vertex with a gaussian distribution sigma of 1cm around r and 5 cm around z.
+
+ - Vertex can be spread along "r" and "φ" or along the cartesian coordinate "x", "y", "z". To select, set SPREAD_V to:
+
+   - ( number, number ) unit : selects (r, φ) spread
+   - ( number, number, number ) unit : selects (dx, dy, dz) spread
+
+ - These changes are backward compatible.
+
+.. Note::
+	6/19/16 gemc 2.4 released!
+
+|
+
+
 6/13/16
  - reinstated G4HadronPhysicsShielding
  - update help on physics list

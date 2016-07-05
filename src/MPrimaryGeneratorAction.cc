@@ -61,7 +61,9 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 			cout << hd_msg << " Beam Direction: (theta, phi) = (" << theta/deg << ", " << phi/deg << ") deg" ;
 			if(dtheta > 0 || dphi > 0) cout << " +- (" << dtheta/deg << ", " << dphi/deg << ") deg ";
 			cout << endl << hd_msg << " Beam Vertex: (" << vx/cm << ", " << vy/cm << ", " << vz/cm << ") cm" ;
-			if(dvr + dvz > 0) cout << " (radius, z-spread) = (" << dvr/cm << ", " << dvz/cm << ") cm" ;
+			if(drdzOrdxdydz == 0) cout << " (radius, z-spread) = (" << dvr/cm << ", " << dvz/cm << ") cm, " ;
+			else                  cout << " (dvx, dvy, dvz) = (" << dvx/cm << ", " << dvy/cm << ", " << dvz/cm << ") cm, " ;
+			cout << (gaussOrFlatV ?  "gaussian spread" : "flat spread");
 			cout << endl << hd_msg << " Beam polarization: "    << polDeg << "%" << endl ;
 			cout << hd_msg << " Polarization Direction: (theta, phi) = (" << polTheta/deg << ", " << polPhi/deg << ")" ;
 			cout << endl;
@@ -164,16 +166,51 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			
 			particleGun->SetParticleEnergy(akine);
 			particleGun->SetParticleMomentumDirection(beam_dir);
-			
+			G4ThreeVector beam_vrt;
+
 			// vertex
-			double VR  = sqrt(G4UniformRand())*dvr/mm;
-			double PHI = 2.0*pi*G4UniformRand();
-			double Vx = vx/mm + VR*cos(PHI);
-			double Vy = vy/mm + VR*sin(PHI);
-			double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
-			G4ThreeVector beam_vrt(Vx, Vy, Vz);
+			if(drdzOrdxdydz == 0)
+			{
+
+				double VR;
+
+				if(gaussOrFlatV == 1) {
+					// r is gaussian
+					VR  = G4RandGauss::shoot(sqrt(vx*vx + vy*vy + vz*vz), dvr/mm);
+				} else {
+					// r2 is flat
+					VR  = sqrt(G4UniformRand())*dvr/mm;
+				}
+
+
+				double PHI = 2.0*pi*G4UniformRand();
+
+				double Vx = vx/mm + VR*cos(PHI);
+				double Vy = vy/mm + VR*sin(PHI);
+				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
+
+
+				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
+			}
+			else {
+
+				double Vx, Vy, Vz;
+
+				if(gaussOrFlatV == 1) {
+					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm);
+					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm);
+					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm);
+				} else {
+					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm;
+					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm;
+					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
+				}
+				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
+
+			}
 			particleGun->SetParticlePosition(beam_vrt);
-			
+
+
 			// polarization
 			double partPol = 0.0;
 			double polCast = 100.0 * G4UniformRand();
@@ -761,10 +798,47 @@ void MPrimaryGeneratorAction::setBeam()
 			
 			// Getting vertex spread from option value
 			values = get_info(gemcOpt->optMap["SPREAD_V"].args);
-			units = TrimSpaces(values[2]);
-			dvr = get_number(values[0] + "*" + units);
-			dvz = get_number(values[1] + "*" + units);
-			
+			// distribution type is not given. defaults to "flat"
+			// number of argument can be 3 (drdz) or 4 (dxdydz)
+			if(values.back().find("gauss") == string::npos && values.back().find("flat") == string::npos)
+			{
+				gaussOrFlatV = 0;
+
+				// check if it's (dr, dz) or (dx, dy, dz)
+				if(values.size() == 3) {
+					drdzOrdxdydz = 0;
+					units = TrimSpaces(values[2]);
+					dvr = get_number(values[0] + "*" + units);
+					dvz = get_number(values[1] + "*" + units);
+				}
+				else if(values.size() == 4) {
+					drdzOrdxdydz = 1;
+					units = TrimSpaces(values[3]);
+					dvx = get_number(values[0] + "*" + units);
+					dvy = get_number(values[1] + "*" + units);
+					dvz = get_number(values[2] + "*" + units);
+				}
+			} else {
+				if(values.back().find("gauss") == string::npos) gaussOrFlatV = 0;
+				else gaussOrFlatV = 1;
+
+				// check if it's (dr, dz) or (dx, dy, dz)
+				if(values.size() == 4) {
+					drdzOrdxdydz = 0;
+					units = TrimSpaces(values[2]);
+					dvr = get_number(values[0] + "*" + units);
+					dvz = get_number(values[1] + "*" + units);
+				}
+				else if(values.size() == 5) {
+					drdzOrdxdydz = 1;
+					units = TrimSpaces(values[3]);
+					dvx = get_number(values[0] + "*" + units);
+					dvy = get_number(values[1] + "*" + units);
+					dvz = get_number(values[2] + "*" + units);
+				}
+			}
+
+
 			// Getting polarization from option value
 			values = get_info(gemcOpt->optMap["POLAR"].args);
 			polDeg   = get_number(values[0]);
