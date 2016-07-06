@@ -122,23 +122,6 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	
 	
 	
-	/*
-	 G4Material *MMGas = new G4Material("MMGas",   density = 1.17*mg/cm3, nel=4);
-	 MMGas->AddElement(Ne, 79.0*perCent);
-	 MMGas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.2011*11.0*perCent);
-	 MMGas->AddElement(C, (0.7989*11.0+0.1365*10.0)*perCent);
-	 MMGas->AddElement(F, 0.8635*10.0*perCent);
-	 */
-	/*
-	 G4Material *MMGas = new G4Material("MMGas",   density = 1.87*mg/cm3, nel=4);
-	 MMGas->AddElement(Ar, 95.0*perCent);
-	 MMGas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.1734*2.0*perCent);
-	 MMGas->AddElement(C, (0.8266*2.0+0.1365*3.0)*perCent);
-	 MMGas->AddElement(F, 0.8635*3.0*perCent);
-	 */
-	
-	
-	//G4double MMMeshTransparency = (19./50.)*(19./50.);
 	G4double MMMeshTransparency = 1.0;
 	
 	G4Material *MMMesh = new G4Material("MMMesh",   density = 8.02*MMMeshTransparency*g/cm3, nel=5);

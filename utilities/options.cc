@@ -268,7 +268,7 @@ int goptions::setOptMap(int argc, char **argv)
 				hf << "	font-family: \"Trebuchet MS\", Verdana, Arial, Helvetica, sans-serif;" << endl;
 				hf << "	font-size: 0.8em;" << endl;
 				hf << "	color: #000;" << endl;
-				hf << "	background: #bcd0e4;" << endl;
+				hf << "	background: #fcf0e4;" << endl;
 				hf << "}" << endl;
 				hf << ".pretty-table caption" << endl;
 				hf << "{" << endl;
@@ -288,7 +288,7 @@ int goptions::setOptMap(int argc, char **argv)
 				hf << ".pretty-table th[scope=col]" << endl;
 				hf << "{" << endl;
 				hf << "	color: #000;" << endl;
-				hf << "	background-color: #8fadcc;" << endl;
+				hf << "	background-color: #afadcc;" << endl;
 				hf << "	text-transform: uppercase;" << endl;
 				hf << "	font-size: 0.9em;" << endl;
 				hf << "	border-bottom: 2px solid #333;" << endl;
