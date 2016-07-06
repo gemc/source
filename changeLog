@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+7/6/16
+ - Removed CPP obsolete materials: Air, Aerogel, Air_Opt2, NOMEX, RichAerogel3, RichAerogel5, Chlorine, Deuterium, Carbon, LHe,
+   Densimet, Kapton, LgTF1, LeadOxide, LeadTungsten, Glass_GE180, As, W, AluminiumOxide, CalciumOxide, OptScint
+
+
 7/5/2016
  - Additional optional string added to SPREAD_V:
 
@@ -1886,15 +1891,48 @@ Changelog for GEMC
  - Changing generated bank to tag 10 num 0
  - Definitions of variables was wrong - fixed it
 
+2/12/2009
+ - Added Secondary luminosity beam for beam collider experiment.
+ - Both command line and GUI updated.
+
+11/17/2009
+ - GUI fixes and improvements
+ - Added G4Cons, and more pics for the detector editor.
+
+11/11/2009
+ - Introducing the FLUX detector type. A detector is set to be "FLUX" by using TimeWindow = 0.
+ - If FLUX, each track will generate a hit in a detector element - as opposed to integrate hits over a finite time window.
 
 
+10/06/2009
+ - Added luminosity GUI tab
+ - Fixed bug that deleted pointers in the wrong destructor.
 
+9/24/2009
+ - Making compiler happy
 
+9/22/2009
+ - GUI improvs: added number of event combo boxes
 
+9/18/2009
+ - Polishing GUI. Adding beam and luminosity GUI selection.
+ - Added LUMI_SPREAD_V option.
+ - The Beam spread is no longer on x,y,z but on radius and z.
+ - Finalizing camera controls
 
+9/17/2009
+ - Rewriting the GUI interface.
 
+9/15/2009
+ - Fixed env variable name for magnetic field data
 
+9/13/2009
+ - Map location changed to save on number of env. variables.
+ - Reduced GUI on standard operations: one can zoom/pan as google maps on the picture itself.
+ - USE_QT=2 or 3 will show the usual GUI.
 
+8/31/2009
+ - Color can have a 7th character (transparency)
 
 
 
