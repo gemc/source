@@ -37,23 +37,12 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	
 	G4Element* Ar  = new G4Element("Argon",     "Ar", z=18, a=    39.95*g/mole);
 	G4Element* Al  = new G4Element("Aluminum",  "Al", z=13, a=   26.982*g/mole);
-	G4Element* Ba  = new G4Element("Barium",    "Ba", z=56, a=  137.327*g/mole);
 	G4Element* C   = new G4Element("Carbon",    "C",  z=6,  a=    12.01*g/mole);
-	G4Element* Cr  = new G4Element("Chromium",  "Cr", z=24, a=    52.00*g/mole);
 	G4Element* F   = new G4Element("Fluorine",  "F",  z=9,  a=  18.9984*g/mole);
 	G4Element* H   = new G4Element("Hydrogen",  "H",  z=1,  a=     1.01*g/mole);
-	G4Element* He  = new G4Element("Helium",    "He", z=2,  a=   4.0026*g/mole);
-	G4Element* He3 = new G4Element("Helium3",  "He3", z=2,  a=3.0160293*g/mole);
-	G4Element* Mn  = new G4Element("Manganese", "Mn", z=25, a=    54.94*g/mole);
-	G4Element* N   = new G4Element("Nitrogen",  "N",  z=7,  a=    14.01*g/mole);
 	G4Element* O   = new G4Element("Oxygen",    "O",  z=8,  a=    16.00*g/mole);
-	G4Element* Ox  = new G4Element("Ox",        "Ox", z=8,  a=     16.0*g/mole);
-	G4Element* Ni  = new G4Element("Nickel",    "Ni", z=28, a=    58.70*g/mole);
-	G4Element* Pb  = new G4Element("Lead",      "Pb", z=82, a=   207.19*g/mole);
 	G4Element* Si  = new G4Element("Silicon",   "Si", z=14, a=    28.09*g/mole);
-	G4Element* Sr  = new G4Element("Strontium", "Sr", z=38, a=    87.62*g/mole);
-	G4Element* Wf  = new G4Element("Wf",        "Wf", z=74, a=   183.85*g/mole);
-	
+
 	G4NistManager* matman = G4NistManager::Instance();
 	
 
@@ -101,53 +90,14 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	
 	
 
-	G4Material* PbWO4    = new G4Material( "PbWO4",  density = 8.28*g/cm3, nel=3 );
-	PbWO4->AddElement( Pb,   1./6.*100.*perCent );
-	PbWO4->AddElement( Wf,   1./6.*100.*perCent );
-	PbWO4->AddElement( Ox,   4./6.*100.*perCent );
-	
-	G4Material* SemiMirror    = new G4Material( "SemiMirror",  density = 8.28*g/cm3, nel=3 );
-	SemiMirror->AddElement( Pb,   1./6.*100.*perCent );
-	SemiMirror->AddElement( Wf,   1./6.*100.*perCent );
-	SemiMirror->AddElement( Ox,   4./6.*100.*perCent );
-	
-	//for pol He3 target
-	//He3 gas target
-	G4Material* He3_10amg = new G4Material( "He3_10amg",  density = 10.*0.1345*mg/cm3, nel=1 );
-	//0.1345=44.6(amg=mol/m3)*3.016(g/mol)
-	He3_10amg->AddElement( He3, 100.0*perCent );
-	
-	//He3 cell glass
-	G4Material *BariumOxide = new G4Material("BariumOxide", density=5.72*g/cm3, nel=2);
-	BariumOxide->AddElement(Ba, 1);
-	BariumOxide->AddElement(O,  1);
-	
-	G4Material *StrontiumOxide = new G4Material("StrontiumOxide", density=4.7*g/cm3, nel=2);
-	StrontiumOxide->AddElement(Sr, 1);
-	StrontiumOxide->AddElement(O,  1);
-	
 
-	//proton pol target NH3
-	//solid NH3
-	G4double density_NH3_solid = 0.817*g/cm3;
-	G4Material *NH3_solid = new G4Material("NH3_solid", density_NH3_solid, nel=2);
-	NH3_solid->AddElement(H, 3);
-	NH3_solid->AddElement(N, 1);
-	
-	G4Material *He4_liquid = new G4Material( "He4_liquid",  density = 0.145*g/cm3, nel=1 );
-	He4_liquid->AddElement( He, 100.0*perCent );
-	
-	//SolidNH3(55%)+LiquidHe(45%) in volumn?
-	//density = mLiquidHeD*(1.0-mNH3VolumnRatio)+mSolidNH3D*mNH3VolumnRatio;
-	//density_NH3He = 1.0/((1.0-mNH3WeightRatio)/mLiquidHeD+mNH3WeightRatio/mSolidNH3D);
-	G4double density_NH3He = (0.817*0.55+0.145*0.45)*g/cm3;
-	G4Material *NH3He = new G4Material("NH3He", density_NH3He, nel=2);
-	NH3He->AddMaterial(NH3_solid, 0.8732);
-	NH3He->AddMaterial(He4_liquid, 1-0.8732);
-	
-	//Beryllium oxide
-	G4Material *BerylliumOxide =  matman->FindOrBuildMaterial("G4_BERYLLIUM_OXIDE");  // BeO 3.02g/cm3
-	
+
+
+
+
+
+
+
 	// polyethylene
 	
 		// Nema G10:
@@ -230,16 +180,13 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	MMats["Glass"]          = Glass;
 	MMats["Gold"]           = matman->FindOrBuildMaterial("G4_Au");
 	MMats["H2O"]            = H2O;
-	MMats["He3_10amg"]      = He3_10amg ;
 	MMats["Iron"]           = matman->FindOrBuildMaterial("G4_Fe");
 	MMats["Kryptonite"]     = matman->FindOrBuildMaterial("Kryptonite");
 	MMats["Lead"]           = matman->FindOrBuildMaterial("G4_Pb");
 	MMats["LH2"]            = matman->FindOrBuildMaterial("G4_lH2");;
 	MMats["Methane"]        = Methane;
 	MMats["Nickel"]         =  matman->FindOrBuildMaterial("G4_Ni");
-	MMats["PbWO4"]          = PbWO4 ;
 	MMats["Quartz"]         = Quartz;
-	MMats["SemiMirror"]     = SemiMirror ;
 	MMats["Silicium"]       = matman->FindOrBuildMaterial("G4_Si");
 	MMats["Silicon"]        = matman->FindOrBuildMaterial("G4_Si");
 	MMats["Teflon"]         = matman->FindOrBuildMaterial("G4_TEFLON");
@@ -252,11 +199,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	MMats["Argon"]          = Argon;
 	MMats["CO2"]            = CO2;
 	MMats["ArCO2"]          = ArCO2;
-	MMats["NH3_solid"]      = NH3_solid;
-	MMats["He4_liquid"]     = He4_liquid;
-	MMats["NH3He"]          = NH3He;
-	MMats["BerylliumOxide"] = BerylliumOxide;
-	
+
 	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Materials Optical Properties
@@ -275,16 +218,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	Air_MPT->AddProperty("RINDEX", PhotonEnergy_Air, RefractiveIndex_Air, nEntries_Air);
 	MMats["Air_Opt"]->SetMaterialPropertiesTable(Air_MPT);
 
-	G4double PhotonEnergy_SemiMirror[nEntries_Air]    = { 2.034*eV , 4.136*eV };
-	G4double RefractiveIndex_SemiMirror[nEntries_Air] = { 5.00, 5.00 };
-	G4double Absorption_SemiMirror[nEntries_Air]      = { 100.0*m    , 100.0*m  };
-	
-	G4MaterialPropertiesTable* SemiMirrorMPT = new G4MaterialPropertiesTable();
-	SemiMirrorMPT->AddProperty("RINDEX",     PhotonEnergy_SemiMirror, RefractiveIndex_SemiMirror, 2);
-	SemiMirrorMPT->AddProperty("ABSLENGTH",  PhotonEnergy_SemiMirror, Absorption_SemiMirror,      2);
-	MMats["SemiMirror"]->SetMaterialPropertiesTable(SemiMirrorMPT);
-	
-	
+
 	
 	
 
