@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+7/7/16
+ - Removed CPP obsolete materials: DCgas, FTinsfoam, Noryl, svtwirebond, MMGas, MMMesh, MMMylar, He4_1atm, He4_2atm, He4_3atm,
+   He4_7atm, 
+
 7/6/16
  - Removed CPP obsolete materials: Air, Aerogel, Air_Opt2, NOMEX, RichAerogel3, RichAerogel5, Chlorine, Deuterium, Carbon, LHe,
    Densimet, Kapton, LgTF1, LeadOxide, LeadTungsten, Glass_GE180, As, W, AluminiumOxide, CalciumOxide, OptScint

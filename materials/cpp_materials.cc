@@ -91,73 +91,16 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	
 
 
-	G4Material *DCgas    = new G4Material("DCgas",              density = 1.8*mg/cm3, nel=3);
-	DCgas->AddElement(Ar, 90*perCent);
-	DCgas->AddMaterial(matman->FindOrBuildMaterial("G4_O"),  6.6*perCent);
-	DCgas->AddMaterial(matman->FindOrBuildMaterial("G4_C"),  3.4*perCent);
+
+	
+
+
+	
+
+
 	
 	
-	
-	G4Material *FTinsfoam    = new G4Material("FTinsfoam",     density = 34*kg/m3, nel=4);
-	FTinsfoam->AddMaterial(matman->FindOrBuildMaterial("G4_C"), 60.*perCent);
-	FTinsfoam->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 10.*perCent);
-	FTinsfoam->AddMaterial(matman->FindOrBuildMaterial("G4_N"), 10.*perCent);
-	FTinsfoam->AddMaterial(matman->FindOrBuildMaterial("G4_O"), 20.*perCent);
-	
-	G4Material *Noryl	= new G4Material("Noryl",	    density = 1.06*g/cm3, nel=3);
-	Noryl->AddMaterial(matman->FindOrBuildMaterial("G4_C"), 47.06*perCent );
-	Noryl->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 47.06*perCent );
-	Noryl->AddMaterial(matman->FindOrBuildMaterial("G4_O"),  5.88*perCent );
-	
-	
-	G4Material *svtwirebond    = new G4Material("svtwirebond",  density = 2.69*g/cm3, nel=2);
-	svtwirebond->AddElement(Al, 99*perCent);
-	svtwirebond->AddMaterial(matman->FindOrBuildMaterial("G4_Si"), 1*perCent);
-	
-	G4Material *MMGas = new G4Material("MMGas",   density = (1.662*0.95+2.489*0.05)*mg/cm3, nel=3);
-	MMGas->AddElement(Ar, 95.0*perCent);
-	MMGas->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.173414*5.0*perCent);
-	MMGas->AddMaterial(matman->FindOrBuildMaterial("G4_C"), 0.826586*5.0*perCent);
-	
-	
-	
-	
-	G4double MMMeshTransparency = 1.0;
-	
-	G4Material *MMMesh = new G4Material("MMMesh",   density = 8.02*MMMeshTransparency*g/cm3, nel=5);
-	MMMesh->AddElement(Mn, 0.02);
-	MMMesh->AddMaterial(matman->FindOrBuildMaterial("G4_Si"), 0.01);
-	MMMesh->AddElement(Cr, 0.19);
-	MMMesh->AddElement(Ni, 0.10);
-	MMMesh->AddMaterial(matman->FindOrBuildMaterial("G4_Fe"), 0.68);
-	
-	/*
-	 G4Material *MMMesh       = new G4Material("MMMesh",  z=28, a=   58.70*g/mole,  density =  8.902*MMMeshTransparency*g/cm3);
-	 */
-	
-	G4Material *MMMylar = new G4Material("MMMylar",   density = 1.40*g/cm3, nel=3);
-	MMMylar->AddMaterial(matman->FindOrBuildMaterial("G4_H"), 0.041958);
-	MMMylar->AddMaterial(matman->FindOrBuildMaterial("G4_C"), 0.625017);
-	MMMylar->AddMaterial(matman->FindOrBuildMaterial("G4_O"), 0.333025);
-	
-	/*
-	 G4Material *MMMylar = new G4Material("MMMylar",   density = 8.02*MMMeshTransparency*g/cm3, nel=5);
-	 MMMylar->AddElement(Mn, 0.02);
-	 MMMylar->AddMaterial(matman->FindOrBuildMaterial("G4_Si"), 0.01);
-	 MMMylar->AddElement(Cr, 0.19);
-	 MMMylar->AddElement(Ni, 0.10);
-	 MMMylar->AddMaterial(matman->FindOrBuildMaterial("G4_Fe"), 0.68);
-	 */
-	//G4Material *MMMylar       = new G4Material("MMMylar",  z=28, a=   58.70*g/mole,  density =  8.902*g/cm3);
-	G4Material* He4_1atm = new G4Material( "He4_1atm",  density = 1.*0.1786*mg/cm3, nel=1 );
-	He4_1atm->AddElement( He, 100.0*perCent );
-	G4Material* He4_2atm = new G4Material( "He4_2atm",  density = 2.*0.1786*mg/cm3, nel=1 );
-	He4_2atm->AddElement( He, 100.0*perCent );
-	G4Material* He4_3atm = new G4Material( "He4_3atm",  density = 3.*0.1786*mg/cm3, nel=1 );
-	He4_3atm->AddElement( He, 100.0*perCent );
-	G4Material* He4_7atm = new G4Material( "He4_7atm",  density = 7.*0.1786*mg/cm3, nel=1 );
-	He4_7atm->AddElement( He, 100.0*perCent );
-	
+
 	G4Material* PbWO4    = new G4Material( "PbWO4",  density = 8.28*g/cm3, nel=3 );
 	PbWO4->AddElement( Pb,   1./6.*100.*perCent );
 	PbWO4->AddElement( Wf,   1./6.*100.*perCent );
@@ -247,8 +190,6 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	Quartz->AddMaterial(matman->FindOrBuildMaterial("G4_Si"), 1);
 	Quartz->AddElement(O,  2);
 	
-	//G4Material *Methane = new G4Material("Methane", density= 0.422*g/cm3, nel=2);  //liquid
-	//G4Material *Methane = new G4Material("Methane", density= 0.717*kg/m3, nel=2);  //gas at 0 degree, 1atm
 	G4Material *Methane = new G4Material("Methane", density= 0.667*kg/m3, nel=2);    //gas at 20 degree, 1atm
 	Methane->AddElement(C, 1);
 	Methane->AddElement(H, 4);
@@ -286,32 +227,21 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	MMats["C6F14"]          = C6F14;
 	MMats["Concrete"]       = matman->FindOrBuildMaterial("G4_CONCRETE");       // concrete
 	MMats["Copper"]         = matman->FindOrBuildMaterial("G4_Cu");
-	MMats["DCgas"]          = DCgas;
-	MMats["FTinsfoam"]      = FTinsfoam;
 	MMats["Glass"]          = Glass;
 	MMats["Gold"]           = matman->FindOrBuildMaterial("G4_Au");
 	MMats["H2O"]            = H2O;
-	MMats["He4_1atm"]       = He4_1atm ;
-	MMats["He4_2atm"]       = He4_2atm ;
-	MMats["He4_3atm"]       = He4_3atm ;
-	MMats["He4_7atm"]       = He4_7atm ;
 	MMats["He3_10amg"]      = He3_10amg ;
 	MMats["Iron"]           = matman->FindOrBuildMaterial("G4_Fe");
 	MMats["Kryptonite"]     = matman->FindOrBuildMaterial("Kryptonite");
 	MMats["Lead"]           = matman->FindOrBuildMaterial("G4_Pb");
 	MMats["LH2"]            = matman->FindOrBuildMaterial("G4_lH2");;
 	MMats["Methane"]        = Methane;
-	MMats["MMGas"]          = MMGas;
-	MMats["MMMesh"]         = MMMesh;
-	MMats["MMMylar"]        = MMMylar;
 	MMats["Nickel"]         =  matman->FindOrBuildMaterial("G4_Ni");
-	MMats["Noryl"]          = Noryl ;
 	MMats["PbWO4"]          = PbWO4 ;
 	MMats["Quartz"]         = Quartz;
 	MMats["SemiMirror"]     = SemiMirror ;
 	MMats["Silicium"]       = matman->FindOrBuildMaterial("G4_Si");
 	MMats["Silicon"]        = matman->FindOrBuildMaterial("G4_Si");
-	MMats["svtwirebond"]    = svtwirebond;
 	MMats["Teflon"]         = matman->FindOrBuildMaterial("G4_TEFLON");
 	MMats["Tungsten"]       = matman->FindOrBuildMaterial("G4_W");
 	MMats["Vacuum"]         = matman->FindOrBuildMaterial("G4_Galactic");

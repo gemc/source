@@ -28,6 +28,7 @@ Code Improvements:
 - gemcOptions make it a library, pass it by reference not value!
 - make calls like gemcOpt->get3Vector("BEAM_V")
 - change primaryFlat to thetaGauss thetaUniform cthetaGauss cthetaUniform.
+- add system name to material name
 
 Add production cut verbosity?
 
