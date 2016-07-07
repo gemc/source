@@ -4,7 +4,7 @@ Changelog for GEMC
 7/6/16
  - Removed CPP obsolete materials: Air, Aerogel, Air_Opt2, NOMEX, RichAerogel3, RichAerogel5, Chlorine, Deuterium, Carbon, LHe,
    Densimet, Kapton, LgTF1, LeadOxide, LeadTungsten, Glass_GE180, As, W, AluminiumOxide, CalciumOxide, OptScint
-
+ - changed color for help-html
 
 7/5/2016
  - Additional optional string added to SPREAD_V:

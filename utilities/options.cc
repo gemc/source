@@ -305,8 +305,9 @@ int goptions::setOptMap(int argc, char **argv)
 				hf << "	background-color: #b8cfe5;" << endl;
 				hf << "	border-right: 2px solid #333;" << endl;
 				hf << "}" << endl;
-				hf << "pre{font-family:Helvetica;font-size:12pt}" << endl;
-				
+				hf << "pre{font-family:Helvetica;font-size:12pt" << endl;
+				hf << "	overflow: auto; " << endl;
+				hf << "}" << endl;
 				hf << "--->" << endl;
 				hf << "</STYLE>" << endl;
 				hf << "</head>" << endl;
