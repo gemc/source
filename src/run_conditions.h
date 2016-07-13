@@ -125,10 +125,7 @@ class runWeights
 	private:
 		// map with weights as coming from the file
 		map<int, double> w;
-	
-		// fill the number of events map
-		void randomize();
-	
+		
 		// map with numnber of events for each run, based on weight map
 		map<int, int> n;
 	

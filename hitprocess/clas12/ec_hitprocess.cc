@@ -68,6 +68,48 @@ void ec_HitProcess::initWithRunNumber(int runno)
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		ecc = initializeECConstants(runno);
 		ecc.runNo = runno;
+
+
+		// loading translation table
+		TT = TranslationTable("ec");
+
+		// loads translation table from CLAS12 Database:
+		// Translation table for EC (ECAL+PCAL).
+		// Crate sector assignments: ECAL/FADC=1,7,13,19,25,31 ECAL/TDC=2,8,14,20,26,32
+		// PCAL/FADC=3,9,15,21,27,33 PCAL/TDC=4,10,16,22,28,34.
+		// ORDER: 0=FADC 2=TDC.
+
+		string connection =  "mysql://clas12reader@clasdb.jlab.org/clas12";
+		string database   = "/daq/tt/ec:1";
+
+		vector<vector<double> > data;
+		auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
+
+		data.clear(); calib->GetCalib(data, database);
+		cout << "  > " << TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
+
+		// filling translation table
+		for(unsigned row = 0; row < data.size(); row++)
+		{
+			int crate   = data[row][0];
+			int slot    = data[row][1];
+			int channel = data[row][2];
+
+			int sector = data[row][3];
+			int layer  = data[row][4];
+			int pmt    = data[row][5];
+			int order  = data[row][6];
+
+			if(verbosity>2) {
+				cout << " crate: " << crate << "  slot: " << slot << "  channel: " << channel ;
+				cout << " sector: " << sector << "  layer: " << layer << "  pmt: " << pmt << "  order: " << order << endl;
+			}
+
+			// order is important as we could have duplicate entries w/o it
+			TT.addHardwareItem({sector, layer, pmt, order}, Hardware(crate, slot, channel));
+		}
+		cout << "  > Data loaded in translation table " << TT.getName() << endl;
+
 	}
 }
 

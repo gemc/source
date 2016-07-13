@@ -29,35 +29,7 @@ Code Improvements:
 - make calls like gemcOpt->get3Vector("BEAM_V")
 - change primaryFlat to thetaGauss thetaUniform cthetaGauss cthetaUniform.
 - add system name to material name
-
-Add production cut verbosity?
-
-If you want to know the traslation from an energy cut value to a range cut value for a given
-particle in a given material, you can do with the following instructions.
-First you have to instantiate the user action
-
-/gamos/userAction GmCutsEnergy2RangeUA
-
-and then you can use the command
-
-/gamos/physics/ECuts2RangeCuts MATERIAL_NAME CUT_VALUE PARTICLE_NAME
-
-You may use in the material name an '*' if you want to name several materials at the same time.
-For the particle name only the following names have a meaning: gamma, e-, e+, e*, *.
-This will produce a table with the conversion for each material and particle similar to the following one:
-
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_AIR  PART: gamma
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 286588
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_AIR  PART: e-
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 129.155
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_AIR  PART: e+
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 131.938
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_WATER  PART: gamma
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 334.152
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_WATER  PART: e-
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 0.134781
-GmCutsEnergy2RangeUA:  MATERIAL:  G4_WATER  PART: e+
-ENERGY CUT: 0.1 (MeV)  = RANGE CUT: 0.137686
+- sqlite support. Dropdown menu: available systems.
 
 
 
@@ -66,7 +38,6 @@ Fixes
 
 Load path should be corrected /group still show /group even though it's loaded
 from a different path
-
 
 
 

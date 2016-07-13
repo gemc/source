@@ -25,6 +25,8 @@
 #include "outputFactory.h"
 #include "options.h"
 
+// translationTable framework
+#include "translationTable.h"
 
 
 /// \class trueInfos
@@ -138,6 +140,10 @@ protected:
 
 		return  - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2));
 	}
+
+	TranslationTable TT;
+
+
 };
 
 // Define HitProcess as a pointer to a function that returns a pointer

@@ -239,6 +239,12 @@ void dc_HitProcess::initWithRunNumber(int runno)
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		dcc = initializeDCConstants(runno);
 		dcc.runNo = runno;
+
+		// loading translation table
+		TT = TranslationTable("dc");
+		cout << "  > Data loaded in translation table " << TT.getName() << endl;
+
+
 	}
 }
 
@@ -267,7 +273,7 @@ vector<MHit*> dc_HitProcess :: electronicNoise()
 }
 
 // this static function will be loaded first thing by the executable
-dcConstants dc_HitProcess::dcc = initializeDCConstants(1);
+dcConstants dc_HitProcess::dcc = initializeDCConstants(-1);
 
 
 
