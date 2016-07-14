@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/14/16
+ - added additional overlap check line_test if CHECK_OVERLAPS > 3
+
 7/13/16
  - added translation table mechanism from mlibrary: translationTable
  - development version tag: 2.5
@@ -1945,6 +1948,38 @@ Changelog for GEMC
 
 8/31/2009
  - Color can have a 7th character (transparency)
+
+8/28/2009
+ - Checking on color field size.
+
+8/19/2009
+ - Modified bst strip routine to reflect geometry changes
+
+8/18/2009
+ - Abandoning arthur qt style
+
+8/11/2009
+ - With  MGN_VERBOSITY set to 99, only the first step in the magnetic field will the Field values.
+
+8/10/2009
+ - Accepting lengths in inches.
+
+6/15/2009
+ - Making the compiler with -Wall happy
+ - Splitting images in different .h files
+
+5/28/2009
+ - Fixed routine that was disactivating daughters.
+
+5/11/2009
+ - Making the compiler with -Wall happy
+
+
+
+
+
+
+
 
 
 

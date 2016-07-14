@@ -72,8 +72,11 @@ vector<string> init_dmesg(goptions gemcOpt)
 	
 	if(OVERL>2)
 		commands.push_back("/geometry/test/cylinder_test 1");
-	
-	
+
+	if(OVERL>3)
+		commands.push_back("/geometry/test/line_test 1");
+
+
 	if(DAWN_N>0)
 	{
 		char dawn[10];
