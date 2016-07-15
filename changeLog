@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+7/15/16
+ - removed gdml material factory. Adding gemc gdml extension "gxml".
+ - starting to import gdml files with native G4GDMLParser
+
+
 7/14/16
  - added additional overlap check line_test if CHECK_OVERLAPS > 3
 
@@ -29,7 +34,7 @@ Changelog for GEMC
 
    For example::
 
-    - SPREAD_P="(1, 5)cm gauss"
+    - SPREAD_V="(1, 5)cm gauss"
 
   will spread the vertex with a gaussian distribution sigma of 1cm around r and 5 cm around z.
 

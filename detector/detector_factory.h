@@ -43,4 +43,7 @@ string check_factory_existance(map<string, detectorFactoryInMap> detectorFactory
 // load detector from gtable
 detector get_detector(gtable, goptions go, runConditions rc);
 
+// load detector from its physical volume
+detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions rc);
+
 #endif

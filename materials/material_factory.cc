@@ -4,7 +4,6 @@
 // gemc headers
 #include "material_factory.h"
 #include "cpp_materials.h"
-#include "gdml_materials.h"
 #include "mysql_materials.h"
 #include "text_materials.h"
 #include "string_utilities.h"
@@ -41,10 +40,7 @@ map<string, materialFactory> registerMaterialFactories()
 	
 	// TEXT initialization
 	materialMethodMap["TEXT"] = &text_materials::createMaterials;
-	
-	// GDML initialization
-	materialMethodMap["GDML"]  = &gdml_materials::createMaterials;
-	
+		
 	return materialMethodMap;
 }
 
@@ -161,13 +157,7 @@ map<string, G4Material*> buildMaterials(map<string, materialFactory> materialFac
 	// Loading CPP def
 	materials *materialSelectedFactory = getMaterialFactory(&materialFactoryMap, "CPP");
 	map<string, G4Material*> mats = materialSelectedFactory->initMaterials(rc, go);
-	
-	// adding GDML
-	materials *gdmlFactory = getMaterialFactory(&materialFactoryMap, "GDML");
-	map<string, G4Material*> gdmlMats = gdmlFactory->initMaterials(rc, go);
-	for(map<string, G4Material*>::iterator it = gdmlMats.begin(); it != gdmlMats.end(); it++)
-		mats[it->first] = it->second;
-	
+		
 	// adding MYSQL
 	materials *mysqlFactory = getMaterialFactory(&materialFactoryMap, "MYSQL");
 	map<string, G4Material*> mysqlMats = mysqlFactory->initMaterials(rc, go);

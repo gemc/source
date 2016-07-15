@@ -52,7 +52,11 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	string hd_msg  = gemcOpt.optMap["LOG_MSG"].args + " Solid: >> ";
 	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
-	
+
+	// gdml obects will not be built
+	if(type.find("gdmlParsed") != string::npos) return 0;
+
+
 	if(type.find("ReplicaOf") != string::npos)
 	{
 		if(VERB>4 || name.find(catch_v) != string::npos)
@@ -759,6 +763,9 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	string defmat  = gemcOpt.optMap["DEFAULT_MATERIAL"].args;
 
+	// gdml obects will not be built
+	if(type.find("gdmlParsed") != string::npos) return 0;
+
 	vector<aopt> changeMatOptions = gemcOpt.getArgs("SWITCH_MATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
 	{
@@ -836,7 +843,12 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	bool   OVERL   = gemcOpt.optMap["CHECK_OVERLAPS"].arg > 0 ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	if(PhysicalV) delete PhysicalV;
-	
+
+
+	// gdml obects will not be built
+	if(type.find("gdmlParsed") != string::npos) return 0;
+
+
 	// don't build physical volumes for components or replicas.
 	// Replicas are built in the dedicated routine
 	if(material == "Component" || material == "OfReplica")
@@ -848,7 +860,7 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	
 	
 	if(name == "root")
-		PhysicalV = new G4PVPlacement(0,       ///< rotation
+		PhysicalV = new G4PVPlacement(0,          ///< rotation
 									  G4ThreeVector(),   ///< translation
 									  LogicV,            ///< logical volume
 									  name.c_str(),      ///< name
@@ -857,7 +869,7 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 									  0);                ///< copy number
 	
 	else
-		PhysicalV = new G4PVPlacement(&rot,       ///< rotation
+		PhysicalV = new G4PVPlacement(&rot,          ///< rotation
 									  pos,                  ///< translation
 									  LogicV,               ///< logical volume
 									  name.c_str(),         ///< name

@@ -205,7 +205,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		cout << " !!! ERROR: Detector data size should be at least 18. There are " << gt.data.size() << " items on the line for " << gt.data[0] << endl;
 		exit(0);
 	}	
-	string hd_msg     = " >> TEXT Factory: ";
+	string hd_msg     = " >> GTABLE Factory: ";
 	double verbosity  = go.optMap["GEO_VERBOSITY"].arg;
 	
 	string catch_v    = go.optMap["CATCH"].args;
@@ -255,7 +255,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	if(gt.data[5].size() != 6 && gt.data[5].size() != 7)
 	{
 		cout << hd_msg << " Color Attributes for " << det.name << "<" << gt.data[5] << ">  have wrong size: " << gt.data[5].size()
-									 << ". It should be 6 or 7 digits  rrggbb[t]  (red, green, blue hexadecimals + optional transparency)." << endl;
+		<< ". It should be 6 or 7 digits  rrggbb[t]  (red, green, blue hexadecimals + optional transparency)." << endl;
 		exit(9);
 	}
 
@@ -285,7 +285,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 			// VolumeNewMats[0] = volume name
 			// VolumeNewMats[1] = new material
 			if(det.name == TrimSpaces(VolumeNewMats[0]))
-				det.material = TrimSpaces(VolumeNewMats[1]);
+			det.material = TrimSpaces(VolumeNewMats[1]);
 		}
 	}
 
@@ -302,15 +302,15 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 
 	// 12: Activation flag
 	det.exist   = atoi(gt.data[12].c_str());
-			
+
 	// Overwriting existance is set in the gcard
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
 		det.exist = RC.detectorConditionsMap[det.name].get_existance();
 		if(verbosity > 3 || det.name.find(catch_v))
-			cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
+		cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
 	}
-				
+
 	// 13:  Visibility
 	det.visible = atoi(gt.data[13].c_str());
 
@@ -321,7 +321,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	det.VAtts = G4VisAttributes(thisCol);
 	det.visible ? det.VAtts.SetVisibility(true) : det.VAtts.SetVisibility(false);
 	if(det.visible)
-		det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
+	det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
 
 
 	// 15: sensitivity
@@ -355,13 +355,144 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 
 
 	if(gt.data.size() > 20)
-		det.variation = gt.data[20];
+	det.variation = gt.data[20];
 
 	if(gt.data.size() > 21)
-		det.run     = atoi(gt.data[21].c_str());
+	det.run     = atoi(gt.data[21].c_str());
 
 	if(verbosity>2)
-		cout << det;	
+	cout << det;
+	return det;
+}
+
+// load detector from its physical volume
+detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
+{
+	double verbosity  = go.optMap["GEO_VERBOSITY"].arg;
+	string hd_msg     = " >> GPHYS Factory: ";
+	string catch_v    = go.optMap["CATCH"].args;
+
+	detector det;
+
+	// 0,1,2: Id, Mother, Description
+	det.name        = pv->GetLogicalVolume()->GetName();
+	det.mother      = pv->GetMotherLogical()->GetName();;
+	det.description = det.name + " parsed from GDML";
+
+	// 3: Position Vector
+	det.pos = pv->GetTranslation() ;
+
+	// 4: Rotation Vector
+	det.rot = *(pv->GetRotation());
+
+	// Checking for displacements and rotation from nominal position
+	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
+	{
+		// Adding gcard displacement for this detector if non zero
+		G4ThreeVector shiftp = RC.detectorConditionsMap[det.name].get_position();
+
+		if(shiftp.mag2() != 0)
+		{
+			if(verbosity > 3 || det.name.find(catch_v))
+			cout << hd_msg << " Detector " << det.name << " is displaced by: " << shiftp/cm << " cm" << endl;
+
+			det.pos += shiftp;
+		}
+
+		// Adding gcard rotation for this detector if if non zero
+		G4ThreeVector more_rot = RC.detectorConditionsMap[det.name].get_vrotation();
+		if(more_rot.mag2() != 0)
+		{
+			if(verbosity > 3 || det.name.find(catch_v))
+			cout << hd_msg << " Detector " << det.name << " is rotated by: " << more_rot/deg << " deg" << endl;
+
+			det.rot.rotateX(more_rot.x());
+			det.rot.rotateY(more_rot.y());
+			det.rot.rotateZ(more_rot.z());
+		}
+	}  // end of checking displacement
+
+
+	// 5: Color, opacity. By default the detector is blue
+	G4Colour thisCol = gcol("2222aa");
+
+	// 6: Solid Type
+	det.type = "gdmlParsed";
+
+	// 7: Dimensions
+	det.dimensions.push_back(0);
+
+	// 8: Material
+	det.material =   "gdmlParsed";
+	// resetting Material if asked
+	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
+	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
+	{
+		vector < string > VolumeNewMats = get_strings(changeMatOptions[f].args, ",");
+		if(VolumeNewMats.size() == 2)
+		{
+			// VolumeNewMats[0] = volume name
+			// VolumeNewMats[1] = new material
+			if(det.name == TrimSpaces(VolumeNewMats[0]))
+			det.material = TrimSpaces(VolumeNewMats[1]);
+		}
+	}
+
+
+
+	// 9: Magnetic Field
+	det.magfield = "gdmlParsed";
+
+	// 10: copy number
+	det.ncopy   = 0;
+
+	// 11: pMany
+	det.pMany   = 0;
+
+	// 12: Activation flag
+	det.exist   = 1;
+
+	// Overwriting existance is set in the gcard
+	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
+	{
+		det.exist = RC.detectorConditionsMap[det.name].get_existance();
+		if(verbosity > 3 || det.name.find(catch_v))
+		cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
+	}
+
+	// 13:  Visibility
+	det.visible = 1;
+
+	// 14: Style
+	det.style   = 1;
+
+	// Setting the Visual Atributes Color, Visibility, Style
+	det.VAtts = G4VisAttributes(thisCol);
+	det.visible ? det.VAtts.SetVisibility(true) : det.VAtts.SetVisibility(false);
+	if(det.visible)
+	det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
+
+
+	// 15: sensitivity
+	det.sensitivity = "no";
+
+	// 16: hitType
+	det.sensitivity = "no";
+
+	// 17: identity not set
+
+	// 18: detector system
+	det.system  = "gdml";
+
+	// 18: detector factory
+	det.factory = "gdml";
+
+	// 19: detector variation
+	det.variation = "gdml";
+
+	// 20: run
+	det.run     = 0;
+
 	return det;
 }
 

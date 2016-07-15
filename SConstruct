@@ -19,8 +19,7 @@ materials_sources = Split("""
 	materials/material_factory.cc
 	materials/cpp_materials.cc
 	materials/mysql_materials.cc
-	materials/text_materials.cc
-	materials/gdml_materials.cc""")
+	materials/text_materials.cc""")
 env.Library(source = materials_sources, target = "lib/materials")
 
 # Mirrors
@@ -60,7 +59,6 @@ det_sources = Split("""
 	detector/mysql_det_factory.cc
 	detector/gdml_det_factory.cc
 	detector/clara_det_factory.cc
-	detector/gdml_solids.cc
 	detector/text_det_factory.cc""")
 env.Library(source = det_sources, target = "lib/detector")
 
