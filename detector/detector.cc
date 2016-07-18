@@ -54,7 +54,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 
 	// gdml obects will not be built
-	if(type.find("gdmlParsed") != string::npos) return 0;
+	if(description.find("gdmlParsed") != string::npos) return 0;
 
 
 	if(type.find("ReplicaOf") != string::npos)
@@ -764,7 +764,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	string defmat  = gemcOpt.optMap["DEFAULT_MATERIAL"].args;
 
 	// gdml obects will not be built
-	if(type.find("gdmlParsed") != string::npos) return 0;
+	if(description.find("gdmlParsed") != string::npos) return 0;
 
 	vector<aopt> changeMatOptions = gemcOpt.getArgs("SWITCH_MATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
@@ -803,7 +803,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	{
 		if(defmat == "none")
 		{
-			cout << hd_msg << " Warning: material >" << material << "< is not defined. Exiting" << endl;
+			cout << hd_msg << " Warning: material >" << material << "< is not defined for volume >" << name <<"<. Exiting" << endl;
 			cout << hd_msg << " You can set the DEFAULT_MATERIAL flag to replace an undefined material. " << endl;
 			exit(0);
 		}
@@ -844,10 +844,8 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	if(PhysicalV) delete PhysicalV;
 
-
-	// gdml obects will not be built
-	if(type.find("gdmlParsed") != string::npos) return 0;
-
+	// gdml obects will not be built - must be built at Construct() time
+	if(description.find("gdmlParsed") != string::npos) return 0;
 
 	// don't build physical volumes for components or replicas.
 	// Replicas are built in the dedicated routine
@@ -877,7 +875,7 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 									  false,                ///< pMany (for future use)
 									  ncopy,                ///< ncopy
 									  OVERL);               ///< Checks Volume Overlapping at Placement time
-	
+
 	if(VERB>4 || name.find(catch_v) != string::npos)
 	{
 		if(mamma)
