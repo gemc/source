@@ -349,8 +349,11 @@ void MDetectorConstruction::hasMagfield(detector detect)
 	double verbosity = gemcOpt.optMap["FIELD_VERBOSITY"].arg ;
 	string catch_v   = gemcOpt.optMap["CATCH"].args;
 	string field     = gemcOpt.optMap["NO_FIELD"].args;
-	
-	if(field == "all" || detect.name.find(field) != string::npos)
+
+
+	//cout << field << " " <<
+
+	if(field == "all" || detect.magfield.find(field) != string::npos)
 		return;
 	
 	string magf   = detect.magfield;
