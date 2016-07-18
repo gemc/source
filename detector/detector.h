@@ -113,6 +113,7 @@ class detector
 		G4LogicalVolume   *GetLogical() { return LogicV;}                                ///< Returns Logical Volume pointer
 		G4VPhysicalVolume *GetPhysical(){ return PhysicalV;}                             ///< Returns Physical Volume pointer
 		void SetLogical(G4LogicalVolume *LV){LogicV = LV;}                               ///< Sets Logical Volume pointer
+		void SetPhysical(G4VPhysicalVolume *PV){PhysicalV = PV;}                         ///< Sets Physical Volume pointer
 		void SetTranslation(G4ThreeVector TR){PhysicalV->SetTranslation(TR);}            ///< Sets Physical Volume Position
 		void RemoveDaughter(G4VPhysicalVolume* PV){LogicV->RemoveDaughter(PV);}          ///< Remove Physical Volumes from LogicV
 		void AssignMFM(G4FieldManager* MFM){LogicV->SetFieldManager(MFM, true);}         ///< Assigns Magnetic Field Manager to LogicV

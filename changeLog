@@ -1,10 +1,13 @@
 Changelog for GEMC
 ==================
 
+7/18/16
+ - fixed NO_FIELD option for individual fields
+ - added volume name when material is not found
+
 7/15/16
  - removed gdml material factory. Adding gemc gdml extension "gxml".
  - starting to import gdml files with native G4GDMLParser
-
 
 7/14/16
  - added additional overlap check line_test if CHECK_OVERLAPS > 3
@@ -1978,6 +1981,52 @@ Changelog for GEMC
 
 5/11/2009
  - Making the compiler with -Wall happy
+
+4/20/2009
+ - added IC_hitprocess.cc to list of routine to be compiled
+ - added call to routine for IC hit processing
+ - routine for IC digitazion
+
+4/07/2009
+
+ - Added existence flag in the gcard.
+   Usage (to turn of a detector + all its daughters)::
+
+    <detector name="SL_1">
+      <existance exist="no" />
+    </detector>
+
+3/23/2009
+ - Print more infos when bank id might be corrupted.
+
+3/20/2009
+ - Added Field in user_geometry database
+
+3/13/2009
+ - VisManager initialized even in batch mode.
+
+2/11/2009
+ - Script to show current banks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

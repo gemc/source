@@ -13,6 +13,8 @@
 #include "G4OpBoundaryProcess.hh"
 #include "G4RegionStore.hh"
 
+#include "G4GDMLParser.hh"
+
 // gemc headers
 #include "MDetectorConstruction.h"
 #include "MDetectorMessenger.h"
@@ -286,7 +288,66 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			}
 		}
 	}
-	
+
+	// now build GDML volumes.
+	set<string> gdmlAlreadyProcessed;
+	for(auto &dd : *hallMap) {
+
+		string filename = dd.second.variation;
+
+		if(dd.second.factory == "gdml" && filename != "gdml") {
+
+			// checking that we didn't already processed this file
+			if(gdmlAlreadyProcessed.find(filename) == gdmlAlreadyProcessed.end()) {
+
+				cout << "  Parsing GDML Physical volumes from " << filename << endl;
+				// parsing G4 volumes
+				G4GDMLParser *parser = new G4GDMLParser();
+				parser->Read(filename, 0);
+
+				// the volume name has to be "World"
+				// its oririn are "root" coordinate
+				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
+
+				// only daughters of World will be a new G4PVPlacement in root
+				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
+
+					string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
+					G4LogicalVolume* thisLogical = parser->GetVolume(thisDetName.c_str());
+
+				//	cout << thisDetName << " " << dd.second.VAtts << endl;
+
+					thisLogical->SetVisAttributes(dd.second.VAtts);
+					(*hallMap)[thisDetName].SetLogical(thisLogical);
+
+					// has to be in the same scope, otherwise parser loses all the pointers
+					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&dd.second.rot,
+																		 dd.second.pos,
+																		 (*hallMap)[thisDetName].GetLogical(),
+																		 thisDetName.c_str(),
+																		 (*hallMap)["root"].GetLogical(),
+																		 false,
+																		 0)
+												 );
+
+					// cout << " why are these different " << thisDetName << " " << (*hallMap)[thisDetName].GetPhysical() << "  difference  " << dd.second.GetPhysical()  << endl;
+
+				}
+
+
+				gdmlAlreadyProcessed.insert(filename);
+
+			}
+
+		}
+	}
+
+
+
+
+
+
+
 	// build mirrors
 	buildMirrors();
 	
@@ -442,10 +503,11 @@ void MDetectorConstruction::buildDetector(string name)
 				isSensitive((*hallMap)[kid.name]);  // if sensitive, associate sensitive detector
 				hasMagfield((*hallMap)[kid.name]);  // if it has magnetic field, create or use MFM
 			}
+
 			(*hallMap)[kid.name].scanned = 1;
 		}
 	}
-	
+
 	if(kid.name == "notfound")
 		cout << "   Attention: " << kid.name << " not found. " << endl;
 	if(mom.name == "notfound" )

@@ -41,75 +41,79 @@ map<string, detector> gdml_det_factory::loadDetectors()
 		G4GDMLParser *parser = new G4GDMLParser();
 		string gname     = dname + ".gdml";
 
-		// the parses has its own output
+		// parsing G4 volumes
 		parser->Read(gname, 0);
 
-
 		// the volume name has to be "World"
-		// its oririn are "root" coordinate
+		// its origin are "root" coordinate
 		G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
 
-		// these volumes will be the ones with mother = "root"
-		for(int d=0; d<gdmlWorld->GetNoDaughters (); d++)
-		{
-			cout << gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName() << endl;
+		// first daughters: these volumes will be the ones with mother = "root"
+		for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
+
+
+			string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
+			string momName =  gdmlWorld->GetDaughter(d)->GetMotherLogical()->GetName() ;
 
 			detector thisDet = get_detector(gdmlWorld->GetDaughter(d),  gemcOpt, RC);
 			thisDet.mother = "root";
-
+			thisDet.variation = gname;
 
 			if(verbosity>2) cout << thisDet ;
 
-			dets[thisDet.name] = thisDet;
+			// now browsing for daughters
+			G4LogicalVolume* firstDaughter = gdmlWorld->GetDaughter(d)->GetLogicalVolume();
+			for(int gd=0; gd<firstDaughter->GetNoDaughters (); gd++) {
+				cout <<  " gd: " << firstDaughter->GetDaughter(d)->GetLogicalVolume()->GetName() << endl;
+			}
 
+			dets[thisDet.name] = thisDet;
 		}
 
 
 
 		// parsing attribute modifications
-		string fname     = dname + ".gxml";
+		string fname = dname + ".gxml";
 
 		QFile gxml(fname.c_str());
 
-		if( !gxml.exists() )
-		{
-			cout << " >>  gxml: " << fname << " not found. Exiting." << endl;
-			exit(0);
-		}
+		if( !gxml.exists() ) {
+			cout << " > " << fname << " not found. All volumes in " << fname << " are imported as original." << endl;
+		} else {
 
-		QDomDocument domDocument;
-		// opening gcard and filling domDocument
-		if(!domDocument.setContent(&gxml))
-		{
-			cout << " >>  xml format for file <" << fname << "> is wrong - check XML syntax. Exiting." << endl;
-			exit(0);
-		}
-		gxml.close();
-
-		QDomNodeList volumes = domDocument.firstChildElement().elementsByTagName("volume");
-		for(int i = 0; i < volumes.count(); i++)
-		{
-			QDomNode elm = volumes.at(i);
-			if(elm.isElement())
+			QDomDocument domDocument;
+			// opening gcard and filling domDocument
+			if(!domDocument.setContent(&gxml))
 			{
-				QDomElement e = elm.toElement();
-				string volumeName   = e.attribute("name").toStdString();
-				string color        = e.attribute("color").toStdString();
-				string material     = e.attribute("material").toStdString();
-				string sensitivity  = e.attribute("sensitivity").toStdString();
-				string identifiers  = e.attribute("identifiers").toStdString();
-
-
-
-				cout << " Volume: " << volumeName
-				<< " color: " << color
-				<< " material: " << material
-				<< " sensitivity: " << sensitivity
-				<< " identifiers: " << identifiers << endl;
+				cout << " >>  xml format for file <" << fname << "> is wrong - check XML syntax. Exiting." << endl;
+				exit(0);
 			}
+			gxml.close();
 
+			QDomNodeList volumes = domDocument.firstChildElement().elementsByTagName("volume");
+			for(int i = 0; i < volumes.count(); i++)
+			{
+				QDomNode elm = volumes.at(i);
+				if(elm.isElement())
+				{
+					QDomElement e = elm.toElement();
+					string volumeName   = e.attribute("name").toStdString();
+					string color        = e.attribute("color").toStdString();
+					string material     = e.attribute("material").toStdString();
+					string sensitivity  = e.attribute("sensitivity").toStdString();
+					string identifiers  = e.attribute("identifiers").toStdString();
+
+					if(verbosity>3) {
+						cout << " Volume: " << volumeName
+						<< " color: " << color
+						<< " material: " << material
+						<< " sensitivity: " << sensitivity
+						<< " identifiers: " << identifiers << endl;
+					}
+				}
+				
+			}
 		}
-		
 
  	}
 

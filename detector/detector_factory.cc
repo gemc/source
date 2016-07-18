@@ -377,13 +377,14 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	// 0,1,2: Id, Mother, Description
 	det.name        = pv->GetLogicalVolume()->GetName();
 	det.mother      = pv->GetMotherLogical()->GetName();;
-	det.description = det.name + " parsed from GDML";
+	det.description = "gdmlParsed";
 
 	// 3: Position Vector
 	det.pos = pv->GetTranslation() ;
 
 	// 4: Rotation Vector
-	det.rot = *(pv->GetRotation());
+	if(pv->GetRotation())
+		det.rot = *(new G4RotationMatrix(*(pv->GetRotation())));
 
 	// Checking for displacements and rotation from nominal position
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
@@ -417,13 +418,13 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	G4Colour thisCol = gcol("2222aa");
 
 	// 6: Solid Type
-	det.type = "gdmlParsed";
+	det.type = pv->GetLogicalVolume()->GetSolid()->GetName();
 
 	// 7: Dimensions
 	det.dimensions.push_back(0);
 
 	// 8: Material
-	det.material =   "gdmlParsed";
+	det.material =   pv->GetLogicalVolume()->GetMaterial()->GetName();
 	// resetting Material if asked
 	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
@@ -441,7 +442,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 
 
 	// 9: Magnetic Field
-	det.magfield = "gdmlParsed";
+	det.magfield = "no";
 
 	// 10: copy number
 	det.ncopy   = 0;
@@ -487,11 +488,13 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	// 18: detector factory
 	det.factory = "gdml";
 
-	// 19: detector variation
+	// 19: detector variation is the GDML filename
 	det.variation = "gdml";
 
 	// 20: run
 	det.run     = 0;
+
+
 
 	return det;
 }
