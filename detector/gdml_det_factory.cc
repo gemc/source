@@ -6,7 +6,7 @@
 // geant4
 #include "G4GDMLParser.hh"
 #include "G4LogicalVolume.hh"
-//#include "G4PhysicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
 
 map<string, detector> gdml_det_factory::loadDetectors()
 {
@@ -44,7 +44,8 @@ map<string, detector> gdml_det_factory::loadDetectors()
 
 		// parsing G4 volumes
 		parser->Read(gname, 0);
-		//G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
+		// remove the volume from the collection. Not sure if we need it or not.
+		G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
 
 		// the volume name has to be "World"
 		// its origin are "root" coordinate
@@ -128,7 +129,10 @@ map<string, detector> gdml_det_factory::loadDetectors()
 
 						if(sensitivity != "") {
 							cout << " sensitivity: " << sensitivity ;
+
+							// same hitType as sensitivity
 							dets[volumeName].sensitivity = sensitivity;
+							dets[volumeName].hitType = sensitivity;
 
 							// identifier must be defined
 							if(identifiers != "") {

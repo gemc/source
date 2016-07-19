@@ -8,6 +8,7 @@ Changelog for GEMC
    1. fill gemc detector map
    2. build the actual volumes
  - added handling of color, visual attributes.
+ - added handling of sensitivity
 
 7/18/16
  - fixed NO_FIELD option for individual fields

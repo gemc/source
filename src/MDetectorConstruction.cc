@@ -354,10 +354,14 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 					}
 					thisLogical->SetMaterial((*mats)[materialName]);
 
+					// assigning the logical volume to the detector
+					(*hallMap)[thisDetName].SetLogical(thisLogical);
+					isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
+
 
 					// has to be in the same scope, otherwise parser loses all the pointers
-					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)["thisDetName"].rot,
-																		 (*hallMap)["thisDetName"].pos,
+					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
+																		 (*hallMap)[thisDetName].pos,
 																		 thisLogical,
 																		 thisDetName.c_str(),
 																		 (*hallMap)["root"].GetLogical(),
