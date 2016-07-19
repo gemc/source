@@ -9,6 +9,7 @@ Changelog for GEMC
    2. build the actual volumes
  - added handling of color, visual attributes.
  - added handling of sensitivity
+ - handling first daughter so they're seen by the gemc tree
 
 7/18/16
  - fixed NO_FIELD option for individual fields

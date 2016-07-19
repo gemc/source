@@ -70,8 +70,11 @@ map<string, detector> gdml_det_factory::loadDetectors()
 				thisDDet.mother = thisDetName;
 				thisDDet.variation = gname;
 
-			//	cout <<  " gd: " << firstDaughter->GetDaughter(d)->GetLogicalVolume()->GetName() << endl;
+				//	cout <<  " gd: " << firstDaughter->GetDaughter(d)->GetLogicalVolume()->GetName() << endl;
 				dets[thisDDet.name] = thisDDet;
+
+				// setting the physical volume pointer so this volume is seen by the tree
+				dets[thisDDet.name].SetPhysical(firstDaughter->GetDaughter(d));
 			}
 
 			dets[thisDet.name] = thisDet;
