@@ -389,6 +389,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	// Checking for displacements and rotation from nominal position
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
+
 		// Adding gcard displacement for this detector if non zero
 		G4ThreeVector shiftp = RC.detectorConditionsMap[det.name].get_position();
 
@@ -424,7 +425,10 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	det.dimensions.push_back(0);
 
 	// 8: Material
-	det.material =   pv->GetLogicalVolume()->GetMaterial()->GetName();
+	if(pv->GetLogicalVolume()->GetMaterial())
+		det.material =   pv->GetLogicalVolume()->GetMaterial()->GetName();
+	else det.material = "G4_Galactic";
+
 	// resetting Material if asked
 	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
@@ -471,7 +475,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	det.VAtts = G4VisAttributes(thisCol);
 	det.visible ? det.VAtts.SetVisibility(true) : det.VAtts.SetVisibility(false);
 	if(det.visible)
-	det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
+		det.style   ? det.VAtts.SetForceSolid(true) : det.VAtts.SetForceWireframe(true);
 
 
 	// 15: sensitivity

@@ -56,6 +56,13 @@
 #include "run_conditions.h"
 #include "string_utilities.h"
 
+// TODO for mlibrary:
+// - material should be a g4material*
+// - add field replica
+// - the detector map should be a map<string, *detector>
+// - rotation* ?
+// - the class containing the map should have "root" defined.
+// - having two steps, one filling the map one building the detector is ok because of hierarchy.
 
 class detector
 {

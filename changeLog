@@ -1,6 +1,14 @@
 Changelog for GEMC
 ==================
 
+7/19/16
+ - added comments for future detector mlibrary
+ - added material handling in GDML import
+ - added GDML import. This is done in two steps:
+   1. fill gemc detector map
+   2. build the actual volumes
+ - added handling of color, visual attributes.
+
 7/18/16
  - fixed NO_FIELD option for individual fields
  - added volume name when material is not found

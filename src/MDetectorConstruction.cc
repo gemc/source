@@ -14,6 +14,7 @@
 #include "G4RegionStore.hh"
 
 #include "G4GDMLParser.hh"
+#include "G4NistManager.hh"
 
 // gemc headers
 #include "MDetectorConstruction.h"
@@ -289,6 +290,32 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 		}
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// now build GDML volumes.
 	set<string> gdmlAlreadyProcessed;
 	for(auto &dd : *hallMap) {
@@ -305,6 +332,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 				G4GDMLParser *parser = new G4GDMLParser();
 				parser->Read(filename, 0);
 
+				G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
+
 				// the volume name has to be "World"
 				// its oririn are "root" coordinate
 				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
@@ -315,20 +344,30 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 					string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
 					G4LogicalVolume* thisLogical = parser->GetVolume(thisDetName.c_str());
 
-				//	cout << thisDetName << " " << dd.second.VAtts << endl;
+					thisLogical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
 
-					thisLogical->SetVisAttributes(dd.second.VAtts);
-					(*hallMap)[thisDetName].SetLogical(thisLogical);
+					string materialName = TrimSpaces((*hallMap)[thisDetName].material);
+
+					if(mats->find(materialName) == mats->end() ) {
+						G4NistManager* matman = G4NistManager::Instance();
+						if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
+					}
+					thisLogical->SetMaterial((*mats)[materialName]);
+
 
 					// has to be in the same scope, otherwise parser loses all the pointers
-					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&dd.second.rot,
-																		 dd.second.pos,
-																		 (*hallMap)[thisDetName].GetLogical(),
+					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)["thisDetName"].rot,
+																		 (*hallMap)["thisDetName"].pos,
+																		 thisLogical,
 																		 thisDetName.c_str(),
 																		 (*hallMap)["root"].GetLogical(),
 																		 false,
 																		 0)
 												 );
+
+
+					// the daughters will not be a new G4PVPlacement
+
 
 					// cout << " why are these different " << thisDetName << " " << (*hallMap)[thisDetName].GetPhysical() << "  difference  " << dd.second.GetPhysical()  << endl;
 

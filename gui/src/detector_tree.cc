@@ -181,8 +181,8 @@ map<string, tree_item> detector_tree::read_geometry(QTreeWidget *motherWidget)
 		item.visible   = i->second.visible;
 		item.wiresolid = i->second.style;
 
-		if(i->second.GetPhysical() ) cout << i->second.name << " has physical " << i->second.GetPhysical() << endl;
-		else cout << i->second.name << " has NOT physical " << endl;
+//		if(i->second.GetPhysical() ) cout << i->second.name << " has physical " << i->second.GetPhysical() << endl;
+//		else cout << i->second.name << " has NOT physical " << endl;
 
 		if(i->second.name != "root" && i->second.GetPhysical())
 		{
