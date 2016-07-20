@@ -1,13 +1,13 @@
-#ifndef GDML_DET_FACTORY_H
-#define GDML_DET_FACTORY_H 1
+#ifndef CAD_DET_FACTORY_H
+#define CAD_DET_FACTORY_H 1
 
 // gemc headers
 #include "detector_factory.h"
 
-class gdml_det_factory : public detectorFactory
+class cad_det_factory : public detectorFactory
 {
 	public:
-		gdml_det_factory(){;}
+		cad_det_factory(){;}
 	
 		// load all detectors that matches factorytype
 		map<string, detector> loadDetectors();      
@@ -17,7 +17,7 @@ class gdml_det_factory : public detectorFactory
 		
 		static detectorFactory *createFactory() 
 		{
-			return new gdml_det_factory; 
+			return new cad_det_factory;
 		}
 
 };

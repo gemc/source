@@ -3,6 +3,7 @@
 #include "mysql_det_factory.h"
 #include "text_det_factory.h"
 #include "gdml_det_factory.h"
+#include "cad_det_factory.h"
 #include "clara_det_factory.h"
 
 // c++ headers
@@ -40,7 +41,10 @@ map<string, detectorFactoryInMap> registerDetectorFactory()
 
 	// gdml factory
 	dFactoryMap["GDML"]  = &gdml_det_factory::createFactory;
-	
+
+	// gdml factory
+	dFactoryMap["CAD"]  = &cad_det_factory::createFactory;
+
 	// clara factory
 	dFactoryMap["CLARA"]  = clara_det_factory::createFactory;
 	

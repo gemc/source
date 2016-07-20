@@ -12,9 +12,10 @@
 #include "G4SDManager.hh"
 #include "G4OpBoundaryProcess.hh"
 #include "G4RegionStore.hh"
-
 #include "G4GDMLParser.hh"
 #include "G4NistManager.hh"
+
+#include "CADMesh.hh"
 
 // gemc headers
 #include "MDetectorConstruction.h"
@@ -291,31 +292,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// now build GDML volumes.
 	set<string> gdmlAlreadyProcessed;
 	for(auto &dd : *hallMap) {
@@ -369,19 +345,11 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 																		 0)
 												 );
 
-
-					// the daughters will not be a new G4PVPlacement
-
-
 					// cout << " why are these different " << thisDetName << " " << (*hallMap)[thisDetName].GetPhysical() << "  difference  " << dd.second.GetPhysical()  << endl;
-
 				}
-
-
+				delete gdmlWorld;
 				gdmlAlreadyProcessed.insert(filename);
-
 			}
-
 		}
 	}
 
@@ -389,12 +357,36 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 
 
+	// CAD imports
+
+
+
+//	// CAD model rotation.
+//	G4RotationMatrix * rot = new G4RotationMatrix();
+//	rot->rotateZ(90*deg);
+//
+//
+//	// Note that offset is applied to the points in mesh directly before placement.
+//	CADMesh * mesh = new CADMesh((char *) "loubie_adalinda_dragon_decimated.stl");
+//	mesh->SetScale(mm);
+//	mesh->SetOffset(G4ThreeVector(-20*cm, 0, 0));
+//	mesh->SetReverse(false);
+//
+//	G4VSolid *cad_solid = mesh->TessellatedMesh();
+//	G4LogicalVolume *cad_logical = new G4LogicalVolume(cad_solid, (*mats)["G4_AIR"], "cad_logical", 0, 0, 0);
+//	G4VPhysicalVolume *cad_physical = new G4PVPlacement(rot, G4ThreeVector(), cad_logical,
+//												"cad_physical", (*hallMap)["root"].GetLogical(), false, 0);
+//	cad_logical->SetVisAttributes(G4Color(0.5, 0.3, 1, 1));
+//
+
+
+
 
 
 	// build mirrors
 	buildMirrors();
-	
-	
+
+
 	// assign regions
 	// includes root
 	regions.push_back("root");

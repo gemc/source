@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+7/20/16
+ - added CAD factory - work in progress
+ - fixed gdml factory: deleting world pointer after use
+
 7/19/16
  - added comments for future detector mlibrary
  - added material handling in GDML import
