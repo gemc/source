@@ -40,6 +40,15 @@ map<string, detector> gdml_det_factory::loadDetectors()
 		G4GDMLParser parser;
 		string gname     = dname + ".gdml";
 
+
+		// checking for the filename
+		// this will be the detector variation
+		ifstream fstl(gname.c_str());
+		if(!fstl.good()) {
+			cout << " !! Error: " << gname << " file found. Exiting." << endl;
+			exit(0);
+		}
+
 		// parsing G4 volumes
 		parser.Read(gname, 0);
 		// remove the volume from the collection. Not sure if we need it or not.

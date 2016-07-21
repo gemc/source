@@ -3,6 +3,7 @@ Changelog for GEMC
 
 7/21/16
  - finalized CAD factory
+ - added check on file existence for GDML factory
 
 7/20/16
  - added CAD factory - work in progress
@@ -2025,11 +2026,24 @@ Changelog for GEMC
 2/11/2009
  - Script to show current banks
 
+1/27/2009
+ - Adding Bonus to registered hit processes.
+
+1/27/2009
+ - Corrected LUND input format to accept only particles that goes through detector.
+ - Adding SECONDARIES option.
+ - New QT driver.
 
 
+10/9/2009
+ - Field map no more needed in current directory.
+   It will be assumed to be in $G4ROOT/data
 
+ - Based on QT driver improvements:
 
-
+   - no need to instantiate QTUI anymore.
+   - G4QT thread fixes (no more crashes and need to run USE_QT=2)
+   - Window size increased (for now in the G4 software)
 
 
 
