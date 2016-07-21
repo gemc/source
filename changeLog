@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/21/16
+ - finalized CAD factory
+
 7/20/16
  - added CAD factory - work in progress
  - fixed gdml factory: deleting world pointer after use

@@ -53,8 +53,9 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	double VERB    = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 
-	// gdml obects will not be built
+	// cad, gdml obects will not be built
 	if(description.find("gdmlParsed") != string::npos) return 0;
+	if(description.find("cadImported") != string::npos) return 0;
 
 
 	if(type.find("ReplicaOf") != string::npos)
@@ -763,8 +764,9 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	string defmat  = gemcOpt.optMap["DEFAULT_MATERIAL"].args;
 
-	// gdml obects will not be built
+	// cad, gdml obects will not be built
 	if(description.find("gdmlParsed") != string::npos) return 0;
+	if(description.find("cadImported") != string::npos) return 0;
 
 	vector<aopt> changeMatOptions = gemcOpt.getArgs("SWITCH_MATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
@@ -844,8 +846,9 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	if(PhysicalV) delete PhysicalV;
 
-	// gdml obects will not be built - must be built at Construct() time
+	// cad, gdml obects will not be built
 	if(description.find("gdmlParsed") != string::npos) return 0;
+	if(description.find("cadImported") != string::npos) return 0;
 
 	// don't build physical volumes for components or replicas.
 	// Replicas are built in the dedicated routine

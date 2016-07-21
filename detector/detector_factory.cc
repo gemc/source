@@ -307,12 +307,12 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	// 12: Activation flag
 	det.exist   = atoi(gt.data[12].c_str());
 
-	// Overwriting existance is set in the gcard
+	// Overwriting existence is set in the gcard
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
 		det.exist = RC.detectorConditionsMap[det.name].get_existance();
 		if(verbosity > 3 || det.name.find(catch_v))
-		cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
+			cout << hd_msg << " Detector " << det.name << " has existence set to: " << det.exist << endl;
 	}
 
 	// 13:  Visibility

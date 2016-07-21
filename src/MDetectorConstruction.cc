@@ -359,6 +359,58 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 	// CAD imports
 
+	// now build GDML volumes.
+	for(auto &dd : *hallMap) {
+
+
+		if(dd.second.factory == "CAD") {
+
+			string thisDetName = dd.first;
+
+			// filename has been already verified to exist
+			string filename = dd.second.variation;
+			cout << "  Parsing CAD volume from " << filename << endl;
+
+			CADMesh * mesh = new CADMesh((char *) filename.c_str());
+			mesh->SetScale(mm);
+			mesh->SetReverse(false);
+
+			// solid
+			G4VSolid *cad_solid = mesh->TessellatedMesh();
+
+			// material
+			string materialName = TrimSpaces((*hallMap)[thisDetName].material);
+
+			if(mats->find(materialName) == mats->end() ) {
+				G4NistManager* matman = G4NistManager::Instance();
+				if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
+			}
+
+			// logical
+			G4LogicalVolume *cad_logical = new G4LogicalVolume(cad_solid, (*mats)[materialName],thisDetName, 0, 0, 0);
+			cad_logical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
+
+			// assigning the logical volume to the detector
+			(*hallMap)[thisDetName].SetLogical(cad_logical);
+			isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
+
+
+			// physical volume
+
+			// has to be in the same scope, otherwise parser loses all the pointers
+			(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
+																					(*hallMap)[thisDetName].pos,
+																					cad_logical,
+																					thisDetName.c_str(),
+																					(*hallMap)["root"].GetLogical(),
+																					false,
+																					0)
+															);
+
+		}
+
+
+	}
 
 
 //	// CAD model rotation.

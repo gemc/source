@@ -79,13 +79,15 @@ class gtable
 		{
 			data.push_back(TrimSpaces(qv_tostring(input)));
 		}
-		
+
+		// notice: char* and QVariant will confuse the compiler
+		// so add_data("bah") won't work. Need to cast it to string first
 		void add_data(string input)
 		{
 			data.push_back(TrimSpaces(input));
 		}
-		
-	
+
+
 	// Overloaded "<<" for gtable class. Dumps infos on screen.
 	friend ostream &operator<<(ostream &stream, gtable);                          
 

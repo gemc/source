@@ -28,11 +28,53 @@ map<string, detector> cad_det_factory::loadDetectors()
 			cout <<  hd_msg << " Importing Detector: <" <<  dname << "> with " << factoryType << " factory. "  << endl;
 
 
+		// checking for the filename
+		// this will be the detector variation
+		string filename = dname + ".stl";
+		ifstream fstl(filename.c_str());
+		if(!fstl.good()) {
+			// checking .ply format
+			filename = dname + ".ply";
+			ifstream fply(filename.c_str());
+			if(!fply.good()) {
+				cout << " !! Error: no " << dname << ".stl or " << dname << ".ply file found. Exiting." << endl;
+
+				exit(0);
+			}
+		}
+
+		// there is only one solid / cad file
+		// using gtable to create it
+		gtable gt;
+
+		gt.add_data(dname);                            // 1 name
+		gt.add_data( (string) "root");                 // 2 mother volume
+		gt.add_data(dname + (string) " cadImported"); // 3 description
+		gt.add_data( (string) "0*cm 0*cm 0*cm");       // 4 position
+		gt.add_data( (string) "0*deg 0*deg 0*deg");    // 5 rotation
+		gt.add_data( (string) "2222aa");               // 6 color
+		gt.add_data( (string) "cadImport");            // 7 type
+		gt.add_data( (string) "0");                    // 8 dimensions
+		gt.add_data( (string) "G4_Al");                // 9 material is aluminum by defaul
+		gt.add_data( (string) "no");                   // 10 magnetic field
+		gt.add_data( (string) "0");                    // 11 copy number
+		gt.add_data( (string) "0");         // 12 pmany
+		gt.add_data( (string) "1");         // 13 activation flag
+		gt.add_data( (string) "1");       // 14 visibility
+		gt.add_data( (string) "1");         // 15 style
+		gt.add_data( (string) "no");   // 16 sensitivity
+		gt.add_data( (string) "no");      // 17 hit_type
+		gt.add_data( (string) "");   // 18 identifiers
+		gt.add_data( (string) "dname");                     // 19 system
+		gt.add_data( (string) "CAD");              // 20 factory
+		gt.add_data(filename);     // 21 variation
+		gt.add_data( (string) "1");           // 22 run number
+
+		dets[gt.data[0]] = get_detector(gt, gemcOpt, RC);
 
 
-
-		// parsing attribute modifications
-		string fname = dname + ".gxml";
+		// parsing attribute modifications. All cad imported volumes are stored in cad.gxml
+		string fname = dname + "cad.gxml";
 
 		QFile gxml(fname.c_str());
 
