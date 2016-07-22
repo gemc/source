@@ -235,7 +235,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 					
 		if(shiftp.mag2() != 0)
 		{
-			if(verbosity > 3 || det.name.find(catch_v))
+			if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 				cout << hd_msg << " Detector " << det.name << " is displaced by: " << shiftp/cm << " cm" << endl;
 						
 			det.pos += shiftp;
@@ -245,7 +245,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		G4ThreeVector more_rot = RC.detectorConditionsMap[det.name].get_vrotation();
 		if(more_rot.mag2() != 0)
 		{
-			if(verbosity > 3 || det.name.find(catch_v))
+			if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 				cout << hd_msg << " Detector " << det.name << " is rotated by: " << more_rot/deg << " deg" << endl;
 						
 			det.rot.rotateX(more_rot.x());
@@ -311,7 +311,8 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
 		det.exist = RC.detectorConditionsMap[det.name].get_existance();
-		if(verbosity > 3 || det.name.find(catch_v))
+
+		if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 			cout << hd_msg << " Detector " << det.name << " has existence set to: " << det.exist << endl;
 	}
 
@@ -399,8 +400,8 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 
 		if(shiftp.mag2() != 0)
 		{
-			if(verbosity > 3 || det.name.find(catch_v))
-			cout << hd_msg << " Detector " << det.name << " is displaced by: " << shiftp/cm << " cm" << endl;
+			if(verbosity > 3 || det.name.find(catch_v) != string::npos)
+				cout << hd_msg << " Detector " << det.name << " is displaced by: " << shiftp/cm << " cm" << endl;
 
 			det.pos += shiftp;
 		}
@@ -409,8 +410,8 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 		G4ThreeVector more_rot = RC.detectorConditionsMap[det.name].get_vrotation();
 		if(more_rot.mag2() != 0)
 		{
-			if(verbosity > 3 || det.name.find(catch_v))
-			cout << hd_msg << " Detector " << det.name << " is rotated by: " << more_rot/deg << " deg" << endl;
+			if(verbosity > 3 || det.name.find(catch_v) != string::npos)
+				cout << hd_msg << " Detector " << det.name << " is rotated by: " << more_rot/deg << " deg" << endl;
 
 			det.rot.rotateX(more_rot.x());
 			det.rot.rotateY(more_rot.y());
@@ -465,8 +466,8 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
 		det.exist = RC.detectorConditionsMap[det.name].get_existance();
-		if(verbosity > 3 || det.name.find(catch_v))
-		cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
+		if(verbosity > 3 || det.name.find(catch_v) != string::npos)
+			cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
 	}
 
 	// 13:  Visibility
