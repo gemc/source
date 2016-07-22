@@ -4,6 +4,7 @@ Changelog for GEMC
 7/22/16
  - fixed CATCH option for detector factory
  - for cad model, reading cad.gxml for new volume attributes
+ - added obj format to CAD support
 
 7/21/16
  - finalized CAD factory

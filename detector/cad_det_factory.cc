@@ -35,9 +35,14 @@ map<string, detector> cad_det_factory::loadDetectors()
 			filename = dname + ".ply";
 			ifstream fply(filename.c_str());
 			if(!fply.good()) {
-				cout << " !! Error: no " << dname << ".stl or " << dname << ".ply file found. Exiting." << endl;
+				// checking .obj format
+				filename = dname + ".obj";
+				ifstream fobj(filename.c_str());
 
-				exit(0);
+				if(!fply.good()) {
+					cout << " !! Error: no " << dname << ".stl or " << dname << ".ply file found. Exiting." << endl;
+					exit(0);
+				}
 			}
 		}
 
