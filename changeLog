@@ -3,6 +3,8 @@ Changelog for GEMC
 
 7/27/16
  - added possibility of import all CAD files from a directory
+ - changed log verbosity for both CAD and GDML 
+ - modified github README
 
 7/22/16
  - fixed CATCH option for detector factory
