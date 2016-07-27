@@ -17,7 +17,7 @@ It provides:
 	<img src="https://github.com/gemc/docs/blob/master/webPage/source/eic.png"    height="170" width="170">
 	<img src="https://github.com/gemc/docs/blob/master/webPage/source/bubble.png" height="170" width="170">
 </p>
-<i> examples of experiments using gemc. From left to right: a <a href="<https://www.jlab.org/Hall-B/clas12-web/">CLAS12</a>beamline event; 
+<i> examples of experiments using gemc. From left to right: a <a href="https://www.jlab.org/Hall-B/clas12-web/">CLAS12</a> beamline event; 
 The electron and ion beamline and interation point detectors for the <a href="https://www.jlab.org/meic/">electron-ion collider</a>.
 The gemc simulation of the Electron Ion Collider beamline and detectors.
 10,000 electrons producing photons in the 6mm collimator in the bubble experiments at Jefferson Lab.</i>
@@ -42,10 +42,9 @@ Experiments can be loaded  using a combination of several available factories:
 - C++ Plugin
 
 
-<p align="center">
 <script src="https://embed.github.com/view/3d/gemc/detectors/master/humanBody/Upper_GI.stl?width=250"></script>
 <script src="https://embed.github.com/view/3d/gemc/detectors/master/forFun/enterprise.stl?width=250"></script>
-</p>
+
 
 
 
