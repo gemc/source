@@ -42,10 +42,6 @@ Experiments can be loaded  using a combination of several available factories:
 - C++ Plugin
 
 
-<script src="https://embed.github.com/view/3d/gemc/detectors/master/humanBody/Upper_GI.stl?width=250"></script>
-<script src="https://embed.github.com/view/3d/gemc/detectors/master/forFun/enterprise.stl?width=250"></script>
-
-
 
 
 
