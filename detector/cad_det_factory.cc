@@ -1,7 +1,9 @@
-// gemc headers
+// gemc
 #include "cad_det_factory.h"
 #include "utils.h"
 
+// c++
+#include <dirent.h>
 
 map<string, detector> cad_det_factory::loadDetectors()
 {
@@ -21,59 +23,93 @@ map<string, detector> cad_det_factory::loadDetectors()
 	for(map<string, detectorCondition>::iterator it=RC.detectorConditionsMap.begin(); it != RC.detectorConditionsMap.end() ; it++) {
 		if(it->second.get_factory() != factoryType )
 			continue;
-		
-		string dname     = it->first;
-		if(verbosity)
-			cout <<  hd_msg << " Importing Detector: <" <<  dname << "> with " << factoryType << " factory. "  << endl;
 
-		// checking for the filename
-		// this will be the detector variation
-		string filename = dname + ".stl";
-		ifstream fstl(filename.c_str());
-		if(!fstl.good()) {
-			// checking .ply format
-			filename = dname + ".ply";
-			ifstream fply(filename.c_str());
-			if(!fply.good()) {
-				// checking .obj format
-				filename = dname + ".obj";
-				ifstream fobj(filename.c_str());
+		string dname = it->first;
 
-				if(!fply.good()) {
-					cout << " !! Error: no " << dname << ".stl or " << dname << ".ply file found. Exiting." << endl;
-					exit(0);
+		vector<string> cadFiles;
+
+		// checking wildcards
+		if(strcmp(&dname.back(), "/") == 0) {
+			string dir(dname.begin(), dname.end()-1);
+			DIR *thisDir = opendir(dir.c_str());
+
+			if(thisDir != NULL) {
+				struct dirent *thisDirent = readdir(thisDir);
+				while (thisDirent != NULL){
+
+					// removing 4 char from filename. Extension must be 3 letters long + period
+					string thisName = thisDirent->d_name;
+
+					if(thisName.size()>4) {
+						string thisRootFileName(thisName.begin(), thisName.end()-4);
+
+						string thisFileName = checkFormat(dname + thisRootFileName);
+
+						if(thisFileName != "na")
+							cadFiles.push_back(thisFileName);
+					}
+
+					thisDirent = readdir(thisDir);
 				}
+
+			} else {
+				cout << " !! Error: directory " << dir << " cannot be read. Exiting." << endl;
+				exit(0);
 			}
+			closedir(thisDir);
+
+		// no wildcard, use name directly
+		} else {
+			string thisFileName = checkFormat(dname);
+			if(thisFileName != "na")
+				cadFiles.push_back(thisFileName);
 		}
 
-		// there is only one solid / cad file
-		// using gtable to create it
-		gtable gt;
+		if(cadFiles.size() == 0) {
+			cout << " !! Error: cad system " << it->first << " is not a cad file or a directory containing cad files. Exiting." << endl;
+			exit(0);
+		}
 
-		gt.add_data(dname);                            // 1 name
-		gt.add_data( (string) "root");                 // 2 mother volume
-		gt.add_data(dname + (string) " cadImported");  // 3 description
-		gt.add_data( (string) "0*cm 0*cm 0*cm");       // 4 position
-		gt.add_data( (string) "0*deg 0*deg 0*deg");    // 5 rotation
-		gt.add_data( (string) "2222aa");               // 6 color
-		gt.add_data( (string) "cadImport");            // 7 type
-		gt.add_data( (string) "0");                    // 8 dimensions
-		gt.add_data( (string) "G4_Al");                // 9 material is aluminum by defaul
-		gt.add_data( (string) "no");                   // 10 magnetic field
-		gt.add_data( (string) "0");                    // 11 copy number
-		gt.add_data( (string) "0");                    // 12 pmany
-		gt.add_data( (string) "1");                    // 13 activation flag
-		gt.add_data( (string) "1");                    // 14 visibility
-		gt.add_data( (string) "1");                    // 15 style
-		gt.add_data( (string) "no");                   // 16 sensitivity
-		gt.add_data( (string) "no");                   // 17 hit_type
-		gt.add_data( (string) "");                     // 18 identifiers
-		gt.add_data( (string) "dname");                // 19 system
-		gt.add_data( (string) "CAD");                  // 20 factory
-		gt.add_data(filename);                         // 21 variation
-		gt.add_data( (string) "1");                    // 22 run number
 
-		dets[gt.data[0]] = get_detector(gt, gemcOpt, RC);
+
+		if(verbosity)
+			cout <<  hd_msg << " Importing Cad Detector from: <" <<  dname << "> with " << factoryType << " factory. "  << endl;
+
+		// looping over all cad files for this system
+		for(const auto &cf : cadFiles) {
+			// there is only one solid / cad file
+			// using gtable to create it
+			gtable gt;
+
+			// cf is at least 5 chars because it has 3 letters extension
+			string detN(cf.begin(), cf.end()-4);
+
+			gt.add_data(detN);                            // 1 name
+			gt.add_data( (string) "root");                // 2 mother volume
+			gt.add_data(detN + (string) " cadImported");  // 3 description
+			gt.add_data( (string) "0*cm 0*cm 0*cm");      // 4 position
+			gt.add_data( (string) "0*deg 0*deg 0*deg");   // 5 rotation
+			gt.add_data( (string) "2222aa");              // 6 color
+			gt.add_data( (string) "cadImport");           // 7 type
+			gt.add_data( (string) "0");                   // 8 dimensions
+			gt.add_data( (string) "G4_Al");               // 9 material is aluminum by defaul
+			gt.add_data( (string) "no");                  // 10 magnetic field
+			gt.add_data( (string) "0");                   // 11 copy number
+			gt.add_data( (string) "0");                   // 12 pmany
+			gt.add_data( (string) "1");                   // 13 activation flag
+			gt.add_data( (string) "1");                   // 14 visibility
+			gt.add_data( (string) "1");                   // 15 style
+			gt.add_data( (string) "no");                  // 16 sensitivity
+			gt.add_data( (string) "no");                  // 17 hit_type
+			gt.add_data( (string) "");                    // 18 identifiers
+			gt.add_data( dname);                          // 19 system is dname (can be a path)
+			gt.add_data( (string) "CAD");                 // 20 factory
+			gt.add_data(cf);                              // 21 variation is the full filename
+			gt.add_data( (string) "1");                   // 22 run number
+
+			dets[gt.data[0]] = get_detector(gt, gemcOpt, RC);
+
+		}
 	}
 
 	// parsing attribute modifications. All cad imported volumes are stored in cad.gxml
@@ -165,4 +201,40 @@ map<string, detector> cad_det_factory::loadDetectors()
 
  	return dets;
 }
+
+string cad_det_factory::checkFormat(string file)
+{
+	// trying STL
+	string filename = file + ".stl";
+	ifstream fstl(filename.c_str());
+	if(fstl.good()) {
+		fstl.close();
+		return filename;
+		// trying .PLY
+	} else {
+		filename = file + ".ply";
+		ifstream fply(filename.c_str());
+		if(fply.good()) {
+			fply.close();
+			return filename;
+			// trying OBJ
+		} else {
+			filename = file + ".obj";
+			ifstream fobj(filename.c_str());
+			if(fobj.good()) {
+				fobj.close();
+				return filename;
+				// trying OBJ
+			} else {
+				return "na";
+			}
+		}
+	}
+
+	return "na";
+}
+
+
+
+
 

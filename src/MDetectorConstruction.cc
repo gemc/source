@@ -303,7 +303,9 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			// checking that we didn't already processed this file
 			if(gdmlAlreadyProcessed.find(filename) == gdmlAlreadyProcessed.end()) {
 
-				cout << "  Parsing GDML Physical volumes from " << filename << endl;
+				if(VERB > 1)
+				 cout << "  > Parsing GDML Physical volumes from " << filename << endl;
+
 				// parsing G4 volumes
 				G4GDMLParser *parser = new G4GDMLParser();
 				parser->Read(filename, 0);
@@ -369,7 +371,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 			// filename has been already verified to exist
 			string filename = dd.second.variation;
-			cout << "  Parsing CAD volume from " << filename << endl;
+			if(VERB > 1)
+				cout << "  > Parsing CAD volume from " << filename << endl;
 
 			CADMesh * mesh = new CADMesh((char *) filename.c_str());
 			mesh->SetScale(mm);

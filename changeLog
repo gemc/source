@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/27/16
+ - added possibility of import all CAD files from a directory
+
 7/22/16
  - fixed CATCH option for detector factory
  - for cad model, reading cad.gxml for new volume attributes

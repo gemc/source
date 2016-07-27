@@ -39,26 +39,30 @@ Code Improvements:
 Fixes
 =====
 
-Load path should be corrected /group still show /group even though it's loaded
-from a different path
+Log of load path should be corrected /group still show /group even though the detector is loaded
+from a different path using the GEMC_DIR variable
 
 
 
 
 Gemc Newsletter 7/2016
+Post from google group
 ----------------------
 
-Ladies and gentlemen, 240 years ago the founding fathers...
+With gemc 2.4 released, here's a couple of additional notes:
 
-hmm maybe too formal.
+The development version of gemc just implemented importing volumes from CAD.
+This can be a game changer for many aspects of the simulation:
 
-Yo all...
+- cad import is now lighting fast.
+- some volumes are just too complicated to implement with geant4 volumes (CLAS12 CTOF paddles and light guides, torus magnet, beamline details).
+- geometry consistency with engineering model
+- reconstruction could use the same cad models
 
-ok too informal...
+In addition, gemc devel has now translation table mechanism and by the end of august it will have FADC composite banks. At that point gemc output will be indistiguishable from
+real data - the holy grail of simulations.
 
-
-
-
+If you have anything you'd like to discuss, this email list could be a good channel for it.
 
 
 
