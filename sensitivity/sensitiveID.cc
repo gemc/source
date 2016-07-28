@@ -34,6 +34,11 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 	if(factory == "TEXT" || factory == "CAD" || factory == "GDML")
 	{
 		string fname = system + "__hit_" + variation + ".txt";
+		if(factory == "CAD")
+			fname = system + "__hit_cad.txt";
+		if(factory == "GDML")
+			fname = system + "__hit_cad.txt";
+
 		if(verbosity > 1) cout << "   > Loading TEXT definitions for <" << SD << ">..." << endl;
 
 		ifstream IN(fname.c_str());
@@ -120,6 +125,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 		{
 			// 1: description
 			description     = "unknown";
+			identifiers.push_back("unknown");
 			signalThreshold = 1;
 			timeWindow      = 100;
 			prodThreshold   = 1;

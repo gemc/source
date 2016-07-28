@@ -1,10 +1,20 @@
 Changelog for GEMC
 ==================
 
+7/28/16
+ - added attributes modifier for cad imports:
+   - position
+   - rotation
+ - added CAD and GDML reading of hit definitions
+ - protecting against a too low production threshold
+ - assigning system to sensitivity so hit definitions can be read properly
+ - bug fix: assigning a non empty identifier if SDID cannot be loaded from hit definitions
+
 7/27/16
  - added possibility of import all CAD files from a directory
  - changed log verbosity for both CAD and GDML 
  - modified github README
+ - detector run condition existance set to 0 by default - or non existing volumes will appear
 
 7/22/16
  - fixed CATCH option for detector factory
@@ -2045,7 +2055,7 @@ Changelog for GEMC
  - New QT driver.
 
 
-10/9/2009
+10/9/2008
  - Field map no more needed in current directory.
    It will be assumed to be in $G4ROOT/data
 
@@ -2056,16 +2066,42 @@ Changelog for GEMC
    - Window size increased (for now in the G4 software)
 
 
+9/24/2008
+ - Added gemc_Opt to ProcessID
 
+9/19/2008
+ - Exiting gemc when the gcard format is wrong
 
+9/16/2008
+ - Added QGSC_BERT (Kossov)
 
+9/16/2008
+ - Taking absolute value of sdoca instead of throwing another number if doca is negative.
+ - One random number per doca is launched, preserving the random engine sequence.
 
+9/11/2008
+ - Random number seed picked from time, cpu clock and process id (process id added because two gemc
+   instances at the same time and with similar processor speed were giving the same seed)
 
+9/10/2008
+ - Added immediate mode for OpenGL (OGLIX)
 
+9/3/2008
+ - Identifier verbosity removed for "CATCH" option.
 
+8/22/2008
+ - Added transparency to logical volumes.
+ - Transparency 0 to 5 where 5=max transparency  (default is 0 if nothing is specified)
 
+8/4/2008
+ - bug fix: Phi simmetric Solenoid Magnetic field GetFieldValue was returning wrong values for some values of phi.
 
+7/22/2008
+ - removed hardwired clas12_geometry name since there is a use statement to define which DB to
+	use when creating the tables with this template
 
+6/16/2008
+ - Custom positioning of any component by the gcard.
 
 
 
