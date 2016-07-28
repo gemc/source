@@ -47,11 +47,11 @@ class detectorCondition
 		int    run_number;     // Run Number selected for this detector
 		
 	public:
-		detectorCondition(){is_present = 1;}
+		detectorCondition(){is_present = 0;}
 		detectorCondition(string f)
 		{
 			factory    = f;
-			is_present = 1;
+			is_present = 0;
 			variation  = "main";
 			run_number = 1;
 		}
