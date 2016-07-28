@@ -16,7 +16,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 	name             = SD;
 	thisFactory      = factory + " " + variation;
 	system           = s;
-	
+
 	// iF SD is FLUX, returns special sensitiveID
 	if(SD == "flux")
 	{
@@ -30,8 +30,8 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 	}
 	
 	
-	// MYSQL sensitivity infos
-	if(factory == "TEXT")
+	// TEXT sensitivity infos. For now, CAD and GDML are loaded with TEXT
+	if(factory == "TEXT" || factory == "CAD" || factory == "GDML")
 	{
 		string fname = system + "__hit_" + variation + ".txt";
 		if(verbosity > 1) cout << "   > Loading TEXT definitions for <" << SD << ">..." << endl;
