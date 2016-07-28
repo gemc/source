@@ -167,6 +167,9 @@ map<string, detector> cad_det_factory::loadDetectors()
 							cout << " sensitivity: " << sensitivity ;
 
 						// same hitType as sensitivity
+						// setting system as sensitivity, so the hit definitions can be loaded
+						// this should be modified later
+						dets[volumeName].system = sensitivity;
 						dets[volumeName].sensitivity = sensitivity;
 						dets[volumeName].hitType = sensitivity;
 
