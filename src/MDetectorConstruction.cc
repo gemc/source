@@ -415,29 +415,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 	}
 
-
-//	// CAD model rotation.
-//	G4RotationMatrix * rot = new G4RotationMatrix();
-//	rot->rotateZ(90*deg);
-//
-//
-//	// Note that offset is applied to the points in mesh directly before placement.
-//	CADMesh * mesh = new CADMesh((char *) "loubie_adalinda_dragon_decimated.stl");
-//	mesh->SetScale(mm);
-//	mesh->SetOffset(G4ThreeVector(-20*cm, 0, 0));
-//	mesh->SetReverse(false);
-//
-//	G4VSolid *cad_solid = mesh->TessellatedMesh();
-//	G4LogicalVolume *cad_logical = new G4LogicalVolume(cad_solid, (*mats)["G4_AIR"], "cad_logical", 0, 0, 0);
-//	G4VPhysicalVolume *cad_physical = new G4PVPlacement(rot, G4ThreeVector(), cad_logical,
-//												"cad_physical", (*hallMap)["root"].GetLogical(), false, 0);
-//	cad_logical->SetVisAttributes(G4Color(0.5, 0.3, 1, 1));
-//
-
-
-
-
-
 	// build mirrors
 	buildMirrors();
 
@@ -825,8 +802,19 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 					SeRe_Map[regionName]->AddRootLogicalVolume(regionDet.GetLogical());
 
 					SePC_Map[regionName] = new G4ProductionCuts;
-					SePC_Map[regionName] ->SetProductionCut(itr->second->SDID.prodThreshold);
-					
+
+					// protecting against a too low production threshold
+					double productionThreshold = itr->second->SDID.prodThreshold;
+					if(productionThreshold < 0.00001) {
+						cout << " !! Warning: production threshold for " << regionName << " is  " << productionThreshold << "mm."
+						<< " That is too low. Overwriting it with 1mm." << endl;
+						productionThreshold = 1;
+						itr->second->SDID.prodThreshold = productionThreshold;
+					}
+
+					SePC_Map[regionName] ->SetProductionCut(productionThreshold);
+
+
 					if(VERB > 3)
 						cout << "  Region " << regionName << " activated for volume " << regionDet.name << " with range: " << itr->second->SDID.prodThreshold << endl;
 					
