@@ -9,6 +9,8 @@ Changelog for GEMC
  - protecting against a too low production threshold
  - assigning system to sensitivity so hit definitions can be read properly
  - bug fix: assigning a non empty identifier if SDID cannot be loaded from hit definitions
+ - bug fix: existence was not properly managed in run condition. Added bool var to handle cases
+   where existence is set in the gcard
 
 7/27/16
  - added possibility of import all CAD files from a directory

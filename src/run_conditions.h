@@ -39,7 +39,8 @@ class detectorCondition
 		G4ThreeVector    pos;  // Shift relative to the nominal position
 		G4RotationMatrix rot;  // Rotation relative to the nominal position
 		G4ThreeVector    vrot; // Rotation Vector (ordered X,Y,Z)
-		
+
+		bool presentFlag;      // by default this is false. if existance is set in the gcard, this is set to true
 		int is_present;        // by default set to 1. Can be set to 0 to remove a detector from the simulation
 		string system;         // detector system
 		string factory;        // factory that builds the detector
@@ -47,13 +48,14 @@ class detectorCondition
 		int    run_number;     // Run Number selected for this detector
 		
 	public:
-		detectorCondition(){is_present = 0;}
+	detectorCondition(){is_present = 0; presentFlag = false;}
 		detectorCondition(string f)
 		{
 			factory    = f;
 			is_present = 0;
 			variation  = "main";
 			run_number = 1;
+			presentFlag = false;
 		}
 		~detectorCondition(){;}
 		
@@ -68,7 +70,7 @@ class detectorCondition
 		G4ThreeVector    get_position()  {return pos;}
 		G4ThreeVector    get_vrotation() {return vrot;}
 		G4RotationMatrix get_rotation()  {return rot;}
-		int              get_existance() {return is_present;}
+		int              get_existance() {if(presentFlag) return is_present; else return 2;} // 2 means existance is not set
 		string           get_factory()   {return factory;}
 		string           get_variation() {return variation;}
 		string           get_system()    {return system;}

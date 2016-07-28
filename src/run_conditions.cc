@@ -124,6 +124,7 @@ void detectorCondition::set_rotation(string X, string Y, string Z)
 
 void detectorCondition::set_existance(string exist)
 {
+	presentFlag = true;
 	if(exist == "no" || exist == "NO" || exist == "No")
 		is_present = 0;
 }
