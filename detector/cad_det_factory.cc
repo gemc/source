@@ -141,17 +141,19 @@ map<string, detector> cad_det_factory::loadDetectors()
 				string identifiers  = e.attribute("identifiers").toStdString();
 				string visible      = e.attribute("visible").toStdString();
 				string style        = e.attribute("style").toStdString();
+				string position     = e.attribute("position").toStdString();
+				string rotation     = e.attribute("rotation").toStdString();
 
 				// assigning attributes to volume
 				if(dets.find(volumeName) != dets.end()) {
 
-					//if(verbosity>3)
-					cout << " Modifying attributes for volume: " << volumeName ;
+					if(verbosity>3)
+						cout << " Modifying attributes for volume: " << volumeName ;
 
 
 					if(color != "") {
-						//if(verbosity>3)
-						cout << " color: " << color ;
+						if(verbosity>3)
+							cout << " color: " << color ;
 
 						G4Colour thisCol = gcol(color);
 						dets[volumeName].VAtts = G4VisAttributes(thisCol);
@@ -161,7 +163,8 @@ map<string, detector> cad_det_factory::loadDetectors()
 					style == "wireframe" ?  dets[volumeName].VAtts.SetForceWireframe(true) : dets[volumeName].VAtts.SetForceSolid(true);
 
 					if(sensitivity != "") {
-						cout << " sensitivity: " << sensitivity ;
+						if(verbosity>3)
+							cout << " sensitivity: " << sensitivity ;
 
 						// same hitType as sensitivity
 						dets[volumeName].sensitivity = sensitivity;
@@ -169,7 +172,9 @@ map<string, detector> cad_det_factory::loadDetectors()
 
 						// identifier must be defined
 						if(identifiers != "") {
-							cout << " identifiers: " << identifiers ;
+							if(verbosity>3)
+								cout << " identifiers: " << identifiers ;
+
 							dets[volumeName].identity = get_identifiers(identifiers);
 
 						} else {
@@ -178,13 +183,25 @@ map<string, detector> cad_det_factory::loadDetectors()
 					}
 
 					if(material != "") {
-						//if(verbosity>3)
+						if(verbosity>3)
 						cout << " material: " << material ;
 						dets[volumeName].material = material;
 					}
 
-					//if(verbosity>3)
-					cout << endl;
+					if(position != "") {
+						if(verbosity>3)
+							cout << " position: " << position ;
+						dets[volumeName].pos = calc_position(position);
+					}
+
+					if(rotation != "") {
+						if(verbosity>3)
+							cout << " rotation: " << rotation ;
+						dets[volumeName].rot = calc_rotation(rotation, volumeName);
+					}
+
+					if(verbosity>3)
+						cout << endl;
 				}
 			}
 		}
