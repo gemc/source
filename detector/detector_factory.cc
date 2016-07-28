@@ -307,10 +307,12 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	// 12: Activation flag
 	det.exist   = atoi(gt.data[12].c_str());
 
-	// Overwriting existence is set in the gcard
+	// Overwriting existence if it is set in the gcard
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
-		det.exist = RC.detectorConditionsMap[det.name].get_existance();
+		int doesItExist = RC.detectorConditionsMap[det.name].get_existance();
+		if(doesItExist != 2)
+			det.exist = doesItExist;
 
 		if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 			cout << hd_msg << " Detector " << det.name << " has existence set to: " << det.exist << endl;
@@ -465,7 +467,10 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	// Overwriting existance is set in the gcard
 	if(RC.detectorConditionsMap.find(det.name) != RC.detectorConditionsMap.end())
 	{
-		det.exist = RC.detectorConditionsMap[det.name].get_existance();
+		int doesItExist = RC.detectorConditionsMap[det.name].get_existance();
+		if(doesItExist != 2)
+			det.exist = doesItExist;
+
 		if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 			cout << hd_msg << " Detector " << det.name << " has existance set to: " << det.exist << endl;
 	}
