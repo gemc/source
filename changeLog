@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+7/29/16
+ - added two public function to get timewindow and start time from generatorAction
+
+
 7/28/16
  - added attributes modifier for cad imports:
    - position

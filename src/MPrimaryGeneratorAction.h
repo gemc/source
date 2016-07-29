@@ -36,8 +36,12 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     
 		// LUND information
 		vector<double> lundUserDefined;   ///< user defined infos in the LUND header
-	
-	
+
+	// these two should belong to a general generator class
+	// start time can be modeled
+	double getTimeWindow(){return TWINDOW;}
+	double getStartTime(){return TWINDOW/2;}
+
 	private:
 		string input_gen;                 ///< Input Option: internal or external
 		string background_gen;            ///< Input Option: background from file in LUND format
