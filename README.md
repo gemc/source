@@ -41,21 +41,19 @@ Experiments can be loaded  using a combination of several available factories:
 - CAD (STL, PLY, OBJ formats)
 - C++ Plugin
 
-<center>
+<p align="center">
 	<a href="https://github.com/gemc/detectors/blob/master/humanBody/Upper_GI.stl">
-	<img src="https://github.com/gemc/docs/blob/master/webPage/source/examples/humanBody.png" width="400px" height="400px"></img></a>
-
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/examples/humanBody.png" width="380px" height="380px"></img></a>
 	<a href="https://github.com/gemc/detectors/blob/master/forFun/enterprise.stl"> 
-	<img src="https://github.com/gemc/docs/blob/master/webPage/source/examples/forFun.png"    width="400px" height="400px"></img></a>
-
-	<i> gemc can <a href="https://gemc.jlab.org/gemc/html/documentation/gdmlCadFactories.html">import models from CAD and GDML</a>.
+	<img src="https://github.com/gemc/docs/blob/master/webPage/source/examples/forFun.png"    width="380px" height="380px"></img></a><br>
+	<small><i> gemc can <a href="https://gemc.jlab.org/gemc/html/documentation/gdmlCadFactories.html">import models from CAD and GDML</a>.
    	Left: the upper gastrointestinal system is modeled in CAD.
    	It can be <a href="https://gemc.jlab.org/gemc/html/examples/humanBody.html">imported in GEMC and made it sensitive</a> 
 		so that radiation doses can be measured.
    	Right: the mighty USS Enterprise NCC 1701-A <a href="https://gemc.jlab.org/gemc/html/examples/forFun.html">can be
    	used to shoot protons torpedos</a>. 
-   </i>
-</center>
+   </i></small>
+</p>
 
 ### Simulations are application independent
 
