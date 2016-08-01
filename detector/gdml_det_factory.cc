@@ -119,6 +119,8 @@ map<string, detector> gdml_det_factory::loadDetectors()
 					string identifiers  = e.attribute("identifiers").toStdString();
 					string visible      = e.attribute("visible").toStdString();
 					string style        = e.attribute("style").toStdString();
+					string position     = e.attribute("position").toStdString();
+					string rotation     = e.attribute("rotation").toStdString();
 
 					// assigning attributes to volume
 					if(dets.find(volumeName) != dets.end()) {
@@ -159,6 +161,17 @@ map<string, detector> gdml_det_factory::loadDetectors()
 							//if(verbosity>3)
 							cout << " material: " << material ;
 							dets[volumeName].material = material;
+						}
+						if(position != "") {
+							if(verbosity>3)
+								cout << " position: " << position ;
+							dets[volumeName].pos = calc_position(position);
+						}
+
+						if(rotation != "") {
+							if(verbosity>3)
+								cout << " rotation: " << rotation ;
+							dets[volumeName].rot = calc_rotation(rotation, volumeName);
 						}
 
 						//if(verbosity>3)
