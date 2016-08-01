@@ -82,7 +82,10 @@ map<string, detector> cad_det_factory::loadDetectors()
 			gtable gt;
 
 			// cf is at least 5 chars because it has 3 letters extension
-			string detN(cf.begin(), cf.end()-4);
+			string detPN(cf.begin(), cf.end()-4);
+
+			// removing path
+			string detN = detPN.substr(detPN.find_last_of("/") + 1);
 
 			gt.add_data(detN);                            // 1 name
 			gt.add_data( (string) "root");                // 2 mother volume

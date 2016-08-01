@@ -1,9 +1,12 @@
 Changelog for GEMC
 ==================
 
+8/1/16
+ - added position, rotation tag to GDML
+ - fixed cad.gxml naming: removing path from name
+
 7/29/16
  - added two public function to get timewindow and start time from generatorAction
-
 
 7/28/16
  - added attributes modifier for cad imports:
@@ -2108,6 +2111,42 @@ Changelog for GEMC
 
 6/16/2008
  - Custom positioning of any component by the gcard.
+
+5/30/16
+ - Fixed checking on identity size for "<<" operator
+
+5/27/16
+ - Added algorithm to get the field at the closest point of the grid instead of the bottom of the cell.
+ - Disconnetted theta/phi ping connected to the sliders. Too slow. Will reconsider when signal is given from the QT interface.
+ - Geant4 uses a too large step by default... it was meters in the root volume!
+ - Time window initialized to zero. A non zero TW will set the primary particle start time to TW/2.
+
+5/22/16
+ - Minor mods for gcc 4.3
+ - More slice commands
+ - Valgrind usage in README
+ - example gcard more organized
+
+5/15/16
+ - Fine tuning sliders.
+
+5/14/16
+ - QTimer introduced to inquiry phi, theta changes by the QT interface. Changes reflexted in the slider.
+ - An LCD with theta, phi value is added to the gui.
+ - Generated particles in the output fixed.
+ - gemc was writing non-sense for non existing (non generated but requested in the output) particles.
+
+5/12/16
+ - Doxygen Front page typos.
+ - fixed option routine.
+
+
+
+
+
+
+
+
 
 
 
