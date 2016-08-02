@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+8/2/16
+ - fixed bug that affected gaussian spread of vertex in case z was not centered.
+
 8/1/16
  - added position, rotation tag to GDML
  - fixed cad.gxml naming: removing path from name
@@ -2140,6 +2143,55 @@ Changelog for GEMC
  - Doxygen Front page typos.
  - fixed option routine.
 
+5/9/16
+ - Improved Doxygen documentation
+ - Added EVN option to specify initial run number
+ - Temporarely Removed Detector Messenger until needed
+ - Optical Mirror removed until needed
+ - Options are categorized::
+
+    Help Options:
+
+     >  -help-all:  all available options.
+
+     >  -help-control             control options.
+     >  -help-general             general options.
+     >  -help-generator           generator options.
+     >  -help-luminosity          luminosity options.
+     >  -help-mysql               mysql options.
+     >  -help-output              output options.
+     >  -help-physics             physics options.
+     >  -help-verbosity           verbosity options.
+
+5/7/16
+ - Improved Doxygen documentation
+ - Added EVN option to specify initial run number
+ - Temporarely Removed Detector Messenger until needed
+ - Optical Mirror removed until needed
+ - Magnetic Field definitions fix for uniform field (mysql column exceeded)
+ - evio eventtree pointer deleted at the end of each event
+
+4/28/16
+ - Added Ordered Rotations.
+ - Added parallelepiped solid.
+ - Building realistic Torus coils.
+ - Removed dimension retrieval from solid constructors: variables already have dimensions.
+
+4/25/16
+ - Track can be killed if outside a user-defined z range.
+ - Added Inelastic nuclear scattering of gammas, e-. e+
+ - Added G4Region, G4ProductionCuts Maps and MaxStep cut to each Sensitive Detector. The
+   values are read from the database.  G4StepLimiter registered for all charged particles.
+
+
+ - GEOMETRY:
+
+   - First five paddles of Outer TOF panel 1 are 66 mm longer.
+   - Minor mods to downstream beamline
+
+ - FIXES:
+
+   - Outer TOF mother volume was not updated - overlapping with kids caused troubles.
 
 
 

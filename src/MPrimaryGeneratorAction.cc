@@ -176,10 +176,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				if(gaussOrFlatV == 1) {
 					// r is gaussian
-					VR  = G4RandGauss::shoot(sqrt(vx*vx + vy*vy + vz*vz), dvr/mm);
+					VR  = G4RandGauss::shoot(sqrt(vx*vx + vy*vy), dvr);
 				} else {
 					// r2 is flat
-					VR  = sqrt(G4UniformRand())*dvr/mm;
+					VR  = sqrt(G4UniformRand())*dvr;
 				}
 
 
