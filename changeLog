@@ -3,6 +3,7 @@ Changelog for GEMC
 
 8/9/16
  - ctof paddle length in the ctof constants - not derived by dimensions as ctof is now from CAD.
+ - getting local position in cad paddle
 
 8/2/16
  - fixed bug that affected gaussian spread of vertex in case z was not centered.

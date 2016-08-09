@@ -111,8 +111,8 @@ static ctofConstants initializeCTOFConstants(int runno)
 	}
 	*/
 
-	ctc.lengthHighPitch = 35.013*25.4;  // length of long bar
-	ctc.lengthLowPitch  = 34.664*25.4;  // length of short bar
+	ctc.lengthHighPitch = 35.013*25.4/2;  // length of long bar
+	ctc.lengthLowPitch  = 34.664*25.4/2;  // length of short bar
 
 	return ctc;
 }
@@ -168,8 +168,10 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 
 	// Distances from upstream, downstream
-	double dUp = length + tInfos.ly;
-	double dDn = length - tInfos.ly;
+	// ctof paddle center is exactly the target position,
+	// so z is also the local coordinate
+	double dUp = length + tInfos.z;
+	double dDn = length - tInfos.z;
 	
 	// attenuation length
 	double attlenUp = ctc.attlen[sector-1][panel-1][0][paddle-1];
