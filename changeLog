@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+8/9/16
+ - ctof paddle length in the ctof constants - not derived by dimensions as ctof is now from CAD.
+
 8/2/16
  - fixed bug that affected gaussian spread of vertex in case z was not centered.
 
@@ -99,7 +102,7 @@ Changelog for GEMC
  - These changes are backward compatible.
 
 .. Note::
-	6/19/16 gemc 2.4 released!
+	6/19/16 gemc 2.4 released.
 
 |
 
@@ -252,7 +255,7 @@ Changelog for GEMC
    By default STD is loaded.
 
 .. Note::
-	4/18/16 gemc 2.3 released!
+	4/18/16 gemc 2.3 released.
 
 |
 
@@ -606,7 +609,7 @@ Changelog for GEMC
 
 
 .. Note::
-   1/29/15 gemc 2.2 released!
+   1/29/15 gemc 2.2 released.
 
 |
 
@@ -697,7 +700,7 @@ Changelog for GEMC
 
 
 .. Note::
-   10/22/14 gemc 2.1 released!
+   10/22/14 gemc 2.1 released.
 
 |
 
@@ -1143,7 +1146,7 @@ Changelog for GEMC
  - fixed bug in calculating dipole field for maps.
 
 .. Note::
-   12/06/2012 gemc 1.8 released!
+   12/06/2012 gemc 1.8 released.
 
 |
 
@@ -1154,7 +1157,7 @@ Changelog for GEMC
  - Improve QT path handling for plugins. Fix issues with Aprime hitprocessing.
 
 .. Note::
-   10/24/2012 gemc 1.7 released!
+   10/24/2012 gemc 1.7 released.
 
 |
 
@@ -1437,7 +1440,7 @@ Changelog for GEMC
  - Building operands of sold operations or copies first. Users do not need anymore to order them in alphabetical order.
 
 .. Note::
-   1/26/2012 working gemc version 1.6 revision 5588
+   1/26/2012 gemc 1.6 released - repository revision  5588
 
 |
 
@@ -1509,7 +1512,7 @@ Changelog for GEMC
  - Added button jpg, corrected atomic weight of chlorine
 
 .. Note::
-   7/25/2011 working gemc version 1.5 revision 4756
+   7/25/2011 gemc 1.5 released - repository revision  4756
 
 |
 
@@ -1743,7 +1746,7 @@ Changelog for GEMC
 
 
 .. Note::
-   8/12/2010 working gemc version 1.4 revision 3553
+   8/12/2010 gemc 1.4 released - repository revision  3553
 
 |
 
@@ -2115,35 +2118,35 @@ Changelog for GEMC
 6/16/2008
  - Custom positioning of any component by the gcard.
 
-5/30/16
+5/30/2008
  - Fixed checking on identity size for "<<" operator
 
-5/27/16
+5/27/2008
  - Added algorithm to get the field at the closest point of the grid instead of the bottom of the cell.
  - Disconnetted theta/phi ping connected to the sliders. Too slow. Will reconsider when signal is given from the QT interface.
  - Geant4 uses a too large step by default... it was meters in the root volume!
  - Time window initialized to zero. A non zero TW will set the primary particle start time to TW/2.
 
-5/22/16
+5/22/2008
  - Minor mods for gcc 4.3
  - More slice commands
  - Valgrind usage in README
  - example gcard more organized
 
-5/15/16
+5/15/2008
  - Fine tuning sliders.
 
-5/14/16
+5/14/2008
  - QTimer introduced to inquiry phi, theta changes by the QT interface. Changes reflexted in the slider.
  - An LCD with theta, phi value is added to the gui.
  - Generated particles in the output fixed.
  - gemc was writing non-sense for non existing (non generated but requested in the output) particles.
 
-5/12/16
+5/12/2008
  - Doxygen Front page typos.
  - fixed option routine.
 
-5/9/16
+5/9/2008
  - Improved Doxygen documentation
  - Added EVN option to specify initial run number
  - Temporarely Removed Detector Messenger until needed
@@ -2163,7 +2166,7 @@ Changelog for GEMC
      >  -help-physics             physics options.
      >  -help-verbosity           verbosity options.
 
-5/7/16
+5/7/2008
  - Improved Doxygen documentation
  - Added EVN option to specify initial run number
  - Temporarely Removed Detector Messenger until needed
@@ -2171,13 +2174,13 @@ Changelog for GEMC
  - Magnetic Field definitions fix for uniform field (mysql column exceeded)
  - evio eventtree pointer deleted at the end of each event
 
-4/28/16
+4/28/2008
  - Added Ordered Rotations.
  - Added parallelepiped solid.
  - Building realistic Torus coils.
  - Removed dimension retrieval from solid constructors: variables already have dimensions.
 
-4/25/16
+4/25/2008
  - Track can be killed if outside a user-defined z range.
  - Added Inelastic nuclear scattering of gammas, e-. e+
  - Added G4Region, G4ProductionCuts Maps and MaxStep cut to each Sensitive Detector. The
@@ -2194,24 +2197,59 @@ Changelog for GEMC
    - Outer TOF mother volume was not updated - overlapping with kids caused troubles.
 
 
+4/24/2008
+ - Largest step set in main program - and in MDetectorConstruction
+
+4/22/2008
+ - bank DB commands
+ - Stepping action: removing tracks on user_defined z limits
+
+ -  DC digitization: wire finding routine and digitization1 added.
+    The output of the DC Hit Process, in addition to the normal "raw" variables::
+
+     Name        ID  Type   Comment
+
+     LR          14   1      Left/Right: -1 (right) if the track is between the beam and the closest wire
+     doca        15   1      2D distance between closest track step to the wire hit
+     sdoca       16   1      smeared doca
+     time1       17   1      doca / (50 um/ns)
+     stime1      18   1      time1
+     sector      20   0      CLAS12 Sector
+     superlayer  21   0      Superlayer
+     layer       22   0      Layer
+     wire        23   0      Wire
 
 
 
+4/17/2008
+ - Hit Color:
+
+    - Red for Hits with energy deposited on the first step larger than the detector threshold.
+    - Blue for "touching" tracks (non null energy deposited, but smaller than detector threshold, on the first step).
+    - Green for "passing by" tracks (no energy deposited on the first step).
+
+ - If the Hit Process routine associated with a detector doesn't exist, the program will now issue a warning and exit.
+ - Outer TOF panel geometry upgraded.
+ - Magnetic Field in sector
+ - Upgraded Physics Lists in help
+
+
+.. Note::
+   4/16/2008 gemc 1.3 released - repository revision r1022
+
+|
+
+4/16/2008
+ - Message sent if process hit factory fails
+ - example gcard extended
+ - GCARD introduced to control the sql tables to use and changes to the position/rotation of the detector
+ - Fixes to geometry issues: conversion from rad to deg was buggy.
+ - source file spacing fixed: all editors should show aligned text.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+3/31/2008
+ - Changed "pow" funcion to left shift operation to speed up.
 
 
 

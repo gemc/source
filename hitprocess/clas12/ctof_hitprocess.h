@@ -52,6 +52,9 @@ public:
 	double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
 	double tdcLSB;        // Conversion from ns to TDC channel.
+
+	double lengthHighPitch;  // length of long bar
+	double lengthLowPitch;   // length of short bar
 };
 
 // Class definition

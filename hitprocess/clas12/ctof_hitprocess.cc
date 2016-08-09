@@ -110,7 +110,10 @@ static ctofConstants initializeCTOFConstants(int runno)
 	  ctc.twlk[isec-1][ilay-1][5].push_back(data[row][8]);
 	}
 	*/
-	
+
+	ctc.lengthHighPitch = 35.013*25.4;  // length of long bar
+	ctc.lengthLowPitch  = 34.664*25.4;  // length of short bar
+
 	return ctc;
 }
 
@@ -132,6 +135,12 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector = 1;
 	int panel  = 1;
 	int paddle = identity[0].id;
+
+	// odd numbered paddles are short
+	// even numbered are long
+	double length = ctc.lengthLowPitch;
+	if(paddle%2 == 0) length = ctc.lengthHighPitch;
+
 //
 //	if(aHit->isElectronicNoise)
 //	{
@@ -151,10 +160,13 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 //	}
 
 	// Get the paddle length: in ctof paddles are boxes, the length is the y dimension
-	double length = aHit->GetDetector().dimensions[2];
-	
+	// double length = aHit->GetDetector().dimensions[2];
+
+
+
+
 	trueInfos tInfos(aHit);
-	
+
 	// Distances from upstream, downstream
 	double dUp = length + tInfos.ly;
 	double dDn = length - tInfos.ly;
