@@ -28,6 +28,10 @@
 // gemc headers
 #include "detector.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // C++ headers
 #include <string>
 #include <vector>
@@ -589,7 +593,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		string original(type, 6, 190);
 		
 		// Look for original
-		map<string, detector>::iterator it = (*Map).find(TrimSpaces(original));
+		map<string, detector>::iterator it = (*Map).find(trimSpacesFromString(original));
 		if(it == (*Map).end())
 		{
 			cout <<  hd_msg << " <" << original << "> not found. Exiting." << endl << endl;
@@ -599,7 +603,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		{
 			if(VERB>4 || name.find(catch_v) != string::npos)
 			{
-				cout << hd_msg << " " << name << " is a copy of <" << TrimSpaces(original) << ">. Pointing to its logical volume." << endl;
+				cout << hd_msg << " " << name << " is a copy of <" << trimSpacesFromString(original) << ">. Pointing to its logical volume." << endl;
 			}
 			SetLogical(it->second.GetLogical());
 		}
@@ -661,8 +665,8 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		string tsolid1, tsolid2;
 		solid1.assign(operation, 0,     pos);
 		solid2.assign(operation, pos+1, operation.size());
-		tsolid1 = TrimSpaces(solid1);
-		tsolid2 = TrimSpaces(solid2);
+		tsolid1 = trimSpacesFromString(solid1);
+		tsolid2 = trimSpacesFromString(solid2);
 		
 		// Locating second solid transformation
 		map<string, detector>::iterator it1 = (*Map).find(tsolid1);
@@ -686,7 +690,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		G4Transform3D    transf2( G4RotationMatrix(), translate );
 		G4Transform3D    transform = transf2 * transf1 ;
 		
-		if( absolutecoordinates && TrimSpaces(it1->second.mother) == TrimSpaces(it2->second.mother) )
+		if( absolutecoordinates && trimSpacesFromString(it1->second.mother) == trimSpacesFromString(it2->second.mother) )
 		{
 			//assume that second object position and rotation are given in absolute (mother) coordinates:
 			
@@ -776,8 +780,8 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 		{
 			// oldNewMats[0] = old
 			// oldNewMats[1] = new
-			if(material == TrimSpaces(oldNewMats[0]))
-				material = TrimSpaces(oldNewMats[1]);
+			if(material == trimSpacesFromString(oldNewMats[0]))
+				material = trimSpacesFromString(oldNewMats[1]);
 		}
 	}
 

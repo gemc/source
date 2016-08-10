@@ -3,11 +3,14 @@
 #include <QSplashScreen>
 #include <QtWidgets>
 
-
 // gemc headers
 #include "utils.h"
 #include "string_utilities.h"
 #include "splash.h"
+
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 // G4 headers
 #include "G4UnitsTable.hh"
@@ -294,7 +297,7 @@ map<string, string> getFilesInDirectory(string directory)
 string assignAttribute(QDomElement e, string attribute, string defaultValue)
 {
 	if(e.attributeNode(attribute.c_str()).isAttr())
-		return TrimSpaces(e.attributeNode(attribute.c_str()).value().toStdString());
+		return trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString());
 	
 	// otherwise
 	return defaultValue;
@@ -302,14 +305,14 @@ string assignAttribute(QDomElement e, string attribute, string defaultValue)
 int assignAttribute(QDomElement e, string attribute, int defaultValue)
 {
 	if(e.attributeNode(attribute.c_str()).isAttr())
-		return get_number(TrimSpaces(e.attributeNode(attribute.c_str()).value().toStdString()));
+		return get_number(trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString()));
 	
 	return defaultValue;
 }
 double assignAttribute(QDomElement e, string attribute, double defaultValue)
 {
 	if(e.attributeNode(attribute.c_str()).isAttr())
-		return get_number(TrimSpaces(e.attributeNode(attribute.c_str()).value().toStdString()));
+		return get_number(trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString()));
 	
 	return defaultValue;
 }

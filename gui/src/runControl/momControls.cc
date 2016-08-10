@@ -2,9 +2,12 @@
 #include "momControls.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // G4 headers
 #include "G4ParticleTable.hh"
-
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -21,7 +24,7 @@ momControls::momControls(goptions *Opts, string type)
 	if(type == "Primary") values    = get_info(Opts->optMap["BEAM_P"].args);
 	if(type == "Lumi1")   values    = get_info(Opts->optMap["LUMI_P"].args);
 	if(type == "Lumi2")   values    = get_info(Opts->optMap["LUMI2_P"].args);
-	string pname     = TrimSpaces(values[0]);
+	string pname     = trimSpacesFromString(values[0]);
 
 	// check that particle is in particle table
 	if(!particleTable->FindParticle(pname))
@@ -171,7 +174,7 @@ void momControls::set_momentum(string momOption)
 	
 	if(values.size() == 4)
 	{
-		string pname = TrimSpaces(values[0]);
+		string pname = trimSpacesFromString(values[0]);
 		
 		// default values of units are from the GUI
 		double mom   = get_number(values[1])/GeV;

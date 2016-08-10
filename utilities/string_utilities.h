@@ -17,6 +17,9 @@
 #include <sstream>
 using namespace std;
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 inline string stringify(double x)
 {
@@ -134,7 +137,6 @@ inline string replaceCharsWithChars(string input, string x, string y)
 
 vector< vector<string> > dimensionstype(string);    ///< Returns dimensions nomenclature for different solid type
 double get_number(string,int warn_no_unit=0);       ///< Returns number with dimension from string, i.e. 100*cm
-string TrimSpaces(string);                          ///< Removes leading and trailing spaces
 vector<string> get_strings_except(string, string);  ///< returns a vector of strings from a stringstream, space is delimiter, ignore string with second argument
 vector<string> get_strings(string);                 ///< returns a vector of strings from a stringstream, space is delimiter
 vector<string> get_strings(string, string);         ///< returns a vector of strings from a stringstream, second string is delimiter
@@ -150,7 +152,7 @@ ostream &operator<<(ostream &stream, map<string, string>);  ///< overload << for
 // returns a double from a QVariant
 inline double get_number(QVariant input)
 {
-	return get_number(TrimSpaces(qv_tostring(input)));
+	return get_number(trimSpacesFromString(qv_tostring(input)));
 }
 
 
@@ -160,7 +162,7 @@ inline double get_number(QVariant input)
 // solving all this with stringstream
 inline double stringToDouble(string v)
 {
-	stringstream ss(TrimSpaces(v));
+	stringstream ss(trimSpacesFromString(v));
 	double d;
 	ss >> d;
 	return d;

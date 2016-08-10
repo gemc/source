@@ -5,6 +5,10 @@
 #include "evio_output.h"
 #include "txt_output.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // C++ headers
 #include <fstream>
 using namespace std;
@@ -35,11 +39,11 @@ outputContainer::outputContainer(goptions Opts)
 	outType.assign(optf, 0, optf.find(",")) ;
 	outFile.assign(optf,    optf.find(",") + 1, optf.size()) ;
 	
-	if(outType != "no") cout << hd_msg << " Opening output file \"" << TrimSpaces(outFile) << "\"." << endl;
-	if(outType == "txt")  txtoutput = new ofstream(TrimSpaces(outFile).c_str());
+	if(outType != "no") cout << hd_msg << " Opening output file \"" << trimSpacesFromString(outFile) << "\"." << endl;
+	if(outType == "txt")  txtoutput = new ofstream(trimSpacesFromString(outFile).c_str());
 	if(outType == "evio")
 	{
-		pchan = new evioFileChannel(TrimSpaces(outFile).c_str(), "w", evio_buffer);
+		pchan = new evioFileChannel(trimSpacesFromString(outFile).c_str(), "w", evio_buffer);
 		pchan->open();
 	}
 }

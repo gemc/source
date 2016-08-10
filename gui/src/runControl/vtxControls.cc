@@ -2,6 +2,10 @@
 #include "vtxControls.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
@@ -121,7 +125,7 @@ void vtxControls::set_vertex(string vtxOption)
 	
 	if(values.size() == 4)
 	{
-		string 		units = TrimSpaces(values[3]);
+		string 		units = trimSpacesFromString(values[3]);
 
 		// default values of units are from the GUI
 		double vx = get_number(values[0] + "*" + units)/cm;
@@ -156,7 +160,7 @@ void vtxControls::set_rvertex(string vtxOption)
 	
 	if(values.size() == 3)
 	{
-		string 		units = TrimSpaces(values[2]);
+		string 		units = trimSpacesFromString(values[2]);
 		
 		// default values of units are from the GUI
 		double dvr = get_number(values[0] + "*" + units)/cm;

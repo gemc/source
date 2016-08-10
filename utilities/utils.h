@@ -24,6 +24,9 @@ using namespace std;
 #include "string_utilities.h"
 #include "options.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 class gui_splash
 {
@@ -68,7 +71,7 @@ class gtable
 		gtable(vector<string> d)
 		{
 			for(unsigned int i=0; i<d.size(); i++)
-				data.push_back(TrimSpaces(d[i]));
+				data.push_back(trimSpacesFromString(d[i]));
 		}
 		gtable(){data.clear();}
 		~gtable(){;}
@@ -77,14 +80,14 @@ class gtable
 		
 		void add_data(QVariant input)
 		{
-			data.push_back(TrimSpaces(qv_tostring(input)));
+			data.push_back(trimSpacesFromString(qv_tostring(input)));
 		}
 
 		// notice: char* and QVariant will confuse the compiler
 		// so add_data("bah") won't work. Need to cast it to string first
 		void add_data(string input)
 		{
-			data.push_back(TrimSpaces(input));
+			data.push_back(trimSpacesFromString(input));
 		}
 
 

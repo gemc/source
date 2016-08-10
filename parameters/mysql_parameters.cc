@@ -7,6 +7,10 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 map<string, double> mysql_parameters::loadParameters(goptions opts, runConditions RC)
 {
 	string hd_msg    = "  > MYSQL Parameters: >> ";
@@ -61,7 +65,7 @@ map<string, double> mysql_parameters::loadParameters(goptions opts, runCondition
 		{
 			
 			gtable gt;
-			gt.add_data(dname + "/" + TrimSpaces(qv_tostring(q.value(0))));
+			gt.add_data(dname + "/" + trimSpacesFromString(qv_tostring(q.value(0))));
 			gt.add_data(q.value(1));
 			gt.add_data(q.value(2));
 			gt.add_data(q.value(3));

@@ -7,6 +7,10 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // G4 headers
 #include "G4Element.hh"
 #include "G4NistManager.hh"
@@ -67,7 +71,7 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 		
 		while (q.next())
 		{
-			material thisMat(TrimSpaces(qv_tostring( q.value(0))));         // name
+			material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
 			thisMat.desc               = qv_tostring(q.value(1));           // description
 			thisMat.density            =             q.value(2).toDouble(); // density
 			thisMat.ncomponents        =             q.value(3).toInt();    // number of components

@@ -8,6 +8,10 @@
 #include "text_materials.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // G4 headers
 #include "G4NistManager.hh"
 
@@ -75,7 +79,7 @@ void material::componentsFromString(string s)
 void material::opticalsFromString(string property, string what)
 {
 	
-	string checkProperty = TrimSpaces(property);
+	string checkProperty = trimSpacesFromString(property);
 	if(checkProperty == "none") return;
 	else
 	{
@@ -85,7 +89,7 @@ void material::opticalsFromString(string property, string what)
 		{
 			string c;
 			comps >> c ;
-			string trimmedC = TrimSpaces(c);
+			string trimmedC = trimSpacesFromString(c);
 			
 			if(what == "photonEnergy")
 				photonEnergy.push_back(get_number(trimmedC));

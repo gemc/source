@@ -1,10 +1,12 @@
 // gemc headers
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 // C++ headers
 #include <algorithm>
-
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -27,24 +29,6 @@ vector<string> get_info(string input)
 	return get_strings(stripped);
 }
 
-// Trims Both leading and trailing spaces
-string TrimSpaces(string in)
-{
-	string out;
-	
-	size_t leapos = in.find_first_not_of(" \t"); // Find the first character position after excluding leading blank spaces
-	size_t endpos = in.find_last_not_of(" \t");  // Find the first character position from reverse af
-	
-	// if all spaces or empty return an empty string
-	if(( string::npos == leapos ) || ( string::npos == endpos))
-		out = "";
-	else
-		out = in.substr( leapos, endpos-leapos+1 );
-	
-	return out;
-}
-
-
 
 // returns a vector of strings from a stringstream, space is delimeter
 vector<string> get_strings(string input)
@@ -55,7 +39,7 @@ vector<string> get_strings(string input)
 	{
 		string tmp;
 		plist >> tmp;
-		pvalues.push_back(TrimSpaces(tmp));
+		pvalues.push_back(trimSpacesFromString(tmp));
 	}
 	
 	return pvalues;
@@ -74,7 +58,7 @@ vector<string> get_strings_except(string input, string ignore)
 		plist >> tmp;
 		
 		if(tmp.find(ignore) == string::npos)
-			pvalues.push_back(TrimSpaces(tmp));
+			pvalues.push_back(trimSpacesFromString(tmp));
 	}
 	
 	return pvalues;
@@ -133,7 +117,7 @@ double scan_number(const char *str)
 /// \return value with correct G4 unit.
 double get_number(string v,int warn_no_unit)
 {
-	string value = TrimSpaces(v);
+	string value = trimSpacesFromString(v);
 	
 	if(value.find("*") == string::npos)
 	{
@@ -146,7 +130,7 @@ double get_number(string v,int warn_no_unit)
 	else
 	{
 		double answer = scan_number(value.substr(0, value.find("*")).c_str());
-		string units  = TrimSpaces(value.substr(value.find("*")+1, value.find("*") + 20));
+		string units  = trimSpacesFromString(value.substr(value.find("*")+1, value.find("*") + 20));
 		if(       units == "m")         answer *= m;
 		else if(  units == "inches")    answer *= 2.54*cm;
 		else if(  units == "inch")      answer *= 2.54*cm;

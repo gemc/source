@@ -4,6 +4,11 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
+
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
@@ -164,7 +169,7 @@ gfield asciiField::loadField(string file, goptions opts)
 			// default unit is "megatesla" since for volts is megavolt
 			newdim += stringify(get_number(olddim[d])*1000*gf.scaleFactor) + "*T " ;
 		}
-		gf.dimensions = TrimSpaces(newdim);
+		gf.dimensions = trimSpacesFromString(newdim);
 	}
 	
 	// rescaling dimensions for multipole field	
@@ -175,10 +180,10 @@ gfield asciiField::loadField(string file, goptions opts)
 		for(unsigned int d=0; d<olddim.size(); d++)
 		{
 		  if (d==1) newdim += stringify(gf.scaleFactor*atof(olddim[d].substr(0, olddim[d].find("*")).c_str()))
-			                + "*" + TrimSpaces(olddim[d].substr(olddim[d].find("*")+1, olddim[d].find("*") + 20)) + " ";
+			                + "*" + trimSpacesFromString(olddim[d].substr(olddim[d].find("*")+1, olddim[d].find("*") + 20)) + " ";
 		  else newdim += olddim[d]+" ";
 		}
-		gf.dimensions = TrimSpaces(newdim);
+		gf.dimensions = trimSpacesFromString(newdim);
 	}	
 	
 	return gf;

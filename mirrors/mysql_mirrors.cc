@@ -7,6 +7,9 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 {
@@ -60,7 +63,7 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 		
 		while (q.next())
 		{
-			mirror *thisMir = new mirror(TrimSpaces(qv_tostring( q.value(0))));         // name
+			mirror *thisMir = new mirror(trimSpacesFromString(qv_tostring( q.value(0))));         // name
 			thisMir->desc          =                 qv_tostring(q.value(1));           // description
 			thisMir->type          =                 qv_tostring(q.value(2));           // type
 			thisMir->finish        =                 qv_tostring(q.value(3));           // finish

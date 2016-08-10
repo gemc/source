@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+8/10/16
+ - mlibrary gstring introduced: string manipulation library. This will replace many methods that do not belong in gemc
+ - changelog finalized up to 2/4/2008
+
 8/9/16
  - ctof paddle length in the ctof constants - not derived by dimensions as ctof is now from CAD.
  - getting local position in cad paddle
@@ -2251,6 +2255,251 @@ Changelog for GEMC
 
 3/31/2008
  - Changed "pow" funcion to left shift operation to speed up.
+
+
+3/28/2008
+ - Default material for the Hall is now vacuum.
+ - evio: num can be checked versus its mother
+
+3/20/2008
+ - EVIO Buffer size set to 3M words
+
+
+3/19/2008
+ - Cleaning geo_table_commands
+
+3/18/2008
+ - Tuning magnetic field manager.
+
+3/17/2008
+ - Magnetic Field Propagator Largest Acceptable Step set to 1 mm as suggested by Kostya here:
+   http://clasweb.jlab.org/wiki/index.php/MagFieldTrackingNotes
+
+3/14/2008
+ - Added more physics lists options:
+
+    - LHEP
+    - LHEP_BERT
+    - LHEP_BERT_HP
+    - QGSP
+    - QGSP_BIC
+    - QGSP_BIC_HP
+    - QGSP_BERT
+    - QGSP_BERT_HP
+
+
+3/13/2008
+ - Detector as argument of hit-process routines.
+
+3/2/2008
+ - Adding Detector in Visual Tree only if its logical volume is built (avoids Solid operation).
+ - Solid operation refined.
+ - Trimming spaces for copies.
+ - geometry directory: moving detectors geometry into subdirs
+
+3/1/2008
+ - Added Solid Operations.
+    Rules of engagement:
+
+	 1) A solid that will be added/subtracted must have the material set to "Component"
+	 2) The result of the operation must have solid type = "Operation: solid1name +/- solid2name"
+
+    Example::
+
+	 subtract mysolid2 from mysolid1, result in myresult:
+	 mysolid1.material = "Component"
+	 mysolid2.material = "Component"
+	 myresult.type = "Operation: mysolid1 - mysolid2"
+
+ - database_io/show_geo_table accepts only one parameter
+ - CopyOf can accept spaces, sector modified accordingly (more readable).
+ - Corrected dictionary for num
+ - max evio num is 256, corrected generated particle output.
+ - Added example of reading LUND file format.
+
+
+2/29/2008
+ - G4Polycone introduced.
+ - Solenoid Volume Added.
+ - LUND format finalized.
+ - Introduced Options:
+
+    * GEN_VERBOSITY: controls generator messages
+    * NGENP: Number of generated particles to be saved in the output stream
+ 
+ - Added kaons to particle definitions.
+
+
+2/28/2008
+ - Bug in evio output fixed: bitId was not clear.
+ - Starting LUND format for input generator.
+ - typo on global to local coordinates if Edep is zero
+
+
+2/27/2008
+ - CLHEP Random Engine Initialization Option: RANDOM=seed number or RANDOM=TIME for local time initialization
+ - Weighting position with energy (if Etot>0).
+ - Smooth graphic trajectories.
+ - evio2xml command in README.
+ - Redefinition of the Hit.
+
+    An "element" is part of a sensitive volume associated with read-out.
+    For example, one paddle could be one whole element.
+    But one silicon module can contain many read-out strip: in this case
+    one element is the single strip.
+
+    The process of element identification is done at the HitProcess level.
+
+    In the main gemc model, all energies deposited in one element for each step
+    add, all positiions average, etc.
+
+2/26/2008
+ - virtual identifier ProcessID(identifier, G4StepPoint) = 0;
+ - Virtual Method to calculate identifier for each step.
+ - Each Sensitive detector has now the pointer to the Process Hit Map.
+ - identifier class has its own files now.
+ - Defining operators::
+
+    bool operator<  (const identifier& I) const;
+    bool operator>  (const identifier& I) const;
+    bool operator<= (const identifier& I) const {return !(*this >  I);}
+    bool operator>= (const identifier& I) const {return !(*this <  I);}
+    bool operator!= (const identifier& I) const {return !(*this == I);}
+
+ - SConstruct modified accordingly
+ - gcc 3.2.3 doesn't like floor(int).
+ - README updated.
+ 
+2/25/2008
+ - Added Luminosity Options:
+
+    - Option LUMI_EVENT: Luminosity Beam Parameters: Number of Particles/Event, Time Window, Time Between Bunches
+	   Example: -LUMI_EVENT="10000, 120*ns, 2*ns" simulate 10K particles per event distributed over 120 ns, at 2ns intervals.
+
+	 - Option LUMI_P: Luminosity Beam particle, momentum, angles (in respect of z-axis).
+	   Example: -LUMI_P="proton, 1*GeV, 25*deg, 2*deg" sets luminosity beam 1 GeV protons 25 degrees in theta, 2 degrees in phi.
+	   Use -LUMI_P="show_all" to print the list of G4 supported particles.
+
+	 - Option LUMI_V: Luminosity Beam Vertex. Example: -LUMI_V="(0, 0, -20)cm".
+
+2/22/2008
+ - Check on number of arguments.
+ - Added -f to scripts so it doesn't call shell startup script.
+
+2/20/2008
+ - segmented magnetic field finalized.
+
+2/19/2008
+ - Added Toroidal Field support.
+ - Added "arcmin" units
+ - Added G4TRACK_VERBOSITY to control the Geant4 tracking verbosity
+ - Added Material Option for Experimental Hall.
+ - Started a README file with example of command line option
+ - Physics list now can be chosen with option USE_PHYSICSL.
+   Available:
+
+	- gemc: comprehensive physics list. Optical Physics may be activated with OPT_PH=1
+	- G4 Standard QGSP: hadronic physics list. More details at:
+	  http://geant4.cern.ch/support/proc_mod_catalog/physics_lists/hadronic/QGSP.html
+
+2/12/2008
+ - Criterias to record new/existing hit modified.
+ - Map<track ID, TrackInfo> created to keep track of parent track.
+ - Hit is red if there is deposited energy, blue if none.
+ - Added infos to MHit.
+ - EVIO Buffer set higher.
+ - Added mother particle ID and vertex to the dictionary
+ - Added mother particle ID and vertex to the output.
+
+2/11/2008
+ - Added minimum energy cut per sensitive detector.
+ - Information is stored in the DB.
+ - WriteAndClear becomes RecordAndClear - and doesn't dump the event buffer anymore.
+ - Introducing WriteEvent do bump the event buffer.
+
+2/10/2008
+ - Momentum, total energy of track read from the PREsteppoint
+ - Track Verbosity added
+ - Only first generated particle saved in datastream for now.
+ - Physics List initialized with gemc_opt
+ - Added OPT_PH and PHY_VERBOSITY Options. PHY_VERBOSITY also controls /process/verbose
+ - Reorganize the physics lists.
+ - Muon EM processes to EM physics.
+ - EM physics also have mu- capture.
+ - Removed muon physics.
+ - Removed high energy hadronic processes.
+ - Hadron and Ion EM processes moved to EM physics.
+ - Added Option for Optical Physics: OPT_PH=1
+ - Redefinition of MHit conditions:
+
+    * If a secondary is produced in a sensitive volume, it will result in a new different hit.
+    * Fixed procedure: if a new track hit a previosly hit sensitive volume, it will produce a new hit.
+
+ - Overloading "==" for identifier class.
+ - G4 Track ID i/o gemc <> G4
+ - Track ID saved in MHit
+
+2/9/2008
+ - Added dictionary for evio2xml
+ - Getting hit infos from poststeppoint instead of presteppoint
+ - Adding Energy of the track to output stream
+ - Adding Energy of the track in the output
+
+2/6/2008
+ - Added option for using the X11 OGLIX driver (OpenGL immediate mode)
+ - USE_QT=2 will not use QT but OGLIX
+
+2/5/2008
+ - Spread of vertex added: SPREAD_V option.
+
+2/4/2008
+ - Sub-dirs added for version control.
+
+Note: the recorded log of gemc stops here. The gemc project started in 2007.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

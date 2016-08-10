@@ -15,11 +15,16 @@
 #include "G4GDMLParser.hh"
 #include "G4NistManager.hh"
 
+// cadmesh
 #include "CADMesh.hh"
 
 // gemc headers
 #include "MDetectorConstruction.h"
 #include "MDetectorMessenger.h"
+
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
 
 // C++ headers
 #include <sstream>
@@ -204,7 +209,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 					// add it to the relative list
 					if(dorig.scanned == 0)
 					{
-						relatives.push_back(TrimSpaces(original));
+						relatives.push_back(trimSpacesFromString(original));
 						
 						if(VERB > 3  || kid.name.find(catch_v) != string::npos)
 						{
@@ -324,7 +329,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 					thisLogical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
 
-					string materialName = TrimSpaces((*hallMap)[thisDetName].material);
+					string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
 
 					if(mats->find(materialName) == mats->end() ) {
 						G4NistManager* matman = G4NistManager::Instance();
@@ -382,7 +387,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			G4VSolid *cad_solid = mesh->TessellatedMesh();
 
 			// material
-			string materialName = TrimSpaces((*hallMap)[thisDetName].material);
+			string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
 
 			if(mats->find(materialName) == mats->end() ) {
 				G4NistManager* matman = G4NistManager::Instance();

@@ -7,6 +7,10 @@
 #include "text_mirrors.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 
 mirrors *getMirrorFactory(map<string, mirrorFactory> *factory, string mirrorsMethod)
 {
@@ -49,7 +53,7 @@ void mirror::opticalsFromString(string s, string what)
 	{
 		string c;
 		comps >> c ;
-		string trimmedC = TrimSpaces(c);
+		string trimmedC = trimSpacesFromString(c);
 		if(what != "none")
 		{
 			if(what == "photonEnergy")

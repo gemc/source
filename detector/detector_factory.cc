@@ -6,6 +6,10 @@
 #include "cad_det_factory.h"
 #include "clara_det_factory.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // c++ headers
 #include <set>
 using namespace std;
@@ -288,8 +292,8 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		{
 			// VolumeNewMats[0] = volume name
 			// VolumeNewMats[1] = new material
-			if(det.name == TrimSpaces(VolumeNewMats[0]))
-			det.material = TrimSpaces(VolumeNewMats[1]);
+			if(det.name == trimSpacesFromString(VolumeNewMats[0]))
+			det.material = trimSpacesFromString(VolumeNewMats[1]);
 		}
 	}
 
@@ -346,7 +350,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	vector < string > vnames = get_strings(go.optMap["REMOVESENSITIVITY"].args, ",");
 	for(unsigned vtr = 0; vtr < vnames.size(); vtr++)
 	{
-		if(det.name == TrimSpaces(vnames[vtr]))
+		if(det.name == trimSpacesFromString(vnames[vtr]))
 		{
 			det.sensitivity = "no";
 			det.hitType = "";
@@ -445,8 +449,8 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 		{
 			// VolumeNewMats[0] = volume name
 			// VolumeNewMats[1] = new material
-			if(det.name == TrimSpaces(VolumeNewMats[0]))
-			det.material = TrimSpaces(VolumeNewMats[1]);
+			if(det.name == trimSpacesFromString(VolumeNewMats[0]))
+			det.material = trimSpacesFromString(VolumeNewMats[1]);
 		}
 	}
 

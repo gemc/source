@@ -7,6 +7,10 @@ using namespace std;
 #include "PhysicsListMessenger.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // geant4 headers
 #include "G4LossTableManager.hh"
 #include "G4PhysListFactory.hh"
@@ -65,7 +69,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 		vector<string> emstripped = get_strings(allEM[i], "_");
 		string stripped;
 
-		if(emstripped.size() == 2) stripped = TrimSpaces(emstripped[1]);
+		if(emstripped.size() == 2) stripped = trimSpacesFromString(emstripped[1]);
 		if(stripped != "")
 			g4EMList.push_back(stripped);
 
@@ -129,7 +133,7 @@ bool PhysicsList::validateIngredients()
 	G4PhysListFactory factory;
 	for(unsigned i=0; i<physIngredients.size(); i++)
 	{
-		string ingredient = TrimSpaces(physIngredients[i]);
+		string ingredient = trimSpacesFromString(physIngredients[i]);
 
 		if(factory.IsReferencePhysList(ingredient))
 		{

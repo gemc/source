@@ -4,6 +4,10 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 
 map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 {
@@ -76,13 +80,13 @@ map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 				     << ". We should have 14 but we have " << gt.data.size() << " instead." << endl;
 			
 		
-			mirror *thisMir = new mirror(TrimSpaces( gt.data[0])); // name
+			mirror *thisMir = new mirror(trimSpacesFromString( gt.data[0])); // name
 			thisMir->desc         =                  gt.data[1];   // description
-			thisMir->type         =       TrimSpaces(gt.data[2]);  // type
-			thisMir->finish       =       TrimSpaces(gt.data[3]);  // finish
-			thisMir->model        =       TrimSpaces(gt.data[4]);  // model
-			thisMir->border       =       TrimSpaces(gt.data[5]);  // border
-			thisMir->maptOptProps =       TrimSpaces(gt.data[6]);  // material with optical properties
+			thisMir->type         =       trimSpacesFromString(gt.data[2]);  // type
+			thisMir->finish       =       trimSpacesFromString(gt.data[3]);  // finish
+			thisMir->model        =       trimSpacesFromString(gt.data[4]);  // model
+			thisMir->border       =       trimSpacesFromString(gt.data[5]);  // border
+			thisMir->maptOptProps =       trimSpacesFromString(gt.data[6]);  // material with optical properties
 			thisMir->opticalsFromString(             gt.data[7],  "photonEnergy");
 			thisMir->opticalsFromString(             gt.data[8],  "indexOfRefraction");
 			thisMir->opticalsFromString(             gt.data[9],  "reflectivity");

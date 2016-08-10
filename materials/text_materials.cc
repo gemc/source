@@ -4,6 +4,10 @@
 #include "string_utilities.h"
 #include "utils.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // G4 headers
 #include "G4Element.hh"
 #include "G4NistManager.hh"
@@ -81,7 +85,7 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			
 			gtable gt(get_strings(dbline, "|"));
 			
-			material thisMat(TrimSpaces(             gt.data[0])); // name
+			material thisMat(trimSpacesFromString(             gt.data[0])); // name
 			thisMat.desc                =            gt.data[1];   // description
 			thisMat.density             = get_number(gt.data[2]);  // density
 			thisMat.ncomponents         = get_number(gt.data[3]);  // number of components

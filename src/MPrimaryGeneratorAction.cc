@@ -10,6 +10,10 @@
 #include "MPrimaryGeneratorAction.h"
 #include "string_utilities.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // C++ headers
 #include <iostream>
 using namespace std;
@@ -743,7 +747,7 @@ void MPrimaryGeneratorAction::setBeam()
 		{
 			// Getting particle name,  momentum from option value
 			values       = get_info(gemcOpt->optMap["BEAM_P"].args, string(",\""));
-			string pname = TrimSpaces(values[0]);
+			string pname = trimSpacesFromString(values[0]);
 			
 			if(values.size() == 4)
 			{
@@ -772,7 +776,7 @@ void MPrimaryGeneratorAction::setBeam()
 			
 			// Getting custom beam direction if it's set
 			values = get_info(gemcOpt->optMap["ALIGN_ZAXIS"].args);
-			string align = TrimSpaces(values[0]);
+			string align = trimSpacesFromString(values[0]);
 			if(align == "custom")
 			{
 				ctheta = get_number(values[1]);
@@ -786,12 +790,12 @@ void MPrimaryGeneratorAction::setBeam()
 			dtheta = get_number(values[1]);
 			dphi   = get_number(values[2]);
 			if(values.size() == 4)
-				if(TrimSpaces(values[3]) == "flat")
+				if(trimSpacesFromString(values[3]) == "flat")
 					primaryFlat = 1;
 			
 			// Getting vertex from option value
 			values = get_info(gemcOpt->optMap["BEAM_V"].args);
-			units = TrimSpaces(values[3]);
+			units = trimSpacesFromString(values[3]);
 			vx = get_number(values[0] + "*" + units);
 			vy = get_number(values[1] + "*" + units);
 			vz = get_number(values[2] + "*" + units);
@@ -807,13 +811,13 @@ void MPrimaryGeneratorAction::setBeam()
 				// check if it's (dr, dz) or (dx, dy, dz)
 				if(values.size() == 3) {
 					drdzOrdxdydz = 0;
-					units = TrimSpaces(values[2]);
+					units = trimSpacesFromString(values[2]);
 					dvr = get_number(values[0] + "*" + units);
 					dvz = get_number(values[1] + "*" + units);
 				}
 				else if(values.size() == 4) {
 					drdzOrdxdydz = 1;
-					units = TrimSpaces(values[3]);
+					units = trimSpacesFromString(values[3]);
 					dvx = get_number(values[0] + "*" + units);
 					dvy = get_number(values[1] + "*" + units);
 					dvz = get_number(values[2] + "*" + units);
@@ -825,13 +829,13 @@ void MPrimaryGeneratorAction::setBeam()
 				// check if it's (dr, dz) or (dx, dy, dz)
 				if(values.size() == 4) {
 					drdzOrdxdydz = 0;
-					units = TrimSpaces(values[2]);
+					units = trimSpacesFromString(values[2]);
 					dvr = get_number(values[0] + "*" + units);
 					dvz = get_number(values[1] + "*" + units);
 				}
 				else if(values.size() == 5) {
 					drdzOrdxdydz = 1;
-					units = TrimSpaces(values[3]);
+					units = trimSpacesFromString(values[3]);
 					dvx = get_number(values[0] + "*" + units);
 					dvy = get_number(values[1] + "*" + units);
 					dvz = get_number(values[2] + "*" + units);
@@ -895,11 +899,11 @@ void MPrimaryGeneratorAction::setBeam()
 	{
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
 		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
-		cout << hd_msg << "LUND: Opening  " << gformat << " file: " << TrimSpaces(gfilename).c_str() << endl;
-		gif.open(TrimSpaces(gfilename).c_str());
+		cout << hd_msg << "LUND: Opening  " << gformat << " file: " << trimSpacesFromString(gfilename).c_str() << endl;
+		gif.open(trimSpacesFromString(gfilename).c_str());
 		if(!gif)
 		{
-			cerr << hd_msg << " Can't open input file " << TrimSpaces(gfilename).c_str() << ". Exiting. " << endl;
+			cerr << hd_msg << " Can't open input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
 			exit(1);
 		}
 	}
@@ -910,33 +914,33 @@ void MPrimaryGeneratorAction::setBeam()
 		// StdHep is an (old like LUND) MC generator format in binary form.
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
 		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
-		cout << hd_msg << "StdHEP: Opening  " << gformat << " file: " << TrimSpaces(gfilename).c_str() << endl;
-		stdhep_reader = new lStdHep(TrimSpaces(gfilename).c_str());
+		cout << hd_msg << "StdHEP: Opening  " << gformat << " file: " << trimSpacesFromString(gfilename).c_str() << endl;
+		stdhep_reader = new lStdHep(trimSpacesFromString(gfilename).c_str());
 		
 		if(!stdhep_reader)
 		{
-			cerr << hd_msg << " Can't open input file " << TrimSpaces(gfilename).c_str() << ". Exiting. " << endl;
+			cerr << hd_msg << " Can't open input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
 			exit(1);
 		}
     
     	// For the STEER_BEAM option, we need to have the angles and vertex of the GCARD in BEAM_P and BEAM_V, SPREAD_V
     	// Getting particle name,  momentum from option value
 		values       = get_info(gemcOpt->optMap["BEAM_P"].args);
-		string pname = TrimSpaces(values[0]);
+		string pname = trimSpacesFromString(values[0]);
 		mom          = get_number(values[1]);
 		theta        = get_number(values[2]);
 		phi          = get_number(values[3]);
     
     	// Getting vertex from option value
 		values = get_info(gemcOpt->optMap["BEAM_V"].args);
-		units = TrimSpaces(values[3]);
+		units = trimSpacesFromString(values[3]);
 		vx = get_number(values[0] + "*" + units);
 		vy = get_number(values[1] + "*" + units);
 		vz = get_number(values[2] + "*" + units);
 		
 		// Getting vertex spread from option value
 		values = get_info(gemcOpt->optMap["SPREAD_V"].args);
-		units = TrimSpaces(values[2]);
+		units = trimSpacesFromString(values[2]);
 		dvr = get_number(values[0] + "*" + units);
 		dvz = get_number(values[1] + "*" + units);
 
@@ -949,10 +953,10 @@ void MPrimaryGeneratorAction::setBeam()
 		// file may be already opened cause setBeam is called again in graphic mode
 		if(!bgif.is_open() )
 		{
-			bgif.open(TrimSpaces(background_gen).c_str());
+			bgif.open(trimSpacesFromString(background_gen).c_str());
 			if(!bgif)
 			{
-				cerr << hd_msg << " Can't open background input file >" << TrimSpaces(background_gen).c_str() << "<. Exiting. " << endl;
+				cerr << hd_msg << " Can't open background input file >" << trimSpacesFromString(background_gen).c_str() << "<. Exiting. " << endl;
 				exit(1);
 			}
 		}
@@ -965,7 +969,7 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	// Getting particle name,  momentum from option value
 	values         = get_info(gemcOpt->optMap["LUMI_P"].args);
-	string L_pname = TrimSpaces(values[0]);
+	string L_pname = trimSpacesFromString(values[0]);
 	L_mom          = get_number(values[1]);
 	L_theta        = get_number(values[2]);
 	L_phi          = get_number(values[3]);
@@ -978,7 +982,7 @@ void MPrimaryGeneratorAction::setBeam()
 	L_dtheta = get_number(values[1]);
 	L_dphi   = get_number(values[2]);
 	if(values.size() == 4)
-		if(TrimSpaces(values[3]) == "flat")
+		if(trimSpacesFromString(values[3]) == "flat")
 			lumiFlat = 1;
 
 	
@@ -1001,14 +1005,14 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	// Getting vertex from option value
 	values = get_info(gemcOpt->optMap["LUMI_V"].args);
-	units = TrimSpaces(values[3]);
+	units = trimSpacesFromString(values[3]);
 	L_vx = get_number(values[0] + "*" + units);
 	L_vy = get_number(values[1] + "*" + units);
 	L_vz = get_number(values[2] + "*" + units);
 	
 	// Getting vertex spread from option value
 	values = get_info(gemcOpt->optMap["LUMI_SPREAD_V"].args);
-	units = TrimSpaces(values[2]);
+	units = trimSpacesFromString(values[2]);
 	L_dvr = get_number(values[0] + "*" + units);
 	L_dvz = get_number(values[1] + "*" + units);
 	
@@ -1026,7 +1030,7 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	// Getting particle name,  momentum from option value
 	values          = get_info(gemcOpt->optMap["LUMI2_P"].args);
-	string L2_pname = TrimSpaces(values[0]);
+	string L2_pname = trimSpacesFromString(values[0]);
 	L2_mom          = get_number(values[1]);
 	L2_theta        = get_number(values[2]);
 	L2_phi          = get_number(values[3]);
@@ -1038,7 +1042,7 @@ void MPrimaryGeneratorAction::setBeam()
 	L2_dtheta = get_number(values[1]);
 	L2_dphi   = get_number(values[2]);
 	if(values.size() == 4)
-		if(TrimSpaces(values[3]) == "flat")
+		if(trimSpacesFromString(values[3]) == "flat")
 			lumi2Flat = 1;
 
 	
@@ -1061,7 +1065,7 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	// Getting vertex from option value
 	values = get_info(gemcOpt->optMap["LUMI2_V"].args);
-	units = TrimSpaces(values[3]);
+	units = trimSpacesFromString(values[3]);
 	L2_vx = get_number(values[0] + "*" + units);
 	L2_vy = get_number(values[1] + "*" + units);
 	L2_vz = get_number(values[2] + "*" + units);
@@ -1069,7 +1073,7 @@ void MPrimaryGeneratorAction::setBeam()
 	
 	// Getting vertex spread from option value
 	values = get_info(gemcOpt->optMap["LUMI2_SPREAD_V"].args);
-	units = TrimSpaces(values[2]);
+	units = trimSpacesFromString(values[2]);
 	L2_dvr = get_number(values[0] + "*" + units);
 	L2_dvz = get_number(values[1] + "*" + units);
 	

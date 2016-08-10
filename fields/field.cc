@@ -4,6 +4,10 @@
 #include "fieldFactory.h"
 #include "multipoleField.h"
 
+// mlibrary
+#include "gstring.h"
+using namespace gstring;
+
 // G4 headers
 #include "G4UniformMagField.hh"
 #include "G4ChordFinder.hh"
@@ -149,11 +153,11 @@ void gfield::initialize(goptions Opt)
 			if(attributes[0].find(name) != string::npos)
 			{
 				minStep = get_number(attributes[1]);
-				integration = TrimSpaces(attributes[2]);
+				integration = trimSpacesFromString(attributes[2]);
 
 				if(map)
 					if(attributes.size() == 4)
-						map->interpolation = TrimSpaces(attributes[3]);
+						map->interpolation = trimSpacesFromString(attributes[3]);
 			}
 		}
 	}
