@@ -315,7 +315,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	// write event header bank
 	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
+
+	// write RF bank if present
 	
+
 	// Getting Generated Particles info
 	// Are these loops necessary, revisit later1
 	vector<generatedParticle> MPrimaries;

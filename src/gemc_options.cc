@@ -477,8 +477,18 @@ void goptions::setGoptions()
 	optMap["RUN_WEIGHTS"].help += "      Will simulate 10% of events with run number 11 conditions, 70% run 12 and 20% run 13.\n";
 	optMap["RUN_WEIGHTS"].type  = 1;
 	optMap["RUN_WEIGHTS"].ctgr  = "control";
-	
-	
+
+
+	optMap["RFSETUP"].args = "no";
+	optMap["RFSETUP"].name = "Radio-frequency signal";
+	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 3 parameters for one given RF signal:\n";
+	optMap["RFSETUP"].help += "      1. timeWindow (ns)\n";
+	optMap["RFSETUP"].help += "      2. radioFrequency (GHz)\n";
+	optMap["RFSETUP"].help += "      3. radioInterval (ns)\n";
+	optMap["RFSETUP"].help += "     Any additional parameter (in ns) will add an RF signal with that time distance from the original.\n";
+	optMap["RFSETUP"].type = 1;
+	optMap["RFSETUP"].ctgr = "control";
+
 	
 	
 	// Output
