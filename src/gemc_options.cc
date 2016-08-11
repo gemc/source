@@ -486,6 +486,8 @@ void goptions::setGoptions()
 	optMap["RFSETUP"].help += "      2. radioFrequency (GHz)\n";
 	optMap["RFSETUP"].help += "      3. radioInterval (ns)\n";
 	optMap["RFSETUP"].help += "     Any additional parameter (in ns) will add an RF signal with that time distance from the original.\n";
+	optMap["RFSETUP"].help += "     Example of option with 200 ns timewindow, 2 500MHz RF signals, separated by 30 ns and each sampled in 80ns bunches: \n";
+	optMap["RFSETUP"].help += "      -RFSETUP=\"200, 0.5, 80, 40\" \n";
 	optMap["RFSETUP"].type = 1;
 	optMap["RFSETUP"].ctgr = "control";
 

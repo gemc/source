@@ -73,7 +73,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 				if(!dbline.size())
 					continue;
 
-				gtable gt(get_strings(dbline, "|"));
+				gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 
 				if(gt.data.size())
 					if(gt.data[0] == SD)
@@ -85,7 +85,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 						description = gt.data[1];
 
 						// 2: Identifiers
-						vector<string> ids = get_strings(gt.data[2]);
+						vector<string> ids = getStringVectorFromString(gt.data[2]);
 						for(unsigned i=0; i<ids.size(); i++)
 							identifiers.push_back(ids[i]);
 
@@ -182,7 +182,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 			description = qv_tostring(q.value(1));
 			
 			// 2: Identifiers
-			vector<string> ids = get_strings(qv_tostring(q.value(2)));
+			vector<string> ids = getStringVectorFromString(qv_tostring(q.value(2)));
 			for(unsigned i=0; i<ids.size(); i++)
 				identifiers.push_back(ids[i]);
 			

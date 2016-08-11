@@ -68,7 +68,7 @@ map<string, detector> text_det_factory::loadDetectors()
 			if(!dbline.size())
 			continue;
 			
-			gtable gt(get_strings(dbline, "|"));
+			gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 			if( gt.data.size() != 18)
 				cout << "ERROR: Incorrect number of geometry items (" << gt.data.size() << ") for " << gt.data[0] << endl;
 			

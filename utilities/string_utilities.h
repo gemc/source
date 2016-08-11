@@ -138,8 +138,6 @@ inline string replaceCharsWithChars(string input, string x, string y)
 vector< vector<string> > dimensionstype(string);    ///< Returns dimensions nomenclature for different solid type
 double get_number(string,int warn_no_unit=0);       ///< Returns number with dimension from string, i.e. 100*cm
 vector<string> get_strings_except(string, string);  ///< returns a vector of strings from a stringstream, space is delimiter, ignore string with second argument
-vector<string> get_strings(string);                 ///< returns a vector of strings from a stringstream, space is delimiter
-vector<string> get_strings(string, string);         ///< returns a vector of strings from a stringstream, second string is delimiter
 void print_vstring(vector<string>);                 ///< prints each element of a string vector
 vector<string> get_info(string);                    ///< get information from strings such as "5*GeV, 2*deg, 10*deg", parses out parenthesis, commas, quotes
 vector<string> get_info(string, string);            ///< get information from strings such as "5*GeV, 2*deg, 10*deg", parses out strings in second argument

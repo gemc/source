@@ -83,7 +83,7 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			if(!dbline.size())
 			continue;
 			
-			gtable gt(get_strings(dbline, "|"));
+			gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 			
 			material thisMat(trimSpacesFromString(             gt.data[0])); // name
 			thisMat.desc                =            gt.data[1];   // description

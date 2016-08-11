@@ -198,7 +198,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 					
 					if(!dbline.size()) continue;
 					
-					gtable gt(get_strings(dbline, "|"));
+					gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 					
 					if(gt.data.size())
 						if(gt.data[1] == "bankid")
@@ -218,7 +218,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 						
 						if(!dbline.size()) continue;
 						
-						gtable gt(get_strings(dbline, "|"));
+						gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 						
 						// the bankid entry is always the first
 						if(gt.data.size())

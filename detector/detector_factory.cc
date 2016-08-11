@@ -97,7 +97,7 @@ map<string, detector> buildDetector(map<string, detectorFactoryInMap> detectorFa
 	// adding root mother volume
 	string hall_mat   = go.optMap["HALL_MATERIAL"].args;
 	string hall_field = go.optMap["HALL_FIELD"].args;
-	vector<string> hall_dims  = get_strings(go.optMap["HALL_DIMENSIONS"].args, ",");
+	vector<string> hall_dims  = getStringVectorFromStringWithDelimiter(go.optMap["HALL_DIMENSIONS"].args, ",");
 	if(hall_dims.size() != 3)
 		cout << "   !!! Error: Hall dimensions is not a vector of 3 numbers. Example of dimensions: \"20*m, 20*m, 20*m\"" << endl;
 	
@@ -287,7 +287,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
 	{
-		vector < string > VolumeNewMats = get_strings(changeMatOptions[f].args, ",");
+		vector < string > VolumeNewMats = getStringVectorFromStringWithDelimiter(changeMatOptions[f].args, ",");
 		if(VolumeNewMats.size() == 2)
 		{
 			// VolumeNewMats[0] = volume name
@@ -347,7 +347,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 		det.identity = get_identifiers(gt.data[17]);
 	}
 	// removing Sensitivity if asked
-	vector < string > vnames = get_strings(go.optMap["REMOVESENSITIVITY"].args, ",");
+	vector < string > vnames = getStringVectorFromStringWithDelimiter(go.optMap["REMOVESENSITIVITY"].args, ",");
 	for(unsigned vtr = 0; vtr < vnames.size(); vtr++)
 	{
 		if(det.name == trimSpacesFromString(vnames[vtr]))
@@ -444,7 +444,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 	vector<aopt> changeMatOptions = go.getArgs("CHANGEVOLUMEMATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
 	{
-		vector < string > VolumeNewMats = get_strings(changeMatOptions[f].args, ",");
+		vector < string > VolumeNewMats = getStringVectorFromStringWithDelimiter(changeMatOptions[f].args, ",");
 		if(VolumeNewMats.size() == 2)
 		{
 			// VolumeNewMats[0] = volume name

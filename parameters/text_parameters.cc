@@ -47,7 +47,7 @@ map<string, double> text_parameters::loadParameters(goptions opts, runConditions
 			if(!dbline.size())
 				continue;
 			
-			gtable gt(get_strings(dbline, "|"));
+			gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 			
 			GParameters[gt.data[0]] = get_par_value(gt);
 			

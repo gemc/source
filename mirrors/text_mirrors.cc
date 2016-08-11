@@ -74,7 +74,7 @@ map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 			if(!dbline.size())
 			continue;
 			
-			gtable gt(get_strings(dbline, "|"));
+			gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
 			if( gt.data.size() != 14)
 				cout << "ERROR: Incorrect number of mirror items (" << gt.data.size() << ") for " << gt.data[0]
 				     << ". We should have 14 but we have " << gt.data.size() << " instead." << endl;

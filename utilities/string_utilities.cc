@@ -16,7 +16,7 @@ vector<string> get_info(string input, string chars)
 {
 	string stripped = replaceCharWithChars(input, chars, " ");
 	
-	return get_strings(stripped);
+	return getStringVectorFromString(stripped);
 }
 
 vector<string> get_info(string input)
@@ -26,24 +26,10 @@ vector<string> get_info(string input)
 	
 	string stripped = replaceCharWithChars(input, chars, " ");
 	
-	return get_strings(stripped);
+	return getStringVectorFromString(stripped);
 }
 
 
-// returns a vector of strings from a stringstream, space is delimeter
-vector<string> get_strings(string input)
-{
-	vector<string> pvalues;
-	stringstream plist(input);
-	while(!plist.eof())
-	{
-		string tmp;
-		plist >> tmp;
-		pvalues.push_back(trimSpacesFromString(tmp));
-	}
-	
-	return pvalues;
-}
 
 
 // returns a vector of strings from a stringstream, space is delimeter
@@ -176,7 +162,7 @@ void print_vstring(vector<string> s)
 string get_variation(string var)
 {
 	string variation = var;
-	vector<string> vars = get_strings(var);
+	vector<string> vars = getStringVectorFromString(var);
 	if(vars[0] == "main" && vars.size() > 1)
 	{
 		variation = vars[1];

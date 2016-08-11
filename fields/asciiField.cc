@@ -162,7 +162,7 @@ gfield asciiField::loadField(string file, goptions opts)
 	// rescaling dimensions for uniform field
 	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "uniform")
 	{
-		vector<string> olddim = get_strings(gf.dimensions);
+		vector<string> olddim = getStringVectorFromString(gf.dimensions);
 		string newdim;
 		for(unsigned int d=0; d<olddim.size(); d++)
 		{
@@ -175,7 +175,7 @@ gfield asciiField::loadField(string file, goptions opts)
 	// rescaling dimensions for multipole field	
 	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "multipole")
 	{
-		vector<string> olddim = get_strings(gf.dimensions);
+		vector<string> olddim = getStringVectorFromString(gf.dimensions);
 		string newdim;
 		for(unsigned int d=0; d<olddim.size(); d++)
 		{

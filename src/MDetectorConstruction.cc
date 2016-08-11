@@ -235,7 +235,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 					if(kid.type.find("Operation:~") == 0 || kid.type.find("Operation:@") == 0 ) sstart = 11;
 					
 					string operation(kid.type, sstart, kid.type.size());
-					vector<string> operands = get_strings(replaceCharWithChars(operation, "-+*/", " "));
+					vector<string> operands = getStringVectorFromString(replaceCharWithChars(operation, "-+*/", " "));
 					string firstop  = operands[0];
 					string secondop = operands[1];
 					
@@ -605,7 +605,7 @@ void MDetectorConstruction::buildMirrors()
 		string mirrorString = "no";
 		if(it->second.sensitivity.find("mirror:") != string::npos)
 		{
-			vector<string> mmirror = get_strings(it->second.sensitivity);
+			vector<string> mmirror = getStringVectorFromString(it->second.sensitivity);
 			if(mmirror.size() == 2)
 				mirrorString = mmirror[1];
 		}

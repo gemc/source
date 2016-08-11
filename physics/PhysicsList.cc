@@ -66,7 +66,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	g4EMList.push_back("STD");
 	for(unsigned i=0; i<allEM.size(); i++)
 	{
-		vector<string> emstripped = get_strings(allEM[i], "_");
+		vector<string> emstripped = getStringVectorFromStringWithDelimiter(allEM[i], "_");
 		string stripped;
 
 		if(emstripped.size() == 2) stripped = trimSpacesFromString(emstripped[1]);
@@ -82,7 +82,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	cutForPositron  = defaultCutValue;
 	cutForProton    = defaultCutValue;
 
-	physIngredients = get_strings(ingredientsList, "+");
+	physIngredients = getStringVectorFromStringWithDelimiter(ingredientsList, "+");
 
 	g4EMPhysics    = NULL;
 	g4ParticleList = NULL;

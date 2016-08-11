@@ -65,7 +65,7 @@ void gfield::create_MFM()
 
 void gfield::create_simple_MFM()
 {
-	vector < string > dim = get_strings(dimensions);
+	vector < string > dim = getStringVectorFromString(dimensions);
 	
 	if (dim.size() != 3)
 		cout << "   !!! Error: dimension of field " << name << " are wrong: "
@@ -88,7 +88,7 @@ void gfield::create_simple_MFM()
 
 void gfield::create_simple_multipole_MFM()
 {
-	vector < string > dim = get_strings(dimensions);
+	vector < string > dim = getStringVectorFromString(dimensions);
 	
 	if (dim.size() != 7)
 		cout << "   !!! Error: dimension of field " << name << " are wrong: "
@@ -136,7 +136,7 @@ void gfield::initialize(goptions Opt)
 	vector<aopt> FIELD_SCALES_OPTION = Opt.getArgs("SCALE_FIELD");
 	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++)
 	{
-		vector < string > scales = get_strings(FIELD_SCALES_OPTION[f].args, ",");
+		vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
 		if(scales.size() == 2)
 		{
 			if (scales[0].find(name) != string::npos)
@@ -147,7 +147,7 @@ void gfield::initialize(goptions Opt)
 	vector<aopt> FIELD_PROPERTIES = Opt.getArgs("FIELD_PROPERTIES");
 	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++)
 	{
-		vector < string > attributes = get_strings(FIELD_PROPERTIES[f].args, ",");
+		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
 		if(attributes.size() > 2)
 		{
 			if(attributes[0].find(name) != string::npos)

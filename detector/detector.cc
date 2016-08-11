@@ -775,7 +775,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	vector<aopt> changeMatOptions = gemcOpt.getArgs("SWITCH_MATERIALTO");
 	for (unsigned int f = 0; f < changeMatOptions.size(); f++)
 	{
-		vector < string > oldNewMats = get_strings(changeMatOptions[f].args, ",");
+		vector < string > oldNewMats = getStringVectorFromStringWithDelimiter(changeMatOptions[f].args, ",");
 		if(oldNewMats.size() == 2)
 		{
 			// oldNewMats[0] = old
