@@ -7,6 +7,9 @@
 #include "MEventAction.h"
 #include "Hit.h"
 
+// mlibrary
+#include "frequencySyncSignal.h"
+
 #include <iostream>
 using namespace std;
 
@@ -316,7 +319,26 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
 
 	// write RF bank if present
+	if(RFSETUP!= "no") {
+		vector<string> rfvalues = getStringVectorFromString(RFSETUP);
 
+		// getting time window
+		string rfsetup = to_string(gen_action->getTimeWindow()) + " " ;
+
+		// getting start time of the event
+		rfsetup +=  to_string(gen_action->getStartTime()) + " " ;
+
+		for(unsigned i=0; i<rfvalues.size(); i++)
+			rfsetup += rfvalues[i] + " " ;
+
+		FrequencySyncSignal rfs(rfsetup);
+
+		
+
+		if(VERB > 1)
+			cout << rfs << endl;
+
+	}
 
 
 	// Getting Generated Particles info

@@ -481,13 +481,12 @@ void goptions::setGoptions()
 
 	optMap["RFSETUP"].args = "no";
 	optMap["RFSETUP"].name = "Radio-frequency signal";
-	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 3 parameters for one given RF signal:\n";
-	optMap["RFSETUP"].help += "      1. timeWindow (ns)\n";
-	optMap["RFSETUP"].help += "      2. radioFrequency (GHz)\n";
-	optMap["RFSETUP"].help += "      3. radioInterval (ns)\n";
+	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
+	optMap["RFSETUP"].help += "      1. radioFrequency (GHz)\n";
+	optMap["RFSETUP"].help += "      2. radioInterval (ns)\n";
 	optMap["RFSETUP"].help += "     Any additional parameter (in ns) will add an RF signal with that time distance from the original.\n";
-	optMap["RFSETUP"].help += "     Example of option with 200 ns timewindow, 2 500MHz RF signals, separated by 30 ns and each sampled in 80ns bunches: \n";
-	optMap["RFSETUP"].help += "      -RFSETUP=\"200, 0.5, 80, 40\" \n";
+	optMap["RFSETUP"].help += "     Example of option with 2 500MHz (o.5 GHz) RF signals, separated by 30 ns and each sampled in 80ns bunches: \n";
+	optMap["RFSETUP"].help += "      -RFSETUP=\"0.5, 80, 30\" \n";
 	optMap["RFSETUP"].type = 1;
 	optMap["RFSETUP"].ctgr = "control";
 
