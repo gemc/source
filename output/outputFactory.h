@@ -9,17 +9,20 @@
 #ifndef OUTPUT_FACTORY_H
 #define OUTPUT_FACTORY_H 1
 
-// gemc headers
+// gemc
 #include "gbank.h"
 #include "options.h"
 #include "MPrimaryGeneratorAction.h"
 
-// EVIO headers
+// mlibrary
+#include "frequencySyncSignal.h"
+
+// EVIO
 #include "evioUtil.hxx"
 #include "evioFileChannel.hxx"
 using namespace evio;
 
-// geant4 headers
+// geant4
 #include "G4ThreeVector.hh"
 
 
@@ -191,7 +194,7 @@ class outputFactory
 		virtual void writeHeader(outputContainer*, map<string, double>, gBank)  = 0;
 
 		// write RF Signal
-		virtual void writeRFSignal(outputContainer*, vector<double>, vector<double>, gBank)  = 0;
+		virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank)  = 0;
 
 		// write generated particles
 		virtual void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap) = 0;

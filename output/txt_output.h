@@ -26,7 +26,7 @@ class txt_output : public outputFactory
 	void writeHeader(outputContainer*, map<string, double>, gBank);
 
 	// write RF Signal
-	virtual void writeRFSignal(outputContainer*, vector<double>, vector<double>, gBank);
+	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank);
 
 	// write generated particles
 	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap);

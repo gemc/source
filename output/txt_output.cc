@@ -48,11 +48,24 @@ void txt_output :: writeHeader(outputContainer* output, map<string, double> data
 	
 }
 
-void txt_output :: writeRFSignal(outputContainer* output, vector<double> rfids, vector<double> rfsignals, gBank bank)
+void txt_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
 {
+	ofstream *txtout = output->txtoutput ;
+
 	*txtout << " --- RF Signals Bank -- " << endl;
-	for(unsigned int i=0; i<rfids.size();  i++) {
-		*txtout << "    - RF ID: "    << rfids[i] << "   Signal: " << rfsignals[i] << endl;
+
+
+	vector<oneRFOutput> rfs = rfsignals.getOutput();
+
+	for(unsigned int i=0; i<rfs.size();  i++) {
+
+		vector<int>    rfid = rfs[i].getIDs();
+		vector<double> rfva = rfs[i].getValues();
+
+		for(unsigned int j=0; j<rfid.size();  j++) {
+			*txtout << "    - RF " << i+1 << " ID: "    << rfid[j] << "   Signal: " << rfva[j] << endl;
+		}
+
 
 	}
 	*txtout << " --- End of RF Signals Bank Bank -- " << endl;

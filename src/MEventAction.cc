@@ -332,8 +332,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			rfsetup += rfvalues[i] + " " ;
 
 		FrequencySyncSignal rfs(rfsetup);
+		processOutputFactory->writeRFSignal(outContainer, rfs, getBankFromMap("rf", banksMap));
 
-		
+
 
 		if(VERB > 1)
 			cout << rfs << endl;

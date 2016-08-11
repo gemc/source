@@ -7,7 +7,8 @@ Changelog for GEMC
  - getting timewindow and start time from primary generator
  - rf signal added in event action
  - added rf bank
- - added txt and evio rf writers
+ - implemented txt and evio rf writers
+ - added rf writer to event action
 
 8/10/16
  - mlibrary gstring introduced: string manipulation library. This will replace many methods that do not belong in gemc
