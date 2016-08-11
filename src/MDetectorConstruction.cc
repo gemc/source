@@ -235,7 +235,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 					if(kid.type.find("Operation:~") == 0 || kid.type.find("Operation:@") == 0 ) sstart = 11;
 					
 					string operation(kid.type, sstart, kid.type.size());
-					vector<string> operands = getStringVectorFromString(replaceCharWithChars(operation, "-+*/", " "));
+					vector<string> operands = getStringVectorFromString(replaceCharInStringWithChars(operation, "-+*/", " "));
 					string firstop  = operands[0];
 					string secondop = operands[1];
 					

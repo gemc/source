@@ -8,7 +8,7 @@ gtrigger::gtrigger(QWidget *parent, goptions *Opts, map<string, sensitiveDetecto
 {
 	gemcOpt  = Opts;
 	SeDe_Map = SD_Map;
-	VOLTAGES = replaceCharWithChars(gemcOpt->optMap["SIGNALVT"].args, ",", "  ");
+	VOLTAGES = replaceCharInStringWithChars(gemcOpt->optMap["SIGNALVT"].args, ",", "  ");
 	plotChoice = 0;  // start with both plots
 	
 	// top: choose what to show

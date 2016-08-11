@@ -88,11 +88,12 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
 	rw               = runWeights(opts);
 	
-	WRITE_ALLRAW     = replaceCharWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
-	WRITE_INTRAW     = replaceCharWithChars(gemcOpt.optMap["INTEGRATEDRAW"].args, ",", "  ");
-	WRITE_INTDGT     = replaceCharWithChars(gemcOpt.optMap["INTEGRATEDDGT"].args, ",", "  ");
-	SIGNALVT         = replaceCharWithChars(gemcOpt.optMap["SIGNALVT"].args, ",", "  ");
-	
+	WRITE_ALLRAW     = replaceCharInStringWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
+	WRITE_INTRAW     = replaceCharInStringWithChars(gemcOpt.optMap["INTEGRATEDRAW"].args, ",", "  ");
+	WRITE_INTDGT     = replaceCharInStringWithChars(gemcOpt.optMap["INTEGRATEDDGT"].args, ",", "  ");
+	SIGNALVT         = replaceCharInStringWithChars(gemcOpt.optMap["SIGNALVT"].args, ",", "  ");
+	RFSETUP          = replaceCharInStringWithChars(gemcOpt.optMap["RFSETUP"].args, ",", "  ");
+
 	if(SAVE_ALL_MOTHERS>1)
 	{
 		lundOutput = new ofstream("background.dat");
@@ -295,9 +296,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		return;
 	}
 	outputFactory *processOutputFactory = getOutputFactory(outputFactoryMap, outContainer->outType);
-	
-	
-	
+
 	
 	// Header Bank contains event number
 	// Need to change this to read DB header bank
@@ -317,7 +316,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
 
 	// write RF bank if present
-	
+
+
 
 	// Getting Generated Particles info
 	// Are these loops necessary, revisit later1

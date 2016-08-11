@@ -14,7 +14,7 @@ using namespace CLHEP;
 
 vector<string> get_info(string input, string chars)
 {
-	string stripped = replaceCharWithChars(input, chars, " ");
+	string stripped = replaceCharInStringWithChars(input, chars, " ");
 	
 	return getStringVectorFromString(stripped);
 }
@@ -24,7 +24,7 @@ vector<string> get_info(string input)
 	
 	string chars("(),\"");
 	
-	string stripped = replaceCharWithChars(input, chars, " ");
+	string stripped = replaceCharInStringWithChars(input, chars, " ");
 	
 	return getStringVectorFromString(stripped);
 }
@@ -50,34 +50,6 @@ vector<string> get_strings_except(string input, string ignore)
 	return pvalues;
 }
 
-
-// returns a vector of strings from a stringstream, x (one char) is delimiter
-vector<string> get_strings(string input, string x)
-{
-	vector<string> pvalues;
-	
-	string tmp;
-	for(unsigned int i=0; i<input.size(); i++)
-	{
-		if(input[i] != x[0])
-			tmp += input[i];
-		
-		else
-		{
-			pvalues.push_back(tmp);
-			tmp = "";
-		}
-		
-		// end of line
-		if(i==input.size() - 1)
-		{
-			pvalues.push_back(tmp);
-		}
-		
-	}
-	
-	return pvalues;
-}
 
 double scan_number(const char *str)
 {

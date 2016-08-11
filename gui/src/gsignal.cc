@@ -13,7 +13,7 @@ using namespace CLHEP;
 gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*> SD_Map) : QWidget(parent)
 {
 	gemcOpt = Opts;
-	WRITE_INTRAW     = replaceCharWithChars(gemcOpt->optMap["INTEGRATEDRAW"].args, ",", "  ");
+	WRITE_INTRAW     = replaceCharInStringWithChars(gemcOpt->optMap["INTEGRATEDRAW"].args, ",", "  ");
 	SAVE_ALL_MOTHERS = gemcOpt->optMap["SAVE_ALL_MOTHERS"].arg;
 	
 	SeDe_Map   = SD_Map;

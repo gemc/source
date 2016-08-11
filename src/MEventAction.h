@@ -37,22 +37,22 @@
 /// to a generator - instead of regenerating beam on target
 class BGParts
 {
-	public:
-		BGParts(){;}
-		BGParts(int partid, double t, G4ThreeVector vtx, G4ThreeVector mom)
-		{
-			pid = partid;
-			v    = vtx;
-			p    = mom;
-			time = t;
-		}
-		~BGParts(){;}
-	
-	public:
-		int pid;
-		double time;
-		G4ThreeVector v; // vertex
-		G4ThreeVector p; // momentum
+public:
+	BGParts(){;}
+	BGParts(int partid, double t, G4ThreeVector vtx, G4ThreeVector mom)
+	{
+		pid = partid;
+		v    = vtx;
+		p    = mom;
+		time = t;
+	}
+	~BGParts(){;}
+
+public:
+	int pid;
+	double time;
+	G4ThreeVector v; // vertex
+	G4ThreeVector p; // momentum
 };
 
 
@@ -69,21 +69,21 @@ class BGParts
 /// to the ground state and I >0 to excitations \n
 class TInfos
 {
-	public:
-		TInfos(){;}
-		TInfos(int MTID)
-		{
-			mtid = MTID;
-			mpid = 0;
-			mv   = G4ThreeVector(0.,0.,0.);
-		}
-		~TInfos(){;}
+public:
+	TInfos(){;}
+	TInfos(int MTID)
+	{
+		mtid = MTID;
+		mpid = 0;
+		mv   = G4ThreeVector(0.,0.,0.);
+	}
+	~TInfos(){;}
 
-	public:
-		int mtid;  // mother track id
-		int mpid;  // mother PID
-	
-		G4ThreeVector mv;
+public:
+	int mtid;  // mother track id
+	int mpid;  // mother PID
+
+	G4ThreeVector mv;
 };
 
 vector<int> vector_mtids(  map<int, TInfos> tinfos, vector<int> tids);
@@ -105,49 +105,50 @@ vector<G4ThreeVector> vector_zthre( int size);  ///< provides a vector of (0,0,0
 /// (if the output option is selected)
 class MEventAction : public G4UserEventAction
 {
-	public:
-		MEventAction(goptions, map<string, double>);       ///< Constructor copies gemc options
-		~MEventAction();                                   ///< Destructor
-		
-		goptions gemcOpt;                                  ///< gemc options
-		
-		outputContainer                  *outContainer;     ///< outputContainer class - contains the output format.
-		map<string, outputFactoryInMap>  *outputFactoryMap; ///< outputFactory map
-		map<string, sensitiveDetector*>  SeDe_Map;          ///< Sensitive detector Map
-		map<string, HitProcess_Factory>  *hitProcessMap;    ///< Hit Process Routine Factory Map
-		map<string, gBank>               *banksMap;         ///< Bank Map
-		map<string, double>               gPars;            ///< Parameters Map
-		MPrimaryGeneratorAction          *gen_action;       ///< Generator Action
-    
-		map<int, int> hierarchy;                     ///< Hierarchy map
-		map<int, int> momDaughter;                   ///< mom - daughter relationship
-		vector<int> vector_otids(vector<int> tids);  ///< return original track id of a vector of tid
+public:
+	MEventAction(goptions, map<string, double>);       ///< Constructor copies gemc options
+	~MEventAction();                                   ///< Destructor
 
-	
-		int    evtN;            ///< Event Number
-		string hd_msg;          ///< Event Action Message
-		int    Modulo;          ///< Print Log Event every Modulo
-		double VERB;            ///< Event Verbosity
-		string catch_v;         ///< Print Log for volume
-		int   SAVE_ALL_MOTHERS; ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
-		int   MAXP;             ///< Max number of generated particles to save on output stream
-		string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
-		string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
-		string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
-		string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
-	
-		// save particles that produced a hit onto LUND format
-		void saveBGPartsToLund();
-		ofstream *lundOutput;
-		map<int, BGParts> bgMap;
-	
-	public:
-		void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
-		void EndOfEventAction(const G4Event*);              ///< Routine at the end of each event
-		void SetEvtNumber(int N){evtN = N;}                 ///< Sets Event Number
-	
-		runWeights rw;
-	
+	goptions gemcOpt;                                  ///< gemc options
+
+	outputContainer                  *outContainer;     ///< outputContainer class - contains the output format.
+	map<string, outputFactoryInMap>  *outputFactoryMap; ///< outputFactory map
+	map<string, sensitiveDetector*>  SeDe_Map;          ///< Sensitive detector Map
+	map<string, HitProcess_Factory>  *hitProcessMap;    ///< Hit Process Routine Factory Map
+	map<string, gBank>               *banksMap;         ///< Bank Map
+	map<string, double>               gPars;            ///< Parameters Map
+	MPrimaryGeneratorAction          *gen_action;       ///< Generator Action
+
+	map<int, int> hierarchy;                     ///< Hierarchy map
+	map<int, int> momDaughter;                   ///< mom - daughter relationship
+	vector<int> vector_otids(vector<int> tids);  ///< return original track id of a vector of tid
+
+
+	int    evtN;            ///< Event Number
+	string hd_msg;          ///< Event Action Message
+	int    Modulo;          ///< Print Log Event every Modulo
+	double VERB;            ///< Event Verbosity
+	string catch_v;         ///< Print Log for volume
+	int   SAVE_ALL_MOTHERS; ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
+	int   MAXP;             ///< Max number of generated particles to save on output stream
+	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
+	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
+	string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
+	string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
+	string RFSETUP;         ///< Parameters for RF setup
+
+	// save particles that produced a hit onto LUND format
+	void saveBGPartsToLund();
+	ofstream *lundOutput;
+	map<int, BGParts> bgMap;
+
+public:
+	void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
+	void EndOfEventAction(const G4Event*);              ///< Routine at the end of each event
+	void SetEvtNumber(int N){evtN = N;}                 ///< Sets Event Number
+
+	runWeights rw;
+
 };
 
 #endif

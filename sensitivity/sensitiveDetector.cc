@@ -25,7 +25,7 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
 	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
-	ELECTRONICNOISE  = replaceCharWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
+	ELECTRONICNOISE  = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
 
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy

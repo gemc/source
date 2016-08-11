@@ -73,67 +73,7 @@ inline string qs_tostring(QString input)
 }
 
 
-//replaces a character to another characters.
-inline string replaceCharWithChars(string input, string x, string y)
-{
-	
-	string output = "";
-	
-	for(unsigned int k=0; k<input.size(); k++)
-	{
-		int replace = 1;
-		for(unsigned int j=0; j<x.size(); j++)
-		{
-			
-			if(input[k] == x[j])
-			{
-				output.append(y);
-				replace = 0;
-			}
-		}
-		if(replace) output += input[k];
-	}
-	
-	return output;
-	
-}
 
-//replaces a string that has more than one character to another string
-inline string replaceCharsWithChars(string input, string x, string y)
-{
-	
-	string output = "";
-	unsigned long k = x.length();
-	unsigned long i = 0;
-	
-	
-	
-	while(i<input.size())
-	{
-		unsigned int j=0;
-		unsigned int l=0;
-		while(j<k)
-		{
-			if(input[i+j] == x[j])
-				l++;
-			j++;
-		}
-		
-		if(l==k)
-		{
-			output.append(y);
-			i = i+k;
-		}
-		else
-		{
-			output = output+input[i];
-			i++;
-		}
-	}
-	
-	
-	return output;
-}
 
 vector< vector<string> > dimensionstype(string);    ///< Returns dimensions nomenclature for different solid type
 double get_number(string,int warn_no_unit=0);       ///< Returns number with dimension from string, i.e. 100*cm

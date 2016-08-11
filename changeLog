@@ -3,6 +3,7 @@ Changelog for GEMC
 
 8/11/16
  - getStringVectorFromString and getStringVectorFromStringWithDelimiter from mlibrary
+ - replaceCharInStringWithChars from mlibrary
 
 8/10/16
  - mlibrary gstring introduced: string manipulation library. This will replace many methods that do not belong in gemc
