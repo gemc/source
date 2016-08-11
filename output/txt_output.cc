@@ -48,8 +48,14 @@ void txt_output :: writeHeader(outputContainer* output, map<string, double> data
 	
 }
 
-void txt_output :: writeRFSignal(outputContainer* output, vector<double>, vector<double>, gBank bank)
+void txt_output :: writeRFSignal(outputContainer* output, vector<double> rfids, vector<double> rfsignals, gBank bank)
 {
+	*txtout << " --- RF Signals Bank -- " << endl;
+	for(unsigned int i=0; i<rfids.size();  i++) {
+		*txtout << "    - RF ID: "    << rfids[i] << "   Signal: " << rfsignals[i] << endl;
+
+	}
+	*txtout << " --- End of RF Signals Bank Bank -- " << endl;
 }
 
 void txt_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)

@@ -58,8 +58,16 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 	*event << headerBank;
 }
 
-void evio_output :: writeRFSignal(outputContainer* output, vector<double>, vector<double>, gBank bank)
+void evio_output :: writeRFSignal(outputContainer* output, vector<double> rfids, vector<double> rfsignals, gBank bank)
 {
+	// creating and inserting generated particles bank  >> TAG=10 NUM=0 <<
+	evioDOMNodeP rfbank = evioDOMNode::createEvioDOMNode(RF_BANK_TAG, 0);
+	
+	*rfbank << addVector(RF_BANK_TAG, bank.getVarId("id"), bank.getVarType("id"), rfids);
+	*rfbank << addVector(RF_BANK_TAG, bank.getVarId("rf"), bank.getVarType("rf"), rfsignals);
+
+	*event << rfbank;
+
 }
 
 void evio_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)
