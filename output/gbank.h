@@ -23,6 +23,10 @@ using namespace std;
 // header bank
 #define HEADER_BANK_TAG 10
 
+// header bank
+#define RF_BANK_TAG 30
+
+
 // simulation conditions NUM is 0 for the mother bank, 1 for the data bank
 #define GENERATED_PARTICLES_BANK_TAG 20
 

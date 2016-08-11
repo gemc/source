@@ -48,6 +48,10 @@ void txt_output :: writeHeader(outputContainer* output, map<string, double> data
 	
 }
 
+void txt_output :: writeRFSignal(outputContainer* output, vector<double>, vector<double>, gBank bank)
+{
+}
+
 void txt_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)
 {
 	double MAXP = output->gemcOpt.optMap["NGENP"].arg;

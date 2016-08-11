@@ -31,6 +31,9 @@ class evio_output : public outputFactory
 	// write generated particles
 	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap);
 
+	// write RF Signal
+	virtual void writeRFSignal(outputContainer*, vector<double>, vector<double>, gBank);
+
 	// write geant4 raw integrated info
 	void writeG4RawIntegrated(outputContainer*, vector<hitOutput>,  string, map<string, gBank>*);
 

@@ -20,6 +20,7 @@
 //  S for raw step by step variables
 //  M for digitized multi-hit variables
 //  V for voltage(time) variables
+//  N for not relevant
 
 // The second char:
 // i for integers
@@ -67,7 +68,13 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("multiplicity",  9,  "Ni", "number of particles at this vertex");
 	abank.orderNames();
 	banks["generated"] = abank;
-	
+
+	// RF info
+	abank =  gBank(RF_BANK_TAG, "rf", "RF Signals");
+	abank.load_variable("id",    1,  "Ni", "RF ID");
+	abank.load_variable("rf",    2,  "ND", "RF ID");
+	banks["rf"] = abank;
+
 	// particle summary infos
 	// this is a daughter bank of the generated particle infos
 	abank =  gBank(GENERATED_SUMMARY_BANK_TAG, "psummary", "Generated Particles Summary");

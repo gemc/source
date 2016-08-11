@@ -58,6 +58,9 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 	*event << headerBank;
 }
 
+void evio_output :: writeRFSignal(outputContainer* output, vector<double>, vector<double>, gBank bank)
+{
+}
 
 void evio_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)
 {

@@ -6,6 +6,7 @@ Changelog for GEMC
  - replaceCharInStringWithChars from mlibrary
  - getting timewindow and start time from primary generator
  - rf signal added in event action
+ - added rf bank
 
 8/10/16
  - mlibrary gstring introduced: string manipulation library. This will replace many methods that do not belong in gemc
