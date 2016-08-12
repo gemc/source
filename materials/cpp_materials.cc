@@ -25,12 +25,17 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	// Example for Water:
 	// H2O->AddElement(elH, natoms=2);
 	// H2O->AddElement(elO, natoms=1);
-	
+
+
+	// temp reinstating these elements here until BirksConstant is in the API
+	G4double a, z, density;
+	G4Element* C   = new G4Element("Carbon",    "C",  z=6,  a=    12.01*g/mole);
+	G4Element* H   = new G4Element("Hydrogen",  "H",  z=1,  a=     1.01*g/mole);
+
 	
 	map<string, G4Material*> MMats;
 	
 	
-	G4double a, z, density;
 	G4int nel;
 	G4String symbol;
 
@@ -60,6 +65,11 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	vacuum_m3->AddMaterial(matman->FindOrBuildMaterial("G4_N"), 70.*perCent);
 	vacuum_m3->AddMaterial(matman->FindOrBuildMaterial("G4_O"), 30.*perCent);
 	
+	// temp reinstating this here until BirksConstant is in the API
+	G4Material *ScintillatorB = new G4Material("ScintillatorB",   density = 1.032*g/cm3, nel=2);
+	ScintillatorB->AddElement(C, 9);
+	ScintillatorB->AddElement(H, 10);
+	ScintillatorB->GetIonisation()->SetBirksConstant(0.126*mm/MeV);
 
 	
 	MMats["Air_Opt"]        = Air_Opt;
@@ -67,6 +77,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	MMats["vacuum_m9"]      = vacuum_m9;
 	MMats["vacuum_m3"]      = vacuum_m3;
 	MMats["AlHoneycomb"]    = AlHoneycomb;
+	MMats["ScintillatorB"]  = ScintillatorB;
 
 	
 	// Materials Optical Properties

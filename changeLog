@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+8/12/16
+ - temp reinstatement of scintillatorB until we get Birks Constant in the API
+
 8/11/16
  - getStringVectorFromString and getStringVectorFromStringWithDelimiter from mlibrary
  - replaceCharInStringWithChars from mlibrary
