@@ -1,6 +1,20 @@
 Changelog for GEMC
 ==================
 
+8/16/16
+ - introducing chargeTime output in the output factory
+ - introducing two new pure virtual functions to be implemented in the hit process routines:
+
+    -  map< int, vector <double> > chargeTime(MHit*): will provide 3 outputs:
+
+        #. step index
+        #. charge (as seen by a PMT) for a given step
+        #. time (as arriving to the PMT) for a given step
+
+    -  double voltage(double, double): returns a voltage given a charge and time
+
+
+
 8/12/16
  - temp reinstatement of scintillatorB until we get Birks Constant in the API
 

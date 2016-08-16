@@ -77,6 +77,12 @@ public:
 	// - multiDgt: returns multiple digitized information / hit
 	map< string, vector <int> > multiDgt(MHit*, int);
 
+	// - charge: returns charge/time digitized information / step
+	virtual map< int, vector <double> > chargeTime(MHit*);
+
+	// - voltage: returns a voltage value for a given time. The input are charge value, time
+	virtual double voltage(double, double);
+	
 	// The pure virtual method processID returns a (new) identifier
 	// containing hit sharing information
 	vector<identifier> processID(vector<identifier>, G4Step*, detector);

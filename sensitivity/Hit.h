@@ -18,6 +18,10 @@
 #include <iostream>
 using namespace std;
 
+
+// TODO: Many of these quantities could be calculated as needed if the Touchable history is given.
+
+
 // Class definition
 class MHit : public G4VHit
 {

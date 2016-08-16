@@ -550,35 +550,35 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// by default they are all DISABLED
 			// user can enable them one by one
 			// using the SIGNALVT option
-			if(SIGNALVT.find(hitType) != string::npos)
-			{
-				vector<hitOutput> allVTOutput;
-				
-				for(int h=0; h<nhits; h++)
-				{
-					hitOutput thisHitOutput;
-					
-					MHit* aHit = (*MHC)[h];
-					
-					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit));
-					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit));
-					
-					allVTOutput.push_back(thisHitOutput);
-					
-					// this is not written out yet
-					
-					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-					if(VERB > 4 || vname.find(catch_v) != string::npos)
-					{
-						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
-						cout << aHit->GetId();
-						double Etot = 0;
-						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
-						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
-					}
-				}
-			}
-			
+//			if(SIGNALVT.find(hitType) != string::npos)
+//			{
+//				vector<hitOutput> allVTOutput;
+//				
+//				for(int h=0; h<nhits; h++)
+//				{
+//					hitOutput thisHitOutput;
+//					
+//					MHit* aHit = (*MHC)[h];
+//					
+//					thisHitOutput.setSignal(hitProcessRoutine->signalVT(aHit));
+//					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit));
+//					
+//					allVTOutput.push_back(thisHitOutput);
+//					
+//					// this is not written out yet
+//					
+//					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
+//					if(VERB > 4 || vname.find(catch_v) != string::npos)
+//					{
+//						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
+//						cout << aHit->GetId();
+//						double Etot = 0;
+//						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
+//						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
+//					}
+//				}
+//			}
+
 			delete hitProcessRoutine;
 		}
 	}

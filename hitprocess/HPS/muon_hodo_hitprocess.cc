@@ -75,6 +75,21 @@ map< string, vector <int> >  muon_hodo_HitProcess :: multiDgt(MHit* aHit, int hi
 
 
 
+// - charge: returns charge/time digitized information / step
+map< int, vector <double> > muon_hodo_HitProcess :: chargeTime(MHit* aHit)
+{
+	map< int, vector <double> >  CT;
+
+	return CT;
+}
+
+// - voltage: returns a voltage value for a given time. The input are charge value, time
+double muon_hodo_HitProcess :: voltage(double charge, double time)
+{
+	return 0.0;
+}
+
+
 
 
 

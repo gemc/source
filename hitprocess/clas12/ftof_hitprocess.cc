@@ -320,6 +320,20 @@ map< string, vector <int> >  ftof_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	return MH;
 }
 
+// - charge: returns charge/time digitized information / step
+map< int, vector <double> > ftof_HitProcess :: chargeTime(MHit* aHit)
+{
+	map< int, vector <double> >  CT;
+
+	return CT;
+}
+
+// - voltage: returns a voltage value for a given time. The input are charge value, time
+double ftof_HitProcess :: voltage(double charge, double time)
+{
+	return 0.0;
+}
+
 // this static function will be loaded first thing by the executable
 ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(-1);
 

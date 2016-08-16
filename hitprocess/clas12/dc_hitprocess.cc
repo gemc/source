@@ -256,6 +256,22 @@ map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	return MH;
 }
 
+// - charge: returns charge/time digitized information / step
+map< int, vector <double> > dc_HitProcess :: chargeTime(MHit* aHit)
+{
+	map< int, vector <double> >  CT;
+
+	return CT;
+}
+
+// - voltage: returns a voltage value for a given time. The input are charge value, time
+double dc_HitProcess :: voltage(double charge, double time)
+{
+	return 0.0;
+}
+
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> dc_HitProcess :: electronicNoise()
 {

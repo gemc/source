@@ -168,76 +168,76 @@ map< string, vector <double> > HitProcess::allRaws(MHit* aHit, int hitn)
 
 
 
-map< double, double >  HitProcess :: signalVT(MHit* aHit)
-{
-	// Time resolution is an external parameter
-	double tres = gemcOpt.optMap["VTRESOLUTION"].arg;
-	
-	map< double, double > VT;
-	sensitiveID SID = aHit->GetSDID();
-	
-	// signal parameters
-	double par[4];
-
-	// setting signal parameters
-	par[0] = SID.delay;
-	par[1] = SID.riseTime;
-	par[2] = SID.fallTime;
-	par[3] = SID.mvToMeV;
-	
-	vector<G4double>  Edep  = aHit->GetEdep();
-	vector<G4double>  times = aHit->GetTime();
-	unsigned nsteps = Edep.size();	
-	
-	double tmin = 100000;
-	double tmax = 0;
-	
-	
-	// finding min, max
-	for(unsigned int s=0; s<nsteps; s++)
-	{
-		if(tmin > times[s]) tmin = times[s];
-		if(tmax < times[s]) tmax = times[s];
-		//	cout << " step " << s+1 << " time " << times[s] << "  tmin " << tmin << "  tmax " << tmax << endl;
-	}
-	
-	// adding 1/2 DELAY to tmin
-	tmin = floor(tmin + 0.5*SID.delay);
-	
-	// adding a whole signal to tmax
-	tmax = floor(tmax + SID.delay + SID.riseTime + 2*SID.fallTime);
-	
-	unsigned int nt = (int) (tmax - tmin)/tres;
-
-
-	// cout <<  "  tmin " << tmin << "  tmax " << tmax << "  nt " << nt << endl;
-	
-	for(unsigned ti=0; ti<nt; ti++)
-	{
-		// local time
-		double localT = tmin + ti*tres;
-		double totV   = 0;
-		
-		// v signal at this time is sum of all signals at each step
-		for(unsigned int s=0; s<nsteps; s++)
-		{			
-			totV += DGauss(localT, par, Edep[s], times[s]);
-			
-//			cout << " local time " << localT << "  step " << s + 1 << " time " << times[s]
-//			<< "  Edep " << Edep[s] << "  signal " << DGauss(localT, par, Edep[s], times[s]) << endl;
-		}
-		
-		VT[localT] = totV + SID.pedestal;
-	}
-	
-	
-//	for(map<double, double>::iterator it = VT.begin(); it != VT.end(); it++)
-//		cout << "  time " << it->first << "   VT " << it->second << endl;
-	
-	aHit->setSignal(VT);
-	
-	return VT;
-}
+//map< double, double >  HitProcess :: signalVT(MHit* aHit)
+//{
+//	// Time resolution is an external parameter
+//	double tres = gemcOpt.optMap["VTRESOLUTION"].arg;
+//	
+//	map< double, double > VT;
+//	sensitiveID SID = aHit->GetSDID();
+//	
+//	// signal parameters
+//	double par[4];
+//
+//	// setting signal parameters
+//	par[0] = SID.delay;
+//	par[1] = SID.riseTime;
+//	par[2] = SID.fallTime;
+//	par[3] = SID.mvToMeV;
+//	
+//	vector<G4double>  Edep  = aHit->GetEdep();
+//	vector<G4double>  times = aHit->GetTime();
+//	unsigned nsteps = Edep.size();	
+//	
+//	double tmin = 100000;
+//	double tmax = 0;
+//	
+//	
+//	// finding min, max
+//	for(unsigned int s=0; s<nsteps; s++)
+//	{
+//		if(tmin > times[s]) tmin = times[s];
+//		if(tmax < times[s]) tmax = times[s];
+//		//	cout << " step " << s+1 << " time " << times[s] << "  tmin " << tmin << "  tmax " << tmax << endl;
+//	}
+//	
+//	// adding 1/2 DELAY to tmin
+//	tmin = floor(tmin + 0.5*SID.delay);
+//	
+//	// adding a whole signal to tmax
+//	tmax = floor(tmax + SID.delay + SID.riseTime + 2*SID.fallTime);
+//	
+//	unsigned int nt = (int) (tmax - tmin)/tres;
+//
+//
+//	// cout <<  "  tmin " << tmin << "  tmax " << tmax << "  nt " << nt << endl;
+//	
+//	for(unsigned ti=0; ti<nt; ti++)
+//	{
+//		// local time
+//		double localT = tmin + ti*tres;
+//		double totV   = 0;
+//		
+//		// v signal at this time is sum of all signals at each step
+//		for(unsigned int s=0; s<nsteps; s++)
+//		{			
+//			totV += DGauss(localT, par, Edep[s], times[s]);
+//			
+////			cout << " local time " << localT << "  step " << s + 1 << " time " << times[s]
+////			<< "  Edep " << Edep[s] << "  signal " << DGauss(localT, par, Edep[s], times[s]) << endl;
+//		}
+//		
+//		VT[localT] = totV + SID.pedestal;
+//	}
+//	
+//	
+////	for(map<double, double>::iterator it = VT.begin(); it != VT.end(); it++)
+////		cout << "  time " << it->first << "   VT " << it->second << endl;
+//	
+//	aHit->setSignal(VT);
+//	
+//	return VT;
+//}
 
 
 

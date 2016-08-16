@@ -116,6 +116,19 @@ vector<MHit*> FMT_HitProcess :: electronicNoise()
 	return noiseHits;
 }
 
+// - charge: returns charge/time digitized information / step
+map< int, vector <double> > FMT_HitProcess :: chargeTime(MHit* aHit)
+{
+	map< int, vector <double> >  CT;
+
+	return CT;
+}
+
+// - voltage: returns a voltage value for a given time. The input are charge value, time
+double FMT_HitProcess :: voltage(double charge, double time)
+{
+	return 0.0;
+}
 
 map< string, vector <int> >  FMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {

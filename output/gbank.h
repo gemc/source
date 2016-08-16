@@ -76,10 +76,14 @@ using namespace std;
 // identified by "V" in the variable type
 #define VOLTAGETIME_ID 5
 
+// charge time is a user-defined info for every step:
+// it provides a (as seen by the PMT) charge and its timing
+#define CHARGE_TIME_ID 6
+
 // quantum signal: it's the processed signal every # nanoseconds
 // (bunch time parameter given by user)
 // identified by "Q" in the variable type
-#define QUANTUM_SIGNAL_ID 6
+#define QUANTUM_SIGNAL_ID 7
 
 
 /// \class gBank

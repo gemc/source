@@ -113,6 +113,20 @@ map< string, vector <int> >  IC_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 
 
+// - charge: returns charge/time digitized information / step
+map< int, vector <double> > IC_HitProcess :: chargeTime(MHit* aHit)
+{
+	map< int, vector <double> >  CT;
+
+	return CT;
+}
+
+// - voltage: returns a voltage value for a given time. The input are charge value, time
+double IC_HitProcess :: voltage(double charge, double time)
+{
+	return 0.0;
+}
+
 
 
 
