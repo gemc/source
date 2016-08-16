@@ -117,7 +117,7 @@ vector<MHit*> FMT_HitProcess :: electronicNoise()
 }
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > FMT_HitProcess :: chargeTime(MHit* aHit)
+map< int, vector <double> > FMT_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 

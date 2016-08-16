@@ -117,7 +117,7 @@ map< string, vector <int> >  ECAL_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > ECAL_HitProcess :: chargeTime(MHit* aHit)
+map< int, vector <double> > ECAL_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 

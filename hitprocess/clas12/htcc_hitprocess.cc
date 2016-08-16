@@ -164,7 +164,7 @@ map< string, vector <int> >  htcc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit)
+map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 

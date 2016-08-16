@@ -103,7 +103,7 @@ public:
 	virtual map< string, vector <int> > multiDgt(MHit*, int) = 0;
 
 	// - charge: returns charge/time digitized information / step
-	virtual map< int, vector <double> > chargeTime(MHit*) = 0;
+	virtual map< int, vector <double> > chargeTime(MHit*, int) = 0;
 
 	// The pure virtual method processID returns a (new) identifier
 	// containing hit sharing information

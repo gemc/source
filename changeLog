@@ -5,11 +5,12 @@ Changelog for GEMC
  - introducing chargeTime output in the output factory
  - introducing two new pure virtual functions to be implemented in the hit process routines:
 
-    -  map< int, vector <double> > chargeTime(MHit*): will provide 3 outputs:
+    -  map< int, vector <double> > chargeTime(MHit*, int): will provide 4 outputs:
 
         #. step index
         #. charge (as seen by a PMT) for a given step
         #. time (as arriving to the PMT) for a given step
+        #. hit number
 
     -  double voltage(double charge, double time, double forTime): returns a voltage for an asked time given a charge/time signal
 

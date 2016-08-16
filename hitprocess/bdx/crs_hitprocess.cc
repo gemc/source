@@ -526,7 +526,7 @@ vector<MHit*> crs_HitProcess :: electronicNoise()
 
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > crs_HitProcess :: chargeTime(MHit* aHit)
+map< int, vector <double> > crs_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 

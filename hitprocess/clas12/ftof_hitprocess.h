@@ -78,7 +78,7 @@ public:
 	map< string, vector <int> > multiDgt(MHit*, int);
 
 	// - charge: returns charge/time digitized information / step
-	virtual map< int, vector <double> > chargeTime(MHit*);
+	virtual map< int, vector <double> > chargeTime(MHit*, int);
 
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double);
