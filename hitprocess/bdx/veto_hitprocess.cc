@@ -1154,7 +1154,7 @@ map< int, vector <double> > veto_HitProcess :: chargeTime(MHit* aHit)
 }
 
 // - voltage: returns a voltage value for a given time. The input are charge value, time
-double veto_HitProcess :: voltage(double charge, double time)
+double veto_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }

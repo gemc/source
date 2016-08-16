@@ -113,7 +113,7 @@ public:
 	virtual vector<MHit*> electronicNoise() = 0;
 
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
-	virtual double voltage(double, double) = 0;
+	virtual double voltage(double, double, double) = 0;
 
 	// - quantum signal: V(t) in ADC channel, reported every bunch time
 	virtual map< int, int > quantumS(map< double, double >, MHit*) ;

@@ -167,7 +167,7 @@ map< int, vector <double> > bst_HitProcess :: chargeTime(MHit* aHit)
 }
 
 // - voltage: returns a voltage value for a given time. The input are charge value, time
-double bst_HitProcess :: voltage(double charge, double time)
+double bst_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }

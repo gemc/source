@@ -274,7 +274,7 @@ map< int, vector <double> > cnd_HitProcess :: chargeTime(MHit* aHit)
 }
 
 // - voltage: returns a voltage value for a given time. The input are charge value, time
-double cnd_HitProcess :: voltage(double charge, double time)
+double cnd_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }

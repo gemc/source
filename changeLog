@@ -11,7 +11,7 @@ Changelog for GEMC
         #. charge (as seen by a PMT) for a given step
         #. time (as arriving to the PMT) for a given step
 
-    -  double voltage(double, double): returns a voltage given a charge and time
+    -  double voltage(double charge, double time, double forTime): returns a voltage for an asked time given a charge/time signal
 
 
 

@@ -125,7 +125,7 @@ map< int, vector <double> > ECAL_HitProcess :: chargeTime(MHit* aHit)
 }
 
 // - voltage: returns a voltage value for a given time. The input are charge value, time
-double ECAL_HitProcess :: voltage(double charge, double time)
+double ECAL_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }
