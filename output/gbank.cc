@@ -15,11 +15,11 @@
 
 // Variable Type is two chars.
 // The first char:
-//  R for raw integrated variables
-//  D for dgt integrated variables
-//  S for raw step by step variables
-//  M for digitized multi-hit variables
-//  V for voltage(time) variables
+//  R for raw integrated
+//  D for dgt integrated
+//  S for raw step by step
+//  M for digitized multi-hit
+//  C for charge, time
 //  N for not relevant
 
 // The second char:
@@ -153,7 +153,16 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.orderNames();
 	banks["allraws"] = abank;
 	
-	
+	// geant4 raw step by step
+	// common for all banks
+	abank =  gBank(CHARGE_TIME_ID, "chargeTime", "charge and time as seen by the electronics");
+	abank.load_variable("id",     1,    "Si", "hit identifier");
+	abank.load_variable("q",      2,    "Sd", "charge as seen by electronics");
+	abank.load_variable("t",      3,    "Sd", "time as seen by electronics");
+	abank.load_variable("stepn",  98,   "Si", "step index");
+	abank.load_variable("hitn",   99,   "Si", "Hit Number");
+	banks["chargeTime"] = abank;
+
 	
 	// flux bank integrated digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
@@ -397,7 +406,7 @@ int gBank::getVarBankType(string var)
 			if(type[i].find("D") == 0) return DGTINT_ID;
 			if(type[i].find("S") == 0) return RAWSTEP_ID;
 			if(type[i].find("M") == 0) return DGTMULTI_ID;
-			if(type[i].find("V") == 0) return VOLTAGETIME_ID;
+			if(type[i].find("C") == 0) return CHARGE_TIME_ID;
 		}
 	}
 	return 0;
@@ -471,6 +480,7 @@ gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap)
 	dgtBank.orderNames();
 	return dgtBank;
 }
+
 
 // Overloaded "<<" for the class 'bank'
 ostream &operator<<(ostream &stream, gBank bank)

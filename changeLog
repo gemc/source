@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+8/17/16
+ - implementation / test of charge / time information for calorimeter.
+ - starting to write output implementation for charge / time information. TXT in progress
+
 8/16/16
  - introducing chargeTime output in the output factory
  - introducing two new pure virtual functions to be implemented in the hit process routines:
@@ -49,8 +53,10 @@ Changelog for GEMC
 
 7/28/16
  - added attributes modifier for cad imports:
-   - position
-   - rotation
+
+    - position
+    - rotation
+
  - added CAD and GDML reading of hit definitions
  - protecting against a too low production threshold
  - assigning system to sensitivity so hit definitions can be read properly

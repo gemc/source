@@ -72,18 +72,19 @@ using namespace std;
 // identified by "M" in the variable type
 #define DGTMULTI_ID 4
 
-// voltage versus time info
-// identified by "V" in the variable type
-#define VOLTAGETIME_ID 5
-
 // charge time is a user-defined info for every step:
 // it provides a (as seen by the PMT) charge and its timing
-#define CHARGE_TIME_ID 6
+// index 0: hit number
+// index 1: step index
+// index 2: charge at electronics
+// index 3: time at electronics
+// index 4: vector of identifiers - have to match the translation table
+#define CHARGE_TIME_ID 5
 
 // quantum signal: it's the processed signal every # nanoseconds
 // (bunch time parameter given by user)
 // identified by "Q" in the variable type
-#define QUANTUM_SIGNAL_ID 7
+#define QUANTUM_SIGNAL_ID 6
 
 
 /// \class gBank
@@ -93,49 +94,49 @@ using namespace std;
 /// from the database or a text file.\n
 class gBank
 {
-	public:
-		gBank(){;}
-		gBank(int i, string bname, string d)
-		{
-			idtag        = i;
-			bdescription = d;
-			name.clear();
-			id.clear();
-			description.clear();
-			bankName = bname;
-		}
-		~gBank(){;}
-		
-		string bankName;              ///< name of the bank, it's also key in the map but we store it here as well
-		int    idtag;                 ///< unique id for the bank
-		string bdescription;          ///< bank description
-	
-	public:
-		vector<string>  name;         ///< Variable name.
-		vector<int>     id;           ///< Output variable identifier
-		// variable type is 2 chars. The first char represent the type of bank:
-	    // N is for no level banks, the rest are defined above (N, R, D, S, M, V).
-	    // "i"nt , "d"ouble, "s"tring
-		vector<string>  type;         ///< Variable type 
-		vector<string>  description;  ///< Variable description
-		
-		void load_variable(string, int, string, string);  // Load a variable in the bank definition
-			
-		// these two function return id and type
-		// first occurance of string in the vector
-		// there should be only one (not enforced right now)
-		int getVarId(string);
-		string getVarType(string);
-		
-		// returns the type of variable (rawInt, dgtInt, etc)
-		int getVarBankType(string);
-	
-		// vector of names ordered by ID
-		map<int, string> orderedNames;
-		void orderNames();
+public:
+	gBank(){;}
+	gBank(int i, string bname, string d)
+	{
+		idtag        = i;
+		bdescription = d;
+		bankName = bname;
+		name.clear();
+		id.clear();
+		description.clear();
+	}
+	~gBank(){;}
+
+public:
+	int    idtag;                 ///< unique id for the bank
+	string bdescription;          ///< bank description
+	string bankName;              ///< name of the bank, it's also key in the map but we store it here as well
+
+	vector<string>  name;         ///< Variable name.
+	vector<int>     id;           ///< Output variable identifier
+	// variable type is 2 chars. The first char represent the type of bank:
+	// N is for no level banks, the rest are defined above (N, R, D, S, M, V).
+	// "i"nt , "d"ouble, "s"tring
+	vector<string>  type;         ///< Variable type
+	vector<string>  description;  ///< Variable description
+
+	void load_variable(string, int, string, string);  // Load a variable in the bank definition
+
+	// these two function return id and type
+	// first occurance of string in the vector
+	// there should be only one (not enforced right now)
+	int getVarId(string);
+	string getVarType(string);
+
+	// returns the type of variable (rawInt, dgtInt, etc)
+	int getVarBankType(string);
+
+	// vector of names ordered by ID
+	map<int, string> orderedNames;
+	void orderNames();
 
 
-		friend ostream &operator<<(ostream &stream, gBank);       ///< Overloaded "<<" for the class 'bank'
+	friend ostream &operator<<(ostream &stream, gBank);       ///< Overloaded "<<" for the class 'bank'
 
 };
 

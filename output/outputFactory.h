@@ -63,6 +63,11 @@ private:
 
 	// charge ([0]), time([1] info at every step
 	// DISABLED by default
+	// index 0: hit number
+	// index 1: step index
+	// index 2: charge at electronics
+	// index 3: time at electronics
+	// index 4: vector of identifiers - have to match the translation table
 	map< int, vector <double> >  chargeTime;
 
 public:
@@ -210,6 +215,9 @@ public:
 
 	// write geant4 raw integrated info
 	virtual void writeG4DgtIntegrated(outputContainer*, vector<hitOutput>, string, map<string, gBank>*) = 0;
+
+	// write geant4 charge / time (as seen by electronic) info
+	virtual void writeChargeTime(outputContainer*, vector<hitOutput>, string, map<string, gBank>*) = 0;
 
 	// write event and close stream if necessary
 	virtual void writeEvent(outputContainer*) = 0;

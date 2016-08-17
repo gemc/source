@@ -103,6 +103,11 @@ public:
 	virtual map< string, vector <int> > multiDgt(MHit*, int) = 0;
 
 	// - charge: returns charge/time digitized information / step
+	// index 0: hit number
+	// index 1: step index
+	// index 2: charge at electronics
+	// index 3: time at electronics
+	// index 4: vector of identifiers - have to match the translation table
 	virtual map< int, vector <double> > chargeTime(MHit*, int) = 0;
 
 	// The pure virtual method processID returns a (new) identifier

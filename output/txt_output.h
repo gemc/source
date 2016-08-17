@@ -40,6 +40,9 @@ class txt_output : public outputFactory
 	// write geant4 digitized integrated info
 	void writeG4DgtIntegrated(outputContainer*, vector<hitOutput>,  string, map<string, gBank>*);
 
+	// write geant4 charge / time (as seen by electronic) info
+	virtual void writeChargeTime(outputContainer*, vector<hitOutput>, string, map<string, gBank>*);
+
 	// write geant4 true info for every step
 	virtual void writeG4RawAll(outputContainer*, vector<hitOutput>, string, map<string, gBank>*);
 

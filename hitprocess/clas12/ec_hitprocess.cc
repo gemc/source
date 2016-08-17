@@ -134,7 +134,6 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
 	double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 	
-	vector<G4ThreeVector> pos  = aHit->GetPos();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	
 	// Get Total Energy deposited
@@ -306,9 +305,93 @@ map< string, vector <int> >  ec_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // - charge: returns charge/time digitized information / step
+// index 0: hit number
+// index 1: step index
+// index 2: charge
+// index 3: time at electronics
+// index 4: vector of identifiers - have to match the translation table
 map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
+
+	vector<double> hitNumbers;
+	vector<double> stepIndex;
+	vector<double> chargeAtElectronics;
+	vector<double> timeAtElectronics;
+	vector<double> identifiers;
+	hitNumbers.push_back(hitn);
+
+
+	// getting identifiers
+	vector<identifier> identity = aHit->GetId();
+	int sector = identity[0].id;
+	int stack  = identity[1].id;
+	int view   = identity[2].id;
+	int strip  = identity[3].id;
+	int layer  = (stack-1)*3+view+3; // layer=1-3 (PCAL) 4-9 (ECAL)
+
+
+	identifiers.push_back(sector);   // sector
+	identifiers.push_back(layer);    // laylayer=1-3 (PCAL) 4-9 (ECAL)er
+	identifiers.push_back(strip);    // component (pmt)
+	identifiers.push_back(0);        // order
+
+
+	// getting charge and time
+	trueInfos tInfos(aHit);
+
+	// Get scintillator mother volume dimensions (mm)
+	double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
+	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
+	double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+
+	vector<G4ThreeVector> pos  = aHit->GetPos();
+	vector<G4ThreeVector> Lpos = aHit->GetLPos();
+
+
+	vector<G4double> Edep = aHit->GetEdep();
+	vector<G4double> time = aHit->GetTime();
+
+	double A = ecc.attlen[sector-1][layer-1][0][strip-1];
+	double B = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
+	double C = ecc.attlen[sector-1][layer-1][2][strip-1];
+
+	for(unsigned int s=0; s<tInfos.nsteps; s++) {
+		if(B>0) {
+			double xlocal = Lpos[s].x();
+			double ylocal = Lpos[s].y();
+			double latt = 0;
+
+			if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
+			if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
+			if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+			double att   = A*exp(-latt/B)+C;
+
+			double stepE = Edep[s]*att;
+			double stepTime = time[s] + latt/ecc.veff;
+
+			if (stepE > 0) {
+				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
+				if (EC_npe>0) {
+					double sigma  = ecc.pmtFactor/sqrt(EC_npe);
+					double EC_MeV = G4RandGauss::shoot(EC_npe, sigma)*ecc.ADC_MeV_to_evio/ecc.pmtPEYld;
+					if (EC_MeV>0) {
+						stepIndex.push_back(s);
+						chargeAtElectronics.push_back(EC_MeV);
+						timeAtElectronics.push_back(stepTime);
+					}
+				}
+			}
+		}
+	}
+
+	CT[0] = hitNumbers;
+	CT[1] = stepIndex;
+	CT[2] = chargeAtElectronics;
+	CT[3] = timeAtElectronics;
+	CT[4] = identifiers;
+
+	// cout << " SIGNAL done with n steps: " << CT[3].size() << " and identifier " <<  CT[4].size() << endl;
 
 	return CT;
 }

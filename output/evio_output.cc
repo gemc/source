@@ -265,7 +265,11 @@ void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 			*(detectorDgtIntBank[thisHitBank.bankName]) << addVector(dgtBank.idtag + thisHitBank.idtag, bankId, dgtBank.getVarType(it->second), thisVar);
 		}
 	}
-	
+}
+
+
+void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
+{
 }
 
 

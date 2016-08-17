@@ -193,10 +193,6 @@ void txt_output ::  writeG4RawAll(outputContainer* output, vector<hitOutput> HO,
 }
 
 
-
-
-
-
 void txt_output ::  writeG4DgtIntegrated(outputContainer* output, vector<hitOutput> HO,  string hitType, map<string, gBank> *banksMap)
 {
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
@@ -231,6 +227,40 @@ void txt_output ::  writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	
 	*txtout << "   -- End of integrated digitized bank." << endl;
 }
+
+// index 0: hit number
+// index 1: step index
+// index 2: charge at electronics
+// index 3: time at electronics
+// index 4: vector of identifiers - have to match the translation table
+void txt_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
+{
+	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
+	gBank chargeTimeBank = getBankFromMap("chargeTime", banksMap);
+
+	initBank(output, thisHitBank);
+	ofstream *txtout = output->txtoutput ;
+
+	*txtout << "   -- charge time infos (as seen by electronics) bank  (" << thisHitBank.idtag + CHARGE_TIME_ID << ", 0) -- " << endl;
+
+	int bankId   = chargeTimeBank.getVarId("id");
+	int bankType = chargeTimeBank.getVarBankType("id");
+
+//	for(unsigned int nh=0; nh<HO.size(); nh++) {
+//		map<int, vector<double> > thisChargeTime = HO[nh].getAllRaws();
+//
+//
+//
+//	}
+
+
+
+
+	*txtout << "   -- end of charge time infos (as seen by electronics) bank  (" << thisHitBank.idtag + CHARGE_TIME_ID << ", 0) -- " << endl;
+
+}
+
+
 
 void txt_output :: writeEvent(outputContainer* output)
 {
