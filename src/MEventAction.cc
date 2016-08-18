@@ -579,6 +579,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
 					}
 				}
+				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);
+
 			}
 
 			delete hitProcessRoutine;

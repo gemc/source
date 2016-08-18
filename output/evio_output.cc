@@ -270,6 +270,17 @@ void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 
 void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
+	gBank chargeTimeBank = getBankFromMap("chargeTime", banksMap);
+
+	initBank(output, thisHitBank, CHARGE_TIME_ID );
+
+	int IDbankId = chargeTimeBank.getVarId("id");
+	int QbankId  = chargeTimeBank.getVarId("q");
+	int TbankId  = chargeTimeBank.getVarId("t");
+	int SbankId  = chargeTimeBank.getVarId("stepn");
+	int HbankId  = chargeTimeBank.getVarId("hitn");
+
 }
 
 

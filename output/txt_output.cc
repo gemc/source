@@ -243,19 +243,47 @@ void txt_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO
 
 	*txtout << "   -- charge time infos (as seen by electronics) bank  (" << thisHitBank.idtag + CHARGE_TIME_ID << ", 0) -- " << endl;
 
-	int bankId   = chargeTimeBank.getVarId("id");
-	int bankType = chargeTimeBank.getVarBankType("id");
+	for(unsigned int nh=0; nh<HO.size(); nh++) {
 
-//	for(unsigned int nh=0; nh<HO.size(); nh++) {
-//		map<int, vector<double> > thisChargeTime = HO[nh].getAllRaws();
-//
-//
-//
-//	}
+		map<int, vector<double> > thisChargeTime = HO[nh].getChargeTime();
+
+		// hit number
+		vector<double> thisHitN   = thisChargeTime[0];
+		vector<double> thisStep   = thisChargeTime[1];
+		vector<double> thisCharge = thisChargeTime[2];
+		vector<double> thisTime   = thisChargeTime[3];
+		vector<double> thisID     = thisChargeTime[4];
 
 
+		if(thisHitN.size() != 1 ) {
+			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
+			exit(0);
+		}
+		*txtout << "    - Hit number :\t " << thisHitN[0] << " has " << thisStep.size() << " steps." << endl;
+
+		// identifier
+		*txtout << "    - Identifier:\t " ;
+		for(unsigned s=0; s<thisID.size(); s++) *txtout << (int) thisID[s] << " "  ;
+		*txtout << endl ;
 
 
+		// step index
+		*txtout << "    - Step number:\t " ;
+		for(unsigned s=0; s<thisStep.size(); s++) *txtout << (int) thisStep[s] << " "  ;
+		*txtout << endl ;
+
+		// charge at electronics
+		*txtout << "    - Charge at electronics:\t " ;
+		for(unsigned s=0; s<thisCharge.size(); s++) *txtout << thisCharge[s] << " "  ;
+		*txtout << endl ;
+
+		// time at electronics
+		*txtout << "    - Time at electronics:\t " ;
+		for(unsigned s=0; s<thisTime.size(); s++) *txtout << thisTime[s] << " "  ;
+		*txtout << endl ;
+
+
+	}
 	*txtout << "   -- end of charge time infos (as seen by electronics) bank  (" << thisHitBank.idtag + CHARGE_TIME_ID << ", 0) -- " << endl;
 
 }

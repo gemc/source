@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+8/18/16
+ - text output finalized for charge / time information at electronics
+
 8/17/16
  - implementation / test of charge / time information for calorimeter.
  - starting to write output implementation for charge / time information. TXT in progress
