@@ -156,11 +156,11 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	// geant4 raw step by step
 	// common for all banks
 	abank =  gBank(CHARGE_TIME_ID, "chargeTime", "charge and time as seen by the electronics");
-	abank.load_variable("id",     1,    "Si", "hit identifier");
-	abank.load_variable("q",      2,    "Sd", "charge as seen by electronics");
-	abank.load_variable("t",      3,    "Sd", "time as seen by electronics");
-	abank.load_variable("stepn",  98,   "Si", "step index");
-	abank.load_variable("hitn",   99,   "Si", "Hit Number");
+	abank.load_variable("id",     1,    "Ci", "hit identifier");
+	abank.load_variable("q",      2,    "Cd", "charge as seen by electronics");
+	abank.load_variable("t",      3,    "Cd", "time as seen by electronics");
+	abank.load_variable("stepi",  98,   "Ci", "step index");
+	abank.load_variable("hitn",   99,   "Ci", "Hit Number");
 	banks["chargeTime"] = abank;
 
 	

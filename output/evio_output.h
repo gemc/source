@@ -55,12 +55,14 @@ class evio_output : public outputFactory
 	map<string, evioDOMNodeP> detectorRawIntBank; 
 	map<string, evioDOMNodeP> detectorDgtIntBank;
 	map<string, evioDOMNodeP> detectorRawAllBank;
+	map<string, evioDOMNodeP> detectorChargeTimeBank;
 
 	map<string, bool> insideBank;
 	map<string, bool> insideRawIntBank;
 	map<string, bool> insideDgtIntBank;
 	map<string, bool> insideRawAllBank;
-	
+	map<string, bool> insideChargeTimeBank;
+
 	int evn;
 	
 };

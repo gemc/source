@@ -247,7 +247,6 @@ void txt_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO
 
 		map<int, vector<double> > thisChargeTime = HO[nh].getChargeTime();
 
-		// hit number
 		vector<double> thisHitN   = thisChargeTime[0];
 		vector<double> thisStep   = thisChargeTime[1];
 		vector<double> thisCharge = thisChargeTime[2];
@@ -255,6 +254,7 @@ void txt_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO
 		vector<double> thisID     = thisChargeTime[4];
 
 
+		// hit number
 		if(thisHitN.size() != 1 ) {
 			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
 			exit(0);

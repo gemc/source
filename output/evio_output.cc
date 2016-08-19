@@ -205,6 +205,15 @@ void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 		*detectorBank << detectorRawAllBank[thisHitBank.bankName];
 		insideRawAllBank[thisHitBank.bankName] = 1;
 	}
+
+	// charge / time information (step by step)
+	if(!insideChargeTimeBank[thisHitBank.bankName] && what == CHARGE_TIME_ID)
+	{
+		detectorChargeTimeBank[thisHitBank.bankName] = evioDOMNode::createEvioDOMNode(thisHitBank.idtag + CHARGE_TIME_ID, 0);
+		*detectorBank << detectorChargeTimeBank[thisHitBank.bankName];
+		insideChargeTimeBank[thisHitBank.bankName] = 1;
+	}
+
 	
 }
 
@@ -268,6 +277,11 @@ void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 }
 
 
+// index 0: hit number
+// index 1: step index
+// index 2: charge at electronics
+// index 3: time at electronics
+// index 4: vector of identifiers - have to match the translation table
 void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
@@ -275,11 +289,52 @@ void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> H
 
 	initBank(output, thisHitBank, CHARGE_TIME_ID );
 
-	int IDbankId = chargeTimeBank.getVarId("id");
-	int QbankId  = chargeTimeBank.getVarId("q");
-	int TbankId  = chargeTimeBank.getVarId("t");
-	int SbankId  = chargeTimeBank.getVarId("stepn");
-	int HbankId  = chargeTimeBank.getVarId("hitn");
+	// collecting vectors from each hit into one big array
+	vector<double> allHitN;
+	vector<double> allStep;
+	vector<double> allCharge;
+	vector<double> allTime;
+	vector<double> allID;
+
+	for(unsigned int nh=0; nh<HO.size(); nh++) {
+
+		map<int, vector<double> > thisChargeTime = HO[nh].getChargeTime();
+
+		vector<double> thisHitN   = thisChargeTime[0];
+		vector<double> thisStep   = thisChargeTime[1];
+		vector<double> thisCharge = thisChargeTime[2];
+		vector<double> thisTime   = thisChargeTime[3];
+		vector<double> thisID     = thisChargeTime[4];
+
+
+		// hit number
+		if(thisHitN.size() != 1 ) {
+			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
+			exit(0);
+		}
+
+		for(auto h: thisHitN)   allHitN.push_back(h);
+		for(auto h: thisStep)   allStep.push_back(h);
+		for(auto h: thisCharge) allCharge.push_back(h);
+		for(auto h: thisTime)   allTime.push_back(h);
+		for(auto h: thisID)     allID.push_back(h);
+	}
+
+	// done collecting, now writing them out
+	if(chargeTimeBank.getVarBankType("id") == CHARGE_TIME_ID)
+	{
+		// hit number
+		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("hitn"), chargeTimeBank.getVarType("hitn"), allHitN);
+		// step index
+		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("stepi"), chargeTimeBank.getVarType("stepi"), allStep);
+		// vector of identifiers - have to match the translation table
+		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("id"), chargeTimeBank.getVarType("id"), allID);
+		// charge at electronics
+		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("q"), chargeTimeBank.getVarType("q"), allCharge);
+		// time at electronics
+		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("t"), chargeTimeBank.getVarType("t"), allTime);
+	}
+
 
 }
 
@@ -363,7 +418,8 @@ evioDOMNodeP addVector(int tag, int num, string type, vector<double> value)
 	{
 		vector<int> VI;
 		for(unsigned i=0; i<value.size(); i++)
-		VI.push_back(value[i]);
+			VI.push_back(value[i]);
+
 		return evioDOMNode::createEvioDOMNode(tag, num, VI);
 	}
 	

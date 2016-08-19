@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+8/19/16
+ - using fscanf return value for field map reading
+ - evio output finalized for charge / time information at electronics
+
 8/18/16
  - text output finalized for charge / time information at electronics
 

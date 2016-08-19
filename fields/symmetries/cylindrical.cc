@@ -50,8 +50,8 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 	// ignoring header
 	while(tmp != "</mfield>")
 	{
-		fscanf(fp, "%s", ctmp);
-		tmp = string(ctmp);
+		if(fscanf(fp, "%s", ctmp) != 0)
+			tmp = string(ctmp);
 	}
 
 	// now reading map values
@@ -59,47 +59,48 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 	{
 		for(int i2 = 0; i2<np_2 ; i2++)
 		{
-			fscanf(fp, "%lg %lg %lg %lg", &d1, &d2, &b1, &b2);
+			if(fscanf(fp, "%lg %lg %lg %lg", &d1, &d2, &b1, &b2) != 0) {
 
-			d1 *= unit1;
-			d2 *= unit2;
-			b1 *= scale;
-			b2 *= scale;
+				d1 *= unit1;
+				d2 *= unit2;
+				b1 *= scale;
+				b2 *= scale;
 
-			if(verbosity>4 && verbosity != 99)
-				cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   values: (" << b1 << ", " << b2 << ")." << endl;
+				if(verbosity>4 && verbosity != 99)
+					cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   values: (" << b1 << ", " << b2 << ")." << endl;
 
-			// checking map consistency for first coordinate
-			if( (min1  + i1*cell1 - d1)/d1 > 0.001)
-			{
-				cout << "   !! Error: first coordinate index wrong. Map point should be " <<  min1  + i1*cell1
-				<< " but it's  " << d1 << " instead."  << endl;
-				cout << " min1: " << min1 << " cell1: " << cell1 << " unit1: " << unit1 << " i1: " << i1 << endl;
-			}
-			// checking map consistency for second coordinate
-			if( (min2  + i2*cell2 - d2)/d2 > 0.001)
-			{
-				cout << "   !! Error: second coordinate index wrong. Map point should be " <<  min2  + i2*cell2
-				<< " but it's  " << d2 << " instead." << endl;
-				cout << " min2: " << min2 << " cell2: " << cell2 << " unit2: " << unit2 << " i2: " << i2 << endl;
-			}
+				// checking map consistency for first coordinate
+				if( (min1  + i1*cell1 - d1)/d1 > 0.001)
+				{
+					cout << "   !! Error: first coordinate index wrong. Map point should be " <<  min1  + i1*cell1
+					<< " but it's  " << d1 << " instead."  << endl;
+					cout << " min1: " << min1 << " cell1: " << cell1 << " unit1: " << unit1 << " i1: " << i1 << endl;
+				}
+				// checking map consistency for second coordinate
+				if( (min2  + i2*cell2 - d2)/d2 > 0.001)
+				{
+					cout << "   !! Error: second coordinate index wrong. Map point should be " <<  min2  + i2*cell2
+					<< " but it's  " << d2 << " instead." << endl;
+					cout << " min2: " << min2 << " cell2: " << cell2 << " unit2: " << unit2 << " i2: " << i2 << endl;
+				}
 
-			// calculating index
-			unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
-			unsigned t2 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;
+				// calculating index
+				unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
+				unsigned t2 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;
 
-			// The values are indexed as B1_2D[transverse][longi]
-			if(   map->getCoordinateWithSpeed(0).name == "transverse"
-				&& map->getCoordinateWithSpeed(1).name == "longitudinal")
-			{
-				map->B1_2D[t1][t2] = b1;
-				map->B2_2D[t1][t2] = b2;
-			}
-			if(   map->getCoordinateWithSpeed(0).name == "longitudinal"
-				&& map->getCoordinateWithSpeed(1).name == "transverse")
-			{
-				map->B1_2D[t2][t1] = b1;
-				map->B2_2D[t2][t1] = b2;
+				// The values are indexed as B1_2D[transverse][longi]
+				if(   map->getCoordinateWithSpeed(0).name == "transverse"
+					&& map->getCoordinateWithSpeed(1).name == "longitudinal")
+				{
+					map->B1_2D[t1][t2] = b1;
+					map->B2_2D[t1][t2] = b2;
+				}
+				if(   map->getCoordinateWithSpeed(0).name == "longitudinal"
+					&& map->getCoordinateWithSpeed(1).name == "transverse")
+				{
+					map->B1_2D[t2][t1] = b1;
+					map->B2_2D[t2][t1] = b2;
+				}
 			}
 		}
 
