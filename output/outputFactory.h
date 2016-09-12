@@ -75,7 +75,6 @@ public:
 	void setRaws       (map<string, double> r)            {raws = r;}
 	void setDgtz       (map<string, double> d)            {dgtz = d;}
 	void setAllRaws    (map< string, vector <double> > r) {allRaws  = r;}
-	void setQuantumS   (map< int, int > s)                {quantumS = s;}
 	void setMultiDgt   (map< string, vector <int> > d)    {multiDgt = d;}
 	void setChargeTime (map< int, vector <double> > d)    {chargeTime = d;}
 
@@ -92,7 +91,8 @@ public:
 	map< string, vector <double> > getAllRaws()    {return allRaws;}
 	map< string, vector <int> >    getMultiDgt()   {return multiDgt;}
 	map< int, vector <double> >    getChargeTime() {return chargeTime;}
-	map< int, int >         		 getQuantumS()   {return quantumS;}
+	map< int, int >         		 getQuantumS()     {return quantumS;}
+	map< int, int >         		 createQuantumS();
 
 	double getIntRawVar(string s)
 	{
