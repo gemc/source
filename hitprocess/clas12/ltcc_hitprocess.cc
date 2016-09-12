@@ -149,7 +149,7 @@ map< int, vector <double> > ltcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	return CT;
 }
 
-// - voltage: returns a voltage value for a given time. The input are:
+// - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
 double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
