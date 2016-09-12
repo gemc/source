@@ -1,6 +1,17 @@
 Changelog for GEMC
 ==================
 
+9/12/16
+ - added setQuantumS and createQuantumS to form voltage vs time function
+ - quantumS created based on user routine **voltage** which returns a voltage value for a given time. The inputs are:
+
+	 - charge value (coming from chargeAtElectronics)
+	 - time (coming from timeAtElectronics)
+
+9/6/16
+ - added muBrems muonNuclear kaon0SInelastic
+ - grouped processes by particle types
+
 8/19/16
  - using fscanf return value for field map reading
  - evio output finalized for charge / time information at electronics

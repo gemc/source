@@ -137,6 +137,11 @@ public:
 	string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
 	string RFSETUP;         ///< Parameters for RF setup
 
+	// sampling time of electronics (typically FADC)
+	// and number of samplings
+	double tsampling, nsamplings;
+
+
 	// save particles that produced a hit onto LUND format
 	void saveBGPartsToLund();
 	ofstream *lundOutput;

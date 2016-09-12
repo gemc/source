@@ -541,9 +541,9 @@ void goptions::setGoptions()
 	optMap["VTRESOLUTION"].type = 0;
 	optMap["VTRESOLUTION"].ctgr = "output";
 	
-	// sampling time of electronics (typically FADC), electronic event time size
+	// sampling time of electronics (typically FADC), and number of sampling / event
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
-	// the default for event time size is 2 microsecond, for a total of 500 ADC points / channel
+	// the default number of samples is 500 ADC points, at 4ns intervals (total electronic event time = 2 microseconds)
 	optMap["TSAMPLING"].args = "4, 500";
 	optMap["TSAMPLING"].help = "Sampling time of electronics (typically FADC)";
 	optMap["TSAMPLING"].name = "Sampling time of electronics (typically FADC)";

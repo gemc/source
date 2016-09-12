@@ -121,7 +121,7 @@ public:
 	virtual double voltage(double, double, double) = 0;
 
 	// - quantum signal: V(t) in ADC channel, reported every bunch time
-	virtual map< int, int > quantumS(map< double, double >, MHit*) ;
+//	virtual map< int, int > quantumS(map< double, double >, MHit*) ;
 
 
 

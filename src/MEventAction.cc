@@ -97,6 +97,9 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	SIGNALVT         = replaceCharInStringWithChars(gemcOpt.optMap["SIGNALVT"].args, ",", "  ");
 	RFSETUP          = replaceCharInStringWithChars(gemcOpt.optMap["RFSETUP"].args, ",", "  ");
 
+	tsampling  = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
+	nsamplings = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
+
 	if(SAVE_ALL_MOTHERS>1)
 	{
 		lundOutput = new ofstream("background.dat");
@@ -553,16 +556,39 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(SIGNALVT.find(hitType) != string::npos)
 			{
 				vector<hitOutput> allVTOutput;
-				
+				map<int, int> vSignal;
+
 				for(int h=0; h<nhits; h++)
 				{
 					hitOutput thisHitOutput;
 					
 					MHit* aHit = (*MHC)[h];
-					
+
+					// process each step to produce a charge/time digitized information / step
 					thisHitOutput.setChargeTime(hitProcessRoutine->chargeTime(aHit, h));
 
-					//					thisHitOutput.setQuantumS(hitProcessRoutine->quantumS(thisHitOutput.getSignalVT(), aHit));
+					vector<double> stepTimes   = thisHitOutput.getChargeTime()[3];
+					vector<double> stepCharges = thisHitOutput.getChargeTime()[2];
+
+					for(unsigned ts = 0; ts<nsamplings; ts++) {
+						double forTime = ts*tsampling;
+						double voltage = 0;
+
+						// create the voltage output based on the hit process
+						// routine voltage(double charge, double time, double forTime)
+						for(unsigned s=0; s<stepTimes.size(); s++) {
+
+							double stepTime   = stepTimes[s];
+							double stepCharge = stepCharges[s];
+
+							voltage += hitProcessRoutine->voltage(stepCharge, stepTime, forTime);
+
+							// cout << " hit " << h <<    "step " << s << "  time: " << stepTime << "   charge " << stepCharge << "  voltage " << voltage << "  for time bunch " << ts << endl;
+						}
+						// need conversion factor from double to int
+						vSignal[ts] = (int) voltage;
+					}
+					thisHitOutput.createQuantumS(vSignal);
 					
 					allVTOutput.push_back(thisHitOutput);
 					
@@ -576,7 +602,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						cout << aHit->GetId();
 						double Etot = 0;
 						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
-						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
+							cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
 					}
 				}
 				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);

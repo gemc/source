@@ -98,7 +98,9 @@ map< int, vector <double> > ecs_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	return CT;
 }
 
-// - voltage: returns a voltage value for a given time. The input are charge value, time
+// - voltage: returns a voltage value for a given time. The input are:
+// charge value (coming from chargeAtElectronics)
+// time (coming from timeAtElectronics)
 double ecs_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;

@@ -62,20 +62,6 @@ outputContainer::~outputContainer()
 }
 
 
-// loops over all voltages signals and build one sampled signal
-map< int, int > hitOutput :: createQuantumS()
-{
-	map<int, int> qOutput;
-
-
-
-
-
-
-	return qOutput;
-}
-
-
 map<string, outputFactoryInMap> registerOutputFactories()
 {
 	map<string, outputFactoryInMap> outputMap;

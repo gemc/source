@@ -241,85 +241,85 @@ map< string, vector <double> > HitProcess::allRaws(MHit* aHit, int hitn)
 
 
 
-map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
-{
-	// hardcoded trigger value, need to determine how
-	double triggerV = 3500;
-	
-	sensitiveID sdid = aHit->GetSDID();
-
-	// voltage signal time resolution is an external parameter
-	double sres = gemcOpt.optMap["VTRESOLUTION"].arg;
-
-	// sampling time of electronics (typically FADC)
-	double tsampling = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
-
-	// time resolution is an external parameter
-	double tres = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
-	
-	// quantum signal, all initialized to zero
-	// number of elements in the map is total time / resolution
-	map< int, int > QS;
-	vector<int> TR;
-	for(int i=0; i<tsampling/tres; i++)
-	{
-		QS[i*4] = 0;
-		TR.push_back(0);
-	}
-	
-	map< int, int > :: iterator   qsi = QS.begin();
-	map<double, double>::iterator vti = vts.begin();
-	int qsind = 0;
-	
-	
-	// leaving the zeros until the first entry in the voltage signal
-	// attention: looks like this can go on forever in some cases?
-	while (qsi->first < vti->first)
-	{
-		//		cout << qsi->first << " " << vti->first << endl;
-		qsi++;
-		qsind++;
-	}
-		
-	for(unsigned i=0; i<vts.size(); i++)
-	{
-		if(fabs(vti->first - qsi->first) < sres/2)
-		{
-			// recording all signals
-			QS[qsind*4] = fabs(vti->second - sdid.pedestal);
-
-			// recording trigger only if above threshold
-			if(fabs(vti->second - sdid.pedestal) > sdid.signalThreshold*sdid.mvToMeV)
-			{
-				TR[qsind] = triggerV;
-				aHit->passedTrigger();
-			}
-				
-			// index have to be increased upon matching
-			qsi++;
-			qsind++;
-		}
-			
-		vti++;
-	}
-	
-	
-	
-	
-//	for(map< int, int > :: iterator qq = QS.begin(); qq != QS.end(); qq++)
-//		cout << qq->first << " " << qq->second << endl;
-		
-	
-//	for(map< double, double > :: iterator qq = vts.begin(); qq != vts.end(); qq++)
-//		cout << qq->first << " " << qq->second <<  " " << fabs(qq->second - sdid.pedestal) << " " << sdid.signalThreshold*100 << endl;
-
-	aHit->setQuantum(QS);
-	aHit->setQuantumTR(TR);
-
-	
-	return QS;
-}
-
+//map< int, int > HitProcess :: quantumS(map< double, double > vts, MHit* aHit)
+//{
+//	// hardcoded trigger value, need to determine how
+//	double triggerV = 3500;
+//	
+//	sensitiveID sdid = aHit->GetSDID();
+//
+//	// voltage signal time resolution is an external parameter
+//	double sres = gemcOpt.optMap["VTRESOLUTION"].arg;
+//
+//	// sampling time of electronics (typically FADC)
+//	double tsampling = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
+//
+//	// time resolution is an external parameter
+//	double tres = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
+//	
+//	// quantum signal, all initialized to zero
+//	// number of elements in the map is total time / resolution
+//	map< int, int > QS;
+//	vector<int> TR;
+//	for(int i=0; i<tsampling/tres; i++)
+//	{
+//		QS[i*4] = 0;
+//		TR.push_back(0);
+//	}
+//	
+//	map< int, int > :: iterator   qsi = QS.begin();
+//	map<double, double>::iterator vti = vts.begin();
+//	int qsind = 0;
+//	
+//	
+//	// leaving the zeros until the first entry in the voltage signal
+//	// attention: looks like this can go on forever in some cases?
+//	while (qsi->first < vti->first)
+//	{
+//		//		cout << qsi->first << " " << vti->first << endl;
+//		qsi++;
+//		qsind++;
+//	}
+//		
+//	for(unsigned i=0; i<vts.size(); i++)
+//	{
+//		if(fabs(vti->first - qsi->first) < sres/2)
+//		{
+//			// recording all signals
+//			QS[qsind*4] = fabs(vti->second - sdid.pedestal);
+//
+//			// recording trigger only if above threshold
+//			if(fabs(vti->second - sdid.pedestal) > sdid.signalThreshold*sdid.mvToMeV)
+//			{
+//				TR[qsind] = triggerV;
+//				aHit->passedTrigger();
+//			}
+//				
+//			// index have to be increased upon matching
+//			qsi++;
+//			qsind++;
+//		}
+//			
+//		vti++;
+//	}
+//	
+//	
+//	
+//	
+////	for(map< int, int > :: iterator qq = QS.begin(); qq != QS.end(); qq++)
+////		cout << qq->first << " " << qq->second << endl;
+//		
+//	
+////	for(map< double, double > :: iterator qq = vts.begin(); qq != vts.end(); qq++)
+////		cout << qq->first << " " << qq->second <<  " " << fabs(qq->second - sdid.pedestal) << " " << sdid.signalThreshold*100 << endl;
+//
+//	aHit->setQuantum(QS);
+//	aHit->setQuantumTR(TR);
+//
+//	
+//	return QS;
+//}
+//
 
 trueInfos::trueInfos(MHit* aHit)
 {

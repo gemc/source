@@ -84,6 +84,8 @@ public:
 	void setOneDgt    (string s, double d)              {dgtz[s] = d;}
 	void setOneDgt    (string s, int i)                 {dgtz[s] = (double) i;}
 
+	void createQuantumS(map< int, int > qs) {quantumS = qs;}
+
 
 	// may want to insert verbosity here?
 	map<string, double>            getRaws()       {return raws;}
@@ -91,8 +93,7 @@ public:
 	map< string, vector <double> > getAllRaws()    {return allRaws;}
 	map< string, vector <int> >    getMultiDgt()   {return multiDgt;}
 	map< int, vector <double> >    getChargeTime() {return chargeTime;}
-	map< int, int >         		 getQuantumS()     {return quantumS;}
-	map< int, int >         		 createQuantumS();
+	map< int, int >         		 getQuantumS()   {return quantumS;}
 
 	double getIntRawVar(string s)
 	{
