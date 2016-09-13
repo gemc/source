@@ -57,7 +57,16 @@ static ecConstants initializeECConstants(int runno)
 	  ecc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
 	  ecc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
 	}
-	
+
+	// setting voltage signal parameters
+	ecc.vpar[0] = 50;  // delay, ns
+	ecc.vpar[1] = 10;  // rise time, ns
+	ecc.vpar[2] = 20;  // fall time, ns
+	ecc.vpar[3] = 1;   // amplifier
+
+
+
+
 	return ecc;
 }
 
@@ -401,7 +410,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double ec_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+//	return 0.0;
+	return DGauss(forTime, ecc.vpar, charge, time);
 }
 
 

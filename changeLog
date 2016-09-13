@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+9/13/16
+ - using DGauss as default for ec hit process routine voltage signal
+ - default sampling time: 4 ns. Default number of samples: 250 (1 microsecond total)
+
 9/12/16
  - added setQuantumS and createQuantumS to form voltage vs time function
  - quantumS created based on user routine **voltage** which returns a voltage value for a given time. The inputs are:
@@ -35,8 +39,6 @@ Changelog for GEMC
         #. hit number
 
     -  double voltage(double charge, double time, double forTime): returns a voltage for an asked time given a charge/time signal
-
-
 
 8/12/16
  - temp reinstatement of scintillatorB until we get Birks Constant in the API

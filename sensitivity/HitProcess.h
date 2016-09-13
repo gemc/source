@@ -120,11 +120,7 @@ public:
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double) = 0;
 
-	// - quantum signal: V(t) in ADC channel, reported every bunch time
-//	virtual map< int, int > quantumS(map< double, double >, MHit*) ;
-
-
-
+	
 protected:
 
 	// hit collection name
@@ -150,8 +146,6 @@ protected:
 	}
 
 	TranslationTable TT;
-
-
 };
 
 // Define HitProcess as a pointer to a function that returns a pointer
