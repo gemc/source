@@ -90,7 +90,14 @@ static dcConstants initializeDCConstants(int runno)
 	
 	for(int l=0; l<6; l++)
 		dcc.miniStagger[l] = 0;
-	
+
+
+	// loading translation table
+	dcc.TT = TranslationTable("dcTT");
+	cout << "  > Data loaded in translation table " << dcc.TT.getName() << endl;
+
+
+
 	return dcc;
 }
 
@@ -234,17 +241,10 @@ vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aS
 
 void dc_HitProcess::initWithRunNumber(int runno)
 {
-	if(dcc.runNo != runno)
-	{
+	if(dcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		dcc = initializeDCConstants(runno);
 		dcc.runNo = runno;
-
-		// loading translation table
-		TT = TranslationTable("dc");
-		cout << "  > Data loaded in translation table " << TT.getName() << endl;
-
-
 	}
 }
 

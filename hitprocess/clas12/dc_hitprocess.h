@@ -31,6 +31,10 @@ public:
 	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
 
 
+	// translation table
+	TranslationTable TT;
+
+
 };
 
 

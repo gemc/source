@@ -556,10 +556,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(SIGNALVT.find(hitType) != string::npos)
 			{
 				vector<hitOutput> allVTOutput;
-				map<int, int> vSignal;
 
 				for(int h=0; h<nhits; h++)
 				{
+
 					hitOutput thisHitOutput;
 					
 					MHit* aHit = (*MHC)[h];
@@ -569,6 +569,14 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 					vector<double> stepTimes   = thisHitOutput.getChargeTime()[3];
 					vector<double> stepCharges = thisHitOutput.getChargeTime()[2];
+					vector<double> hardware    = thisHitOutput.getChargeTime()[5];
+
+
+					map<int, int> vSignal;
+					// crate, slot, channels as from translation table
+					vSignal[0] = hardware[0];
+					vSignal[1] = hardware[1];
+					vSignal[2] = hardware[2];
 
 					for(unsigned ts = 0; ts<nsamplings; ts++) {
 						double forTime = ts*tsampling;
@@ -583,10 +591,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 							voltage += hitProcessRoutine->voltage(stepCharge, stepTime, forTime);
 
-							// cout << " hit " << h <<    "step " << s << "  time: " << stepTime << "   charge " << stepCharge << "  voltage " << voltage << "  for time bunch " << ts << endl;
+							// cout << " hit " << h <<    "step " << s << "  time: " << stepTime
+							// << "   charge " << stepCharge << "  voltage " << voltage << "  for time bunch " << ts << endl;
 						}
 						// need conversion factor from double to int
-						vSignal[ts] = (int) voltage;
+						// the first 3 entries are crate/slot/channels above
+						vSignal[ts+3] = (int) voltage;
 					}
 					thisHitOutput.createQuantumS(vSignal);
 					

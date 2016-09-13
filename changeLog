@@ -4,6 +4,9 @@ Changelog for GEMC
 9/13/16
  - using DGauss as default for ec hit process routine voltage signal
  - default sampling time: 4 ns. Default number of samples: 250 (1 microsecond total)
+ - moving translation tables to hit process constants - out of event/instantiated hit process routine
+ - adding crate/slot/channel to vsignal
+ - modifying ec process routine accordingly
 
 9/12/16
  - added setQuantumS and createQuantumS to form voltage vs time function

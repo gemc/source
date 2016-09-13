@@ -108,6 +108,7 @@ public:
 	// index 2: charge at electronics
 	// index 3: time at electronics
 	// index 4: vector of identifiers - have to match the translation table
+	// index 5: crate slot channel, from identifiers using translation table
 	virtual map< int, vector <double> > chargeTime(MHit*, int) = 0;
 
 	// The pure virtual method processID returns a (new) identifier
@@ -144,8 +145,6 @@ protected:
 
 		return  - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2));
 	}
-
-	TranslationTable TT;
 };
 
 // Define HitProcess as a pointer to a function that returns a pointer
