@@ -27,6 +27,9 @@ public:
 	double pmtDynodeGain;
 	double pmtDynodeK;
 	double pmtFactor;
+
+	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
+	double vpar[4];
 };
 
 // Class definition

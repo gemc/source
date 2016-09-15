@@ -53,6 +53,10 @@ public:
 	double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
 	double tdcLSB;        // Conversion from ns to TDC channel.
+
+	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
+	double vpar[4];
+
 };
 
 

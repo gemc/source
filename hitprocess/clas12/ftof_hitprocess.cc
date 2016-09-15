@@ -117,7 +117,15 @@ static ftofConstants initializeFTOFConstants(int runno)
 	  ftc.twlk[isec-1][ilay-1][4].push_back(data[row][7]);
 	  ftc.twlk[isec-1][ilay-1][5].push_back(data[row][8]);
 	}
-	
+
+
+	// setting voltage signal parameters
+	ftc.vpar[0] = 50;  // delay, ns
+	ftc.vpar[1] = 10;  // rise time, ns
+	ftc.vpar[2] = 20;  // fall time, ns
+	ftc.vpar[3] = 1;   // amplifier
+
+
 	return ftc;
 }
 
@@ -333,7 +341,8 @@ map< int, vector <double> > ftof_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double ftof_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+	//	return 0.0;
+	return DGauss(forTime, ftc.vpar, charge, time);
 }
 
 // this static function will be loaded first thing by the executable

@@ -1,12 +1,18 @@
 Changelog for GEMC
 ==================
 
+9/15/16
+ - writeFADCMode7 - not final version yet
+ - composite banks interface finalized
+ - added template voltage signal for the hit process routines that supports it
+
 9/13/16
  - using DGauss as default for ec hit process routine voltage signal
  - default sampling time: 4 ns. Default number of samples: 250 (1 microsecond total)
  - moving translation tables to hit process constants - out of event/instantiated hit process routine
  - adding crate/slot/channel to vsignal
  - modifying ec process routine accordingly
+ - added writeFADCMode1
 
 9/12/16
  - added setQuantumS and createQuantumS to form voltage vs time function
@@ -58,7 +64,7 @@ Changelog for GEMC
 8/10/16
  - mlibrary gstring introduced: string manipulation library. This will replace many methods that do not belong in gemc
  - changelog finalized up to 2/4/2008
- - adding RF option"
+ - adding RF option
 
 8/9/16
  - ctof paddle length in the ctof constants - not derived by dimensions as ctof is now from CAD.

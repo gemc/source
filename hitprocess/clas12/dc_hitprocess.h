@@ -30,6 +30,8 @@ public:
 	// smearing parameters for each sector / superlayer
 	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
 
+	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
+	double vpar[4];
 
 	// translation table
 	TranslationTable TT;

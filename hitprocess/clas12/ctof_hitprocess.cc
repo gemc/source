@@ -114,6 +114,12 @@ static ctofConstants initializeCTOFConstants(int runno)
 	ctc.lengthHighPitch = 35.013*25.4/2;  // length of long bar
 	ctc.lengthLowPitch  = 34.664*25.4/2;  // length of short bar
 
+	// setting voltage signal parameters
+	ctc.vpar[0] = 50;  // delay, ns
+	ctc.vpar[1] = 10;  // rise time, ns
+	ctc.vpar[2] = 20;  // fall time, ns
+	ctc.vpar[3] = 1;   // amplifier
+
 	return ctc;
 }
 
@@ -317,7 +323,8 @@ map< int, vector <double> > ctof_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double ctof_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+	//	return 0.0;
+	return DGauss(forTime, ctc.vpar, charge, time);
 }
 
 // this static function will be loaded first thing by the executable

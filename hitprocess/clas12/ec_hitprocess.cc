@@ -308,6 +308,7 @@ map< string, vector <int> >  ec_HitProcess :: multiDgt(MHit* aHit, int hitn)
 // index 2: charge
 // index 3: time at electronics
 // index 4: vector of identifiers - have to match the translation table
+// index 5: hardware object: crate/slot/channel from translation table
 map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;

@@ -96,6 +96,11 @@ static dcConstants initializeDCConstants(int runno)
 	dcc.TT = TranslationTable("dcTT");
 	cout << "  > Data loaded in translation table " << dcc.TT.getName() << endl;
 
+	// setting voltage signal parameters
+	dcc.vpar[0] = 50;  // delay, ns
+	dcc.vpar[1] = 10;  // rise time, ns
+	dcc.vpar[2] = 20;  // fall time, ns
+	dcc.vpar[3] = 1;   // amplifier
 
 
 	return dcc;
@@ -269,7 +274,8 @@ map< int, vector <double> > dc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double dc_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+	//	return 0.0;
+	return DGauss(forTime, dcc.vpar, charge, time);
 }
 
 

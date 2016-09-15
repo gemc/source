@@ -36,7 +36,6 @@ public:
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
-
 	// translation table
 	TranslationTable TT;
 };

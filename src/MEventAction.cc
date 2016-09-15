@@ -553,12 +553,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// by default they are all DISABLED
 			// user can enable them one by one
 			// using the SIGNALVT option
-			if(SIGNALVT.find(hitType) != string::npos)
-			{
+			if(SIGNALVT.find(hitType) != string::npos) {
 				vector<hitOutput> allVTOutput;
 
-				for(int h=0; h<nhits; h++)
-				{
+				for(int h=0; h<nhits; h++) {
 
 					hitOutput thisHitOutput;
 					
@@ -571,8 +569,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					vector<double> stepCharges = thisHitOutput.getChargeTime()[2];
 					vector<double> hardware    = thisHitOutput.getChargeTime()[5];
 
-
 					map<int, int> vSignal;
+
 					// crate, slot, channels as from translation table
 					vSignal[0] = hardware[0];
 					vSignal[1] = hardware[1];
@@ -616,7 +614,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 				}
 				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);
-
+				processOutputFactory->writeFADCMode1(outContainer, allVTOutput);
 			}
 
 			delete hitProcessRoutine;

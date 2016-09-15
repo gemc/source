@@ -55,6 +55,10 @@ public:
 
 	double lengthHighPitch;  // length of long bar
 	double lengthLowPitch;   // length of short bar
+
+	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
+	double vpar[4];
+
 };
 
 // Class definition
