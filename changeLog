@@ -24,7 +24,7 @@ Changelog for GEMC
 9/6/16
  - added muBrems muonNuclear kaon0SInelastic
  - grouped processes by particle types
-
+1
 8/19/16
  - using fscanf return value for field map reading
  - evio output finalized for charge / time information at electronics

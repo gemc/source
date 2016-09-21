@@ -25,7 +25,7 @@ void bst_strip::fill_infos()
 	DZ_inLength  = 0.984*mm;   // size of the band of dead zones all around in the length of the card
 	DZ_inWidth   = 0.835*mm;   // size of the band of dead zones all around in the width of the card
 	SensorLength = 111.625*mm; // length of 1 Sensor
-	SensorWidth  = 42.02*mm;  // width 1 Sensor
+	SensorWidth  = 42.0*mm;  // width 1 Sensor - Yuri Gotra 9/21/16
 
 	// Number of strips
 	Nstrips  = (int) floor((SensorWidth-2.0*DZ_inLength)/pitch) - 1;
