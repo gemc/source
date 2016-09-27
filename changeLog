@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+9/27/16
+ - fixed cosmic routine, was not generating cosmics vertices correctly.
+
 9/15/16
  - writeFADCMode7 - not final version yet
  - composite banks interface finalized
@@ -24,7 +27,7 @@ Changelog for GEMC
 9/6/16
  - added muBrems muonNuclear kaon0SInelastic
  - grouped processes by particle types
-1
+
 8/19/16
  - using fscanf return value for field map reading
  - evio output finalized for charge / time information at electronics
