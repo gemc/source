@@ -3,6 +3,7 @@ Changelog for GEMC
 
 9/28/16
  - addressing precision issue in bst hit process routine
+ - ec process ID is now empty - every strip is now a volume
 
 9/27/16
  - fixed cosmic routine, was not generating cosmics vertices correctly.
