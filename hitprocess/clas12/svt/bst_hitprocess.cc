@@ -20,8 +20,13 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// double checking dimensions
 	double SensorLength = 2.0*aHit->GetDetector().dimensions[2]/mm;  // length of 1 card
 	double SensorWidth  = 2.0*aHit->GetDetector().dimensions[0]/mm;  // width 1 card
-	
-	if(SensorLength != bsts.SensorLength || SensorWidth != bsts.SensorWidth)
+
+	double diffLen = SensorLength - bsts.SensorLength;
+ 	double diffWid = SensorWidth  - bsts.SensorWidth;
+
+
+	// there may be precision issues that's why it is not compared to zero
+	if( diffLen > 1E-3 || diffWid > 1E-3 )
 		cout << "  Warning: dimensions mismatch between sensor reconstruction dimensions and gemc card dimensions." << endl << endl;
 	
 	int layer  = 2*identity[0].id + identity[1].id - 2 ;
