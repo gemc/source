@@ -198,6 +198,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["superlayer"] = SLI+1;
 	dgtz["layer"]      = identity[2].id;
 	dgtz["wire"]       = nwire;
+	dgtz["tdc"]        = (int) sdoca/dcc.driftVelocity[SLI]*100;
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;

@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+10/5/16
+ - added tdc variable for clas12 dc
+
 9/28/16
  - addressing precision issue in bst hit process routine
  - ec process ID is now empty - every strip is now a volume
