@@ -18,6 +18,10 @@ map<string, detector> cad_det_factory::loadDetectors()
 	if(!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType))
 		return dets;
 
+
+	// saving directories so we can look for cad.gxml on those locations
+	vector<string> possibleDirs;
+
   	// there is at least one build with this factory.
 	// building all detectors that are tagged with CAD factory
 	for(map<string, detectorCondition>::iterator it=RC.detectorConditionsMap.begin(); it != RC.detectorConditionsMap.end() ; it++) {
@@ -34,6 +38,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 			DIR *thisDir = opendir(dir.c_str());
 
 			if(thisDir != NULL) {
+				possibleDirs.push_back(dir + "/");
 				struct dirent *thisDirent = readdir(thisDir);
 				while (thisDirent != NULL){
 
@@ -69,8 +74,6 @@ map<string, detector> cad_det_factory::loadDetectors()
 			cout << " !! Error: cad system " << it->first << " is not a cad file or a directory containing cad files. Exiting." << endl;
 			exit(0);
 		}
-
-
 
 		if(verbosity)
 			cout <<  hd_msg << " Importing Cad Detector from: <" <<  dname << "> with " << factoryType << " factory. "  << endl;
@@ -118,19 +121,35 @@ map<string, detector> cad_det_factory::loadDetectors()
 	// parsing attribute modifications. All cad imported volumes are stored in cad.gxml
 	string fname = "cad.gxml";
 
-	QFile gxml(fname.c_str());
+	QFile *gxml = new QFile(fname.c_str());
 
-	if( !gxml.exists() ) {
-		cout << hd_msg << " " << fname << " not found. All cad volumes are imported as original." << endl;
+	if( !gxml->exists() ) {
+
+		for(auto &dirs: possibleDirs) {
+
+			gxml = NULL;
+
+			string fullName = dirs + fname;
+			gxml = new QFile(fullName.c_str());
+
+			// first found, exit
+			if( gxml->exists() ) {
+				continue;
+			}
+		}
+	}
+	// checking again
+	if( !gxml->exists() ) {
+			cout << hd_msg << " " << fname << " not found. All cad volumes are imported as original." << endl;
 	} else {
 
 		QDomDocument domDocument;
 		// opening gcard and filling domDocument
-		if(!domDocument.setContent(&gxml)) {
+		if(!domDocument.setContent(gxml)) {
 			cout << " >>  xml format for file <" << fname << "> is wrong - check XML syntax. Exiting." << endl;
 			exit(0);
 		}
-		gxml.close();
+		gxml->close();
 
 		QDomNodeList volumes = domDocument.firstChildElement().elementsByTagName("volume");
 		for(int i = 0; i < volumes.count(); i++) {
@@ -213,14 +232,9 @@ map<string, detector> cad_det_factory::loadDetectors()
 		}
 	}
 
-
-
-
-
 	for(const auto &dd : dets)
 		if(verbosity>3)
 			cout << dd.second;
-
 
  	return dets;
 }

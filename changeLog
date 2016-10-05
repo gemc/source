@@ -3,6 +3,7 @@ Changelog for GEMC
 
 10/5/16
  - added tdc variable for clas12 dc
+ - cad.gxml path is now looked in the cad files directories as well
 
 9/28/16
  - addressing precision issue in bst hit process routine
