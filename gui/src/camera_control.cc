@@ -273,7 +273,9 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	screenShotPDF->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	connect ( screenShotPDF , SIGNAL(clicked()), this, SLOT( printPDF() ));
 	
-	
+
+
+
 	QHBoxLayout *explodeLayout = new QHBoxLayout;
 	explodeLayout->addWidget(explodeSlider);
 	explodeLayout->addWidget(screenShotPNG);
@@ -284,6 +286,26 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	explodeGroup->setLayout(explodeLayout);
 
 
+
+	// field and scale buttons
+	QPushButton *showFieldLines = new QPushButton(tr("Show Field Lines"));
+	showFieldLines->setToolTip("Show Field Lines - Length is proportional to magnitude");
+	showFieldLines->setIcon(style()->standardIcon(QStyle::SP_FileDialogDetailedView));
+	connect ( showFieldLines , SIGNAL(clicked()), this, SLOT( addFieldsArrows() ));
+
+	QPushButton *addScaleButton = new QPushButton(tr("Add Scale"));
+	addScaleButton->setToolTip("Add Automatic Scale on screen");
+	addScaleButton->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
+	connect ( addScaleButton , SIGNAL(clicked()), this, SLOT( addScale() ));
+
+	QHBoxLayout *fieldAndScale = new QHBoxLayout;
+	fieldAndScale->addWidget(showFieldLines);
+	fieldAndScale->addWidget(addScaleButton);
+
+	QGroupBox *fieldAndScaleGroup = new QGroupBox(tr("Utilities"));
+	fieldAndScaleGroup->setLayout(fieldAndScale);
+
+
 	
 	// All together
 	QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -291,6 +313,8 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	mainLayout->addLayout(sliceOptionsLayout);
 	mainLayout->addSpacing(6);
 	mainLayout->addWidget(explodeGroup);
+	mainLayout->addStretch(1);
+	mainLayout->addWidget(fieldAndScaleGroup);
 	mainLayout->addStretch(1);
 	setLayout(mainLayout);
 	
@@ -353,8 +377,6 @@ void camera_control::slice()
 		sprintf(command, "/vis/viewer/addCutawayPlane   0   0 %d mm 0 0 %d ", (int) qs_toDouble(sliceZEdit->text()), sliceZInve->isChecked() ? -1 : 1);
 		UImanager->ApplyCommand(command);
 	}
-
-
 
 }
 
@@ -509,7 +531,37 @@ camera_control::~camera_control()
 	double VERB   = gemcOpt->optMap["GEO_VERBOSITY"].arg ;
 	if(VERB>2)
 		cout << hd_msg << " Camera Control Widget Deleted." << endl;
-	
 }
+
+
+
+void camera_control::addFieldsArrows()
+{
+	int npoints = 6;
+	char command[100];
+
+	sprintf(command,"/vis/scene/add/magneticField %d ", npoints);
+	UImanager->ApplyCommand(command);
+	UImanager->ApplyCommand("/vis/viewer/flush");
+}
+
+
+
+void camera_control::addScale()
+{
+	char command[100];
+
+	sprintf(command,"/vis/scene/add/scale");
+	UImanager->ApplyCommand(command);
+	UImanager->ApplyCommand("/vis/viewer/flush");
+}
+
+
+
+
+
+
+
+
 
 

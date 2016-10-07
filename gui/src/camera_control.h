@@ -47,7 +47,6 @@ class camera_control : public QWidget
 		QComboBox *sides_per_circle;
 		QComboBox *auxiliary;
 
-	
 		// slices
 		QLineEdit *sliceXEdit, *sliceYEdit, *sliceZEdit;
 		QCheckBox *sliceXActi, *sliceYActi, *sliceZActi;
@@ -75,7 +74,9 @@ class camera_control : public QWidget
 		void switch_antialiasing(int);
 		void switch_auxiliary_edges(int);
 		void switch_sides_per_circle(int);
-		
+
+		void addFieldsArrows();
+		void addScale();
 };
 
 #endif

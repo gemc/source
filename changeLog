@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+10/7/16
+ - added button to display magnetic field lines as arrows
+ - added button to display an automatic scale on screen
+
 10/5/16
  - added tdc variable for clas12 dc
  - cad.gxml path is now looked in the cad files directories as well
