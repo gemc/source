@@ -1,6 +1,14 @@
 Changelog for GEMC
 ==================
 
+10/10/16
+- added anti_neutronInelastic to process catalogue.
+
+.. Note::
+	10/7/16 gemc 2.5 released.
+
+|
+
 10/7/16
  - added button to display magnetic field lines as arrows
  - added button to display an automatic scale on screen
