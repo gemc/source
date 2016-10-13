@@ -128,9 +128,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 
 	// Get scintillator mother volume dimensions (mm)
-	double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
+	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-	double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 
@@ -152,10 +152,13 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if(B>0)
 		{
 			double xlocal = Lpos[s].x();
-			double ylocal = Lpos[s].y();
-			if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
-			if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
-			if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+			//double ylocal = Lpos[s].y();
+			//if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
+			//if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
+			//if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+		      	if(view==1) latt = pDx2+xlocal;
+	       		if(view==2) latt = pDx2+xlocal;
+			if(view==3) latt = pDx2-xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
 			Ttota = Ttota + latt/ecc.veff;
@@ -260,9 +263,9 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 
 	// Get scintillator mother volume dimensions (mm)
-	double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
+	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-	double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 
 	vector<G4ThreeVector> pos  = aHit->GetPos();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
@@ -278,12 +281,15 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
 			double xlocal = Lpos[s].x();
-			double ylocal = Lpos[s].y();
+			//double ylocal = Lpos[s].y();
 			double latt = 0;
 
-			if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
-			if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
-			if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+			//if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
+			//if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
+			//if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+		      	if(view==1) latt = pDx2+xlocal;
+	       		if(view==2) latt = pDx2+xlocal;
+			if(view==3) latt = pDx2-xlocal;
 			double att   = A*exp(-latt/B)+C;
 
 			double stepE = Edep[s]*att;
