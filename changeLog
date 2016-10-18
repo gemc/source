@@ -1,8 +1,11 @@
 Changelog for GEMC
 ==================
 
+10/18/16
+ - matching bst hit process pars to java geometry
+
 10/10/16
-- added anti_neutronInelastic to process catalogue.
+ - added anti_neutronInelastic to process catalogue.
 
 .. Note::
 	10/7/16 gemc 2.5 released.

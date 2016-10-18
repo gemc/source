@@ -17,6 +17,7 @@ public:
 	double DZ_inWidth;    // size of the band of dead zones all around in the width of the card
 	double SensorLength;  // length of 1 Sensor (including dead area)
 	double SensorWidth ;  // width 1 Sensor (including dead area)
+	double StripStart;    // the first sensitive strip starts at stripStart + 1/2 of the pitch
 	int Nstrips;          // Number of strips for 1 card (New Design)
 
 	void fill_infos();
