@@ -432,7 +432,6 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 		} else {
 			numberOfChannelsPerSlot[hardwareKey]++;
 		}
-
 	}
 
 	int oldCrate    = -1;
