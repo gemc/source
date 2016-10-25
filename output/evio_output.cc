@@ -71,13 +71,13 @@ void evio_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 	vector<oneRFOutput> rfs = rfsignals.getOutput();
 	for(unsigned i=0; i<rfs.size(); i++) {
 
-		// each rf signal is a different bank
-		evioDOMNodeP erfsignal = evioDOMNode::createEvioDOMNode(RF_BANK_TAG, i+1);
+		// each rf signal is a different container bank
+		evioDOMNodeP erfsignalContainer = evioDOMNode::createEvioDOMNode(RF_BANK_TAG + i + 1, 0);
 
-		*erfsignal << addVector(RF_BANK_TAG, bank.getVarId("id"), bank.getVarType("id"), rfs[i].getIDs());
-		*erfsignal << addVector(RF_BANK_TAG, bank.getVarId("rf"), bank.getVarType("rf"), rfs[i].getValues());
+		*erfsignalContainer << addVector(RF_BANK_TAG + i + 1, bank.getVarId("id"), bank.getVarType("id"), rfs[i].getIDs());
+		*erfsignalContainer << addVector(RF_BANK_TAG + i + 1, bank.getVarId("rf"), bank.getVarType("rf"), rfs[i].getValues());
 
-		*rfbank << erfsignal;
+		*rfbank << erfsignalContainer;
 
 	}
 

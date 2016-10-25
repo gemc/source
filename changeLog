@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+10/25/16
+ - evio format for RF signal conforming to CLAS12 structure.
+
 10/18/16
  - matching bst hit process pars to java geometry
 
