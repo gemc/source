@@ -1,20 +1,17 @@
-#ifndef BONUS_HITPROCESS_H
-#define BONUS_HITPROCESS_H 1
+#ifndef RTPC_HITPROCESS_H
+#define RTPC_HITPROCESS_H 1
 
 // gemc headers
 #include "HitProcess.h"
 
 // Class definition
-/// \class bonus_HitProcess
-/// <b> Ceontral Time of Flight Hit Process Routine</b>\n\n
-/// The Calibration Constants are:\n
-/// - VEF is the effective velocity of propogation in the scintillator
+/// \class rtpc_HitProcess
 
-class bonus_HitProcess : public HitProcess
+class rtpc_HitProcess : public HitProcess
 {
 public:
 
-	~bonus_HitProcess(){;}
+	~rtpc_HitProcess(){;}
 
 	// - integrateDgt: returns digitized information integrated over the hit
 	map<string, double> integrateDgt(MHit*, int);
@@ -33,7 +30,7 @@ public:
 	vector<identifier> processID(vector<identifier>, G4Step*, detector);
 
 	// creates the HitProcess
-	static HitProcess *createHitClass() {return new bonus_HitProcess;}
+	static HitProcess *createHitClass() {return new rtpc_HitProcess;}
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
