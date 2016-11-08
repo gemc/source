@@ -108,8 +108,8 @@ hitp_sources = Split("""
 	hitprocess/clas12/micromegas/bmt_strip.cc
 	hitprocess/clas12/micromegas/ftm_hitprocess.cc
 	hitprocess/clas12/micromegas/ftm_strip.cc
-   hitprocess/clas12/bonus_hitprocess.cc
-   hitprocess/clas12/svt/bst_hitprocess.cc
+        hitprocess/clas12/rtpc_hitprocess.cc
+        hitprocess/clas12/svt/bst_hitprocess.cc
 	hitprocess/clas12/svt/bst_strip.cc
 	hitprocess/clas12/ctof_hitprocess.cc
 	hitprocess/clas12/cnd_hitprocess.cc

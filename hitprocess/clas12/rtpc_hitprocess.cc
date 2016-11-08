@@ -1,4 +1,4 @@
-#include "bonus_hitprocess.h"
+#include "rtpc_hitprocess.h"
 #include <math.h>
 
 // CLHEP units
@@ -18,7 +18,7 @@ float TPC_TZERO = 0.0;
 
 static const double PI=3.1415926535;
 
-map<string, double> bonus_HitProcess :: integrateDgt(MHit* aHit, int hitn)
+map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
@@ -124,7 +124,7 @@ map<string, double> bonus_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 
-vector<identifier>  bonus_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
+vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
   vector<identifier> yid = id;
 
@@ -166,7 +166,7 @@ vector<identifier>  bonus_HitProcess :: processID(vector<identifier> id, G4Step*
 
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
-vector<MHit*> bonus_HitProcess :: electronicNoise()
+vector<MHit*> rtpc_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
 
@@ -182,7 +182,7 @@ vector<MHit*> bonus_HitProcess :: electronicNoise()
 }
 
 
-map< string, vector <int> >  bonus_HitProcess :: multiDgt(MHit* aHit, int hitn)
+map< string, vector <int> >  rtpc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
 	
@@ -190,7 +190,7 @@ map< string, vector <int> >  bonus_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > bonus_HitProcess :: chargeTime(MHit* aHit, int hitn)
+map< int, vector <double> > rtpc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 
@@ -200,7 +200,7 @@ map< int, vector <double> > bonus_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
-double bonus_HitProcess :: voltage(double charge, double time, double forTime)
+double rtpc_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }
