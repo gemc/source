@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+11/15/2016
+ - added CND constants
+
+11/7/2-16
+ - new bonus hit process
+
 10/25/16
  - evio format for RF signal conforming to CLAS12 structure.
 

@@ -9,6 +9,32 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static cndConstants initializeCNDConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	cndConstants cndc;
+
+
+	// database
+	cndc.runNo = runno;
+	cndc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		cndc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		cndc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	cndc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(cndc.connection));
+
+	return cndc;
+}
+
 map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	string hd_msg = " > cnd hit process";
@@ -282,6 +308,16 @@ double cnd_HitProcess :: voltage(double charge, double time, double forTime)
 }
 
 
+void cnd_HitProcess::initWithRunNumber(int runno)
+{
+	if(cndc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		cndc = initializeCNDConstants(runno);
+		cndc.runNo = runno;
+	}
+}
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> cnd_HitProcess :: electronicNoise()
 {
@@ -297,6 +333,10 @@ vector<MHit*> cnd_HitProcess :: electronicNoise()
 
 	return noiseHits;
 }
+
+// this static function will be loaded first thing by the executable
+cndConstants cnd_HitProcess::cndc = initializeCNDConstants(-1);
+
 
 
 

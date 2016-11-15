@@ -4,6 +4,30 @@
 // gemc headers
 #include "HitProcess.h"
 
+
+// constants to be used in the digitization routine
+// warning: since NWIRES and ministagger are also used by processID, the plugin loading
+// has to happen before the first event is processed. In other words,
+// initializeDCConstants(1) - or remove the 	if(runno == -1) return dcc;
+class cndConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+	
+};
+
+
+
 // Class definition
 class cnd_HitProcess : public HitProcess
 {
@@ -31,6 +55,13 @@ public:
 	static HitProcess *createHitClass() {return new cnd_HitProcess;}
 
 	double BirksAttenuation(double,double,int,double);
+
+private:
+
+	// constants initialized with initWithRunNumber
+	static cndConstants cndc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
