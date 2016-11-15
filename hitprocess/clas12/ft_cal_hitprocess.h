@@ -4,6 +4,25 @@
 // gemc headers
 #include "HitProcess.h"
 
+// constants to be used in the digitization routine
+class ftCalConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+
+};
+
+
 
 // Class definition
 class ft_cal_HitProcess : public HitProcess
@@ -30,6 +49,13 @@ public:
 
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new ft_cal_HitProcess;}
+
+private:
+
+	// constants initialized with initWithRunNumber
+	static ftCalConstants ftcc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

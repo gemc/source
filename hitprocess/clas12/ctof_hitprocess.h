@@ -71,10 +71,6 @@ public:
 
 	~ctof_HitProcess(){;}
 
-	// constants initialized with initWithRunNumber
-	static ctofConstants ctc;
-
-	void initWithRunNumber(int runno);
 
 	// - integrateDgt: returns digitized information integrated over the hit
 	map<string, double> integrateDgt(MHit*, int);
@@ -94,6 +90,12 @@ public:
 
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new ctof_HitProcess;}
+
+private:
+	// constants initialized with initWithRunNumber
+	static ctofConstants ctc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

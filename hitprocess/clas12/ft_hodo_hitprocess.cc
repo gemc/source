@@ -5,6 +5,32 @@
 // gemc headers
 #include "ft_hodo_hitprocess.h"
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static ftHodoConstants initializeFTHODOConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	ftHodoConstants fthc;
+
+
+	// database
+	fthc.runNo = runno;
+	fthc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		fthc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		fthc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	fthc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fthc.connection));
+
+	return fthc;
+}
+
 map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -39,6 +65,16 @@ vector<identifier>  ft_hodo_HitProcess :: processID(vector<identifier> id, G4Ste
 {
 	id[id.size()-1].id_sharing = 1;
 	return id;
+}
+
+
+void ft_hodo_HitProcess::initWithRunNumber(int runno)
+{
+	if(fthc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		fthc = initializeFTHODOConstants(runno);
+		fthc.runNo = runno;
+	}
 }
 
 
@@ -84,6 +120,8 @@ double ft_hodo_HitProcess :: voltage(double charge, double time, double forTime)
 	return 0.0;
 }
 
+// this static function will be loaded first thing by the executable
+ftHodoConstants ft_hodo_HitProcess::fthc = initializeFTHODOConstants(-1);
 
 
 

@@ -6,6 +6,32 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static fmtConstants initializeFMTConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	fmtConstants fmtc;
+
+
+	// database
+	fmtc.runNo = runno;
+	fmtc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		fmtc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		fmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	fmtc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
+
+	return fmtc;
+}
+
 map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -99,6 +125,14 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	return yid;
 }
 
+void FMT_HitProcess::initWithRunNumber(int runno)
+{
+	if(fmtc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		fmtc = initializeFMTConstants(runno);
+		fmtc.runNo = runno;
+	}
+}
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> FMT_HitProcess :: electronicNoise()
@@ -139,6 +173,9 @@ map< string, vector <int> >  FMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	return MH;
 }
 
+
+// this static function will be loaded first thing by the executable
+fmtConstants FMT_HitProcess::fmtc = initializeFMTConstants(-1);
 
 
 

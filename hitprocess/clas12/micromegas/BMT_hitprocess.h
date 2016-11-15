@@ -11,6 +11,7 @@
 #include "HitProcess.h"
 #include "bmt_strip.h"
 
+
 // Class definition
 
 /// \class BMT_HitProcess

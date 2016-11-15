@@ -2,7 +2,7 @@ Changelog for GEMC
 ==================
 
 11/15/2016
- - added CND constants
+ - added CLAS12 CND, FMT, BST, HTCC, LTCC, RICH, FTCAL, FTHODO constants and database reading
 
 11/7/2-16
  - new bonus hit process

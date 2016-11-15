@@ -11,6 +11,32 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static htccConstants initializeHTCCConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	htccConstants htccc;
+
+
+	// database
+	htccc.runNo = runno;
+	htccc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		htccc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		htccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	htccc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(htccc.connection));
+
+	return htccc;
+}
+
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -139,6 +165,16 @@ vector<identifier>  htcc_HitProcess :: processID(vector<identifier> id, G4Step *
 	return id;
 }
 
+void htcc_HitProcess::initWithRunNumber(int runno)
+{
+	if(htccc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		htccc = initializeHTCCConstants(runno);
+		htccc.runNo = runno;
+	}
+}
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> htcc_HitProcess :: electronicNoise()
 {
@@ -179,6 +215,8 @@ double htcc_HitProcess :: voltage(double charge, double time, double forTime)
 	return 0.0;
 }
 
+// this static function will be loaded first thing by the executable
+htccConstants htcc_HitProcess::htccc = initializeHTCCConstants(-1);
 
 
 

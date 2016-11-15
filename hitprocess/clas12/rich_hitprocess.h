@@ -10,6 +10,26 @@
 // gemc headers
 #include "HitProcess.h"
 
+// constants to be used in the digitization routine
+class richConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+
+};
+
+
+
 // Class definition
 class rich_HitProcess : public HitProcess
 {
@@ -35,6 +55,13 @@ public:
 
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new rich_HitProcess;}
+
+private:
+
+	// constants initialized with initWithRunNumber
+	static richConstants richc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

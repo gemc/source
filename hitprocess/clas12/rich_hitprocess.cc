@@ -2,6 +2,11 @@
 #include "G4Poisson.hh"
 #include "Randomize.hh"
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -9,6 +14,28 @@ using namespace CLHEP;
 
 // gemc headers
 #include "rich_hitprocess.h"
+
+static richConstants initializeRICHConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	richConstants richc;
+
+
+	// database
+	richc.runNo = runno;
+	richc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		richc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	richc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+
+	return richc;
+}
+
+
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
@@ -351,12 +378,22 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 
 
 
-  map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
-  {
-    map< string, vector <int> > MH;
-	
-    return MH;
-  }
+map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
+{
+	map< string, vector <int> > MH;
+
+	return MH;
+}
+
+
+void rich_HitProcess::initWithRunNumber(int runno)
+{
+	if(richc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		richc = initializeRICHConstants(runno);
+		richc.runNo = runno;
+	}
+}
 
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
@@ -393,6 +430,8 @@ double rich_HitProcess :: voltage(double charge, double time, double forTime)
 
 
 
+// this static function will be loaded first thing by the executable
+richConstants rich_HitProcess::richc = initializeRICHConstants(-1);
 
 
 

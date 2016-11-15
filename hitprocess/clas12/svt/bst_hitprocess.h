@@ -6,6 +6,29 @@
 
 // Class definition
 
+
+
+// constants to be used in the digitization routine
+class bstConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+
+};
+
+
+
+
 /// \class bst_HitProcess
 /// <b> bst_HitProcess </b>\n\n
 /// The barrel silicon tracker hit process routine include:\n
@@ -39,6 +62,13 @@ public:
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new bst_HitProcess;}
 
+private:
+
+	// constants initialized with initWithRunNumber
+	static bstConstants bstc;
+
+	void initWithRunNumber(int runno);
+	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
 };

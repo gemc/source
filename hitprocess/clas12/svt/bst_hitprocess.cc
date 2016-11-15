@@ -9,6 +9,32 @@ using namespace CLHEP;
 // geant4
 #include "Randomize.hh"
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static bstConstants initializeBSTConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	bstConstants bstc;
+
+
+	// database
+	bstc.runNo = runno;
+	bstc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		bstc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		bstc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	bstc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bstc.connection));
+
+	return bstc;
+}
+
 map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -139,6 +165,16 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	return yid;
 }
 
+void bst_HitProcess::initWithRunNumber(int runno)
+{
+	if(bstc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		bstc = initializeBSTConstants(runno);
+		bstc.runNo = runno;
+	}
+}
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> bst_HitProcess :: electronicNoise()
 {
@@ -180,6 +216,8 @@ double bst_HitProcess :: voltage(double charge, double time, double forTime)
 }
 
 
+// this static function will be loaded first thing by the executable
+bstConstants bst_HitProcess::bstc = initializeBSTConstants(-1);
 
 
 

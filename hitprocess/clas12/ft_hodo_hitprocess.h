@@ -4,6 +4,26 @@
 // gemc headers
 #include "HitProcess.h"
 
+// constants to be used in the digitization routine
+class ftHodoConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+
+};
+
+
+
 // Class definition
 class ft_hodo_HitProcess : public HitProcess
 {
@@ -29,6 +49,13 @@ public:
 
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new ft_hodo_HitProcess;}
+
+private:
+
+	// constants initialized with initWithRunNumber
+	static ftHodoConstants fthc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

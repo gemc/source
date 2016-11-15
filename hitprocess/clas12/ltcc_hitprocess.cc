@@ -8,6 +8,32 @@
 // C++ headers
 #include <set>
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static ltccConstants initializeLTCCConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	ltccConstants ltccc;
+
+
+	// database
+	ltccc.runNo = runno;
+	ltccc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ltccc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ltccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	ltccc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
+
+	return ltccc;
+}
+
 map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -117,6 +143,16 @@ vector<identifier>  ltcc_HitProcess :: processID(vector<identifier> id, G4Step *
 	return id;
 }
 
+void ltcc_HitProcess::initWithRunNumber(int runno)
+{
+	if(ltccc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ltccc = initializeLTCCConstants(runno);
+		ltccc.runNo = runno;
+	}
+}
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> ltcc_HitProcess :: electronicNoise()
 {
@@ -156,6 +192,9 @@ double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }
+
+// this static function will be loaded first thing by the executable
+ltccConstants ltcc_HitProcess::ltccc = initializeLTCCConstants(-1);
 
 
 

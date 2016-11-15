@@ -4,6 +4,25 @@
 // gemc headers
 #include "HitProcess.h"
 
+// constants to be used in the digitization routine
+class ltccConstants
+{
+public:
+
+	// database
+	int    runNo;
+	string variation;
+	string date;
+	string connection;
+
+	// translation table
+	TranslationTable TT;
+
+	// add constants here
+
+};
+
+
 
 // Class definition
 class ltcc_HitProcess : public HitProcess
@@ -30,6 +49,13 @@ public:
 
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new ltcc_HitProcess;}
+
+private:
+
+	// constants initialized with initWithRunNumber
+	static ltccConstants ltccc;
+
+	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

@@ -9,6 +9,32 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
+
+static ftCalConstants initializeFTCALConstants(int runno)
+{
+	// all these constants should be read from CCDB
+	ftCalConstants ftcc;
+
+
+	// database
+	ftcc.runNo = runno;
+	ftcc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != NULL)
+		ftcc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+		ftcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	ftcc.variation  = "main";
+	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftcc.connection));
+
+	return ftcc;
+}
+
 map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -108,6 +134,16 @@ vector<identifier>  ft_cal_HitProcess :: processID(vector<identifier> id, G4Step
 	return id;
 }
 
+void ft_cal_HitProcess::initWithRunNumber(int runno)
+{
+	if(ftcc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ftcc = initializeFTCALConstants(runno);
+		ftcc.runNo = runno;
+	}
+}
+
+
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> ft_cal_HitProcess :: electronicNoise()
 {
@@ -153,6 +189,8 @@ double ft_cal_HitProcess :: voltage(double charge, double time, double forTime)
 }
 
 
+// this static function will be loaded first thing by the executable
+ftCalConstants ft_cal_HitProcess::ftcc = initializeFTCALConstants(-1);
 
 
 
