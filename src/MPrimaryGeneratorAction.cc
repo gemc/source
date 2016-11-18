@@ -30,6 +30,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	background_gen = gemcOpt->optMap["MERGE_LUND_BG"].args;
 	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
+    ntoskip        = gemcOpt->optMap["SKIPNGEN"].arg;
 
 	particleTable = G4ParticleTable::GetParticleTable();
 
@@ -121,6 +122,8 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 
 void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+    int eventIndex = 1;
+    
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal")
 	{
@@ -383,8 +386,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					lundUserDefined.push_back(tmp);
 				}
 			}
-
-			for(int p=0; p<nparticles; p++)
+            
+			for(int p=0; p<nparticles && eventIndex > ntoskip; p++)
 			{
 				double tmp, px, py, pz;
 				int pdef, type, parent, daughter, pindex;
@@ -430,14 +433,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					particleGun->SetNumberOfParticles(1);
 					particleGun->GeneratePrimaryVertex(anEvent);
 					if(GEN_VERBOSITY > 3)
-					cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
-					<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+                        cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+					         << "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 				}
 				else if(pindex != p+1)
-				if(GEN_VERBOSITY > 3)
-				cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
+                    if(GEN_VERBOSITY > 3)
+                        cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
 
 			}
+            eventIndex++;
 		}
 		else if((gformat == "stdhep" || gformat == "STDHEP" || gformat == "StdHep" || gformat == "StdHEP"))
 		{

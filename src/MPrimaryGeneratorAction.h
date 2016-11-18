@@ -47,6 +47,7 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		string background_gen;            ///< Input Option: background from file in LUND format
 		string cosmics;                   ///< cosmic ray option
 		string hd_msg;                    ///< Head Message Log
+        int ntoskip;                      ///< Number of events to skip
 		G4ParticleTable* particleTable;   ///< Geant4 Particle Table
 		
 		// Primary Beam

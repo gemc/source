@@ -85,8 +85,6 @@ void goptions::setGoptions()
 	optMap["MERGE_LUND_BG"].type = 1;
 	optMap["MERGE_LUND_BG"].ctgr = "generator";
 	
-
-	
 	optMap["NGENP"].arg  = 10;
 	optMap["NGENP"].help = "Max Number of Generated Particles to save in the Output.";
 	optMap["NGENP"].name = "Max Number of Generated Particles to save in the Output";
@@ -197,7 +195,12 @@ void goptions::setGoptions()
 	optMap["LUMI2_EVENT"].type = 1;
 	optMap["LUMI2_EVENT"].ctgr = "luminosity";
 	
-	
+    optMap["SKIPNGEN"].arg  = 0;
+    optMap["SKIPNGEN"].help = "Skip N events";
+    optMap["SKIPNGEN"].name = "Skip N events";
+    optMap["SKIPNGEN"].type = 0;
+    optMap["SKIPNGEN"].ctgr = "generator";
+
 	
 	// MySQL Database
 	optMap["DBHOST"].args = "no";
