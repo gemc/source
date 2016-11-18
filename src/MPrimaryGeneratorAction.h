@@ -48,6 +48,8 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		string cosmics;                   ///< cosmic ray option
 		string hd_msg;                    ///< Head Message Log
         int ntoskip;                      ///< Number of events to skip
+        int eventIndex;                   ///< Set to 1 
+
 		G4ParticleTable* particleTable;   ///< Geant4 Particle Table
 		
 		// Primary Beam
