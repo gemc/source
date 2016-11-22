@@ -3,6 +3,8 @@
 #include "G4UnitsTable.hh"
 #include "G4ParticleTypes.hh"
 #include "G4VProcess.hh"
+#include "G4FieldManager.hh"
+#include "G4Field.hh"
 
 // gemc headers
 #include "identifier.h"
@@ -113,7 +115,22 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		cout << endl << "  !!! Error: >" << name << "< NOT FOUND IN  ProcessHit Map. Exiting" << endl;
 		return false;
 	}
-	
+
+    // getting magnetic field
+    const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
+    double fieldValue[3] = {0, 0, 0};
+    double hitFieldValue = 0;
+
+    G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
+
+    // if no field manager, the field is zero
+    if(fmanager) {
+        fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+
+        hitFieldValue = sqrt(fieldValue[0]*fieldValue[0] + fieldValue[1]*fieldValue[1] + fieldValue[2]*fieldValue[2]);
+
+    }
+
 	///< Process VID: getting Identifier at the ProcessHitRoutine level
 	///< A process routine can generate hit sharing
 	vector<identifier> PID = ProcessHitRoutine->processID(VID, aStep, (*hallMap)[name]);
@@ -180,7 +197,8 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			thisHit->SetCharge(q);
 			thisHit->SetMatName(materialName);
 			thisHit->SetProcID(processID(processName));
-			thisHit->SetSDID(SDID);
+            thisHit->SetSDID(SDID);
+            thisHit->SetMgnf(hitFieldValue);
 			hitCollection->insert(thisHit);
 			Id_Set.insert(mhPID);
 			
@@ -224,7 +242,8 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 					thisHit->SetMatName(materialName);
 					thisHit->SetProcID(processID(processName));
 					thisHit->SetDetector((*hallMap)[name]);
-					
+                    thisHit->SetMgnf(hitFieldValue);
+
 					if(verbosity > 6 || name.find(catch_v) != string::npos)
 					{
 						string pid    = aStep->GetTrack()->GetDefinition()->GetParticleName();

@@ -69,6 +69,9 @@ public:
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new dc_HitProcess;}
 
+    // returns a time given a distance
+    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int s, int r);
+
 private:
 
 	// constants initialized with initWithRunNumber

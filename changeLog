@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+11/22/16
+ - added magnetic field information in MHit. This will give access to it to all sensitive detector hit process routines.
+ - loading field info in MHit
+ - changed DC hit process to have layer from 1-36 and to have TDC = time in ns
+
 11/18/16
  - added option SKIPNGEN to skip N generated events
 

@@ -74,7 +74,6 @@ static dcConstants initializeDCConstants(int runno)
 			<< ". That means that the DC response in GEMC will have"
 			<< " worse resoultion than the data. " << endl;
 		}
-
 	}
 
 	
@@ -123,11 +122,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double WIRE_Y  = nwire*deltay + dcc.miniStagger[SLI];   ///< Center of wire hit
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
-	vector<double>        stepTime    = aHit->GetTime();
+    vector<double>        stepTime    = aHit->GetTime();
+    vector<double>        mgnf        = aHit->GetMgnf();
 	vector<G4double>      Edep        = aHit->GetEdep();
 	vector<G4ThreeVector> pos         = aHit->GetPos();
-	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-	
+    vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+    vector<G4ThreeVector> mom         = aHit->GetMoms();
+
 	unsigned nsteps = Edep.size();
 
 	// Identifying the fastest - given by time + doca(s) / drift velocity
@@ -148,22 +149,26 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			trackIdw = stepTrackId[s];
 			minTime = signal_t;
 			
-			if(Edep[s] >= dcc.dcThreshold*eV)
-			{
+			if(Edep[s] >= dcc.dcThreshold*eV) {
 				trackIds = stepTrackId[s];
 			}
 		}
+
 	}
-	
+
+
+
 	// If no step pass the threshold, getting the fastest signal of the weak tracks
 	if(trackIds == -1)
 		trackIds = trackIdw;
 	
 	// Left / Right ambiguity
 	// Finding DOCA
-	double LR      = 0;
-	double doca    = 10000;
-	
+	double LR       = 0;
+	double doca     = 10000;
+    double thisMgnf = 0;
+    double alpha    = 0;
+
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z());
@@ -173,9 +178,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
+            thisMgnf = mgnf[s];
+            alpha    = mom[s].z() / mom[s].mag();
 		}
 	}
-	
+
+
+
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
@@ -195,16 +204,18 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// recording smeared and un-smeared quantities
 	dgtz["hitn"]       = hitn;
 	dgtz["sector"]     = identity[0].id;
-	dgtz["superlayer"] = SLI+1;
-	dgtz["layer"]      = identity[2].id;
+	dgtz["layer"]      = SLI*6 + identity[2].id;
 	dgtz["wire"]       = nwire;
-	dgtz["tdc"]        = (int) sdoca/dcc.driftVelocity[SLI]*100;
+	dgtz["tdc"]        = (int) sdoca/dcc.driftVelocity[SLI];
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
 	dgtz["time"]       = ineff *doca/dcc.driftVelocity[SLI];
 	dgtz["stime"]      = ineff*sdoca/dcc.driftVelocity[SLI];
-	
+
+
+   //  cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << endl;
+
 	return dgtz;
 }
 
@@ -216,11 +227,12 @@ vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	
 	G4StepPoint   *prestep   = aStep->GetPreStepPoint();
 	G4StepPoint   *poststep  = aStep->GetPostStepPoint();
-	
-	G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction
-	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
-	->GetTopTransform().TransformPoint(xyz);
-	
+    G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction
+    G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
+    ->GetTopTransform().TransformPoint(xyz);
+
+
+
 	
 	double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;
@@ -270,13 +282,33 @@ map< int, vector <double> > dc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	return CT;
 }
 
+
 // - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
 double dc_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	//	return 0.0;
-	return DGauss(forTime, dcc.vpar, charge, time);
+    //	return 0.0;
+    return DGauss(forTime, dcc.vpar, charge, time);
+}
+
+
+
+
+// returns a time in ns give:
+// x      = distance from the wire, in cm
+// dmax   = cell size in superlayer
+// tmax   = t max in superlayer
+// alpha  = polar angle of the track
+// bfield = magnitude of field in tesla
+// s      = sector
+// r      = superlayer
+double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int s, int r)
+{
+    double rtime = 0.0;
+
+
+    return rtime;
 }
 
 
@@ -298,7 +330,7 @@ vector<MHit*> dc_HitProcess :: electronicNoise()
 }
 
 // this static function will be loaded first thing by the executable
-dcConstants dc_HitProcess::dcc = initializeDCConstants(-1);
+dcConstants dc_HitProcess::dcc = initializeDCConstants(1);
 
 
 
