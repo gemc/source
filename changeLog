@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+11/23/16
+ - all ftof panel assigned to the same hit process and bank
+
 11/22/16
  - added magnetic field information in MHit. This will give access to it to all sensitive detector hit process routines.
  - loading field info in MHit

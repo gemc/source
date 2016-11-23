@@ -283,7 +283,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = sector;
+    dgtz["sector"] = sector;
+    dgtz["layer"]  = panel;
 	dgtz["paddle"] = paddle;
 	dgtz["ADCL"]   = adcl;
 	dgtz["ADCR"]   = adcr;

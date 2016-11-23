@@ -64,9 +64,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["dc"]       = &dc_HitProcess::createHitClass;
 			hitMap["ec"]       = &ec_HitProcess::createHitClass;
 			hitMap["ecs"]      = &ec_HitProcess::createHitClass;
-			hitMap["ftof_p1a"] = &ftof_HitProcess::createHitClass;
-			hitMap["ftof_p1b"] = &ftof_HitProcess::createHitClass;
-			hitMap["ftof_p2"]  = &ftof_HitProcess::createHitClass;
+			hitMap["ftof"]     = &ftof_HitProcess::createHitClass;
 			hitMap["ft_cal"]   = &ft_cal_HitProcess::createHitClass;
 			hitMap["ft_hodo"]  = &ft_hodo_HitProcess::createHitClass;
 			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
