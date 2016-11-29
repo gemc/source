@@ -1,8 +1,11 @@
 Changelog for GEMC
 ==================
 
+11/29/16
+ - tdc was not cast correcly to int in DC hit process
+
 11/23/16
- - all ftof panel assigned to the same hit process and bank
+ - all ftof panels assigned to the same hit process and bank
 
 11/22/16
  - added magnetic field information in MHit. This will give access to it to all sensitive detector hit process routines.

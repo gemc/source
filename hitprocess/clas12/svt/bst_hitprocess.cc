@@ -120,7 +120,8 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	int layer   = 2*yid[0].id + yid[1].id - 2 ;
 	int sector  = yid[2].id;
 	int isensor = yid[3].id;
-	
+
+    // this vector odd values are the strip numbers, the second number is the energy sharing
 	vector<double> multi_hit = bsts.FindStrip(layer-1, sector-1, isensor, Lxyz);
 	
 	int n_multi_hits = multi_hit.size()/2;
