@@ -75,7 +75,35 @@ static dcConstants initializeDCConstants(int runno)
 			<< " worse resoultion than the data. " << endl;
 		}
 	}
+  //Here is where MK and Daniel start their work
+  
+  database   = "/calibration/dc/time_to_distance/";
+  data.clear();
+  calib->GetCalib(data, database);
+  for(unsigned row = 0; row < data.size(); row++)
+  {
+    int sec = data[row][0] - 1;
+    int sl  = data[row][1] - 1;
+    dcc.v0[sec][sl]    = data[row][2];
+    dcc.deltanm[sec][sl]    = data[row][3];
+    dcc.tmaxsuperlayer[sec][sl]    = data[row][4];
+    dcc.delt_bfield_coefficient[sec][sl]    = data[row][6];
+    dcc.deltatime_bfield_par1[sec][sl]    = data[row][7];
+    dcc.deltatime_bfield_par2[sec][sl]    = data[row][8];
+    dcc.deltatime_bfield_par3[sec][sl]    = data[row][9];
+    dcc.deltatime_bfield_par4[sec][sl]    = data[row][10];
+    
+  }
 
+  dcc.dmaxsuperlayer[0]=0.77665;
+  dcc.dmaxsuperlayer[1]=0.81285;
+  dcc.dmaxsuperlayer[2]=1.25065;
+  dcc.dmaxsuperlayer[3]=1.32446;
+  dcc.dmaxsuperlayer[4]=1.72947;
+  dcc.dmaxsuperlayer[5]=1.80991;
+
+  
+  //Here is where MK and Daniel end their work
 	
 	// reading DC core parameters
 	database   = "/geometry/dc/superlayer";
@@ -303,12 +331,51 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 // bfield = magnitude of field in tesla
 // s      = sector
 // r      = superlayer
-double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int s, int r)
+double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
-    double rtime = 0.0;
-
-
-    return rtime;
+  double FracDmaxAtMinVel = 0.615;
+  double PI = 3.141592653589793238;
+  double toRadians = PI/180.;
+  // Assume a functional form (time=x/v0+a*(x/dmax)**n+b*(x/dmax)**m)
+  // for time as a function of x for theta = 30 deg.
+  // first, calculate n
+		double n = (1. + (dcc.deltanm[sector][superlayer] - 1.) * pow(FracDmaxAtMinVel, dcc.deltanm[sector][superlayer]))
+  / (1. - pow(FracDmaxAtMinVel, dcc.deltanm[sector][superlayer]));
+		// now, calculate m
+		double m = n + dcc.deltanm[sector][superlayer];
+		// determine b from the requirement that the time = tmax at dist=dmax
+		double b = (tmax - dmax / dcc.v0[sector][superlayer]) / (1. - m / n);
+		// determine a from the requirement that the derivative at
+		// d=dmax equal the derivative at d=0
+		double a = -b * m / n;
+  
+		double cos30minusalpha = cos(toRadians*(30. - alpha));
+		double xhat = x / dmax;
+		double dmaxalpha = dmax * cos30minusalpha;
+		double xhatalpha = x / dmaxalpha;
+  
+		// now calculate the dist to time function for theta = 'alpha' deg.
+		// Assume a functional form with the SAME POWERS N and M and
+		// coefficient a but a new coefficient 'balpha' to replace b.
+		// Calculate balpha from the constraint that the value
+		// of the function at dmax*cos30minusalpha is equal to tmax
+  
+		// parameter balpha (function of the 30 degree paramters a,n,m)
+		double balpha = (tmax - dmaxalpha / dcc.v0[sector][superlayer] - a * pow(cos30minusalpha, n)) / pow(cos30minusalpha, m);
+  
+		// now calculate function
+		double time = x / dcc.v0[sector][superlayer] + a * pow(xhat, n) + balpha * pow(xhat, m);
+  
+		// and here's a parameterization of the change in time due to a non-zero
+		// bfield for where xhat=x/dmaxalpha where dmaxalpha is the 'dmax' for
+		// a track with local angle alpha (for local angle = alpha)
+		double deltatime_bfield = dcc.delt_bfield_coefficient[sector][superlayer] * pow(bfield, 2) * tmax * (dcc.deltatime_bfield_par1[sector][superlayer] * xhatalpha + dcc.deltatime_bfield_par2[sector][superlayer] * pow(xhatalpha, 2) + dcc.deltatime_bfield_par3[sector][superlayer] * pow(xhatalpha, 3) + dcc.deltatime_bfield_par4[sector][superlayer] * pow(xhatalpha, 4));
+  
+		// calculate the time at alpha deg. and at a non-zero bfield
+		time += deltatime_bfield;
+  
+		return time;
+  
 }
 
 

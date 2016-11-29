@@ -30,6 +30,20 @@ public:
 	// smearing parameters for each sector / superlayer
 	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
 
+  //This is where MK and Daniel start
+  double v0[6][6];
+  double deltanm[6][6];
+  double tmaxsuperlayer[6][6];
+  double delt_bfield_coefficient[6][6];
+  double deltatime_bfield_par1[6][6];
+  double deltatime_bfield_par2[6][6];
+  double deltatime_bfield_par3[6][6];
+  double deltatime_bfield_par4[6][6];
+  double dmaxsuperlayer[6];
+  
+
+  //This is where MK and Daniel end
+  
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
