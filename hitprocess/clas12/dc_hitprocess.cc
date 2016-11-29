@@ -76,8 +76,7 @@ static dcConstants initializeDCConstants(int runno)
 		}
 	}
   //Here is where MK and Daniel start their work
-  
-  database   = "/calibration/dc/time_to_distance/";
+  database   = "/calibration/dc/time_to_distance/tvsx_devel_v2";
   data.clear();
   calib->GetCalib(data, database);
   for(unsigned row = 0; row < data.size(); row++)
@@ -104,7 +103,7 @@ static dcConstants initializeDCConstants(int runno)
 
   
   //Here is where MK and Daniel end their work
-	
+	cout<<"DC:Done setting DC constants"<<endl;
 	// reading DC core parameters
 	database   = "/geometry/dc/superlayer";
 	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(database));
@@ -329,8 +328,8 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 // tmax   = t max in superlayer
 // alpha  = polar angle of the track
 // bfield = magnitude of field in tesla
-// s      = sector
-// r      = superlayer
+// sector      = sector
+// superlayer      = superlayer
 double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
   double FracDmaxAtMinVel = 0.615;
