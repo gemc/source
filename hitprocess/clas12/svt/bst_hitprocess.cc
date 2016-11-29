@@ -127,17 +127,25 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	int n_multi_hits = multi_hit.size()/2;
 	
 	// closest strip
+    // assigning the strip id
 	yid[4].id = (int) multi_hit[0];
 	
+    // assigning the 
 	yid[0].id_sharing = multi_hit[1];
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
 	yid[4].id_sharing = multi_hit[1];
 	
+
 	// additional strip
 	for(int h=1; h<n_multi_hits; h++)
 	{
+        // the first four identifiers are
+        // 0. superlayer
+        // 1. region
+        // 2. sector
+        // 3. sensor
 		for(int j=0; j<4; j++)
 		{
 			identifier this_id;
@@ -150,10 +158,13 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 			this_id.id_sharing = multi_hit[3];
 			yid.push_back(this_id);
 		}
-		// last id is strip
+		// last identifier is the strip
 		identifier this_id;
 		this_id.name       = yid[4].name;
 		this_id.rule       = yid[4].rule;
+        
+        // should be h*2 but we know multi_hit has size 4.
+        // 2 is the
 		this_id.id         = (int) multi_hit[2];
 		this_id.time       = yid[4].time;
 		this_id.TimeWindow = yid[4].TimeWindow;

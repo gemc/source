@@ -40,7 +40,8 @@ class identifier
 		double       time;   ///< Time of the first step
 		double TimeWindow;   ///< Time Window. If abs(steptime - time) is smaller than TimeWindow, it's the same hit
 		int       TrackId;   ///< If Time Window is 0, it's a "flux" detector: if it's the same track, it's the same hit. Different track, different hit.
-		double id_sharing;   ///< A single step can generate multiple identifiers. This variable represent the percentage sharing of the current identifier. Sum must be normalized to 1
+		double id_sharing;   ///< A single step can generate multiple identifiers. This variable represent the percentage sharing of the current identifier.
+        // there is no check on the total energy shared, so one could have energy created this way
 		
 	public:
 		friend ostream &operator<<(ostream &stream, vector<identifier>);       ///< Overloaded "<<" for the class 'identifier'
