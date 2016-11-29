@@ -146,9 +146,9 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
  */
 
     // Get the crystal length: in the FT crystal are BOXes and the half-length is the 3rd element
-	double length = 2 * aHit->GetDetector().dimensions[2];
+    double length = 2 * aHit->GetDetector().dimensions[2];
 	// Get the crystal width (rear face): in the FT crystal are BOXes and the half-length is the 2th element
-	double width  = 2 * aHit->GetDetector().dimensions[1];
+    //	double width  = 2 * aHit->GetDetector().dimensions[1];
 	
 	// use Crystal ID to define IDX and IDY
 	int IDX = identity[0].id;
@@ -203,7 +203,7 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         
 		// converting to charge (in picoCoulomb)
         //old!		double crg=nel*AMP_gain*1.6e-7;
-        double crg = charge * nel/(npe_mean*ftcc.apd_gain[iCrystal]);
+        //        double crg = charge * nel/(npe_mean*ftcc.apd_gain[iCrystal]);
         ADC = (int) (charge/ftcc.fadc_to_charge[iCrystal]);
         //old! ADC= (int) (crg*adc_charge_tochannel);
    	
