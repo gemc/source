@@ -136,8 +136,8 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         double npe_mean  = charge/fthc.gain_pc[isector-1][ilayer-1][icomponent-1];
         double npe       = G4Poisson(npe_mean);
         charge           = charge * npe/npe_mean;
-        double amplitude = charge*fthc.gain_mv[isector-1][ilayer-1][icomponent-1]/fthc.gain_pc[isector-1][ilayer-1][icomponent-1];
-        double fadc      = amplitude/fthc.fadc_LSB;
+//        double amplitude = charge*fthc.gain_mv[isector-1][ilayer-1][icomponent-1]/fthc.gain_pc[isector-1][ilayer-1][icomponent-1];
+//        double fadc      = amplitude/fthc.fadc_LSB;
         ADC = (int) (charge*fthc.fadc_input_impedence/fthc.fadc_LSB/fthc.ns_per_sample);
         
 	}
