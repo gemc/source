@@ -206,7 +206,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]     = identity[0].id;
 	dgtz["layer"]      = SLI*6 + identity[2].id;
 	dgtz["wire"]       = nwire;
-	dgtz["tdc"]        = (int) sdoca/dcc.driftVelocity[SLI];
+	dgtz["tdc"]        = sdoca/dcc.driftVelocity[SLI];
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
@@ -214,7 +214,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["stime"]      = ineff*sdoca/dcc.driftVelocity[SLI];
 
 
-   //  cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << endl;
+     cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << " " << dgtz["stime"]  << endl;
 
 	return dgtz;
 }
