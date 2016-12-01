@@ -39,9 +39,13 @@ public:
 	// twlk: Time walk correction, 3 constants each for L and R
 	vector<double> twlk[6][3][6];
 
-	// tres: Gaussian sigma for smearing time resolution
-	vector<double> tres[3];
+	// toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
+    vector<double> toff_LR[6][3];
+    vector<double> toff_P2P[6][3];
 
+    // tres: Gaussian sigma for smearing time resolution
+    vector<double> tres[3];
+    
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
 	double dEdxMIP;      // Nominal MIP specific energy loss (MeV/gm/cm2)

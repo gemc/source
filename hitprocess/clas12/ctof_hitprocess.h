@@ -38,6 +38,10 @@ public:
 	// twlk: Time walk correction, 3 constants each for L and R
 	vector<double> twlk[1][1][6];
 
+    // toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
+    vector<double> toff_UD[1][1];
+    vector<double> toff_P2P[1][1];
+    
 	// tres: Gaussian sigma for smearing time resolution
 	vector<double> tres;
 
