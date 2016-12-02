@@ -122,9 +122,10 @@ static ctofConstants initializeCTOFConstants(int runno)
     }
 
     
-    ctc.lengthHighPitch = 35.013*25.4/2;  // length of long bar
-	ctc.lengthLowPitch  = 34.664*25.4/2;  // length of short bar
-
+    ctc.lengthHighPitch  = 35.013*25.4/2;  // length of long bar
+	ctc.lengthLowPitch   = 34.664*25.4/2;  // length of short bar
+	ctc.offsetFromCenter = 194.160;        // the CTOF center is upstream so this quantity will be added to z
+	
 	// setting voltage signal parameters
 	ctc.vpar[0] = 50;  // delay, ns
 	ctc.vpar[1] = 10;  // rise time, ns
@@ -185,10 +186,10 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 
 	// Distances from upstream, downstream
-	// ctof paddle center is exactly the target position,
-	// so z is also the local coordinate
-	double dUp = length + tInfos.z;
-	double dDn = length - tInfos.z;
+	// ctof paddle center is offsetby ctc.offsetFromCenter from the CLAS12 target position,
+	// so need to  z is also the local coordinate
+	double dUp = length + tInfos.z + ctc.offsetFromCenter;
+	double dDn = length - tInfos.z + ctc.offsetFromCenter;
 
 	// attenuation length
 	double attlenUp = ctc.attlen[sector-1][panel-1][0][paddle-1];
