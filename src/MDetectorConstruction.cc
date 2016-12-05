@@ -741,7 +741,12 @@ void MDetectorConstruction::buildMirrors()
 				if(surfaceModel == "unified") mirrorSurfaces.back()->SetModel(unified);  // UNIFIED model
 				if(surfaceModel == "LUT")     mirrorSurfaces.back()->SetModel(LUT);      // Look-Up-Table model
 
-				
+				// sigma alpha
+				double sigmaAlpha = itr->second->sigmaAlpha;
+				if(sigmaAlpha != -1) {
+					mirrorSurfaces.back()->SetSigmaAlpha(sigmaAlpha);
+				}
+
 				if(borderv=="SkinSurface")
 				{
 					mirrorLSkinSurf.push_back(new G4LogicalSkinSurface(name,
@@ -755,7 +760,7 @@ void MDetectorConstruction::buildMirrors()
 																 (*hallMap)[name].GetPhysical(), mirrorSurfaces.back()));
 				}
 				
-				
+
 				if(VERB > 3 || name.find(catch_v) != string::npos)
 				{
 					cout << hd_msg  << " " <<  name << " is a mirror:" << endl;

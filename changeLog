@@ -5,6 +5,7 @@ Changelog for GEMC
  - fixed clas12 ctof time offset
  - added Birk Constant properties in material factory
  - added reading mirrors Sigma Alpha. Fixed backward compatibility for materials.
+ - adding property sigmaAlpha in optical surfaces
 
 11/29/16
  - tdc was not cast correcly to int in DC hit process
