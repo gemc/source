@@ -99,7 +99,7 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			// this condition is for backward compatibility,
 			// scintillation was added with gemc 2.3
 			// 18 exact quantities
-			if( gt.data.size() > 17)
+			if( gt.data.size() > 10)
 			{
 				thisMat.opticalsFromString(             gt.data[10], "fastcomponent");
 				thisMat.opticalsFromString(             gt.data[11], "slowcomponent");

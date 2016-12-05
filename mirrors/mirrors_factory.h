@@ -24,6 +24,7 @@ class mirror
 		string finish;
 		string model;
 		string border;
+		double sigmaAlpha;
 
 		string maptOptProps;
 	

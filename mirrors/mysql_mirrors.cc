@@ -77,7 +77,8 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 			thisMir->opticalsFromString(qv_tostring(             q.value(11)), "specularlobe");
 			thisMir->opticalsFromString(qv_tostring(             q.value(12)), "specularspike");
 			thisMir->opticalsFromString(qv_tostring(             q.value(13)), "backscatter");
-			
+			thisMir->sigmaAlpha    =                             q.value(14).toDouble();
+
 			mymirs[thisMir->name] = thisMir;
 			
 		}

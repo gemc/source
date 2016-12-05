@@ -76,6 +76,9 @@ void mirror::opticalsFromString(string s, string what)
 			
 			if(what == "backscatter")
 				backscatter.push_back(get_number(trimmedC));
+
+			if(what == "sigmaAlpha")
+				sigmaAlpha = get_number(trimmedC);
 		}
 	}
 	
