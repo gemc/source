@@ -96,10 +96,10 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 			thisMat.opticalsFromString(              gt.data[8], "reflectivity");
 			thisMat.opticalsFromString(              gt.data[9], "efficiency");
 			
-			// scintillation
 			// this condition is for backward compatibility,
 			// scintillation was added with gemc 2.3
-			if( gt.data.size() == 18)
+			// 18 exact quantities
+			if( gt.data.size() > 17)
 			{
 				thisMat.opticalsFromString(             gt.data[10], "fastcomponent");
 				thisMat.opticalsFromString(             gt.data[11], "slowcomponent");
@@ -110,6 +110,14 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 				thisMat.yieldratio         = get_number(gt.data[16]);
 				thisMat.opticalsFromString(             gt.data[17], "rayleigh");
 			}
+			// this condition is for backward compatibility,
+			// Birk Constant were added with gemc 2.6
+			// 19 exact quantities
+			if( gt.data.size() > 18)
+			{
+				thisMat.birkConstant = get_number(gt.data[18]);
+			}
+
 			mymats[thisMat.name] = thisMat;
 			
 		}

@@ -130,6 +130,9 @@ void material::opticalsFromString(string property, string what)
 			
 			if(what == "rayleigh")
 				rayleigh.push_back(get_number(trimmedC));
+
+			if(what == "birkConstant")
+				birkConstant = get_number(trimmedC);
 		}
 	
 		if(what == "rayleigh")
@@ -391,6 +394,8 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 					}
 					
 
+
+					// in the API -1 is the default
 					
 					// scintillationyield
 					if(it->second.scintillationyield != -1)
@@ -411,6 +416,10 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 					// yieldratio
 					if(it->second.yieldratio != -1)
 						optTable.back()->AddConstProperty("YIELDRATIO", it->second.yieldratio);
+
+					// birkConstant - must be in mm / MeV
+					if(it->second.birkConstant != -1)
+						mats[it->first]->GetIonisation()->SetBirksConstant(it->second.birkConstant);
 
 					mats[it->first]->SetMaterialPropertiesTable(optTable.back());
 				}

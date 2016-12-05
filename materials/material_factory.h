@@ -44,7 +44,7 @@ class material
 		double slowtimeconstant;
 		double yieldratio;
 		vector<double> rayleigh;
-	
+		double birkConstant;
 	
 		// load material components from DB entry
 		void componentsFromString(string);

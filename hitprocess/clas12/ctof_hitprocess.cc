@@ -189,7 +189,7 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// ctof paddle center is offsetby ctc.offsetFromCenter from the CLAS12 target position,
 	// so need to  z is also the local coordinate
 	double dUp = length + tInfos.z + ctc.offsetFromCenter;
-	double dDn = length - tInfos.z + ctc.offsetFromCenter;
+	double dDn = length - tInfos.z - ctc.offsetFromCenter;
 
 	// attenuation length
 	double attlenUp = ctc.attlen[sector-1][panel-1][0][paddle-1];
