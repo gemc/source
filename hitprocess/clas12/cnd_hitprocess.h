@@ -15,12 +15,32 @@ public:
 	string variation;
 	string date;
 	string connection;
+	char   database[80];
 
 	// translation table
 	TranslationTable TT;
 
 	// add constants here
-	
+	/* vector<int> status[24][3][2]; */
+	/* vector<double> veff[24][3][2]; */
+	/* vector<double> att_length[24][3][2]; */
+	/* vector<double> time_offset_LR[24][3][2]; */
+	/* vector<double> time_offset_layer[24][3][2]; */
+	/* vector<double> uturn_t[24][3][2]; */
+	/* vector<double> uturn_e[24][3][2]; */
+	/* vector<double> ecal[24][3][4]; */
+
+	int status[24][3][2];
+	double veff[24][3][2];
+	double att_length[24][3][2];
+	double time_offset_LR[24][3][1];
+	double time_offset_layer[24][3][1];
+	double uturn_t[24][3][1];
+	double uturn_e[24][3][1];
+	double ecalD[24][3][2];
+	double ecalN[24][3][2];
+
+
 };
 
 
@@ -31,6 +51,10 @@ class cnd_HitProcess : public HitProcess
 public:
 
 	~cnd_HitProcess(){;}
+
+	static cndConstants cndc;
+
+	void initWithRunNumber(int runno);
 
 	// - integrateDgt: returns digitized information integrated over the hit
 	map<string, double> integrateDgt(MHit*, int);
@@ -55,10 +79,6 @@ public:
 
 private:
 
-	// constants initialized with initWithRunNumber
-	static cndConstants cndc;
-
-	void initWithRunNumber(int runno);
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
