@@ -124,6 +124,7 @@ ostream &operator<<(ostream &stream, mirror Mirror)
 	cout << "   finish:       "  << Mirror.finish      << endl;
 	cout << "   model:        "  << Mirror.model       << endl;
 	cout << "   border:       "  << Mirror.border      << endl;
+	cout << "   sigmaAlpha:   "  << Mirror.sigmaAlpha  << endl;
 	cout << endl;
 	
 	return stream;

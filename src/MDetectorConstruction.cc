@@ -768,7 +768,8 @@ void MDetectorConstruction::buildMirrors()
 					cout << "                             > Surface Type: "       << surfaceType << endl;
 					cout << "                             > Finish: "             << surfaceFinish << endl;
 					cout << "                             > Model: "              << surfaceModel << endl;
-					
+					cout << "                             > Sigma Alpha: "        << sigmaAlpha << endl;
+
 					// why it's not dumping all properties?
 					mirrorsMPT.back()->DumpTable();
 				}

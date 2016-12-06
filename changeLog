@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+12/6/16
+ - addded mirror sigmaAlpha in verbosity log
+
 12/5/16
  - fixed clas12 ctof time offset
  - added Birk Constant properties in material factory
