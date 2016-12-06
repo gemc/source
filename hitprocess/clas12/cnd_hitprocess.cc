@@ -152,16 +152,16 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// uturn[1] = 0.6;
 	// uturn[2] = 0.5;                                // outer layer
 	
-	double light_yield = 10000;               // number of optical photons produced in the scintillator per MeV of deposited energy
-	double sensor_qe = 0.2;                       // photo sensor quantum efficiency
-	double sensor_gain = 0.24;                    // gain of the photo sensor in pC/(#p.e.); it defines the conversion from photoelectrons to charge:
+	// double light_yield = 10000;               // number of optical photons produced in the scintillator per MeV of deposited energy
+	// double sensor_qe = 0.2;                       // photo sensor quantum efficiency
+	// double sensor_gain = 0.24;                    // gain of the photo sensor in pC/(#p.e.); it defines the conversion from photoelectrons to charge:
 						      // for a pmt gain of 1.5*10^6, this factor is equal to 1.5*10^6*1.6*10^-19 C = 0.24 pC/(#p.e.)
 
 	double pmtPEYld = 500;
 
-	double signal_split = 0.5;                    // signal is split into two, going to QDC and discriminators.
-	double adc_conv = 10.;                        // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
-	double adc_ped = 3.;                          // ADC Pedestal
+	// double signal_split = 0.5;                    // signal is split into two, going to QDC and discriminators.
+	// double adc_conv = 10.;                        // conversion factor from pC to ADC (typical sensitivy of CAEN VME QDC is of 0.1 pC/ch)
+	// double adc_ped = 3.;                          // ADC Pedestal
 	
 	
 	// Time of signal:
@@ -230,7 +230,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double t_offset_LR = cndc.time_offset_LR[sector-1][layer-1][0];
 	double t_offset_layer = cndc.time_offset_layer[sector-1][layer-1][0];
 	double adcd_mip = cndc.ecalD[sector-1][layer-1][paddle-1];
-	double adcn_mip = cndc.ecalN[sector-1][layer-1][paddle-1];
+	// double adcn_mip = cndc.ecalN[sector-1][layer-1][paddle-1];
 
 	double dUp = length + tInfos.z;
 	double dDn = 3*length - tInfos.z;
@@ -329,7 +329,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		{
 			TDCD = (int) ((timeD + G4RandGauss::shoot(0.,sigmaTD/sqrt(etotD*MeV)))*ns * tdc_conv);
 			//TDCD = (int) ((timeD_old + G4RandGauss::shoot(0.,sigmaTD/sqrt(etotD_old*MeV))) * tdc_conv);
-			int ADCD_old = (int) (G4Poisson(etotD_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
+			// int ADCD_old = (int) (G4Poisson(etotD_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
 			double npheD = G4Poisson(etotD*pmtPEYld);
 			double eneD = npheD/pmtPEYld;
 			ADCD = (eneD*MeV)*(adcd_mip/(dEdxMIP*thickness)/gain);
@@ -338,7 +338,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		{
 			TDCN = (int) ((timeN + G4RandGauss::shoot(0.,sigmaTN/sqrt(etotN*MeV)))*ns* tdc_conv);
 			//TDCN = (int) ((timeN_old + G4RandGauss::shoot(0.,sigmaTN/sqrt(etotN_old*MeV))) * tdc_conv);
-			int ADCN_old = (int) (G4Poisson(etotN_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
+			// int ADCN_old = (int) (G4Poisson(etotN_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
 			double npheN = G4Poisson(etotN*pmtPEYld);
 			double eneN = npheN/pmtPEYld;
 			ADCN = (eneN*MeV)*(adcd_mip/(dEdxMIP*thickness)/gain);
