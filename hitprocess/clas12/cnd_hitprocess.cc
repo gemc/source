@@ -219,8 +219,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int ADCD = 0;
 	int ADCN = 0;
-	int TDCD = 4096;    // max value of the ADC readout
-	int TDCN = 4096;
+	int TDCD = 16384;    // max value of the ADC readout
+	int TDCN = 16384;
 	
 	double attlength = cndc.att_length[sector-1][layer-1][paddle-1];
 	double v_eff = cndc.veff[sector-1][layer-1][paddle-1];
@@ -345,9 +345,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 		
 		//if(TDCD < 0) TDCD = 0;
-		if (TDCD > 4096) TDCD = 4096;
+		if (TDCD > 16384) TDCD = 16384;
 		//if(TDCN < 0) TDCN = 0;
-		if(TDCN > 4096) TDCN = 4096;
+		if(TDCN > 16384) TDCN = 16384;
 		
 		if(ADCD < 0) ADCD = 0;
 		if(ADCN < 0) ADCN = 0;
