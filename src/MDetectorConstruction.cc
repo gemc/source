@@ -742,6 +742,8 @@ void MDetectorConstruction::buildMirrors()
 				if(surfaceModel == "LUT")     mirrorSurfaces.back()->SetModel(LUT);      // Look-Up-Table model
 
 				// sigma alpha
+				// Looking at the code processes/optical/src/G4OpBoundaryProcess.cc it
+				// looks like sigmaAlpha only works with opticalSurfaces, not skin surfaces.
 				double sigmaAlpha = itr->second->sigmaAlpha;
 				if(sigmaAlpha != -1) {
 					mirrorSurfaces.back()->SetSigmaAlpha(sigmaAlpha);
