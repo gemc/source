@@ -262,6 +262,50 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		tdcd = tDn*ctc.tdcLSB;
 	}
 
+	// Status flags
+	switch (ctc.status[sector-1][panel-1][0][paddle-1])
+	{
+		case 0:
+			break;
+		case 1:
+			adcu = 0;
+			break;
+		case 2:
+			tdcu = 0;
+			break;
+		case 3:
+			adcu = tdcu = 0;
+			break;
+
+		case 5:
+			break;
+			
+		default:
+			cout << " > Unknown CTOF status: " << ctc.status[sector-1][panel-1][0][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left " << endl;
+	}
+	
+	switch (ctc.status[sector-1][panel-1][1][paddle-1])
+	{
+		case 0:
+			break;
+		case 1:
+			adcd = 0;
+			break;
+		case 2:
+			tdcd = 0;
+			break;
+		case 3:
+			adcd = tdcd = 0;
+			break;
+			
+		case 5:
+			break;
+			
+		default:
+			cout << " > Unknown CTOF status: " << ctc.status[sector-1][panel-1][1][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " right " << endl;
+	}
+
+
 	dgtz["hitn"]   = hitn;
 	dgtz["paddle"] = paddle;
 	dgtz["ADCU"]   = (int) adcu;
