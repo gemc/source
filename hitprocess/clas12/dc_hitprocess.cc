@@ -76,6 +76,36 @@ static dcConstants initializeDCConstants(int runno)
 		}
 	}
 
+
+     //********************************************
+    //calculating distance to time:
+    database  = "/calibration/dc/time_to_distance/tvsx_devel_v2";
+    data.clear();
+    calib->GetCalib(data, database);
+    
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        int sec = data[row][0] - 1;
+        int sl  = data[row][1] - 1;
+        dcc.v0[sec][sl] = data[row][2];
+        dcc.deltanm[sec][sl] = data[row][3];
+        dcc.tmaxsuperlayer[sec][sl] = data[row][4];
+        dcc.delta_bfield_coefficient[sec][sl] = data[row][5];
+        dcc.deltatime_bfield_par1[sec][sl] = data[row][6];
+        dcc.deltatime_bfield_par2[sec][sl] = data[row][7];
+        dcc.deltatime_bfield_par3[sec][sl] = data[row][8];
+        dcc.deltatime_bfield_par4[sec][sl] = data[row][9];
+    }
+    
+    dcc.dmaxsuperlayer[0] = 0.77665;
+    dcc.dmaxsuperlayer[1] = 0.81285;
+    dcc.dmaxsuperlayer[2] = 1.25065;
+    dcc.dmaxsuperlayer[3] = 1.32446;
+    dcc.dmaxsuperlayer[4] = 1.72947;
+    dcc.dmaxsuperlayer[5] = 1.80991;
+    //********************************************
+
+
 	
 	// reading DC core parameters
 	database   = "/geometry/dc/superlayer";
@@ -167,7 +197,25 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double LR       = 0;
 	double doca     = 10000;
     double thisMgnf = 0;
-    double alpha    = 0;
+    
+    //Quantities needed for the calculation of alpha:
+    //******************************************************************
+    double alpha = 0;
+    double deg_to_rad = 3.14159265359/180;
+    double rotate_to_sec = (-60*SECI)*deg_to_rad; //Rotation towards fireing sector
+    
+    int sl_sign; //check superlayer and define sign --> Needed for orientation within the wire system
+    for(int i=0;i<3;i++){
+		 if(SLI == 2*i+1){
+			  sl_sign = -1; 
+		 }else sl_sign = 1;
+	}
+    
+    double rotate_to_wire = 6*sl_sign*deg_to_rad; //Angle for the final rotation into the wire system
+    double const2 = sl_sign*sin(6*deg_to_rad);
+    double const1= cos(6*deg_to_rad);
+    
+    G4ThreeVector rotated_vector;
 
 	for(unsigned int s=0; s<nsteps; s++)
 	{
@@ -175,16 +223,31 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		if(DOCA.mag() <= doca && stepTrackId[s] == trackIds )
 		{
+			//Get the momentum vector, which shall be rotated:
+			rotated_vector = G4ThreeVector(mom[s].x(),mom[s].y(),mom[s].z());
+			
+			//First, rotate px and py to the sector,that has fired:
+			rotated_vector.rotateZ(rotate_to_sec);
+			
+			//Secondly, rotate px' and pz towards the firing sector:
+			rotated_vector.rotateY(-25*deg_to_rad);
+			
+			//Finally, rotate px'' and py' into the wire coordinate system:
+			rotated_vector.rotateZ(rotate_to_wire);
+			
+			//Now calculate alpha according to Macs definition:
+			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg_to_rad;
+			theta = mom[s].theta()/deg_to_rad;
+			phi = mom[s].phi()/deg_to_rad;
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
-            thisMgnf = mgnf[s];
-            alpha    = mom[s].z() / mom[s].mag();
+            thisMgnf = mgnf[s]; //Given in Tesla
 		}
 	}
-
-
-
+	//******************************************************************
+	
+	
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
@@ -197,7 +260,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// distance-dependent efficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
-
+	
+	//unsmeared time, based on the dist-time-function and alpha;
+	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
+	
+	//smeared time, same as above, but using the smeared doca quantity:
+	double smeared_time = calc_Time(sdoca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
+	
 	int ineff = 1;
 	if(random < ddEff || X > 1) ineff = -1;
 		
@@ -206,14 +275,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]     = identity[0].id;
 	dgtz["layer"]      = SLI*6 + identity[2].id;
 	dgtz["wire"]       = nwire;
-	dgtz["tdc"]        = sdoca/dcc.driftVelocity[SLI];
+	dgtz["tdc"]        = smeared_time;
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
-	dgtz["time"]       = ineff *doca/dcc.driftVelocity[SLI];
-	dgtz["stime"]      = ineff*sdoca/dcc.driftVelocity[SLI];
-
-
+	dgtz["time"]       = ineff*unsmeared_time;
+	dgtz["stime"]      = ineff*smeared_time;
+	
     // cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << " " << dgtz["stime"]  << endl;
 
 	return dgtz;
@@ -303,13 +371,52 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 // bfield = magnitude of field in tesla
 // s      = sector
 // r      = superlayer
-double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int s, int r)
+double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
     double rtime = 0.0;
+    double FracDmaxAtMinVel = 0.615;
+    double PI = 3.14159265359;
+    double toRadians = PI/180;
+    // Assume a functional form (time=x/v0+a*(x/dmax)**n+b*(x/dmax)**m)
+    // for time as a function of x for theta = 30 deg.
+    // first, calculate n
+    double n = ( 1.+ (dcc.deltanm[sector][superlayer]-1.)*pow(FracDmaxAtMinVel, dcc.deltanm[sector][superlayer]) )/( 1.- pow(FracDmaxAtMinVel, dcc.deltanm[sector][superlayer]));
+    //now, calculate m
+    double m = n + dcc.deltanm[sector][superlayer];
+    // determine b from the requirement that the time = tmax at dist=dmax
+    double b = (tmax - dmax/dcc.v0[sector][superlayer])/(1.- m/n);
+    
+    // determine a from the requirement that the derivative at
+    // d=dmax equal the derivative at d=0
+    double a = -b*m/n;
 
+    double cos30minusalpha=(double)cos(toRadians*(30. - alpha));
+    //cout<<cos30minusalpha<<" cos30minusalpha"<<endl;
+    double xhat = x/dmax;
+    double dmaxalpha = dmax*cos30minusalpha;
+    double xhatalpha = x/dmaxalpha;
+    
+    //     now calculate the dist to time function for theta = 'alpha' deg.
+    //     Assume a functional form with the SAME POWERS N and M and
+    //     coefficient a but a new coefficient 'balpha' to replace b.
+    //     Calculate balpha from the constraint that the value
+    //     of the function at dmax*cos30minusalpha is equal to tmax
+    
+    //     parameter balpha (function of the 30 degree paramters a,n,m)
+    double balpha = ( tmax - dmaxalpha/dcc.v0[sector][superlayer] - a*pow(cos30minusalpha,n))/pow(cos30minusalpha, m);
+    
+    //      now calculate function
+    rtime = x/dcc.v0[sector][superlayer] + a*pow(xhat, n) + balpha*pow(xhat, m);
+    
+    double deltatime_bfield = dcc.delta_bfield_coefficient[sector][superlayer]*pow(bfield,2)*tmax*(dcc.deltatime_bfield_par1[sector][superlayer]*xhatalpha+dcc.deltatime_bfield_par2[sector][superlayer]*pow(xhatalpha, 2)+ dcc.deltatime_bfield_par3[sector][superlayer]*pow(xhatalpha, 3)+dcc.deltatime_bfield_par4[sector][superlayer]*pow(xhatalpha, 4));
+   
+    
+    //calculate the time at alpha deg. and at a non-zero bfield
+    rtime += deltatime_bfield;
 
     return rtime;
 }
+
 
 
 

@@ -35,6 +35,12 @@ public:
 
 	// translation table
 	TranslationTable TT;
+	
+	
+    //parameters for time to distance:
+    double deltanm[6][6], v0[6][6], delta_bfield_coefficient[6][6],tmaxsuperlayer[6][6];
+    double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
+    double dmaxsuperlayer[6];
 
 
 };
@@ -70,7 +76,7 @@ public:
 	static HitProcess *createHitClass() {return new dc_HitProcess;}
 
     // returns a time given a distance
-    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int s, int r);
+    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
 
 private:
 
