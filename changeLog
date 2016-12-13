@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+12/13/16
+ - Daniel Lersch, Michael Kunkel: added DC time to distance function
+
 12/6/16
  - addded mirror sigmaAlpha in verbosity log
 

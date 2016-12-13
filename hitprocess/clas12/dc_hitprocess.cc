@@ -237,8 +237,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			
 			//Now calculate alpha according to Macs definition:
 			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg_to_rad;
-			theta = mom[s].theta()/deg_to_rad;
-			phi = mom[s].phi()/deg_to_rad;
+			// theta = mom[s].theta()/deg_to_rad;
+			// phi = mom[s].phi()/deg_to_rad;
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
