@@ -168,10 +168,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	//	double veff = 16*cm/ns;                       // light velocity in scintillator
 
-	double sigmaTD = 0.14*ns/sqrt(MeV);           // time smearing factor (estimated from tests at Orsay), same paddle as hit (in ns/sqrt(MeV)).
-	double sigmaTN = 0.14*ns/sqrt(MeV);           // time smearing factor, neighbouring paddle to the hit one, units as above.
-	
-	double tdc_conv = 40/ns;                      // TDC conversion factor (1/0.025ns), channels per per ns.
+	//	double sigmaTD = 0.14*ns/sqrt(MeV);           // time smearing factor (estimated from tests at Orsay), same paddle as hit (in ns/sqrt(MeV)).
+	//double sigmaTN = 0.14*ns/sqrt(MeV);           // time smearing factor, neighbouring paddle to the hit one, units as above.
+	double sigmaTD = 0.14;
+	double sigmaTN = 0.14;
+
+	double tdc_conv = 40;                      // TDC conversion factor (1/0.025ns), channels per per ns.
 		
 	// Get the paddle length: in CND paddles are along z
 	double length = aHit->GetDetector().dimensions[0]; // this is actually the half-length!
@@ -214,8 +216,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double etotN_old = 0.;  // total energy of hit propagated to downstream end of the hit paddle, round u-turn, along neighbouring paddle and light-guide and into PMT
 	double timeD = 0.;  // hit times measured at the upstream edges of the two paddles
 	double timeN = 0.;
-	double timeD_old = 0.;  // hit times measured at the upstream edges of the two paddles
-	double timeN_old = 0.;
+	//double timeD_old = 0.;  // hit times measured at the upstream edges of the two paddles
+	//double timeN_old = 0.;
 	
 	int ADCD = 0;
 	int ADCN = 0;
@@ -237,6 +239,18 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double attUp  = exp(-dUp/cm/attlength);
 	double attDn  = uturn*exp(-dDn/cm/attlength);
 	double gain = sqrt(attUp*attDn);
+
+        //if(layer==1)
+	//{
+	//  t_offset_layer=1.2;
+	//  t_offset_LR=-0.7;
+	//}
+        //if(layer==2)
+	//{
+	//  t_offset_layer=-1.2;
+	//  t_offset_LR=+0.8;
+	//}
+        //if(layer==3)t_offset_LR=1.2;
 
 	if(tInfos.eTot>0)
 	{
@@ -296,14 +310,14 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		timeD = et_D / etotD;      // sum(energy*time) /  sum(energy)
 		timeN = et_N / etotN;
-		timeD_old = et_D_old / etotD_old;      // sum(energy*time) /  sum(energy)
-		timeN_old = et_N_old / etotN_old;
+		//timeD_old = et_D_old / etotD_old;      // sum(energy*time) /  sum(energy)
+		//timeN_old = et_N_old / etotN_old;
 
-		timeD=timeD*ns+t_offset_layer;
-		timeN=timeN*ns+t_offset_layer;
+		timeD=timeD+t_offset_layer;
+		timeN=timeN+t_offset_layer;
 		
-		if(paddle==2)timeD=timeD*ns+t_offset_LR;
-		if(paddle==1)timeN=timeN*ns+t_offset_LR;
+		if(paddle==2)timeD=timeD+t_offset_LR;
+		if(paddle==1)timeN=timeN+t_offset_LR;
 
 		/******** end timing determination ***********/
 		// cout<< " Length (cm) "<<length/cm<<endl;
@@ -327,21 +341,20 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		if (etotD > 0.)
 		{
-			TDCD = (int) ((timeD + G4RandGauss::shoot(0.,sigmaTD/sqrt(etotD*MeV)))*ns * tdc_conv);
-			//TDCD = (int) ((timeD_old + G4RandGauss::shoot(0.,sigmaTD/sqrt(etotD_old*MeV))) * tdc_conv);
+		  TDCD = (int) ((G4RandGauss::shoot(timeD,sigmaTD/sqrt(etotD)))* tdc_conv);
 			// int ADCD_old = (int) (G4Poisson(etotD_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
 			double npheD = G4Poisson(etotD*pmtPEYld);
 			double eneD = npheD/pmtPEYld;
-			ADCD = (eneD*MeV)*(adcd_mip/(dEdxMIP*thickness)/gain);
+			ADCD = eneD*(adcd_mip/(dEdxMIP*thickness)/gain);
 		}
 		if (etotN > 0.)
 		{
-			TDCN = (int) ((timeN + G4RandGauss::shoot(0.,sigmaTN/sqrt(etotN*MeV)))*ns* tdc_conv);
+		  TDCN = (int) ((G4RandGauss::shoot(timeN,sigmaTN/sqrt(etotN)))* tdc_conv);
 			//TDCN = (int) ((timeN_old + G4RandGauss::shoot(0.,sigmaTN/sqrt(etotN_old*MeV))) * tdc_conv);
 			// int ADCN_old = (int) (G4Poisson(etotN_old*light_yield*sensor_qe)*signal_split*sensor_gain*adc_conv + adc_ped);
 			double npheN = G4Poisson(etotN*pmtPEYld);
 			double eneN = npheN/pmtPEYld;
-			ADCN = (eneN*MeV)*(adcd_mip/(dEdxMIP*thickness)/gain);
+			ADCN = eneN*(adcd_mip/(dEdxMIP*thickness)/gain);
 		}
 		
 		//if(TDCD < 0) TDCD = 0;
