@@ -224,8 +224,11 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int TDCD = 16384;    // max value of the ADC readout
 	int TDCN = 16384;
 	
-	double attlength = cndc.att_length[sector-1][layer-1][paddle-1];
-	double v_eff = cndc.veff[sector-1][layer-1][paddle-1];
+    int paddle_N = 3 - paddle;
+	double attlength_D = cndc.att_length[sector-1][layer-1][paddle-1];
+    double attlength_N = cndc.att_length[sector-1][layer-1][paddle_N-1];
+    double v_eff_D = cndc.veff[sector-1][layer-1][paddle-1];
+    double v_eff_N = cndc.veff[sector-1][layer-1][paddle_N-1];
 
 	double t_u = cndc.uturn_t[sector-1][layer-1][0];
 	double uturn = cndc.uturn_e[sector-1][layer-1][0];
@@ -235,9 +238,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// double adcn_mip = cndc.ecalN[sector-1][layer-1][paddle-1];
 
 	double dUp = length + tInfos.z;
-	double dDn = 3*length - tInfos.z;
-	double attUp  = exp(-dUp/cm/attlength);
-	double attDn  = uturn*exp(-dDn/cm/attlength);
+	double dDn = length - tInfos.z;
+	double attUp  = exp(-dUp/cm/attlength_D);
+	double attDn  = uturn*exp(-dDn/cm/attlength_D)*exp(-2*length/cm/attlength_N);
 	double gain = sqrt(attUp*attDn);
 
         //if(layer==1)
@@ -258,16 +261,16 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		  {
 
 		    // Distances travelled through the paddles to the upstream edges (of the hit paddle and of its coupled neighbour):
-		    dDir = (length + Lpos[s].z());
-		    dNeigh = (3*length - Lpos[s].z());
+		    dDir   = (length + Lpos[s].z());
+		    dNeigh = (length - Lpos[s].z());
 		    
 		    // apply Birks effect
 		    Edep_B = BirksAttenuation(Edep[s],dx[s],charge[s],birks_constant);
 		    // Calculate attenuated energy which will reach both PMTs:
-		    e_dir   = (Edep_B/2.) * exp(-dDir/cm/attlength);
-		    e_neigh = (Edep_B/2.) * exp(-dNeigh/cm/attlength)*uturn;
-		    e_dir_old   = (Edep_B/2.) * exp(-dDir/cm/attlength-Lg[layer-1]/att_length_lg) * light_coll;
-		    e_neigh_old = (Edep_B/2.) * exp(-dNeigh/cm/attlength-Lg[layer-1]/att_length_lg) * uturn * light_coll;
+		    e_dir   = (Edep_B/2.) * exp(-dDir/cm/attlength_D);
+		    e_neigh = (Edep_B/2.) * exp(-dNeigh/cm/attlength_D) * uturn * exp(-2*length/cm/attlength_N);
+		    e_dir_old   = (Edep_B/2.) * exp(-dDir/cm/attlength_D-Lg[layer-1]/att_length_lg) * light_coll;
+		    e_neigh_old = (Edep_B/2.) * exp(-dNeigh/cm/attlength_D-Lg[layer-1]/att_length_lg) * uturn * light_coll;
 		    // Integrate energy over entire hit. These values are the output and will be digitised:
 		    etotD = etotD + e_dir;
 		    etotN = etotN + e_neigh;
@@ -297,10 +300,10 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		    // cout<<"times[s] (ns) "<<times[s]/ns<<endl;
 
-		    et_D = et_D + ((times[s] + dDir/cm/v_eff) * e_dir);
-		    et_N = et_N + ((times[s] + dNeigh/cm/v_eff + t_u) * e_neigh);
-		    et_D_old = et_D_old + ((times[s] + dDir/cm/v_eff) * e_dir_old);
-		    et_N_old = et_N_old + ((times[s] + dNeigh/cm/v_eff + t_u) * e_neigh_old);
+		    et_D = et_D + ((times[s] + dDir/cm/v_eff_D) * e_dir);
+		    et_N = et_N + ((times[s] + dNeigh/cm/v_eff_D + 2*length/cm/v_eff_N+ t_u) * e_neigh);
+		    et_D_old = et_D_old + ((times[s] + dDir/cm/v_eff_D) * e_dir_old);
+		    et_N_old = et_N_old + ((times[s] + dNeigh/cm/v_eff_D + t_u) * e_neigh_old);
 		    
 		  }   // close loop over steps s
 		
