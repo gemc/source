@@ -201,19 +201,18 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     //Quantities needed for the calculation of alpha:
     //******************************************************************
     double alpha = 0;
-    double deg_to_rad = 3.14159265359/180;
-    double rotate_to_sec = (-60*SECI)*deg_to_rad; //Rotation towards fireing sector
+    double rotate_to_sec = (-60*SECI)*deg; //Rotation towards fireing sector
     
     int sl_sign; //check superlayer and define sign --> Needed for orientation within the wire system
     for(int i=0;i<3;i++){
-		 if(SLI == 2*i+1){
-			  sl_sign = -1; 
-		 }else sl_sign = 1;
+       if(SLI == 2*i+1){
+         sl_sign = -1;
+       }else sl_sign = 1;
 	}
     
-    double rotate_to_wire = 6*sl_sign*deg_to_rad; //Angle for the final rotation into the wire system
-    double const2 = sl_sign*sin(6*deg_to_rad);
-    double const1= cos(6*deg_to_rad);
+    double rotate_to_wire = 6*sl_sign*deg; //Angle for the final rotation into the wire system
+    double const2 = sl_sign*sin(6*deg);
+    double const1= cos(6*deg);
     
     G4ThreeVector rotated_vector;
 
@@ -230,15 +229,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			rotated_vector.rotateZ(rotate_to_sec);
 			
 			//Secondly, rotate px' and pz towards the firing sector:
-			rotated_vector.rotateY(-25*deg_to_rad);
+			rotated_vector.rotateY(-25*deg);
 			
 			//Finally, rotate px'' and py' into the wire coordinate system:
 			rotated_vector.rotateZ(rotate_to_wire);
 			
 			//Now calculate alpha according to Macs definition:
-			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg_to_rad;
-			// theta = mom[s].theta()/deg_to_rad;
-			// phi = mom[s].phi()/deg_to_rad;
+			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg;
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
@@ -246,8 +243,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	//******************************************************************
-	
-	
+
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
@@ -369,14 +365,12 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 // tmax   = t max in superlayer
 // alpha  = polar angle of the track
 // bfield = magnitude of field in tesla
-// s      = sector
-// r      = superlayer
+// sector      = sector
+// superlayer      = superlayer
 double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
     double rtime = 0.0;
     double FracDmaxAtMinVel = 0.615;
-    double PI = 3.14159265359;
-    double toRadians = PI/180;
     // Assume a functional form (time=x/v0+a*(x/dmax)**n+b*(x/dmax)**m)
     // for time as a function of x for theta = 30 deg.
     // first, calculate n
@@ -390,8 +384,7 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
     // d=dmax equal the derivative at d=0
     double a = -b*m/n;
 
-    double cos30minusalpha=(double)cos(toRadians*(30. - alpha));
-    //cout<<cos30minusalpha<<" cos30minusalpha"<<endl;
+    double cos30minusalpha=(double)cos((30. - alpha)*deg);
     double xhat = x/dmax;
     double dmaxalpha = dmax*cos30minusalpha;
     double xhatalpha = x/dmaxalpha;
