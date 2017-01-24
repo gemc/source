@@ -789,6 +789,7 @@ void MDetectorConstruction::buildMirrors()
 void MDetectorConstruction::assignRegions(vector<string> volumes)
 {
 	double VERB    = gemcOpt.optMap["HIT_VERBOSITY"].arg ;
+	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
 
 	for(unsigned int i=0; i<volumes.size(); i++)
 	{
@@ -818,6 +819,8 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 
 					// protecting against a too low production threshold
 					double productionThreshold = itr->second->SDID.prodThreshold;
+					if(fastmcMode == 1) productionThreshold = 5000;
+
 					if(productionThreshold < 0.00001) {
 						cout << " !! Warning: production threshold for " << regionName << " is  " << productionThreshold << "mm."
 						<< " That is too low. Overwriting it with 1mm." << endl;

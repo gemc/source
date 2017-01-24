@@ -13,6 +13,8 @@ using namespace CLHEP;
 sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string variation, string s)
 {
 	double verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
+	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+
 	name             = SD;
 	thisFactory      = factory + " " + variation;
 	system           = s;
@@ -97,9 +99,11 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 
 						// 5: Production Threshold in the detector
 						prodThreshold = get_number(gt.data[5], 1);
+						if(fastmcMode == 1) prodThreshold = 5000;
 
 						// 6: Maximum Acceptable Step in the detector
 						maxStep = get_number(gt.data[6], 1);
+						if(fastmcMode == 1) maxStep = 5000;
 
 						// 7: rise time of the PMT signal
 						riseTime = get_number(gt.data[7], 1);
@@ -135,6 +139,13 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 			mvToMeV         = 100;
 			pedestal        = 100;
 			delay           = 100;
+
+
+			if(fastmcMode == 1) {
+				prodThreshold = 5000;
+				maxStep = 5000;
+			}
+
 		}
 		if(verbosity > 3)
 			// this will print the sensitive detector properties

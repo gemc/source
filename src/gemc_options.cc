@@ -585,7 +585,18 @@ void goptions::setGoptions()
 	optMap["PHYSICS"].name = "Choice of Physics List";
 	optMap["PHYSICS"].type = 1;
 	optMap["PHYSICS"].ctgr = "physics";
-		
+
+
+	// voltage versus time resolution, in ns
+	optMap["FASTMCMODE"].arg   = 0;   // 1: production cut set to 5m. 2: turn off all physics but transportation
+	optMap["FASTMCMODE"].help  = "Activate FASTMC Mode. Possible values: \n\n";
+	optMap["FASTMCMODE"].help += "       0: No FASTMC (default).";
+	optMap["FASTMCMODE"].help += "       1: Disable secondaries.";
+	optMap["FASTMCMODE"].help += "       2: Disable all physics but transportation.";
+	optMap["FASTMCMODE"].name  = "Activate FASTMC Mode if non zero.";
+	optMap["FASTMCMODE"].type  = 0;
+	optMap["FASTMCMODE"].ctgr  = "output";
+
 	optMap["HALL_MATERIAL"].args = "Vacuum";
 	optMap["HALL_MATERIAL"].help = "Composition of the Experimental Hall. \n";
 	optMap["HALL_MATERIAL"].help += "            Air normal simulation\n";

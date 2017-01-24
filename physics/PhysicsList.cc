@@ -51,6 +51,8 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	gemcOpt = opts;
 	verbosity       = gemcOpt.optMap["PHYS_VERBOSITY"].arg ;
 	ingredientsList = gemcOpt.optMap["PHYSICS"].args ;
+	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
+
 
 	// default physics lists
 	hadronicPhys = "none";
@@ -77,6 +79,9 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 
 	G4LossTableManager::Instance();
 	defaultCutValue = gemcOpt.optMap["PRODUCTIONCUT"].arg;
+
+	if(fastmcMode == 1) defaultCutValue = 5000;
+
 	cutForGamma     = defaultCutValue;
 	cutForElectron  = defaultCutValue;
 	cutForPositron  = defaultCutValue;
@@ -352,47 +357,51 @@ void PhysicsList::ConstructParticle()
 void PhysicsList::ConstructProcess()
 {
 	AddTransportation();
-	G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
-	G4VProcess* decay;
+	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
 
-	if(g4EMPhysics)
-		g4EMPhysics->ConstructProcess();
+	if(fastmcMode <2) {
+		G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
+		G4VProcess* decay;
 
-	g4ParticleList->ConstructProcess();
+		if(g4EMPhysics)
+			g4EMPhysics->ConstructProcess();
 
-	for(size_t i=0; i<g4HadronicPhysics.size(); i++)
-		g4HadronicPhysics[i]->ConstructProcess();
+		g4ParticleList->ConstructProcess();
 
-	// PhysicsList contains theParticleIterator
-	theParticleIterator->reset();
+		for(size_t i=0; i<g4HadronicPhysics.size(); i++)
+			g4HadronicPhysics[i]->ConstructProcess();
 
-	while( (*theParticleIterator)() )
-	{
+		// PhysicsList contains theParticleIterator
+		theParticleIterator->reset();
 
-		G4ParticleDefinition* particle = theParticleIterator->value();
-		G4ProcessManager*     pmanager = particle->GetProcessManager();
-		string                pname    = particle->GetParticleName();
-
-		// Adding Step Limiter
-		if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
+		while( (*theParticleIterator)() )
 		{
-			if(verbosity > 2)
-				cout << "   >  Adding Step Limiter for " << pname << endl;
 
-			pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
-		}
+			G4ParticleDefinition* particle = theParticleIterator->value();
+			G4ProcessManager*     pmanager = particle->GetProcessManager();
+			string                pname    = particle->GetParticleName();
 
-		if(muonRadDecay){
-			theDecayProcess = new G4DecayWithSpin();
-			decay = processTable->FindProcess("Decay",particle);
-			if (theDecayProcess->IsApplicable(*particle)) {
-				if(decay) pmanager->RemoveProcess(decay);
-				pmanager->AddProcess(theDecayProcess);
-				pmanager->SetProcessOrdering(theDecayProcess, idxPostStep);
-				pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+			// Adding Step Limiter
+			if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
+			{
+				if(verbosity > 2)
+					cout << "   >  Adding Step Limiter for " << pname << endl;
+
+				pmanager->AddProcess(new G4StepLimiter,       -1,-1,3);
 			}
-		}
 
+			if(muonRadDecay){
+				theDecayProcess = new G4DecayWithSpin();
+				decay = processTable->FindProcess("Decay",particle);
+				if (theDecayProcess->IsApplicable(*particle)) {
+					if(decay) pmanager->RemoveProcess(decay);
+					pmanager->AddProcess(theDecayProcess);
+					pmanager->SetProcessOrdering(theDecayProcess, idxPostStep);
+					pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
+				}
+			}
+			
+		}
 	}
 }
 

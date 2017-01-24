@@ -1,6 +1,13 @@
 Changelog for GEMC
 ==================
 
+1/19/17
+ - FASTMCMODE option:
+
+    - 0: No FASTMC (default).
+    - 1: Disable secondaries (5m production cut) and set high (5m) max step in sensitive detectors
+    - 2: Disable all physics but transportation.
+
 12/13/16
  - Daniel Lersch, Michael Kunkel: added DC time to distance function
 
