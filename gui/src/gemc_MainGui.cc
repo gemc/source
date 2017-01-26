@@ -21,10 +21,9 @@
 #include <string>
 using namespace std;
 
-gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, sensitiveDetector*> SDM, map<string, detector> *hMap, map<string, G4Material*> matMap)
+gemcMainWidget::gemcMainWidget(goptions *Opts,  map<string, sensitiveDetector*> SDM, map<string, detector> *hMap, map<string, G4Material*> matMap)
 {
 	gemcOpt    = Opts;
-	RM = rm;
 
 	gtimer = new QTimer(this);
     connect(gtimer, SIGNAL(timeout()), this, SLOT(beamOnCycle()));
@@ -67,7 +66,7 @@ gemcMainWidget::gemcMainWidget(goptions *Opts, G4RunManager *rm,  map<string, se
 	pagesWidget = new QStackedWidget;
 	pagesWidget->addWidget(new run_control     (this, gemcOpt));  // for some reason run_control is very slow
 	pagesWidget->addWidget(new camera_control  (this, gemcOpt));
-	pagesWidget->addWidget(new detector_tree   (this, *gemcOpt, RM, hMap,  matMap));
+	pagesWidget->addWidget(new detector_tree   (this, *gemcOpt, hMap,  matMap));
 	pagesWidget->addWidget(new infos           (this, gemcOpt));
 	pagesWidget->addWidget(new g4dialog        (this, gemcOpt));
 	pagesWidget->addWidget(gsig  = new gsignal (this, gemcOpt, SDM));

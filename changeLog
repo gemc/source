@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+1/26/17
+ - getting particleIterator with GetParticleIterator() (geant4 10.3)
+ - removed unnecessary passing of run manager
+
 1/19/17
  - FASTMCMODE option:
 

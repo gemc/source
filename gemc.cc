@@ -333,7 +333,7 @@ int main( int argc, char **argv )
 		gemc_splash.message("Starting GUI...");
 		qApp->processEvents();
 		
-		gemcMainWidget gemcW(&gemcOpt, runManager, ExpHall->SeDe_Map, &hallMap, mats);
+		gemcMainWidget gemcW(&gemcOpt, ExpHall->SeDe_Map, &hallMap, mats);
 		gemcW.setWindowTitle(GEMC_VERSION);
 		vector<string> wpos =  get_info(gemcOpt.optMap["GUIPOS"].args);
 

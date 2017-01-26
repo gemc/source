@@ -16,11 +16,10 @@
 #include <vector>
 #include <string>
 
-detector_tree::detector_tree(QWidget *parent, goptions Opts, G4RunManager* RM, map<string, detector> *Map,
+detector_tree::detector_tree(QWidget *parent, goptions Opts, map<string, detector> *Map,
                              map<string, G4Material*> MMap) : QWidget(parent)
 {
 	gemcOpt    = Opts;
-	runManager = RM;
 	UImanager  = G4UImanager::GetUIpointer();
 	Hall_Map   = Map;
 	MMats      = MMap;

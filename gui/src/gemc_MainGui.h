@@ -26,13 +26,11 @@ class gemcMainWidget : public QWidget
 	Q_OBJECT
 	
 	public:
-		gemcMainWidget(goptions*, G4RunManager*, map<string, sensitiveDetector*>, map<string, detector>*, map<string, G4Material*>);
+		gemcMainWidget(goptions*, map<string, sensitiveDetector*>, map<string, detector>*, map<string, G4Material*>);
 		~gemcMainWidget();
 		  
 		goptions *gemcOpt;
-		
-		G4RunManager *RM;
-	
+
 	public slots:
 		void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 		void change_background(QListWidgetItem*);
@@ -48,7 +46,7 @@ class gemcMainWidget : public QWidget
 		
 		// we need to delete runManager before quitting the qApp
 		// looks like no need to delete the visManager
-		void  gemc_quit(){delete RM; cout << endl << " Arrivederci! " << endl << endl; qApp->quit();}
+		void  gemc_quit(){cout << endl << " Arrivederci! " << endl << endl; qApp->quit();}
 		void stopBeam();
 		
 		void beamOn();

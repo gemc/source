@@ -51,7 +51,7 @@ class detector_tree : public QWidget
     
 	public:
 		detector_tree(){;}
-		detector_tree(QWidget *parent, goptions, G4RunManager*, map<string, detector>*, map<string, G4Material*>);
+		detector_tree(QWidget *parent, goptions, map<string, detector>*, map<string, G4Material*>);
 		~detector_tree();
 		
 		goptions gemcOpt;
@@ -87,7 +87,6 @@ class detector_tree : public QWidget
 	
 		// passing G4 managers to QT so we can delete them when QT quits
 		// and can access directly the UImanager
-		G4RunManager *runManager;
 		G4UImanager  *UImanager;
 		
 	private slots:
