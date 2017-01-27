@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+1/27/17
+ - fixed mirror definition size dimensions checks for backward compatibility with 2.5
+
 1/26/17
  - getting particleIterator with GetParticleIterator() (geant4 10.3)
  - removed unnecessary passing of run manager

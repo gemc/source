@@ -75,36 +75,36 @@ map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 			continue;
 			
 			gtable gt(getStringVectorFromStringWithDelimiter(dbline, "|"));
-			if( gt.data.size() != 14)
-				cout << "ERROR: Incorrect number of mirror items (" << gt.data.size() << ") for " << gt.data[0]
-				     << ". We should have 14 but we have " << gt.data.size() << " instead." << endl;
-			
-		
-			mirror *thisMir = new mirror(trimSpacesFromString( gt.data[0])); // name
-			thisMir->desc         =                  gt.data[1];   // description
-			thisMir->type         =       trimSpacesFromString(gt.data[2]);  // type
-			thisMir->finish       =       trimSpacesFromString(gt.data[3]);  // finish
-			thisMir->model        =       trimSpacesFromString(gt.data[4]);  // model
-			thisMir->border       =       trimSpacesFromString(gt.data[5]);  // border
-			thisMir->maptOptProps =       trimSpacesFromString(gt.data[6]);  // material with optical properties
-			thisMir->opticalsFromString(             gt.data[7],  "photonEnergy");
-			thisMir->opticalsFromString(             gt.data[8],  "indexOfRefraction");
-			thisMir->opticalsFromString(             gt.data[9],  "reflectivity");
-			thisMir->opticalsFromString(             gt.data[10], "efficiency");
-			thisMir->opticalsFromString(             gt.data[11], "specularlobe");
-			thisMir->opticalsFromString(             gt.data[12], "specularspike");
-			thisMir->opticalsFromString(             gt.data[13], "backscatter");
+			if( gt.data.size() >13 ) {
+				mirror *thisMir = new mirror(trimSpacesFromString( gt.data[0])); // name
+				thisMir->desc         =                  gt.data[1];   // description
+				thisMir->type         =       trimSpacesFromString(gt.data[2]);  // type
+				thisMir->finish       =       trimSpacesFromString(gt.data[3]);  // finish
+				thisMir->model        =       trimSpacesFromString(gt.data[4]);  // model
+				thisMir->border       =       trimSpacesFromString(gt.data[5]);  // border
+				thisMir->maptOptProps =       trimSpacesFromString(gt.data[6]);  // material with optical properties
+				thisMir->opticalsFromString(             gt.data[7],  "photonEnergy");
+				thisMir->opticalsFromString(             gt.data[8],  "indexOfRefraction");
+				thisMir->opticalsFromString(             gt.data[9],  "reflectivity");
+				thisMir->opticalsFromString(             gt.data[10], "efficiency");
+				thisMir->opticalsFromString(             gt.data[11], "specularlobe");
+				thisMir->opticalsFromString(             gt.data[12], "specularspike");
+				thisMir->opticalsFromString(             gt.data[13], "backscatter");
 
-			// this condition is for backward compatibility,
-			// sigma Alpha were added with gemc 2.6
-			// 15 exact quantities
-			if( gt.data.size() > 14) {
-				thisMir->sigmaAlpha = get_number(gt.data[14]);
+				// this condition is for backward compatibility,
+				// sigma Alpha were added with gemc 2.6
+				// 15 exact quantities
+				if( gt.data.size() > 14) {
+					thisMir->sigmaAlpha = get_number(gt.data[14]);
+				}
+
+				mymirs[thisMir->name] = thisMir;
 			}
 
 
-			mymirs[thisMir->name] = thisMir;
-			
+
+
+
 		}
 	}
 	cout << endl;

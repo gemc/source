@@ -100,7 +100,7 @@ const char *GEMC_VERSION = "gemc 2.6";
 QCoreApplication* createApplication(int &argc, char *argv[], double use_gui)
 {
 	if(!use_gui)
-			return new QCoreApplication(argc, argv);
+		return new QCoreApplication(argc, argv);
 	return new QApplication(argc, argv);
 }
 
