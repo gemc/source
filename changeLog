@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/9/17
+ - added "mother" and "hitType" fields in cad.gxml
+
 1/27/17
  - fixed mirror definition size dimensions checks for backward compatibility with 2.5
 

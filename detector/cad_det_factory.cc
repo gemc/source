@@ -160,11 +160,13 @@ map<string, detector> cad_det_factory::loadDetectors()
 				string color        = e.attribute("color").toStdString();
 				string material     = e.attribute("material").toStdString();
 				string sensitivity  = e.attribute("sensitivity").toStdString();
+				string hitType      = e.attribute("hitType").toStdString();
 				string identifiers  = e.attribute("identifiers").toStdString();
 				string visible      = e.attribute("visible").toStdString();
 				string style        = e.attribute("style").toStdString();
 				string position     = e.attribute("position").toStdString();
 				string rotation     = e.attribute("rotation").toStdString();
+				string mother       = e.attribute("mother").toStdString();
 
 				// assigning attributes to volume
 				if(dets.find(volumeName) != dets.end()) {
@@ -193,7 +195,6 @@ map<string, detector> cad_det_factory::loadDetectors()
 						// this should be modified later
 						dets[volumeName].system = sensitivity;
 						dets[volumeName].sensitivity = sensitivity;
-						dets[volumeName].hitType = sensitivity;
 
 						// identifier must be defined
 						if(identifiers != "") {
@@ -205,6 +206,12 @@ map<string, detector> cad_det_factory::loadDetectors()
 						} else {
 							cout << " !! Error: volume " << volumeName << " has sensitivity but not identifier. " << endl;
 						}
+					}
+					
+					if(hitType != "") {
+						if(verbosity>3)
+							cout << " hitType: " << hitType ;
+						dets[volumeName].hitType = hitType;
 					}
 
 					if(material != "") {
@@ -223,6 +230,12 @@ map<string, detector> cad_det_factory::loadDetectors()
 						if(verbosity>3)
 							cout << " rotation: " << rotation ;
 						dets[volumeName].rot = calc_rotation(rotation, volumeName);
+					}
+					
+					if(mother != "") {
+						if(verbosity>3)
+							cout << " mother: " << mother ;
+						dets[volumeName].mother = mother;
 					}
 
 					if(verbosity>3)
@@ -261,7 +274,6 @@ string cad_det_factory::checkFormat(string file)
 			if(fobj.good()) {
 				fobj.close();
 				return filename;
-				// trying OBJ
 			} else {
 				return "na";
 			}
