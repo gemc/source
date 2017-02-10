@@ -31,13 +31,13 @@ static ecConstants initializeECConstants(int runno)
 	ecc.variation  = "default";
 
 	ecc.NSTRIPS             = 36;
-	ecc.TDC_time_to_evio    = 1000.; // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
-	ecc.ADC_MeV_to_evio     = 10.  ; // MIP based calibration is nominally 10 channels/MeV
-	ecc.veff                = 160. ; // Effective velocity of scintillator light (mm/ns)
-	ecc.pmtPEYld            = 3.5  ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
-	ecc.pmtQE               = 0.27 ;
-	ecc.pmtDynodeGain       = 4.0  ;
-	ecc.pmtDynodeK          = 0.5  ; // K=0 (Poisson) K=1(exponential)
+	ecc.TDC_time_to_evio    = 1000.   ; // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	ecc.ADC_GeV_to_evio     = 1/10000.; // MIP based calibration is nominally 10 channels/MeV
+	ecc.veff                = 160.    ; // Effective velocity of scintillator light (mm/ns)
+	ecc.pmtPEYld            = 3.5     ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	ecc.pmtQE               = 0.27    ;
+	ecc.pmtDynodeGain       = 4.0     ;
+	ecc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)
 	//  Fluctuations in PMT gain distributed using Gaussian with
 	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
 	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
@@ -55,10 +55,19 @@ static ecConstants initializeECConstants(int runno)
 	{
 		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
 		ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
-		ecc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
-		ecc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
+		ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
 
+    sprintf(ecc.database,"/calibration/ec/gain:%d",ecc.runNo);
+    data.clear(); calib->GetCalib(data,ecc.database);
+    
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+        ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
+    }
+    
 	// setting voltage signal parameters
 	ecc.vpar[0] = 50;  // delay, ns
 	ecc.vpar[1] = 10;  // rise time, ns
@@ -146,6 +155,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double A = ecc.attlen[sector-1][layer-1][0][strip-1];
 	double B = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C = ecc.attlen[sector-1][layer-1][2][strip-1];
+    double G = ecc.gain[sector-1][layer-1][strip-1];
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
@@ -180,9 +190,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double EC_npe = G4Poisson(Etota*ecc.pmtPEYld); //number of photoelectrons
 		if (EC_npe>0) {
 			double sigma  = ecc.pmtFactor/sqrt(EC_npe);
-			double EC_MeV = G4RandGauss::shoot(EC_npe,sigma)*ecc.ADC_MeV_to_evio/ecc.pmtPEYld;
-			if (EC_MeV>0) {
-				ADC = (int) EC_MeV;
+			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
+			if (EC_GeV>0) {
+				ADC = (int) EC_GeV;
 				TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio);
 			}
 		}
@@ -277,6 +287,7 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	double A = ecc.attlen[sector-1][layer-1][0][strip-1];
 	double B = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C = ecc.attlen[sector-1][layer-1][2][strip-1];
+    double G = ecc.gain[sector-1][layer-1][strip-1];
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
@@ -299,10 +310,10 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
 				if (EC_npe>0) {
 					double sigma  = ecc.pmtFactor/sqrt(EC_npe);
-					double EC_MeV = G4RandGauss::shoot(EC_npe, sigma)*ecc.ADC_MeV_to_evio/ecc.pmtPEYld;
-					if (EC_MeV>0) {
+					double EC_GeV = G4RandGauss::shoot(EC_npe, sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
+					if (EC_GeV>0) {
 						stepIndex.push_back(s);
-						chargeAtElectronics.push_back(EC_MeV);
+						chargeAtElectronics.push_back(EC_GeV);
 						timeAtElectronics.push_back(stepTime);
 					}
 				}

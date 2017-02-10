@@ -30,13 +30,13 @@ static pcConstants initializePCConstants(int runno)
 	pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	pcc.variation  = "default";
 
-	pcc.TDC_time_to_evio    = 1000.;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
-	pcc.ADC_MeV_to_evio     = 10.  ;  // MIP based calibration is nominally 10 channels/MeV
-	pcc.veff                = 160. ;  // Effective velocity of scintillator light (mm/ns)
-	pcc.pmtPEYld            = 11.5 ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
-	pcc.pmtQE               = 0.27 ;
-	pcc.pmtDynodeGain       = 4.0  ;
-	pcc.pmtDynodeK          = 0.5  ; // K=0 (Poisson) K=1(exponential)	vector<vector<double> > data;
+	pcc.TDC_time_to_evio    = 1000.   ;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
+	pcc.ADC_GeV_to_evio     = 1./10000;  // MIP based calibration is nominally 10 channels/MeV
+	pcc.veff                = 160.    ;  // Effective velocity of scintillator light (mm/ns)
+	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
+	pcc.pmtQE               = 0.27    ;
+	pcc.pmtDynodeGain       = 4.0     ;
+	pcc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)	vector<vector<double> > data;
 	//  Fluctuations in PMT gain distributed using Gaussian with
 	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
 	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
@@ -54,11 +54,20 @@ static pcConstants initializePCConstants(int runno)
 	{
 		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
 		pcc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
-		pcc.attlen[isec-1][ilay-1][1].push_back(data[row][4]);
-		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][5]);
+		pcc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
+		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
+    
+    sprintf(pcc.database,"/calibration/ec/gain:%d",pcc.runNo);
+    data.clear(); calib->GetCalib(data,pcc.database);
+    
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+        pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
+    }
 
-	// setting voltage signal parameters
+    // setting voltage signal parameters
 	pcc.vpar[0] = 50;  // delay, ns
 	pcc.vpar[1] = 10;  // rise time, ns
 	pcc.vpar[2] = 20;  // fall time, ns
@@ -110,6 +119,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double A = pcc.attlen[sector-1][view-1][0][strip-1];
 	double B = pcc.attlen[sector-1][view-1][1][strip-1]*10.;
 	double C = pcc.attlen[sector-1][view-1][2][strip-1];
+    double G = pcc.gain[sector-1][view-1][strip-1];
 
 	//cout<<"sector "<<sector<<"view "<<view<<"strip "<<strip<<"B "<<B<<endl;
 
@@ -140,9 +150,9 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double PC_npe = G4Poisson(Etota*pcc.pmtPEYld); //number of photoelectrons
 		if (PC_npe>0) {
 			double sigma = pcc.pmtFactor/sqrt(PC_npe);
-			double PC_MeV = G4RandGauss::shoot(PC_npe,sigma)*pcc.ADC_MeV_to_evio/pcc.pmtPEYld;
-			if (PC_MeV>0) {
-				ADC = (int) PC_MeV;
+			double PC_GeV = G4RandGauss::shoot(PC_npe,sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
+			if (PC_GeV>0) {
+				ADC = (int) PC_GeV;
 				TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio);
 			}
 		}
