@@ -402,7 +402,6 @@ void PhysicsList::ConstructProcess()
 					pmanager->SetProcessOrderingToLast(theDecayProcess, idxAtRest);
 				}
 			}
-			
 		}
 	}
 }
