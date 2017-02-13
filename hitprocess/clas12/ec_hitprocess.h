@@ -22,9 +22,12 @@ public:
 	//attlen: attenuation length
 	vector<double> attlen[6][9][3];
 
+    //gain: pmt gain
+    vector<double> gain[6][9];
+    
 	double NSTRIPS;             // Number of strips
 	double TDC_time_to_evio;    // Conversion from time (ns) to EVIO TDC format
-	double ADC_MeV_to_evio;     // Conversion from energy (MeV) to EVIO FADC250 format
+	double ADC_GeV_to_evio;     // Conversion from energy (GeV) to EVIO FADC250 format
 	double veff;                // Effective velocity of scintillator light (mm/ns)
 	double pmtPEYld;            // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	double pmtQE;               // Quantum efficiency of PMT

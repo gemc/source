@@ -18,9 +18,10 @@ public:
 	char   database[80];
 
 	vector<double> attlen[6][9][3];  // Attenuation Length (mm)
-
+    vector<double> gain[6][9];       //gain: pmt gain
+    
 	double TDC_time_to_evio;     // Conversion from time (ns) to EVIO TDC format
-	double ADC_MeV_to_evio;      // Conversion from energy (MeV) to EVIO FADC250 format
+	double ADC_GeV_to_evio;      // Conversion from energy (MeV) to EVIO FADC250 format
 	double veff;                 // Effective velocity of scintillator light (mm/ns)
 	double pmtPEYld;             // Number of p.e. divided by the energy deposited in MeV.
 	double pmtQE;
