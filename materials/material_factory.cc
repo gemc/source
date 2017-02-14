@@ -188,9 +188,10 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 	// building STL map of existing material names
 	// so I can use "find" later
 	vector<G4String> allMats = matman->GetNistMaterialNames();
-	for(unsigned int j=0; j<allMats.size(); j++)
+	for(unsigned int j=0; j<allMats.size(); j++) {
 		nistMap.insert(allMats[j]);
-	
+	//	cout << allMats[j] << " material " << endl;
+	}
 	vector<G4String> allEls = matman->GetNistElementNames();
 	for(unsigned int j=0; j<allEls.size(); j++)
 	{

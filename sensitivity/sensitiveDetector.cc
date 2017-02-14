@@ -332,6 +332,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "positronNuclear")       return 9;
 	if(procName == "CoulombScat")           return 10;
 	if(procName == "Cerenkov")              return 11;
+	if(procName == "Scintillation")         return 12;
 	if(procName == "hadElastic")            return 20;
 	if(procName == "hBrems")                return 21;
 	if(procName == "hIoni")                 return 22;
@@ -360,10 +361,12 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "ionIoni")               return 120;
 	if(procName == "tInelastic")            return 130;
 
-	if(procName == "na")               return 999;
-	
-	cout << " process name " << procName << " not catalogued." << endl;
-	return 99;
+	if(procName == "na")                    return 999;
+
+	if(verbosity > 0)
+		cout << " Warning: process name " << procName << " not catalogued." << endl;
+
+	return 999;
 }
 
 
