@@ -3,6 +3,7 @@ Changelog for GEMC
 
 2/14/17
  - added Scintillation in the process catalogue. Added verbosity condition to print not catalogue pro
+ - large production threshold and max step for fastmc mode 1 AND 2.
 
 2/9/17
  - added "mother" and "hitType" fields in cad.gxml

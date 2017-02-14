@@ -80,7 +80,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	G4LossTableManager::Instance();
 	defaultCutValue = gemcOpt.optMap["PRODUCTIONCUT"].arg;
 
-	if(fastmcMode == 1) defaultCutValue = 5000;
+	if(fastmcMode > 0) defaultCutValue = 5000;
 
 	cutForGamma     = defaultCutValue;
 	cutForElectron  = defaultCutValue;
@@ -359,7 +359,7 @@ void PhysicsList::ConstructProcess()
 	AddTransportation();
 	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
 
-	if(fastmcMode <2) {
+	if(fastmcMode < 2) {
 		G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
 		G4VProcess* decay;
 
