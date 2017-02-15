@@ -9,6 +9,7 @@ Changelog for GEMC
  - for FASTMC mode, do not digitize the info
  - for FASTMC mode, do not process RF
  - added FASTMC mode TXT and EVIO output: smeared and unsmeared quantities
+ - Simple field integration for FASTMC mode. 
 
 2/14/17
  - added Scintillation in the process catalogue. Added verbosity condition to print not catalogue pro
