@@ -328,6 +328,8 @@ int main( int argc, char **argv )
 	
 	clock_t start_events;
 
+	int nEventsToProcess = gemcOpt.optMap["N"].arg;
+
 	if(use_gui)
 	{
 		gemc_splash.message("Starting GUI...");
@@ -353,14 +355,21 @@ int main( int argc, char **argv )
 		}
 		
 		if(exec_macro != "/control/execute no") UImanager->ApplyCommand(exec_macro.c_str());
-		if(gemcOpt.optMap["N"].arg>0)
+		if(nEventsToProcess > 0)
 		{
+			start_events = clock();
 			char command[100];
-			sprintf(command, "/run/beamOn %d", (int) gemcOpt.optMap["N"].arg);
+			// starting clock after the first event is much more precise
+			if(nEventsToProcess > 10) {
+				sprintf(command, "/run/beamOn 1");
+				UImanager->ApplyCommand(command);
+				start_events = clock();
+				nEventsToProcess--;
+			}
+			sprintf(command, "/run/beamOn %d", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 		
-		start_events = clock();
 		return qApp->exec();
 		// deleting and runManager is now taken care
 		// in the gemc_quit slot
@@ -369,13 +378,20 @@ int main( int argc, char **argv )
 	}
 	else
 	{
-		
 		if(exec_macro != "/control/execute no") UImanager->ApplyCommand(exec_macro.c_str());
 		start_events = clock();
-		if(gemcOpt.optMap["N"].arg>0)
+		if(nEventsToProcess > 0)
 		{
+			start_events = clock();
 			char command[100];
-			sprintf(command, "/run/beamOn %d", (int) gemcOpt.optMap["N"].arg);
+			// starting clock after the first event is much more precise
+			if(nEventsToProcess > 10) {
+				sprintf(command, "/run/beamOn 1");
+				UImanager->ApplyCommand(command);
+				start_events = clock();
+				nEventsToProcess--;
+			}
+			sprintf(command, "/run/beamOn %d", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 	}
@@ -383,6 +399,10 @@ int main( int argc, char **argv )
 	clock_t endTime = clock();
 	clock_t clockAllTaken   = endTime - startTime;
 	clock_t clockEventTaken = endTime - start_events;
+
+	if(nEventsToProcess > 10) {
+		clockEventTaken = clockEventTaken*(nEventsToProcess + 1) / nEventsToProcess;
+	}
 
 	cout << " > Total gemc time: " <<  clockAllTaken / (double) CLOCKS_PER_SEC << " seconds. "
 	     << " Events only time: " << clockEventTaken / (double) CLOCKS_PER_SEC << " seconds. " << endl;
