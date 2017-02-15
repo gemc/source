@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+2/15/17
+ - identifying missing hit process by volume name
+ - for CAD models, if hitType is not specified, using sensitivity
+ - added momemntum information for FASTMC mode (unsmeared)
+ - for FASTMC mode 2, forcing recording of 0 edep particles
+
 2/14/17
  - added Scintillation in the process catalogue. Added verbosity condition to print not catalogue pro
  - large production threshold and max step for fastmc mode 1 AND 2.

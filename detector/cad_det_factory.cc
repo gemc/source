@@ -212,6 +212,8 @@ map<string, detector> cad_det_factory::loadDetectors()
 						if(verbosity>3)
 							cout << " hitType: " << hitType ;
 						dets[volumeName].hitType = hitType;
+					} else {
+						dets[volumeName].hitType = sensitivity;
 					}
 
 					if(material != "") {

@@ -28,10 +28,12 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
 	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
 	ELECTRONICNOISE  = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
+	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy
-	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3)
+	// for FASTMC mode = 2 this is necessary so it does record the hit
+	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3 || fastMCMode == 2)
 		RECORD_PASSBY = 1;
 		
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
@@ -105,14 +107,14 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
 	if(ProcessHitRoutine == NULL)
 	{
-		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name));
+		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name), name);
 	}
 	
 	// if not existing, exit
 	// this should never happen though
 	if(ProcessHitRoutine == NULL)
 	{
-		cout << endl << "  !!! Error: >" << name << "< NOT FOUND IN  ProcessHit Map. Exiting" << endl;
+		cout << endl << "  !!! Error: >" << name << "< NOT FOUND IN  ProcessHit Map for volume: " << aname << " - exiting." << endl;
 		return false;
 	}
 
