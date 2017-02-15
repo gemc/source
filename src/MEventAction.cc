@@ -328,7 +328,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
 
 	// write RF bank if present
-	if(RFSETUP!= "no") {
+	// do not write in FASTMC mode
+	if(RFSETUP!= "no" && fastMCMode == 0) {
 		vector<string> rfvalues = getStringVectorFromString(RFSETUP);
 
 		// getting time window
@@ -343,11 +344,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		FrequencySyncSignal rfs(rfsetup);
 		processOutputFactory->writeRFSignal(outContainer, rfs, getBankFromMap("rf", banksMap));
 
-
-
 		if(VERB > 1)
 			cout << rfs << endl;
-
 	}
 
 
@@ -393,8 +391,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType, vname);
 			if(!hitProcessRoutine)
 				return;
-			
-			hitProcessRoutine->init(hitType, gemcOpt, gPars);
+
+			if(fastMCMode == 0)
+				hitProcessRoutine->init(hitType, gemcOpt, gPars);
 			
 			bool WRITE_TRUE_INTEGRATED = 0;
 			bool WRITE_TRUE_ALL = 0;
@@ -445,7 +444,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						vector<double> times = aHit->GetTime();
 						MPrimaries[pi].pSum.back().nphe = aHit->GetTIds().size();
 						if(fastMCMode >0) {
-							MPrimaries[pi].fastMC.back().pOrig = aHit->GetMom();
+							MPrimaries[pi].fastMC.back().pOrig  = aHit->GetMom();
+							MPrimaries[pi].fastMC.back().pSmear = hitProcessRoutine->psmear(aHit->GetMom());
 						}
 						for(unsigned ss =0; ss<edeps.size(); ss++)
 						{
@@ -477,10 +477,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					aHit->SetmPIDs(    zint);
 					aHit->SetmVerts(   zthre);
 				}
+
+				if(fastMCMode == 0)
+					thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
 				
-				thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
-				
-				if(WRITE_TRUE_ALL)
+				if(WRITE_TRUE_ALL && fastMCMode == 0)
 					thisHitOutput.setAllRaws(hitProcessRoutine->allRaws(aHit, h+1));
 				
 				
@@ -531,7 +532,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// by default they are all ENABLED
 			// user can disable them one by one
 			// using the INTEGRATEDDGT option
-			if(WRITE_INTDGT.find(hitType) == string::npos)
+			// for FASTMC mode, do not digitize the info
+			if(WRITE_INTDGT.find(hitType) == string::npos && fastMCMode == 0)
 			{
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
 				

@@ -121,6 +121,9 @@ public:
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double) = 0;
 
+	// - smearing momentum
+	virtual G4ThreeVector psmear(G4ThreeVector p) { return p;}
+
 	
 protected:
 

@@ -6,6 +6,9 @@ Changelog for GEMC
  - for CAD models, if hitType is not specified, using sensitivity
  - added momemntum information for FASTMC mode (unsmeared)
  - for FASTMC mode 2, forcing recording of 0 edep particles
+ - for FASTMC mode, do not digitize the info
+ - for FASTMC mode, do not process RF
+ - added FASTMC mode TXT and EVIO output: smeared and unsmeared quantities
 
 2/14/17
  - added Scintillation in the process catalogue. Added verbosity condition to print not catalogue pro

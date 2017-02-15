@@ -78,6 +78,8 @@ public:
     // returns a time given a distance
     double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
 
+	G4ThreeVector psmear(G4ThreeVector p);
+
 private:
 
 	// constants initialized with initWithRunNumber

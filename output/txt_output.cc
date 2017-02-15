@@ -115,7 +115,8 @@ void txt_output :: writeGenerated(outputContainer* output, vector<generatedParti
 			            << " nphe and time "  << MGP[i].pSum[d].t << " ns" << endl;
 			}
 			if(writeFastMC == 1) {
-				*txtout << "                    mom: ("      << MGP[i].fastMC[d].pOrig.x() << ", " <<  MGP[i].fastMC[d].pOrig.y() << ", " << MGP[i].fastMC[d].pOrig.z() << ")" << endl;
+				*txtout << "               orig     mom: ("      << MGP[i].fastMC[d].pOrig/MeV  << " MeV" << endl;
+				*txtout << "               smeared  mom: ("      << MGP[i].fastMC[d].pSmear.x() << ", " <<  MGP[i].fastMC[d].pSmear.y() << ", " << MGP[i].fastMC[d].pSmear.z() << ") GeV" << endl;
 
 			}
 		}
