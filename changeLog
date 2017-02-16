@@ -1,6 +1,24 @@
 Changelog for GEMC
 ==================
 
+2/16/17
+ - Added vacuumOpt material - vacuum with optical property. Addressing issue #64.
+
+2/15/17
+ - identifying missing hit process by volume name
+ - for CAD models, if hitType is not specified, using sensitivity
+ - added momemntum information for FASTMC mode (unsmeared)
+ - for FASTMC mode 2, forcing recording of 0 edep particles
+ - for FASTMC mode, do not digitize the info
+ - for FASTMC mode, do not process RF
+ - added FASTMC mode TXT and EVIO output: smeared and unsmeared quantities
+ - Simple field integration for FASTMC mode. 
+ - more precise evaluation of events processing time
+
+2/14/17
+ - added Scintillation in the process catalogue. Added verbosity condition to print not catalogue pro
+ - large production threshold and max step for fastmc mode 1 AND 2.
+
 2/9/17
  - added "mother" and "hitType" fields in cad.gxml
 

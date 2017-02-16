@@ -99,11 +99,11 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 
 						// 5: Production Threshold in the detector
 						prodThreshold = get_number(gt.data[5], 1);
-						if(fastmcMode == 1) prodThreshold = 5000;
+						if(fastmcMode > 0) prodThreshold = 5000;
 
 						// 6: Maximum Acceptable Step in the detector
 						maxStep = get_number(gt.data[6], 1);
-						if(fastmcMode == 1) maxStep = 5000;
+						if(fastmcMode > 0) maxStep = 5000;
 
 						// 7: rise time of the PMT signal
 						riseTime = get_number(gt.data[7], 1);
@@ -141,7 +141,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 			delay           = 100;
 
 
-			if(fastmcMode == 1) {
+			if(fastmcMode > 0) {
 				prodThreshold = 5000;
 				maxStep = 5000;
 			}

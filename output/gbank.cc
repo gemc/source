@@ -78,11 +78,17 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	// particle summary infos
 	// this is a daughter bank of the generated particle infos
 	abank =  gBank(GENERATED_SUMMARY_BANK_TAG, "psummary", "Generated Particles Summary");
-	abank.load_variable("dname",    1,  "Ns", "Detector Name");
-	abank.load_variable("stat",     2,  "Ni", "Number of Hits in the detector");
-	abank.load_variable("etot",     3,  "Nd", "Total Energy Deposited");
-	abank.load_variable("t",        4,  "Nd", "Fastest Time on Detector");
-	abank.load_variable("nphe",     5,  "Ni", "Number of Photoelectrons");
+	abank.load_variable("dname",    1, "Ns", "Detector Name");
+	abank.load_variable("stat",     2, "Ni", "Number of Hits in the detector");
+	abank.load_variable("etot",     3, "Nd", "Total Energy Deposited");
+	abank.load_variable("t",        4, "Nd", "Fastest Time on Detector");
+	abank.load_variable("nphe",     5, "Ni", "Number of Photoelectrons");
+	abank.load_variable("upx",     10, "Nd", "unsmeared px");
+	abank.load_variable("upy",     11, "Nd", "unsmeared py");
+	abank.load_variable("upz",     12, "Nd", "unsmeared pz");
+	abank.load_variable("spx",     10, "Nd", "smeared px");
+	abank.load_variable("spy",     11, "Nd", "smeared py");
+	abank.load_variable("spz",     12, "Nd", "smeared pz");
 	abank.orderNames();
 	banks["psummary"] = abank;
 	

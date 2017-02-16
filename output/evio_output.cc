@@ -89,6 +89,9 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 {
 	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
 	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
+	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+
+	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
 
 	gBank bank  = getBankFromMap("generated", banksMap);
 	gBank sbank = getBankFromMap("psummary", banksMap);
@@ -103,6 +106,8 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> btime;
 	vector<double> multiplicity;
 
+
+
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++)
 	{
 		pid.push_back(MGP[i].PID);
@@ -114,6 +119,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vz.push_back(MGP[i].vertex.getZ()/mm);
 		btime.push_back(MGP[i].time);
 		multiplicity.push_back(MGP[i].multiplicity);
+
 	}
 
 	// creating and inserting generated particles bank  >> TAG=10 NUM=0 <<
@@ -137,9 +143,25 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vector<double> nphe;
 		vector<double> time;
 
+		// fast MC mode, smeared and unsmeared
+		vector<double> ufpx;
+		vector<double> ufpy;
+		vector<double> ufpz;
+		vector<double> sfpx;
+		vector<double> sfpy;
+		vector<double> sfpz;
+
+		int writeFastMC = 0;
+
 		for(unsigned int i=0; i<MAXP && i<MGP.size(); i++)
 		{
-
+			if(MGP[i].fastMC.size() > 0) {
+				if(MGP[i].pSum.size() != MGP[i].fastMC.size()) {
+					cout << " !!! Warning: pSum and fastMC info do not match" << endl;
+				} else {
+					writeFastMC = 1;
+				}
+			}
 
 			for(unsigned d=0; d<MGP[i].pSum.size(); d++)
 			{
@@ -148,8 +170,18 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 				etot.push_back(MGP[i].pSum[d].etot);
 				nphe.push_back(MGP[i].pSum[d].nphe);
 				time.push_back(MGP[i].pSum[d].t);
-			}
 
+
+				if(writeFastMC) {
+					ufpx.push_back(MGP[i].fastMC[d].pOrig.getX()/MeV);
+					ufpy.push_back(MGP[i].fastMC[d].pOrig.getY()/MeV);
+					ufpz.push_back(MGP[i].fastMC[d].pOrig.getZ()/MeV);
+					sfpx.push_back(MGP[i].fastMC[d].pSmear.getX()/MeV);
+					sfpy.push_back(MGP[i].fastMC[d].pSmear.getY()/MeV);
+					sfpz.push_back(MGP[i].fastMC[d].pSmear.getZ()/MeV);
+				}
+				
+			}
 		}
 
 		evioDOMNodeP summaryBank = evioDOMNode::createEvioDOMNode(GENERATED_SUMMARY_BANK_TAG, 0);
@@ -158,6 +190,17 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("etot"),  bank.getVarType("etot"),  etot);
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("nphe"),  bank.getVarType("nphe"),  etot);
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("t"),     bank.getVarType("t"),     time);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upx"),   bank.getVarType("upx"),    ufpx);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upy"),   bank.getVarType("upy"),    ufpy);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upz"),   bank.getVarType("upz"),    ufpz);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spx"),   bank.getVarType("spx"),    sfpx);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spy"),   bank.getVarType("spy"),    sfpy);
+		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spz"),   bank.getVarType("spz"),    sfpz);
+
+		if(writeFastMC) {
+
+		}
+
 		*generatedp << summaryBank;
 	}
 

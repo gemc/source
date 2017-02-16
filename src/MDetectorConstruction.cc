@@ -819,7 +819,7 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 
 					// protecting against a too low production threshold
 					double productionThreshold = itr->second->SDID.prodThreshold;
-					if(fastmcMode == 1) productionThreshold = 5000;
+					if(fastmcMode > 0) productionThreshold = 5000;
 
 					if(productionThreshold < 0.00001) {
 						cout << " !! Warning: production threshold for " << regionName << " is  " << productionThreshold << "mm."

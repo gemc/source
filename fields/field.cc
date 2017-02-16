@@ -115,14 +115,14 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 {
 	if (sname == "G4CashKarpRKF45")	      return new G4CashKarpRKF45(ie);
 	if (sname == "G4ClassicalRK4")	      return new G4ClassicalRK4(ie);
-	if (sname == "G4SimpleHeum")		      return new G4SimpleHeum(ie);
-	if (sname == "G4SimpleRunge")	         return new G4SimpleRunge(ie);
+	if (sname == "G4SimpleHeum")		  return new G4SimpleHeum(ie);
+	if (sname == "G4SimpleRunge")	      return new G4SimpleRunge(ie);
 	if (sname == "G4ImplicitEuler")	      return new G4ImplicitEuler(ie);
 	if (sname == "G4ExplicitEuler")	      return new G4ExplicitEuler(ie);
-	if (sname == "G4HelixImplicitEuler")	return new G4HelixImplicitEuler(ie);
-	if (sname == "G4HelixExplicitEuler")	return new G4HelixExplicitEuler(ie);
-	if (sname == "G4HelixSimpleRunge")	   return new G4HelixSimpleRunge(ie);
-	if (sname == "G4NystromRK4")	         return new G4NystromRK4(ie);
+	if (sname == "G4HelixImplicitEuler")  return new G4HelixImplicitEuler(ie);
+	if (sname == "G4HelixExplicitEuler")  return new G4HelixExplicitEuler(ie);
+	if (sname == "G4HelixSimpleRunge")	  return new G4HelixSimpleRunge(ie);
+	if (sname == "G4NystromRK4")	      return new G4NystromRK4(ie);
 
 	// if requested is not found return NULL
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;
@@ -145,6 +145,8 @@ void gfield::initialize(goptions Opt)
 	}
 
 	vector<aopt> FIELD_PROPERTIES = Opt.getArgs("FIELD_PROPERTIES");
+	int fastMCMode                = Opt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+
 	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++)
 	{
 		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
@@ -154,10 +156,18 @@ void gfield::initialize(goptions Opt)
 			{
 				minStep = get_number(attributes[1]);
 				integration = trimSpacesFromString(attributes[2]);
+				if(fastMCMode) {
+					integration = "G4SimpleRunge";
+					minStep = 2*mm;
+				}
 
-				if(map)
-					if(attributes.size() == 4)
+				if(map) {
+					if(attributes.size() == 4) {
 						map->interpolation = trimSpacesFromString(attributes[3]);
+					} else {
+						map->interpolation = "linear";
+					}
+				}
 			}
 		}
 	}

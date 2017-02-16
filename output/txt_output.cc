@@ -79,13 +79,25 @@ void txt_output :: writeGenerated(outputContainer* output, vector<generatedParti
 	gBank bank = getBankFromMap("generated", banksMap);
 
 	*txtout << " --- Generated Particles Bank -- " << endl;
-	
+
+	int writeFastMC = 0;
+
 	for(unsigned int i=0; i<MAXP && i<MGP.size(); i++)
 	{
 		*txtout << "    - Particle "    << i+1 << " pid: "<< MGP[i].PID
 		        << "   -  mom: "        << MGP[i].momentum/MeV
 		        << " MeV   -  vert: "   << MGP[i].vertex/mm << " mm" << endl;
-				
+
+
+
+		if(MGP[i].fastMC.size() > 0) {
+			if(MGP[i].pSum.size() != MGP[i].fastMC.size()) {
+				cout << " !!! Warning: pSum and fastMC info do not match" << endl;
+			} else {
+				writeFastMC = 1;
+			}
+		}
+
 		for(unsigned d=0; d<MGP[i].pSum.size(); d++)
 		{
 			*txtout << "    - Hit >"     << MGP[i].pSum[d].dname
@@ -101,6 +113,11 @@ void txt_output :: writeGenerated(outputContainer* output, vector<generatedParti
 			{
 				*txtout << " with nphe "      << MGP[i].pSum[d].nphe
 			            << " nphe and time "  << MGP[i].pSum[d].t << " ns" << endl;
+			}
+			if(writeFastMC == 1) {
+				*txtout << "               orig     mom: ("      << MGP[i].fastMC[d].pOrig/MeV  << " MeV" << endl;
+				*txtout << "               smeared  mom: ("      << MGP[i].fastMC[d].pSmear.x() << ", " <<  MGP[i].fastMC[d].pSmear.y() << ", " << MGP[i].fastMC[d].pSmear.z() << ") GeV" << endl;
+
 			}
 		}
 	}

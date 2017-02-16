@@ -121,6 +121,9 @@ public:
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double) = 0;
 
+	// - smearing momentum
+	virtual G4ThreeVector psmear(G4ThreeVector p) { return p;}
+
 	
 protected:
 
@@ -151,7 +154,7 @@ protected:
 typedef HitProcess *(*HitProcess_Factory)();
 
 // Return HitProcess from the Hit Process Map
-HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string);
+HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string, string);
 
 // returns the list of Hit Factories registered
 set<string> getListOfHitProcessHit(map<string, HitProcess_Factory>);
