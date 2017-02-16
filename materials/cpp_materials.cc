@@ -64,7 +64,13 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	G4Material *vacuum_m3 = new G4Material("vacuum_m3", density= 1.68e-6*mg/cm3, nel=2);
 	vacuum_m3->AddMaterial(matman->FindOrBuildMaterial("G4_N"), 70.*perCent);
 	vacuum_m3->AddMaterial(matman->FindOrBuildMaterial("G4_O"), 30.*perCent);
-	
+
+	// optical vacuum  - same density as G4_Galactic
+	// same optical properties as air
+	G4Material *vacuumOpt = new G4Material("vacuumOpt", density=1.0e-22*mg/cm, nel=1);
+	vacuumOpt->AddMaterial(matman->FindOrBuildMaterial("G4_Galactic"), 100.*perCent);
+
+
 	// temp reinstating this here until BirksConstant is in the API
 	G4Material *ScintillatorB = new G4Material("ScintillatorB",   density = 1.032*g/cm3, nel=2);
 	ScintillatorB->AddElement(C, 9);
@@ -73,6 +79,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 
 	
 	MMats["Air_Opt"]        = Air_Opt;
+	MMats["vacuumOpt"]      = vacuumOpt;
 	MMats["Vacuum"]         = matman->FindOrBuildMaterial("G4_Galactic");
 	MMats["vacuum_m9"]      = vacuum_m9;
 	MMats["vacuum_m3"]      = vacuum_m3;
@@ -90,6 +97,10 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 	G4MaterialPropertiesTable* Air_MPT = new G4MaterialPropertiesTable();
 	Air_MPT->AddProperty("RINDEX", PhotonEnergy_Air, RefractiveIndex_Air, nEntries_Air);
 	MMats["Air_Opt"]->SetMaterialPropertiesTable(Air_MPT);
+	MMats["vacuumOpt"]->SetMaterialPropertiesTable(Air_MPT);
+
+
+
 
 	return MMats;
 }
