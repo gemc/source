@@ -392,7 +392,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(!hitProcessRoutine)
 				return;
 
-			if(fastMCMode == 0)
+			if(fastMCMode == 0 || fastMCMode > 9)
 				hitProcessRoutine->init(hitType, gemcOpt, gPars);
 			
 			bool WRITE_TRUE_INTEGRATED = 0;
@@ -405,7 +405,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// creating summary information for each generated particle
 			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
 				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
-				if(fastMCMode >0)
+				if(fastMCMode > 0)
 					MPrimaries[pi].fastMC.push_back(fastMCForParticle("na"));
 			}
 			
@@ -443,7 +443,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						vector<double> edeps = aHit->GetEdep();
 						vector<double> times = aHit->GetTime();
 						MPrimaries[pi].pSum.back().nphe = aHit->GetTIds().size();
-						if(fastMCMode >0) {
+						if(fastMCMode > 0) {
 							MPrimaries[pi].fastMC.back().pOrig  = aHit->GetMom();
 							MPrimaries[pi].fastMC.back().pSmear = hitProcessRoutine->psmear(aHit->GetMom());
 						}
@@ -478,10 +478,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					aHit->SetmVerts(   zthre);
 				}
 
-				if(fastMCMode == 0)
+				if(fastMCMode == 0 || fastMCMode > 9)
 					thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
 				
-				if(WRITE_TRUE_ALL && fastMCMode == 0)
+				if(WRITE_TRUE_ALL && (fastMCMode == 0 || fastMCMode > 9))
 					thisHitOutput.setAllRaws(hitProcessRoutine->allRaws(aHit, h+1));
 				
 				
@@ -533,7 +533,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// user can disable them one by one
 			// using the INTEGRATEDDGT option
 			// for FASTMC mode, do not digitize the info
-			if(WRITE_INTDGT.find(hitType) == string::npos && fastMCMode == 0)
+			if(WRITE_INTDGT.find(hitType) == string::npos && (fastMCMode == 0 ||fastMCMode > 9))
 			{
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
 				

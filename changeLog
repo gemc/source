@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/20/17
+ - added mode 10 and 20 to FASTMC, enabling hit process routines
+
 2/16/17
  - Added vacuumOpt material - vacuum with optical property. Addressing issue #64.
 

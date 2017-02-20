@@ -590,9 +590,11 @@ void goptions::setGoptions()
 	// voltage versus time resolution, in ns
 	optMap["FASTMCMODE"].arg   = 0;   // 1: production cut set to 5m. 2: turn off all physics but transportation
 	optMap["FASTMCMODE"].help  = "Activate FASTMC Mode. Possible values: \n\n";
-	optMap["FASTMCMODE"].help += "       0: No FASTMC (default).";
-	optMap["FASTMCMODE"].help += "       1: Disable secondaries.";
-	optMap["FASTMCMODE"].help += "       2: Disable all physics but transportation.";
+	optMap["FASTMCMODE"].help += "       0: No FASTMC (default).\n";
+	optMap["FASTMCMODE"].help += "       1: Disable secondaries, disable hit processes.\n";
+	optMap["FASTMCMODE"].help += "       2: Disable all physics but transportation, disable hit process.\n";
+	optMap["FASTMCMODE"].help += "       10: Disable secondaries, hit processes are enabled.\n";
+	optMap["FASTMCMODE"].help += "       20: Disable all physics but transportation, hit processes are enabled.\n";
 	optMap["FASTMCMODE"].name  = "Activate FASTMC Mode if non zero.";
 	optMap["FASTMCMODE"].type  = 0;
 	optMap["FASTMCMODE"].ctgr  = "output";
