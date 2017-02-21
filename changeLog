@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+2/21/17
+ - added ionInelastic process
+ - if one uses the /gun/particle /gun/ion command then we make sure not to overwrite those values
+
 2/20/17
  - added mode 10 and 20 to FASTMC, enabling hit process routines
 

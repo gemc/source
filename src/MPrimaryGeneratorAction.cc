@@ -138,7 +138,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			setBeam();
 
 			// Primary Particle
-			particleGun->SetParticleDefinition(Particle);
+			// if one uses the /gun/particle /gun/ion command then we
+			// make sure not to overwrite those values
+			if(Particle->GetParticleName() != "GenericIon")
+				particleGun->SetParticleDefinition(Particle);
+
 
 			G4ThreeVector beam_dir;
 
