@@ -371,7 +371,7 @@ int main( int argc, char **argv )
 		}
 		
 		return qApp->exec();
-		// deleting and runManager is now taken care
+		// deleting runManager is now taken care
 		// in the gemc_quit slot
 		delete visManager;
 		if(session != NULL) delete session;

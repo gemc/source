@@ -21,6 +21,7 @@ Changelog for GEMC
 
 2/16/17
  - Added vacuumOpt material - vacuum with optical property. Addressing issue #64.
+ - fixed qt quit slot, needed to delete runManager
 
 2/15/17
  - identifying missing hit process by volume name

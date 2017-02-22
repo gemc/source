@@ -46,7 +46,11 @@ class gemcMainWidget : public QWidget
 		
 		// we need to delete runManager before quitting the qApp
 		// looks like no need to delete the visManager
-		void  gemc_quit(){cout << endl << " Arrivederci! " << endl << endl; qApp->quit();}
+		void  gemc_quit(){
+			delete G4RunManager::GetRunManager();
+			cout << endl << " Arrivederci! " << endl << endl;
+			qApp->quit();
+		}
 		void stopBeam();
 		
 		void beamOn();
