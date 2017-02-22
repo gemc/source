@@ -2,6 +2,7 @@
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4UnitsTable.hh"
 #include "Randomize.hh"
@@ -142,6 +143,33 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// make sure not to overwrite those values
 			if(Particle->GetParticleName() != "GenericIon")
 				particleGun->SetParticleDefinition(Particle);
+
+			// this has to go in GeneratePrimaries
+			// GetIonTable cannot be called in the constructor of PrimaryGeneratorAction
+			if(gemcOpt->optMap["ION_P"].args != "no") {
+
+				vector<string> values = get_info(gemcOpt->optMap["ION_P"].args, string(",\""));
+
+				if(values.size() > 1) {
+
+					G4int Z = get_number(values[0]);
+					G4int A = get_number(values[1]);
+
+					G4int J = 0;
+
+					Particle = G4IonTable::GetIonTable()->GetIon(Z, A, J);
+					particleGun->SetParticleDefinition(Particle);
+
+					if(values.size() == 3) {
+						G4int Q = get_number(values[2]);
+						particleGun->SetParticleCharge(Q);
+					}
+
+
+
+				}
+			}
+
 
 
 			G4ThreeVector beam_dir;
@@ -787,6 +815,8 @@ void MPrimaryGeneratorAction::setBeam()
 
 				exit(0);
 			}
+
+
 
 			// Getting custom beam direction if it's set
 			values = get_info(gemcOpt->optMap["ALIGN_ZAXIS"].args);

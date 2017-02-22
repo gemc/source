@@ -26,7 +26,8 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 	pcolors[0]    = QPen(Qt::blue,              2);   // optical photons: blue
 	pcolors[13  ] = QPen(QColor(0,125, 0   ),   2);   // Muon+ - dark green
 	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   2);   // Muon- - light green
-	pcolors[1000] = QPen(Qt::black,             2);   // neutrons: black
+	pcolors[1000] = QPen(Qt::black,             2);   // neutrals: black
+	pcolors[-99]  = QPen(Qt::red,               3);   // ion
 
 	// default pen widts
 	axisPenWidth = 3;
@@ -137,13 +138,17 @@ void graph::plot_graph(vector<double> x, vector<double> y, vector<int> pid)
 	
 	for(unsigned int i=0; i<x.size(); i++)
 	{
-		if(pcolors.find(pid[i]) == pcolors.end())
-			cout << " Attention: color not found for: " << pid[i] << endl;
-		else
-		{
-			rect = scene->addRect(xorig + inside, yorig - inside, dataPenWidth, dataPenWidth, pcolors[pid[i]]);
-			rect->moveBy(DX*(x[i]-xmin)/dx, - DY*(y[i]-ymin)/dy);
+		if(pid[i] < 10000) {
+			if(pcolors.find(pid[i]) == pcolors.end()) {
+				cout << " Attention: color not found for: " << pid[i] << endl;
+			} else {
+				rect = scene->addRect(xorig + inside, yorig - inside, dataPenWidth, dataPenWidth, pcolors[pid[i]]);
+			}
+		} else {
+			rect = scene->addRect(xorig + inside, yorig - inside, dataPenWidth, dataPenWidth, pcolors[-99]);
 		}
+
+		rect->moveBy(DX*(x[i]-xmin)/dx, - DY*(y[i]-ymin)/dy);
 	}
 }
 

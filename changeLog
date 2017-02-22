@@ -1,6 +1,17 @@
 Changelog for GEMC
 ==================
 
+2/22/17
+ - added option ION_P:
+   Option ION_P: Primary particle is an ion. Sets Z, A and Charge of the primary particle. Setting the charge is optional.
+
+   - Example 1: -ION_P="6 12" sets the Z to 6, A to 12. Charge will be Z.
+   - Example 2: -ION_P="6 12 -4" sets the Z to 6, A to 12, and charge to -4.
+   - Notice: BEAM_P still sets the particle momentum, and its type must be GenericIon. For example:
+
+     -BEAM_P="GenericIon, 4*GeV, 90*deg, 0*deg"
+
+
 2/21/17
  - added ionInelastic process
  - if one uses the /gun/particle /gun/ion command then we make sure not to overwrite those values

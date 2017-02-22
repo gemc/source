@@ -69,6 +69,15 @@ void goptions::setGoptions()
 	optMap["EVTN"].type = 0;
 	optMap["EVTN"].ctgr = "generator";
 
+	optMap["ION_P"].args  = "no";
+	optMap["ION_P"].help  = "Primary particle is an ion. Sets Z, A and Charge of the primary particle. Setting the charge is optional. \n";
+	optMap["ION_P"].help += "      Example 1: -ION_P=\"6 12\" sets the Z to 6, A to 12. Charge will be Z. \n";
+	optMap["ION_P"].help += "      Example 2: -ION_P=\"6 12 -4\" sets the Z to 6, A to 12, and charge to -4. \n";
+	optMap["ION_P"].help += "      Notice: BEAM_P still sets the particle momentum, and its type must be GenericIon\n";
+	optMap["ION_P"].name  = "Primary particle is an ion. Sets A, Z and Charge of the primary particle. ";
+	optMap["ION_P"].type  = 1;
+	optMap["ION_P"].ctgr  = "generator";
+
 	
 	optMap["INPUT_GEN_FILE"].args = "gemc_internal";
 	optMap["INPUT_GEN_FILE"].help = "Generator Input. Current availables file formats:\n";
