@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/24/17
+ - added surface area, volume and mass information in the detector log if verbosity is high enough
+
 2/22/17
  - added option ION_P:
    Option ION_P: Primary particle is an ion. Sets Z, A and Charge State of the primary particle. Setting the charge state is optional.

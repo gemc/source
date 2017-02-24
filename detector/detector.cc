@@ -27,6 +27,7 @@
 
 // gemc headers
 #include "detector.h"
+#include "utils.h"
 
 // mlibrary
 #include "gstring.h"
@@ -835,9 +836,10 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	
 	if(VERB>4 || name.find(catch_v) != string::npos)
 	{
-		cout << hd_msg << " " << name << " Logical Volume built." << endl;
+		cout << hd_msg << " " << name << " Logical Volume built. " << endl;
 	}
-	
+
+
 	return 1;
 }
 
@@ -1178,7 +1180,15 @@ ostream &operator<<(ostream &stream, detector Detector)
 	
 	if(Detector.identity.size())
 		cout << Detector.identity ;
-	
+
+	if(Detector.SolidV) {
+		cout << "   Volume: "       << bestValueUnits(Detector.SolidV->GetCubicVolume(), "Volume") << endl;
+		cout << "   Surface Area: " << bestValueUnits(Detector.SolidV-> GetSurfaceArea(), "Surface") << endl;
+	}
+	if(Detector.LogicV) {
+		cout << "   Mass: " << bestValueUnits(Detector.LogicV->GetMass(), "Mass") << endl;
+
+	}
 	cout << endl;
 	
 	return stream;

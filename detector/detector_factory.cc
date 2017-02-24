@@ -371,8 +371,7 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 	if(gt.data.size() > 21)
 	det.run     = atoi(gt.data[21].c_str());
 
-	if(verbosity>2)
-	cout << det;
+
 	return det;
 }
 

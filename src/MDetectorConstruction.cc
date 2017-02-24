@@ -45,6 +45,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 {
 	string hd_msg     = gemcOpt.optMap["LOG_MSG"].args + " >> Construction:";
 	double VERB       = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
+	double geo_verb   = gemcOpt.optMap["GEO_VERBOSITY"].arg ;
 	string catch_v    = gemcOpt.optMap["CATCH"].args;
 	string hall_mat   = gemcOpt.optMap["HALL_MATERIAL"].args;
 	string hall_field = gemcOpt.optMap["HALL_FIELD"].args;
@@ -289,7 +290,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			if(kid.scanned == 1 && relatives.size())
 			{
 				if(VERB > 3 || kid.name.find(catch_v) != string::npos)
-					cout << hd_msg  << " " <<  kid << " is built." <<  endl << endl;
+					cout << hd_msg  << " " <<  kid.name << " is built." <<  endl << endl;
 				
 				relatives.pop_back();
 			}
@@ -429,7 +430,14 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	regions.push_back("root");
 	assignRegions(regions);
 	
-	
+
+	// now output det information if verbosity or catch is given
+	for(auto &dd : *hallMap) {
+		if(geo_verb > 3 || dd.second.name.find(catch_v) != string::npos)
+			cout << dd.second ;
+
+	}
+
 	return (*hallMap)["root"].GetPhysical();
 }
 
@@ -574,6 +582,9 @@ void MDetectorConstruction::buildDetector(string name)
 				
 				isSensitive((*hallMap)[kid.name]);  // if sensitive, associate sensitive detector
 				hasMagfield((*hallMap)[kid.name]);  // if it has magnetic field, create or use MFM
+
+
+
 			}
 
 			(*hallMap)[kid.name].scanned = 1;
