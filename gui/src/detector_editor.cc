@@ -94,8 +94,15 @@ void descriptionTab::update_detector(detector *Det)
 		
 		
 		string what;
-		// material
+		// material, area, volume, mass
 		what = "Material: " + det->material;
+		if(det->GetSolid()) {
+			what += "\nVolume:" + bestValueUnits(det->GetSolid()->GetCubicVolume(), "Volume");
+			what += "\nSurface Area:" + bestValueUnits(det->GetSolid()->GetSurfaceArea(), "Surface");
+		}
+		if(det->GetLogical()) {
+			what += "\nMass:" + bestValueUnits(det->GetLogical()->GetMass(), "Mass");
+		}
 		matLabel->setText(what.c_str());
 
 				
@@ -105,7 +112,7 @@ void descriptionTab::update_detector(detector *Det)
 			what = "Magnetic Field: " + det->magfield;
 		mgnLabel->setText(what.c_str());
 		
-		what = "Sensitivity: " + det->sensitivity + "    Hit Process: " + det->hitType;
+		what = "Sensitivity: " + det->sensitivity + "\nHit Process: " + det->hitType;
 		sensHitLabel->setText(what.c_str());
 
 		if(det->identity.size())
