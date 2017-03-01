@@ -641,7 +641,7 @@ void MDetectorConstruction::buildMirrors()
 				
 				if(!(*hallMap)[borderv].GetPhysical() && borderv != "SkinSurface")
 				{
-					cout << hd_msg << " !! Error: border volume " << borderv << " is not found for volume " << name << ". Exiting." << endl;
+					cout << hd_msg << " !! Error: border volume >" << borderv << "< is not found for volume " << name << ". Exiting." << endl;
 					exit(0);
 				}
 				
@@ -769,8 +769,8 @@ void MDetectorConstruction::buildMirrors()
 				{
 					
 					mirrorLBorderSurf.push_back(new G4LogicalBorderSurface(name,
-																 (*hallMap)[borderv].GetPhysical(),
-																 (*hallMap)[name].GetPhysical(), mirrorSurfaces.back()));
+																		   (*hallMap)[name].GetPhysical(),
+																		   (*hallMap)[borderv].GetPhysical(), mirrorSurfaces.back()));
 				}
 				
 

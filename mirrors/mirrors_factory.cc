@@ -79,6 +79,8 @@ void mirror::opticalsFromString(string s, string what)
 
 			if(what == "sigmaAlpha")
 				sigmaAlpha = get_number(trimmedC);
+			else
+				sigmaAlpha = 0;
 		}
 	}
 	

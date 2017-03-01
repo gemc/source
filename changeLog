@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/1/17
+ - fixed G4LogicalBorderSurface instantiation. This caused incorrect mirror behavior for "border" type mirrors
+
 2/24/17
  - added surface area, volume and mass information in the detector log if verbosity is high enough
  - added surface area, volume and mass information in the detector gui tab
