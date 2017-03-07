@@ -140,20 +140,44 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	unsigned int IL = floor( ( LC - startMap[0] ) / cellSize[0] );
 	unsigned int IT = floor( ( TC - startMap[1] ) / cellSize[1] );
 
-	// checking if the point is closer to the top of the cell
-	if( fabs( startMap[0] + IL*cellSize[0] - LC) > fabs( startMap[0] + (IL+1)*cellSize[0] - LC)  ) IL++;
-	if( fabs( startMap[1] + IT*cellSize[1] - TC) > fabs( startMap[1] + (IT+1)*cellSize[1] - TC)  ) IT++;
+	// outside map, returning no field
+	if (LC < startMap[0] || TC < startMap[1]) return;
 
 	// outside map, returning no field
-	if(IL>=np[0] || IT>=np[1]) return;
+	if(IL>=np[0] - 1 || IT>=np[1] - 1) return;
 
 	// no interpolation
 	if(interpolation == "none")
 	{
+		// checking if the point is closer to the top of the cell
+		if( fabs( startMap[0] + IL*cellSize[0] - LC) > fabs( startMap[0] + (IL+1)*cellSize[0] - LC)  ) IL++;
+		if( fabs( startMap[1] + IT*cellSize[1] - TC) > fabs( startMap[1] + (IT+1)*cellSize[1] - TC)  ) IT++;
+
 		if(symmetry == "dipole-x") Bfield[0] = B1_2D[IL][IT];
 		if(symmetry == "dipole-y") Bfield[1] = B1_2D[IL][IT];
 		if(symmetry == "dipole-z") Bfield[2] = B1_2D[IL][IT];
 	}
+	else if (interpolation == "linear")
+	{
+		// relative positions within cell
+		double xlr = (LC - (startMap[0] + IL*cellSize[0])) / cellSize[0];
+		double xtr = (TC - (startMap[1] + IT*cellSize[1])) / cellSize[1];
+
+		// linear interpolation
+		double b10 = B1_2D[IL][IT]   * (1.0 - xtr) + B1_2D[IL][IT+1]   * xtr;
+		double b11 = B1_2D[IL+1][IT] * (1.0 - xtr) + B1_2D[IL+1][IT+1] * xtr;
+		double b1  = b10 * (1.0 - xlr) + b11 * xlr;
+
+		if(symmetry == "dipole-x") Bfield[0] = b1;
+		if(symmetry == "dipole-y") Bfield[1] = b1;
+		if(symmetry == "dipole-z") Bfield[2] = b1;
+	}
+	else
+	{
+		cout << "  !! Unkown field interpolation method >" << interpolation << "<" << endl;
+		return;
+	}
+
 
 	// we don't worry about computer speed
 	// if verbosity is set this high
