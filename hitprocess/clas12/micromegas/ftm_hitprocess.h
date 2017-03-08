@@ -3,6 +3,8 @@
 
 // gemc headers
 #include "HitProcess.h"
+#include "ftm_strip.h"
+
 
 // Class definition
 
@@ -27,13 +29,13 @@
 /// \author \n S. Procureur, G. Charles, M. Ungaro
 /// \author mail: sebastien.procureur@cea.fr, gabriel.charles@cea.fr, ungaro@jlab.org\n\n\n
 
-class FTM_HitProcess : public HitProcess
+class ftm_HitProcess : public HitProcess
 {
 public:
 
-	~FTM_HitProcess(){;}
+	~ftm_HitProcess(){;}
 
-	// - integrateDgt: returns digitized information integrated over the hit
+    // - integrateDgt: returns digitized information integrated over the hit
 	map<string, double> integrateDgt(MHit*, int);
 
 	// - multiDgt: returns multiple digitized information / hit
@@ -50,10 +52,19 @@ public:
 	vector<identifier> processID(vector<identifier>, G4Step*, detector);
 
 	// creates the HitProcess
-	static HitProcess *createHitClass() {return new FTM_HitProcess;}
+	static HitProcess *createHitClass() {return new ftm_HitProcess;}
 
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
+    
+private:
+    
+    // constants initialized with initWithRunNumber
+    static ftmConstants ftmcc;
+    
+    void initWithRunNumber(int runno);
+
+
 };
 
 #endif
