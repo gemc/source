@@ -1187,7 +1187,6 @@ ostream &operator<<(ostream &stream, detector Detector)
 	}
 	if(Detector.LogicV) {
 		cout << "   Mass: " << bestValueUnits(Detector.LogicV->GetMass(), "Mass") << endl;
-
 	}
 	cout << endl;
 	

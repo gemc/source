@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/7/17
+ - added linear interpolation for dipole fields
+ - building CAD and GDML volumes before G4Physical Volumes so we can make copies of them
+
 3/1/17
  - fixed G4LogicalBorderSurface instantiation. This caused incorrect mirror behavior for "border" type mirrors
 

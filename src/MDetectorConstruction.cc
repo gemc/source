@@ -116,6 +116,125 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	
 	vector<string> regions;  // all volumes for which mom is "root"
 
+
+	// CAD imports
+
+	// building these first in case we want to make copies of these
+	for(auto &dd : *hallMap) {
+
+
+		if(dd.second.factory == "CAD") {
+
+			string thisDetName = dd.first;
+
+			// filename has been already verified to exist
+			string filename = dd.second.variation;
+			if(VERB > 1)
+				cout << "  > Parsing CAD volume from " << filename << endl;
+
+			CADMesh * mesh = new CADMesh((char *) filename.c_str());
+			mesh->SetScale(mm);
+			mesh->SetReverse(false);
+
+			// solid
+			G4VSolid *cad_solid = mesh->TessellatedMesh();
+
+			// material
+			string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
+
+			if(mats->find(materialName) == mats->end() ) {
+				G4NistManager* matman = G4NistManager::Instance();
+				if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
+			}
+
+			// logical
+			G4LogicalVolume *cad_logical = new G4LogicalVolume(cad_solid, (*mats)[materialName],thisDetName, 0, 0, 0);
+			cad_logical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
+
+			// assigning the logical volume to the detector
+			(*hallMap)[thisDetName].SetLogical(cad_logical);
+			isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
+
+
+			// physical volume
+
+			// has to be in the same scope, otherwise parser loses all the pointers
+			(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
+																  (*hallMap)[thisDetName].pos,
+																  cad_logical,
+																  thisDetName.c_str(),
+																  (*hallMap)["root"].GetLogical(),
+																  false,
+																  0)
+												);
+			
+		}
+	}
+
+	// now build GDML volumes.
+	set<string> gdmlAlreadyProcessed;
+	for(auto &dd : *hallMap) {
+
+		string filename = dd.second.variation;
+
+		if(dd.second.factory == "gdml" && filename != "gdml") {
+
+			// checking that we didn't already processed this file
+			if(gdmlAlreadyProcessed.find(filename) == gdmlAlreadyProcessed.end()) {
+
+				if(VERB > 1)
+				 cout << "  > Parsing GDML Physical volumes from " << filename << endl;
+
+				// parsing G4 volumes
+				G4GDMLParser *parser = new G4GDMLParser();
+				parser->Read(filename, 0);
+
+				G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
+
+				// the volume name has to be "World"
+				// its oririn are "root" coordinate
+				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
+
+				// only daughters of World will be a new G4PVPlacement in root
+				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
+
+					string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
+					G4LogicalVolume* thisLogical = parser->GetVolume(thisDetName.c_str());
+
+					thisLogical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
+
+					string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
+
+					if(mats->find(materialName) == mats->end() ) {
+						G4NistManager* matman = G4NistManager::Instance();
+						if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
+					}
+					thisLogical->SetMaterial((*mats)[materialName]);
+
+					// assigning the logical volume to the detector
+					(*hallMap)[thisDetName].SetLogical(thisLogical);
+					isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
+
+
+					// has to be in the same scope, otherwise parser loses all the pointers
+					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
+																		  (*hallMap)[thisDetName].pos,
+																		  thisLogical,
+																		  thisDetName.c_str(),
+																		  (*hallMap)["root"].GetLogical(),
+																		  false,
+																		  0)
+														);
+
+					// cout << " why are these different " << thisDetName << " " << (*hallMap)[thisDetName].GetPhysical() << "  difference  " << dd.second.GetPhysical()  << endl;
+				}
+				delete gdmlWorld;
+				gdmlAlreadyProcessed.insert(filename);
+			}
+		}
+	}
+
+
 	for( map<string, detector>::iterator i =  hallMap->begin(); i!=hallMap->end(); i++)
 	{
 		// don't build anything if the exist flag is not set
@@ -298,128 +417,11 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	}
 
 
-	// now build GDML volumes.
-	set<string> gdmlAlreadyProcessed;
-	for(auto &dd : *hallMap) {
-
-		string filename = dd.second.variation;
-
-		if(dd.second.factory == "gdml" && filename != "gdml") {
-
-			// checking that we didn't already processed this file
-			if(gdmlAlreadyProcessed.find(filename) == gdmlAlreadyProcessed.end()) {
-
-				if(VERB > 1)
-				 cout << "  > Parsing GDML Physical volumes from " << filename << endl;
-
-				// parsing G4 volumes
-				G4GDMLParser *parser = new G4GDMLParser();
-				parser->Read(filename, 0);
-
-				G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
-
-				// the volume name has to be "World"
-				// its oririn are "root" coordinate
-				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
-
-				// only daughters of World will be a new G4PVPlacement in root
-				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
-
-					string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
-					G4LogicalVolume* thisLogical = parser->GetVolume(thisDetName.c_str());
-
-					thisLogical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
-
-					string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
-
-					if(mats->find(materialName) == mats->end() ) {
-						G4NistManager* matman = G4NistManager::Instance();
-						if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
-					}
-					thisLogical->SetMaterial((*mats)[materialName]);
-
-					// assigning the logical volume to the detector
-					(*hallMap)[thisDetName].SetLogical(thisLogical);
-					isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
-
-
-					// has to be in the same scope, otherwise parser loses all the pointers
-					(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
-																		 (*hallMap)[thisDetName].pos,
-																		 thisLogical,
-																		 thisDetName.c_str(),
-																		 (*hallMap)["root"].GetLogical(),
-																		 false,
-																		 0)
-												 );
-
-					// cout << " why are these different " << thisDetName << " " << (*hallMap)[thisDetName].GetPhysical() << "  difference  " << dd.second.GetPhysical()  << endl;
-				}
-				delete gdmlWorld;
-				gdmlAlreadyProcessed.insert(filename);
-			}
-		}
-	}
 
 
 
 
 
-	// CAD imports
-
-	// now build GDML volumes.
-	for(auto &dd : *hallMap) {
-
-
-		if(dd.second.factory == "CAD") {
-
-			string thisDetName = dd.first;
-
-			// filename has been already verified to exist
-			string filename = dd.second.variation;
-			if(VERB > 1)
-				cout << "  > Parsing CAD volume from " << filename << endl;
-
-			CADMesh * mesh = new CADMesh((char *) filename.c_str());
-			mesh->SetScale(mm);
-			mesh->SetReverse(false);
-
-			// solid
-			G4VSolid *cad_solid = mesh->TessellatedMesh();
-
-			// material
-			string materialName = trimSpacesFromString((*hallMap)[thisDetName].material);
-
-			if(mats->find(materialName) == mats->end() ) {
-				G4NistManager* matman = G4NistManager::Instance();
-				if(matman->FindOrBuildMaterial(materialName)) (*mats)[materialName] = matman->FindOrBuildMaterial(materialName);
-			}
-
-			// logical
-			G4LogicalVolume *cad_logical = new G4LogicalVolume(cad_solid, (*mats)[materialName],thisDetName, 0, 0, 0);
-			cad_logical->SetVisAttributes((*hallMap)[thisDetName].VAtts);
-
-			// assigning the logical volume to the detector
-			(*hallMap)[thisDetName].SetLogical(cad_logical);
-			isSensitive((*hallMap)[thisDetName]);  // if sensitive, associate sensitive detector
-
-
-			// physical volume
-
-			// has to be in the same scope, otherwise parser loses all the pointers
-			(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
-																					(*hallMap)[thisDetName].pos,
-																					cad_logical,
-																					thisDetName.c_str(),
-																					(*hallMap)["root"].GetLogical(),
-																					false,
-																					0)
-															);
-
-		}
-
-
-	}
 
 	// build mirrors
 	buildMirrors();
