@@ -1,12 +1,44 @@
 // gemc headers
 #include "ftm_hitprocess.h"
-#include "ftm_strip.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-map<string, double> FTM_HitProcess :: integrateDgt(MHit* aHit, int hitn)
+static ftmConstants initializeFTMConstants(int runno)
+{
+    ftmConstants ftmc;
+    
+    // do not initialize at the beginning, only after the end of the first event,
+    // with the proper run number coming from options or run table
+    if(runno == -1) return ftmc;
+    
+    int isec,ilay,istr;
+    
+    
+    ftmc.sigma_td_max = 0   ;  // // very small transverse diffusion (temporary)
+    ftmc.w_i          = 25.0;  // ionization energy
+
+    ftmc.rmin  =  70.43;         // inner radius of disks
+    ftmc.rmax  = 143.66;         // outer radius of disks
+    ftmc.pitch =  0.560;         // pitch of the strips
+    ftmc.nstrips = (int) floor(2.*(ftmc.rmax+ftmc.rmin)/ftmc.pitch); // Number of strips
+
+    return ftmc;
+}
+
+
+void ftm_HitProcess::initWithRunNumber(int runno)
+{
+    if(this->ftmcc.runNo != runno)
+    {
+        cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+        ftmcc = initializeFTMConstants(runno);
+        ftmcc.runNo = runno;
+    }
+}
+
+map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
@@ -34,24 +66,26 @@ map<string, double> FTM_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 
-vector<identifier>  FTM_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
+vector<identifier> ftm_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
 	double x, y, z;
-	G4ThreeVector   xyz    = aStep->GetPostStepPoint()->GetPosition();
-	x = xyz.x()/mm;
-	y = xyz.y()/mm;
-	z = xyz.z()/mm;
+	G4ThreeVector  xyz = aStep->GetPostStepPoint()->GetPosition(); //< Global Coordinates of interaction
+    G4ThreeVector Lxyz = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); //< Local Coordinates of interaction
+    
+    x = Lxyz.x()/mm;
+	y = Lxyz.y()/mm;
+	z = Lxyz.z()/mm;
 
 	vector<identifier> yid = id;
 	class ftm_strip ftms;
-	ftms.fill_infos();
+//	ftms.fill_infos(Detector);
 
 	int layer  = 2*yid[0].id + yid[1].id - 2 ;
 
 	//yid[3].id = ftms.FindStrip(layer-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = ftms.FindStrip(layer-1, x, y, z, depe);
+	vector<double> multi_hit = ftms.FindStrip(layer-1, x, y, z, depe, Detector, ftmcc);
 
 	int n_multi_hits = multi_hit.size()/2;
 
@@ -96,7 +130,7 @@ vector<identifier>  FTM_HitProcess :: processID(vector<identifier> id, G4Step* a
 }
 
 
-map< string, vector <int> >  FTM_HitProcess :: multiDgt(MHit* aHit, int hitn)
+map< string, vector <int> >  ftm_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
 
@@ -104,7 +138,7 @@ map< string, vector <int> >  FTM_HitProcess :: multiDgt(MHit* aHit, int hitn)
 }
 
 // - charge: returns charge/time digitized information / step
-map< int, vector <double> > FTM_HitProcess :: chargeTime(MHit* aHit, int hitn)
+map< int, vector <double> > ftm_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 
@@ -114,14 +148,14 @@ map< int, vector <double> > FTM_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
-double FTM_HitProcess :: voltage(double charge, double time, double forTime)
+double ftm_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
 }
 
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
-vector<MHit*> FTM_HitProcess :: electronicNoise()
+vector<MHit*> ftm_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
 
@@ -136,5 +170,7 @@ vector<MHit*> FTM_HitProcess :: electronicNoise()
 	return noiseHits;
 }
 
+// this static function will be loaded first thing by the executable
+ftmConstants ftm_HitProcess::ftmcc = initializeFTMConstants(-1);
 
 
