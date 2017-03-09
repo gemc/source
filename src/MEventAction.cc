@@ -125,7 +125,7 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
 	rw.getRunNumber(evtN);
 	bgMap.clear();
-	
+
 	if(evtN%Modulo == 0 )
 	{
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
@@ -133,7 +133,18 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 		cout << endl;
 		cout << hd_msg << " Random Number: " << G4UniformRand() << endl;
 		// CLHEP::HepRandom::showEngineStatus();
+
+		
 	}
+
+	if(gen_action->isFileOpen() == false) {
+			G4RunManager *runManager = G4RunManager::GetRunManager();;
+			runManager->AbortRun();
+		}
+
+
+	cout << "ASD " << gen_action->isFileOpen() << endl;
+
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
@@ -181,7 +192,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			}
 		}
 	
-	
+
+
+
 	// now filling the map of tinfos with tracks infos from the track_db database
 	// this won't get the mother particle infos except for their track ID
 	map<int, TInfos> tinfos;
@@ -645,7 +658,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	// Increase event number. Notice: this is different than evt->GetEventID()
 	evtN++;
-	
+
+
+
 	return;
 }
 

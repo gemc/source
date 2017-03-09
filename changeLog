@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/9/17
+ - added beagle open file in primary generator for ascii
+ - stopping run manager if no more events in the LUND or BEAGLE format
+
 3/7/17
  - added linear interpolation for dipole fields
  - building CAD and GDML volumes before G4Physical Volumes so we can make copies of them

@@ -6,6 +6,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4UnitsTable.hh"
 #include "Randomize.hh"
+#include "G4RunManager.hh"
 
 // gemc headers
 #include "MPrimaryGeneratorAction.h"
@@ -132,6 +133,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		lundUserDefined.clear();
 		for(unsigned i=0; i<8; i++) lundUserDefined.push_back(0);
 
+		// internal, no cosmic
 		if(cosmics == "no")
 		{
 			// redefining particle if in graphic mode
@@ -164,9 +166,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 						G4int Q = get_number(values[2]);
 						particleGun->SetParticleCharge(Q);
 					}
-
-
-
 				}
 			}
 
@@ -274,7 +273,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				cout << endl;
 			}
 		}
-		// cosmic model
+		// internal, cosmic model
 		// paper: A. Dar, Phys.Rev.Lett, 51,3,p.227 (1983)
 		else
 		{
@@ -384,6 +383,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->GeneratePrimaryVertex(anEvent);
 		}
 	}
+	// external
 	else
 	// external generator: input file
 	{
@@ -635,11 +635,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				<< "  Vertex=" << beam_vrt << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 			}
 			else if(pindex != p+1)
-			if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
-
+				if(GEN_VERBOSITY > 3)
+					cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
 		}
-
 	}
 
 	// Luminosity Particles
@@ -947,13 +945,25 @@ void MPrimaryGeneratorAction::setBeam()
 		gif.open(trimSpacesFromString(gfilename).c_str());
 		if(!gif)
 		{
-			cerr << hd_msg << " Can't open input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
+			cerr << hd_msg << " Can't open LUND input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
+			exit(1);
+		}
+	}
+	else if( input_gen.compare(0,6,"BEAGLE")==0 || input_gen.compare(0,4,"beagle")==0 )
+	{
+		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
+		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
+		cout << hd_msg << "BEAGLE: Opening  " << gformat << " file: " << trimSpacesFromString(gfilename).c_str() << endl;
+		gif.open(trimSpacesFromString(gfilename).c_str());
+		if(!gif)
+		{
+			cerr << hd_msg << " Can't open BEAGLE input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
 			exit(1);
 		}
 	}
 
 	else if( input_gen.compare(0,6,"stdhep")==0 || input_gen.compare(0,6,"STDHEP")==0 ||
-			  input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
+			 input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
 	{
 		// StdHep is an (old like LUND) MC generator format in binary form.
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;

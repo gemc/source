@@ -42,6 +42,9 @@ class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	double getTimeWindow(){return TWINDOW;}
 	double getStartTime(){return TWINDOW/2;}
 
+
+	bool isFileOpen() {return !gif.eof();}
+
 	private:
 		string input_gen;                 ///< Input Option: internal or external
 		string background_gen;            ///< Input Option: background from file in LUND format

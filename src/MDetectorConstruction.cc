@@ -157,6 +157,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 
 			// physical volume
+			// what if mother does not exist?
 
 			// has to be in the same scope, otherwise parser loses all the pointers
 			(*hallMap)[thisDetName].SetPhysical(new G4PVPlacement(&(*hallMap)[thisDetName].rot,
