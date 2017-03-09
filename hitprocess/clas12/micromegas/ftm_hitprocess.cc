@@ -13,7 +13,7 @@ static ftmConstants initializeFTMConstants(int runno)
     // with the proper run number coming from options or run table
     if(runno == -1) return ftmc;
     
-    int isec,ilay,istr;
+//    int isec,ilay,istr;
     
     
     ftmc.sigma_td_max = 0   ;  // // very small transverse diffusion (temporary)
@@ -171,6 +171,6 @@ vector<MHit*> ftm_HitProcess :: electronicNoise()
 }
 
 // this static function will be loaded first thing by the executable
-ftmConstants ftm_HitProcess::ftmcc = initializeFTMConstants(-1);
+ftmConstants ftm_HitProcess::ftmcc = initializeFTMConstants(0);
 
 
