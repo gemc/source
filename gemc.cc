@@ -330,6 +330,11 @@ int main( int argc, char **argv )
 
 	int nEventsToProcess = gemcOpt.optMap["N"].arg;
 
+	// if it is not set explicitely, and it is a file input, then run all the event in the file by default
+	// only in batch mode
+	if(use_gui == 0 && gemcOpt.optMap["N"].arg == 0 && gemcOpt.optMap["INPUT_GEN_FILE"].args != "gemc_internal")
+		nEventsToProcess = 1000000000;
+
 	if(use_gui)
 	{
 		gemc_splash.message("Starting GUI...");

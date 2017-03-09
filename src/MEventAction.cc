@@ -123,6 +123,13 @@ MEventAction::~MEventAction()
 
 void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
+	if(gen_action->isFileOpen() == false) {
+		G4RunManager *runManager = G4RunManager::GetRunManager();;
+		runManager->AbortRun();
+		cout << " No more events in the input file." << endl;
+		return;
+	}
+
 	rw.getRunNumber(evtN);
 	bgMap.clear();
 
@@ -137,19 +144,14 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 		
 	}
 
-	if(gen_action->isFileOpen() == false) {
-			G4RunManager *runManager = G4RunManager::GetRunManager();;
-			runManager->AbortRun();
-		}
-
-
-	cout << "ASD " << gen_action->isFileOpen() << endl;
-
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
 {
-	
+	if(gen_action->isFileOpen() == false) {
+		return;
+	}
+
 	MHitCollection* MHC;
 	int nhits;
 	
