@@ -191,8 +191,10 @@ public:
 	int multiplicity;
 
 	// adding summary information for each detector.
-	vector<summaryForParticle> pSum;
-	vector<fastMCForParticle> fastMC;
+	vector<summaryForParticle>   pSum;
+	vector<fastMCForParticle>    fastMC;
+	vector<userInforForParticle> userInfo;
+
 
 	int    getVariableFromStringI(string);
 	double getVariableFromStringD(string);

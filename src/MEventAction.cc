@@ -333,10 +333,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	header["evn_type"] = -1;  // physics event. Negative is MonteCarlo event
 	header["beamPol"]  = gen_action->getBeamPol();
 	
-	for(unsigned i=0; i<gen_action->lundUserDefined.size(); i++)
+	for(unsigned i=0; i<gen_action->headerUserDefined.size(); i++)
 	{
 		string tmp = "var" + stringify((int) i+1);
-		header[tmp] = gen_action->lundUserDefined[i];
+		header[tmp] = gen_action->headerUserDefined[i];
 	}
 	
 	// write event header bank
