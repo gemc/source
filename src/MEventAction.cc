@@ -332,10 +332,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	header["evn"]      = evtN;
 	header["evn_type"] = -1;  // physics event. Negative is MonteCarlo event
 	header["beamPol"]  = gen_action->getBeamPol();
-	
+
+	// user header should be in a different tag than the normal header
+	// for now, we're ok
 	for(unsigned i=0; i<gen_action->headerUserDefined.size(); i++)
 	{
-		string tmp = "var" + stringify((int) i+1);
+		string tmp = "user var " + stringify((int) i+1);
 		header[tmp] = gen_action->headerUserDefined[i];
 	}
 	
@@ -649,7 +651,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		}
 	}
 	// writing out generated particle infos
-	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap);
+	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap, gen_action->userInfo);
 	
 	processOutputFactory->writeEvent(outContainer);
 	delete processOutputFactory;

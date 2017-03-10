@@ -193,7 +193,6 @@ public:
 	// adding summary information for each detector.
 	vector<summaryForParticle>   pSum;
 	vector<fastMCForParticle>    fastMC;
-	vector<userInforForParticle> userInfo;
 
 
 	int    getVariableFromStringI(string);
@@ -239,7 +238,7 @@ public:
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank)  = 0;
 
 	// write generated particles
-	virtual void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap) = 0;
+	virtual void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo) = 0;
 
 	// write geant4 true integrated info
 	virtual void writeG4RawIntegrated(outputContainer*, vector<hitOutput>, string, map<string, gBank>*) = 0;

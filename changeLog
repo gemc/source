@@ -4,6 +4,7 @@ Changelog for GEMC
 3/10/17
  - routine to set generated particle from input file more general
  - reading beagle format
+ - writing out generator header and particle info in a separated entry in the generated particles bank
 
 3/9/17
  - added beagle open file in primary generator for ascii

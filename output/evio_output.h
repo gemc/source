@@ -30,7 +30,7 @@ class evio_output : public outputFactory
 	void initBank(outputContainer*, gBank, int what);
  
 	// write generated particles
-	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap);
+	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo);
 
 	// write RF Signal
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank);

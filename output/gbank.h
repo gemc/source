@@ -33,6 +33,9 @@ using namespace std;
 // simulation conditions NUM is 0 for the mother bank, 1 for the data bank
 #define GENERATED_SUMMARY_BANK_TAG 21
 
+// generated particle user info
+#define GENERATED_USE_INFO_TAG 22
+
 // FLUX Bank
 #define FLUX_BANK_TAG 50
 

@@ -48,16 +48,25 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 	string time = timeStamp();
 	*headerBank << addVariable(HEADER_BANK_TAG, bank.getVarId("time"), "s", time);
 
+	int banknum = 0;
 	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++)
 	{
+		banknum++;
+
 		int bankId = bank.getVarId(it->first);
 
-		if(bankId)
-		*headerBank << addVariable(HEADER_BANK_TAG, bankId, bank.getVarType(it->first), it->second);
+
+		if(bankId != -1)
+			*headerBank << addVariable(HEADER_BANK_TAG, bankId, bank.getVarType(it->first), it->second);
+
+		// user info may not be indexed
+		if(bankId == -1)
+			*headerBank << addVariable(HEADER_BANK_TAG, banknum, bank.getVarType(it->first), it->second);
+
 
 		// storing event number in memory
 		if(it->first == "evn")
-		evn = it->second;
+			evn = it->second;
 
 	}
 	*event << headerBank;
@@ -85,7 +94,7 @@ void evio_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 
 }
 
-void evio_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)
+void evio_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo)
 {
 	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
 	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
@@ -134,6 +143,16 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("vz"),            bank.getVarType("vz"),  vz);
 	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("time"),          bank.getVarType("time"), btime);
 	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("multiplicity"),  bank.getVarType("multiplicity"), multiplicity);
+
+	if(userInfo.size()) {
+		evioDOMNodeP userInfoBank = evioDOMNode::createEvioDOMNode(GENERATED_USE_INFO_TAG, 0);
+		for(unsigned p=0; p<userInfo.size(); p++) {
+			*userInfoBank << addVector(GENERATED_USE_INFO_TAG, p+1, "d", userInfo[p].infos);
+		}
+		*generatedp << userInfoBank;
+
+	}
+
 
 	if(SAVE_ALL_MOTHERS)
 	{
@@ -190,16 +209,17 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("etot"),  bank.getVarType("etot"),  etot);
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("nphe"),  bank.getVarType("nphe"),  etot);
 		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("t"),     bank.getVarType("t"),     time);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upx"),   bank.getVarType("upx"),    ufpx);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upy"),   bank.getVarType("upy"),    ufpy);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upz"),   bank.getVarType("upz"),    ufpz);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spx"),   bank.getVarType("spx"),    sfpx);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spy"),   bank.getVarType("spy"),    sfpy);
-		*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spz"),   bank.getVarType("spz"),    sfpz);
 
 		if(writeFastMC) {
-
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upx"),   bank.getVarType("upx"),    ufpx);
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upy"),   bank.getVarType("upy"),    ufpy);
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("upz"),   bank.getVarType("upz"),    ufpz);
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spx"),   bank.getVarType("spx"),    sfpx);
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spy"),   bank.getVarType("spy"),    sfpy);
+			*summaryBank << addVector(GENERATED_SUMMARY_BANK_TAG, sbank.getVarId("spz"),   bank.getVarType("spz"),    sfpz);
 		}
+
+
 
 		*generatedp << summaryBank;
 	}

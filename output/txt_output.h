@@ -29,7 +29,7 @@ class txt_output : public outputFactory
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank);
 
 	// write generated particles
-	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap);
+	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo);
 	
 	// format output and set insideBank
 	void initBank(outputContainer*, gBank);

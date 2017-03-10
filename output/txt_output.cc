@@ -36,12 +36,19 @@ void txt_output :: writeHeader(outputContainer* output, map<string, double> data
 	*txtout << " --- Header Bank -- " << endl;
 	*txtout << "    - (" << HEADER_BANK_TAG << ", " << bank.getVarId("time") << ") " << "time:\t" << timeStamp() << endl;
 	
+	int banknum = 0;
 	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++)
 	{
+		banknum++;
 		int bankId = bank.getVarId(it->first);
 		
-		if(bankId)
+		if(bankId != -1)
 			*txtout << "    - (" << HEADER_BANK_TAG << ", " << bankId << ") " << it->first << ":\t" << it->second << endl;
+
+		if(bankId == -1)
+			*txtout << "    - (" << HEADER_BANK_TAG << ", " << banknum << ") " << it->first << ":\t" << it->second << endl;
+
+
 	}
 	*txtout << " --- End of Header Bank -- " << endl;
 	
@@ -71,7 +78,7 @@ void txt_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rf
 	*txtout << " --- End of RF Signals Bank Bank -- " << endl;
 }
 
-void txt_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap)
+void txt_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo)
 {
 	double MAXP = output->gemcOpt.optMap["NGENP"].arg;
 	ofstream *txtout = output->txtoutput ;
@@ -121,6 +128,19 @@ void txt_output :: writeGenerated(outputContainer* output, vector<generatedParti
 			}
 		}
 	}
+
+	if(userInfo.size()) {
+		*txtout << " --- Generated User Info Particles Bank -- " << endl;
+		for(unsigned p=0; p<userInfo.size(); p++) {
+			*txtout << "      ";
+			for(unsigned i=0; i<userInfo[p].infos.size(); i++) {
+				*txtout << userInfo[p].infos[i] << " " ;
+			}
+			*txtout << endl;
+		}
+	}
+
+
 	*txtout << " --- End of Generated Particles Bank -- " << endl;
 }
 
