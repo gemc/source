@@ -86,6 +86,10 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		else if( EXP == "gluex" )
 		{
 		}
+		// EIC
+		else if( EXP == "eic" )
+		{
+		}
 		// SoLID
 		else if( EXP == "solid" )
 		{
