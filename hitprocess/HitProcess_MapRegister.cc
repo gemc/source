@@ -34,6 +34,12 @@
 // Cebaf
 #include "injector/bubble_hitprocess.h"       ///< Calorimeter Crystals
 
+// eic
+#include "eic/eic_compton_hitprocess.h"
+#include "eic/eic_dirc_hitprocess.h"
+#include "eic/eic_ec_hitprocess.h"
+#include "eic/eic_preshower_hitprocess.h"
+#include "eic/eic_rich_hitprocess.h"
 
 map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 {
@@ -89,6 +95,11 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		// EIC
 		else if( EXP == "eic" )
 		{
+			hitMap["eic_dirc"]  = &eic_dirc_HitProcess::createHitClass;
+			hitMap["eic_ec"]  = &eic_ec_HitProcess::createHitClass;
+			hitMap["eic_preshower"]  = &eic_preshower_HitProcess::createHitClass;    
+			hitMap["eic_rich"]  = &eic_rich_HitProcess::createHitClass;
+			hitMap["eic_compton"]  = &eic_compton_HitProcess::createHitClass;  
 		}
 		// SoLID
 		else if( EXP == "solid" )
