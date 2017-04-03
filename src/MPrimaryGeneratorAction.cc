@@ -704,11 +704,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
-	int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
-
+	int PBUNCH     = (int) floor((double)NP/NBUNCHES);
+  double PBUNCH_Remnant = ((double)NP)/NBUNCHES - PBUNCH;
+  // Putting all remaining particles in the last bunch is unphysical.
+  // Better to spread them out over the entire event, with a random fluctuation.
 
 	// there will be some remaining particles, these will be added at the last bunch
-	int NREMAINING = NP - NBUNCHES*PBUNCH;
+  // int NREMAINING = NP - NBUNCHES*PBUNCH;
 
 	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << endl;
 
@@ -743,12 +745,24 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// vertex has uniform density across the cilinder
 			double lvx = L_vx;
 			double lvy = L_vy;
+//
+// The following algorithm wastes CPU and becomes an infinite loop when L_dvr is zero.
+//
+//			do {
+//				lvx = L_vx - L_dvr + 2*G4UniformRand()*L_dvr;
+//				lvy = L_vy - L_dvr + 2*G4UniformRand()*L_dvr;
+//			} while (sqrt(lvx*lvx + lvy*lvy) > L_dvr);
 
-			do {
-				lvx = L_vx - L_dvr + 2*G4UniformRand()*L_dvr;
-				lvy = L_vy - L_dvr + 2*G4UniformRand()*L_dvr;
-			} while (sqrt(lvx*lvx + lvy*lvy) > L_dvr);
-
+      
+      // This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
+      
+      double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
+      double tmp_phi = 2*pi*G4UniformRand();
+      
+      
+      lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
+      lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
+      
 			//			double L_VR  = G4UniformRand()*L_dvr;
 			//			double L_PHI = 2.0*pi*G4UniformRand();
 			//			double lvx = L_vx + L_VR*cos(L_PHI);
@@ -761,10 +775,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
 
-			particleGun->SetNumberOfParticles(PBUNCH);
-
-			if(b == NBUNCHES-1)
-			particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
+      if(G4UniformRand() < PBUNCH_Remnant){
+        particleGun->SetNumberOfParticles(PBUNCH+1);  // On *average* the events will have NP particles, properly spread out.
+      }else{
+        particleGun->SetNumberOfParticles(PBUNCH);
+      }
+//			if(b == NBUNCHES-1)
+//			particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
 
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
