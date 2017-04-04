@@ -809,7 +809,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L2_Phi/rad)*sin(L2_Theta/rad), sin(L2_Phi/rad)*sin(L2_Theta/rad), cos(L2_Theta/rad)));
 
 			// luminosity vertex 2
-			double L2_VR  = G4UniformRand()*L2_dvr/mm;
+			double L2_VR  = sqrt(G4UniformRand())*L2_dvr/mm;
 			double L2_PHI = 2.0*pi*G4UniformRand();
 			L2_vx += L2_VR*cos(L2_PHI);
 			L2_vy += L2_VR*sin(L2_PHI);
