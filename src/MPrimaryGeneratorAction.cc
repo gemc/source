@@ -743,16 +743,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// vertex has uniform density across the cilinder
 			double lvx = L_vx;
 			double lvy = L_vy;
+      
+      if( L_dvr > 0.){
+        double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
+        double tmp_phi = 2*pi*G4UniformRand();
 
-			do {
-				lvx = L_vx - L_dvr + 2*G4UniformRand()*L_dvr;
-				lvy = L_vy - L_dvr + 2*G4UniformRand()*L_dvr;
-			} while (sqrt(lvx*lvx + lvy*lvy) > L_dvr);
-
-			//			double L_VR  = G4UniformRand()*L_dvr;
-			//			double L_PHI = 2.0*pi*G4UniformRand();
-			//			double lvx = L_vx + L_VR*cos(L_PHI);
-			//			double lvy = L_vy + L_VR*sin(L_PHI);
+        // This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
+        lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
+        lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
+      }
+      
 			double lvz = L_vz;
 
 			// spread vertex if requested
@@ -809,7 +809,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L2_Phi/rad)*sin(L2_Theta/rad), sin(L2_Phi/rad)*sin(L2_Theta/rad), cos(L2_Theta/rad)));
 
 			// luminosity vertex 2
-			double L2_VR  = G4UniformRand()*L2_dvr/mm;
+			double L2_VR  = sqrt(G4UniformRand())*L2_dvr/mm;
 			double L2_PHI = 2.0*pi*G4UniformRand();
 			L2_vx += L2_VR*cos(L2_PHI);
 			L2_vy += L2_VR*sin(L2_PHI);
