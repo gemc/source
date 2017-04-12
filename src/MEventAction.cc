@@ -165,8 +165,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	if(SAVE_ALL_MOTHERS)
 		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 		{
-			string hitType;
-			
 			MHC = it->second->GetMHitCollection();
 			nhits = MHC->GetSize();
 			

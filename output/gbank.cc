@@ -176,8 +176,9 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("hitn",   99,  "Di", "Hit Number");
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
-	banks["flux"] = abank;
-	
+	banks["flux"]   = abank;
+	banks["mirror"] = abank;
+
 	
 	// Loading all banks related to a system
 	// then checking that all sensitive detectors have a bank
@@ -464,7 +465,7 @@ gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap)
 	gBank thisBank, dgtBank;
 	if(banksMap->find(name) == banksMap->end())
 	{
-		cout << "   !!! Error: >" << name << "< bank definitions not found. Exiting." << endl;
+		cout << "   !!! Error: >" << name << "< dgt bank definitions not found. Exiting." << endl;
 		exit(0);
 	}
 	else

@@ -69,8 +69,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	
 	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
 		return false;
-	
-        
+
 	// do not record Mirrors unless specified
 	if(HCname == "mirror" && RECORD_MIRROR == 0) return false;
 	

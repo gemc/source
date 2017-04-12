@@ -371,7 +371,7 @@ void PhysicsList::ConstructProcess()
 		for(size_t i=0; i<g4HadronicPhysics.size(); i++)
 			g4HadronicPhysics[i]->ConstructProcess();
 
-		// auto theParticleIterator = GetParticleIterator();
+//		 auto theParticleIterator = GetParticleIterator();
 
 		// PhysicsList contains theParticleIterator
 		theParticleIterator->reset();

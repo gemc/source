@@ -418,12 +418,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	}
 
 
-
-
-
-
-
-
 	// build mirrors
 	buildMirrors();
 
@@ -547,7 +541,6 @@ void MDetectorConstruction::buildDetector(string name)
 
 	if(kid.name != "notfound" || mom.name != "notfound")
 	{
-		
 		// handling replicas
 		if(kid.type.find("ReplicaOf:") == 0)
 		{
@@ -581,13 +574,9 @@ void MDetectorConstruction::buildDetector(string name)
 				// creating physical volume unless it is in the replicant set
 				if(replicants.find(kid.name) == replicants.end())
 					(*hallMap)[kid.name].create_physical_volumes(gemcOpt, mom.GetLogical());
-				
-				
+
 				isSensitive((*hallMap)[kid.name]);  // if sensitive, associate sensitive detector
 				hasMagfield((*hallMap)[kid.name]);  // if it has magnetic field, create or use MFM
-
-
-
 			}
 
 			(*hallMap)[kid.name].scanned = 1;
