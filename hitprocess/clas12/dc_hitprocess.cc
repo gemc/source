@@ -273,12 +273,12 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // Now include (random) time walk contributions:
     
     // Include ionisation effects:
-    double dt_walk_in = time_walk_core(doca/cm,dcc.dmaxsuperlayer[SLI],smear_time_walk[0]*beta_particle*beta_particle,smear_time_walk[1],1,dcc.v0[SECI][SLI]);
+    double dt_walk_in = time_walk_core(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.smear_time_walk[0]*beta_particle*beta_particle,dcc.smear_time_walk[1],1,dcc.v0[SECI][SLI]);
     //Translate value into detector response (landau-function):
     double dt_walk = dt_walk_in + 0.5*dt_walk_in*CLHEP::RandLandau::shoot();
 	
     // Include random time walks:
-    double dt_random_in = time_rnd_core(doca/cm,smear_time_walk[2],dcc.v0[SECI][SLI]);
+    double dt_random_in = time_rnd_core(doca/cm,dcc.smear_time_walk[2],dcc.v0[SECI][SLI]);
     //And translate it to a proper detector response (gaussian):
     double dt_random = CLHEP::RandGauss::shoot(0,dt_random_in);
     
