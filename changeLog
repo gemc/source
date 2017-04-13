@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+4/13/17
+ - added documentation for processID multihit sharing
+
 4/12/17
  - added flux-type bank to mirror bank
 
