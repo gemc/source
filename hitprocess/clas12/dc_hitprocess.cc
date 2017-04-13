@@ -105,9 +105,9 @@ static dcConstants initializeDCConstants(int runno)
     dcc.dmaxsuperlayer[5] = 1.80991;
     
     //Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
-    smear_time_walk[0] = 0.05; //Corresponds to smearing at low distances from the wire (given in mm)
-    smear_time_walk[1] = 3.0; //Adjusts ratio between time walk effects close and far away from the wire
-    smear_time_walk[2] = 30; //Adjusts random time walk smearing
+    dcc.smear_time_walk[0] = 0.05; //Corresponds to smearing at low distances from the wire (given in mm)
+    dcc.smear_time_walk[1] = 3.0; //Adjusts ratio between time walk effects close and far away from the wire
+    dcc.smear_time_walk[2] = 30; //Adjusts random time walk smearing
     //********************************************
 
 
