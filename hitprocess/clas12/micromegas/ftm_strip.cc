@@ -127,6 +127,7 @@ double ftm_strip::get_strip_X(double x, double y,ftmConstants ftmcc) {
     return strip_X;
 }
 
+/*
 double ftm_strip::get_strip_L(double x, double y,ftmConstants ftmcc) {
     int istrip = get_strip_ID(x,y,ftmcc);
     double strip_L = 0;
@@ -138,16 +139,5 @@ double ftm_strip::get_strip_L(double x, double y,ftmConstants ftmcc) {
     }
     return strip_L;
 }
-
-
-
-/*
- double ftm_strip::Weight_td(double strip_x, double strip_y, double x, double y, double z,sigma_td,ftmConstants ftmcc){
-//  Carac_strip(strip);
-    double strip_L = get_strip_L(strip_x,strip_y,ftmcc);
-    double wght=(erf((strip_y+ftmcc.pitch/2.-y)/sigma_td/sqrt(2))-erf((strip_y-ftmcc.pitch/2.-y)/sigma_td/sqrt(2)))
-               *(erf((strip_x+strip_L/2.-x)/sigma_td/sqrt(2))-erf((strip_x-strip_L/2.-x)/sigma_td/sqrt(2)))/2./2.;
-    if (wght<0) wght=-wght; //Did not test if it happens... should not but we never know. If not tested, better be sure.
-    return wght;
-}
  */
+
