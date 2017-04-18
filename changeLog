@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+4/18/18
+ - clearing user information for custom generator - it was accumulating each event.
+
 4/13/17
  - added documentation for processID multihit sharing
 
