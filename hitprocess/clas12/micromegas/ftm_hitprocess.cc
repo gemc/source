@@ -58,11 +58,11 @@ map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << " E=" << tInfos.eTot << "  adc= " << adc<< endl;
 	}
-	dgtz["hitn"]   = hitn;
-    dgtz["sector"] = 1;
-	dgtz["layer"]  = layer;
-	dgtz["strip"]  = strip;
-    dgtz["adc"]    = adc;
+	dgtz["hitn"]       = hitn;
+    dgtz["sector"]     = 1;
+	dgtz["layer"]      = layer;
+	dgtz["component"]  = strip;
+    dgtz["adc"]        = adc;
 
 	return dgtz;
 }
