@@ -65,8 +65,7 @@ vector<double> ftm_strip::FindStrip(int layer, double x, double y, double z, dou
             // check if strip number is well defined (i.e. now really inside the active volume)
             if(istrip>0) {
                 // calculate x as mid point of the strip and the strip length
-                double ix = get_strip_X(x_real,iy,ftmcc);
-                double strip_L = get_strip_L(ix,iy,ftmcc);
+//                double ix = get_strip_X(x_real,iy,ftmcc);
                 // calculate weight
                 double weight= exp(-(iy-y_real)*(iy-y_real)/2/sigma_td/sigma_td);
                 int weight_n = round(weight*Nel*10);   // round weight to closer integer to get rid of very low energy hits
