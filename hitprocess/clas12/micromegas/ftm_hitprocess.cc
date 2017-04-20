@@ -13,17 +13,17 @@ static ftmConstants initializeFTMConstants(int runno)
     // with the proper run number coming from options or run table
     if(runno == -1) return ftmc;
     
-//    int isec,ilay,istr;
     
     
-    ftmc.sigma_td_max = 0   ;  // // very small transverse diffusion (temporary)
-    ftmc.w_i          = 25.0;  // ionization energy
+    ftmc.sigma_0  = 0.3*mm;      // very small transverse diffusion (temporary)
+    ftmc.w_i      = 25.0;        // ionization energy
+    ftmc.nb_sigma = 4;           // number of strips to be considered in the cluster definition
 
-    ftmc.rmin  =  70.43;         // inner radius of disks
-    ftmc.rmax  = 143.66;         // outer radius of disks
-    ftmc.pitch =  0.560;         // pitch of the strips
-    ftmc.nstrips = (int) floor(2.*(ftmc.rmax+ftmc.rmin)/ftmc.pitch); // Number of strips
-
+    ftmc.rmin     =  70.43;      // inner radius of disks
+    ftmc.rmax     = 143.66;      // outer radius of disks
+    ftmc.pitch    =  0.560;      // pitch of the strips
+    ftmc.nstrips  = 768;         // Number of strips
+    
     return ftmc;
 }
 
@@ -50,16 +50,19 @@ map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
 
-	if(verbosity>4)
+    trueInfos tInfos(aHit);
+    int adc = (int) (tInfos.eTot/(ftmcc.w_i*eV));
+
+    if(verbosity>4)
 	{
-		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
-		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
+		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << " E=" << tInfos.eTot << "  adc= " << adc<< endl;
 	}
-	dgtz["hitn"]   = hitn;
-	dgtz["layer"]  = layer;
-	dgtz["sector"] = sector;
-	dgtz["strip"]  = strip;
+	dgtz["hitn"]       = hitn;
+    dgtz["sector"]     = 1;
+	dgtz["layer"]      = layer;
+	dgtz["component"]  = strip;
+    dgtz["adc"]        = adc;
 
 	return dgtz;
 }
@@ -78,26 +81,25 @@ vector<identifier> ftm_HitProcess :: processID(vector<identifier> id, G4Step* aS
 
 	vector<identifier> yid = id;
 	class ftm_strip ftms;
-//	ftms.fill_infos(Detector);
 
 	int layer  = 2*yid[0].id + yid[1].id - 2 ;
 
-	//yid[3].id = ftms.FindStrip(layer-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
-	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = ftms.FindStrip(layer-1, x, y, z, depe, Detector, ftmcc);
+//	cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
+	vector<double> multi_hit = ftms.FindStrip(layer-1, x, y, z, depe, Detector, ftmcc); 
+//    for(int i=0; i<multi_hit.size()/2; i++) {
+//        cout << "multi_hit " << multi_hit[i*2] << " " << multi_hit[i*2+1] << endl;
+//    }
 
 	int n_multi_hits = multi_hit.size()/2;
 
 	// closest strip
-	//yid[4].id = (int) multi_hit[0];
 	yid[3].id = (int) multi_hit[0];
 
 	yid[0].id_sharing = multi_hit[1];
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
-	// yid[4].id_sharing = multi_hit[1];
 
 	// additional strip
 	for(int h=1; h<n_multi_hits; h++)
@@ -111,21 +113,24 @@ vector<identifier> ftm_HitProcess :: processID(vector<identifier> id, G4Step* aS
 			this_id.time       = yid[j].time;
 			this_id.TimeWindow = yid[j].TimeWindow;
 			this_id.TrackId    = yid[j].TrackId;
-			this_id.id_sharing = multi_hit[3];
+			this_id.id_sharing = multi_hit[h*2+1];
 			yid.push_back(this_id);
 		}
 		// last id is strip
 		identifier this_id;
 		this_id.name       = yid[3].name;
 		this_id.rule       = yid[3].rule;
-		this_id.id         = (int) multi_hit[2];
+		this_id.id         = (int) multi_hit[h*2];
 		this_id.time       = yid[3].time;
 		this_id.TimeWindow = yid[3].TimeWindow;
 		this_id.TrackId    = yid[3].TrackId;
-		this_id.id_sharing = multi_hit[3];
+		this_id.id_sharing = multi_hit[h*2+1];
 		yid.push_back(this_id);
 	}
-
+//    for(int i=0; i<yid.size(); i++) {
+//        cout << "yid " << yid[i].id << " " << yid[i].id_sharing << endl;
+//    }
+    
 	return yid;
 }
 
