@@ -181,7 +181,18 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			double Phi   = phi/rad   + (2.0*G4UniformRand()-1.0)*dphi/rad;
 			double mass = Particle->GetPDGMass();
+
+
+			// recalculating momentun, if isKINE its value is kinetic energy
+			if(isKINE) {
+				double kk = Mom;
+				double p2 = kk*kk+2*mass*kk;
+				if(p2 >= 0) Mom = sqrt(p2);
+				else        Mom = sqrt(-p2);
+			}
 			double akine = sqrt(Mom*Mom + mass*mass) - mass ;
+
+
 			if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "no")
 			beam_dir = G4ThreeVector(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad));
 			else if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "beamp")
@@ -265,7 +276,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			if(GEN_VERBOSITY > 3)
 			{
 				cout << hd_msg << " Particle id=" <<  Particle->GetParticleName()
-				<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << Mom/GeV << " GeV, theta="
+				<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << Mom/GeV << " GeV, Kinematic Energy=" << akine/GeV << " GeV, theta="
 				<< Theta/deg <<  " degrees,   phi=" << Phi/deg << " degrees" << endl;
 				if( partPol > 0 )
 				cout << hd_msg << "   with polarization  angles: polar - " << polTheta/deg << " degrees, "
@@ -852,9 +863,13 @@ void MPrimaryGeneratorAction::setBeam()
 			// Getting particle name,  momentum from option value
 			values       = get_info(gemcOpt->optMap["BEAM_P"].args, string(",\""));
 			string pname = trimSpacesFromString(values[0]);
-
-			if(values.size() == 4)
-			{
+			isKINE  = false;
+			if(values.size() == 5) {
+				if(values[4].find("KE") != string::npos){
+					isKINE = true;
+				}
+			}
+			if(values.size() == 4 || (values.size() == 5 && isKINE)) {
 				mom          = get_number(values[1]);
 				theta        = get_number(values[2]);
 				phi          = get_number(values[3]);
@@ -870,7 +885,7 @@ void MPrimaryGeneratorAction::setBeam()
 					for(int i=0; i<particleTable->entries(); i++)
 					cout << hd_msg << " g4 particle: "  << particleTable->GetParticleName(i)
 					<< " pdg encoding: " << particleTable->GetParticle(i)->GetPDGEncoding() << endl;
- 			}
+ 				}
 				// otherwise it's not found. Need to exit here.
 				else
 				cout << hd_msg << " Particle " << pname << " not found in G4 table. Exiting" << endl << endl;

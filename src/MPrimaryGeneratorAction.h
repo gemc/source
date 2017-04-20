@@ -68,6 +68,7 @@ private:
 	// Primary Beam
 	G4ParticleDefinition *Particle;   ///< Particle type
 	double mom,   dmom;               ///< beam momentum, delta momentum
+	bool isKINE;                      ///< particle mom, dmom are Kinetic energy, not momentum
 	double theta, dtheta;             ///< theta, delta theta
 	double phi,   dphi;               ///< phi, delta phi
 	double vx, vy, vz;                ///< Beam Vertex coordinates
