@@ -2,7 +2,7 @@ from init_env import init_environment
 
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
-env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh")
+env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh root")
 
 # env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
 # env.Replace(CXX = "/usr/bin/clang++")
@@ -20,7 +20,7 @@ materials_sources = Split("""
 	materials/cpp_materials.cc
 	materials/mysql_materials.cc
 	materials/text_materials.cc""")
-env.Library(source = materials_sources, target = "lib/materials")
+env.Library(source = materials_sources, target = "lib/gmaterials")
 
 # Mirrors
 env.Append(CPPPATH = 'mirrors')
@@ -28,7 +28,7 @@ mirrors_sources = Split("""
 	mirrors/mirrors_factory.cc
 	mirrors/mysql_mirrors.cc
 	mirrors/text_mirrors.cc""")
-env.Library(source = mirrors_sources, target = "lib/mirrors")
+env.Library(source = mirrors_sources, target = "lib/gmirrors")
 
 
 # Parameters
@@ -37,7 +37,7 @@ parameters_sources = Split("""
 	parameters/parameter_factory.cc
 	parameters/mysql_parameters.cc
 	parameters/text_parameters.cc""")
-env.Library(source = parameters_sources, target = "lib/parameters")
+env.Library(source = parameters_sources, target = "lib/gparameters")
 
 
 # Utilities
@@ -48,7 +48,7 @@ util_sources = Split("""
 	utilities/lStdHep.cc
 	utilities/lXDR.cc
 	utilities/options.cc""")
-env.Library(source = util_sources, target = "lib/utilities")
+env.Library(source = util_sources, target = "lib/gutilities")
 
 
 # Detector
@@ -61,7 +61,7 @@ det_sources = Split("""
 	detector/cad_det_factory.cc
 	detector/clara_det_factory.cc
 	detector/text_det_factory.cc""")
-env.Library(source = det_sources, target = "lib/detector")
+env.Library(source = det_sources, target = "lib/gdetector")
 
 
 # Sensitivity
@@ -72,7 +72,7 @@ sensi_sources = Split("""
 	sensitivity/Hit.cc
 	sensitivity/HitProcess.cc
 	sensitivity/sensitiveID.cc""")
-env.Library(source = sensi_sources, target = "lib/sensitivity")
+env.Library(source = sensi_sources, target = "lib/gsensitivity")
 
 
 # Physics
@@ -80,7 +80,7 @@ env.Append(CPPPATH = 'physics')
 phys_sources = Split("""
 	physics/PhysicsList.cc
 	physics/PhysicsListMessenger.cc""")
-env.Library(source = phys_sources, target = "lib/physics")
+env.Library(source = phys_sources, target = "lib/gphysics")
 
 # Fields
 env.Append(CPPPATH = 'fields')
@@ -93,7 +93,7 @@ field_sources = Split("""
 	fields/symmetries/dipole.cc
 	fields/symmetries/cylindrical.cc
 	fields/symmetries/phi-segmented.cc""")
-env.Library(source = field_sources, target = "lib/fields")
+env.Library(source = field_sources, target = "lib/gfields")
 
 
 # Hit Processes
@@ -135,7 +135,7 @@ hitp_sources = Split("""
 	hitprocess/HPS/ECAL_hitprocess.cc
 	hitprocess/HPS/SVT_hitprocess.cc
 	hitprocess/HPS/muon_hodo_hitprocess.cc""")
-env.Library(source = hitp_sources, target = "lib/hitprocess")
+env.Library(source = hitp_sources, target = "lib/ghitprocess")
 
 
 # Output
@@ -145,7 +145,7 @@ output_sources = Split("""
 	output/evio_output.cc
 	output/txt_output.cc
 	output/gbank.cc""")
-env.Library(source = output_sources, target = "lib/output")
+env.Library(source = output_sources, target = "lib/goutput")
 
 # GUI
 env.Append(CPPPATH = 'gui/src')
@@ -164,7 +164,7 @@ gui_sources = Split("""
 	gui/src/physicsListGui.cc
 	gui/src//gtrigger.cc
 	utilities/graph.cc""")
-env.Library(source = gui_sources, target = "lib/gui")
+env.Library(source = gui_sources, target = "lib/ggui")
 
 
 # gemc
@@ -182,7 +182,7 @@ gemc_sources = Split("""
 	src/MSteppingAction.cc""")
 
 env.Append(LIBPATH = ['lib'])
-env.Prepend(LIBS =  ['materials', 'mirrors', 'parameters', 'utilities', 'detector', 'sensitivity', 'physics', 'fields', 'hitprocess', 'output', 'gui'])
+env.Prepend(LIBS =  ['gmaterials', 'gmirrors', 'gparameters', 'gutilities', 'gdetector', 'gsensitivity', 'gphysics', 'gfields', 'ghitprocess', 'goutput', 'ggui'])
 env.Program(source = gemc_sources, target = "gemc")
 
 

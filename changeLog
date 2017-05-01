@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/1/17
+ - prepending "g" to all library names to avoid potential conflicts with other external packages
+
 4/20/17
  - added optional argument (appended at the end) to BEAM_P: "KE" can specify that the momentum is kinematic energy instead.
    For example, to simulate a K=250 MeV proton::
