@@ -162,11 +162,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// building the tracks set database with all the tracks in all the hits
 	// if SAVE_ALL_MOTHERS is set
 	set<int> track_db;
-	if(SAVE_ALL_MOTHERS)
+	if(SAVE_ALL_MOTHERS) {
 		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 		{
 			MHC = it->second->GetMHitCollection();
-			nhits = MHC->GetSize();
+			if (MHC) nhits = MHC->GetSize();
+			else nhits = 0;
 			
 			for(int h=0; h<nhits; h++)
 			{
@@ -191,9 +192,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				}
 			}
 		}
-	
-
-
+	}
 
 	// now filling the map of tinfos with tracks infos from the track_db database
 	// this won't get the mother particle infos except for their track ID
@@ -270,6 +269,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				}
 			}
 		}
+
 		// removing daughter tracks if mother also gave hits
 		if(SAVE_ALL_MOTHERS>2)
 		{
@@ -303,9 +303,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			}
 		}
 	}
-	
-	
-	
 	
 	
 	// Making sure the output routine exists in the ProcessOutput map
@@ -363,7 +360,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			cout << rfs << endl;
 	}
 
-
 	// Getting Generated Particles info
 	// Are these loops necessary, revisit later1
 	vector<generatedParticle> MPrimaries;
@@ -392,7 +388,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHC = it->second->GetMHitCollection();
-		nhits = MHC->GetSize();
+		
+		if (MHC) nhits = MHC->GetSize();
+		else nhits = 0;
+		
 		
 		// The same ProcessHit Routine must apply to all the hits  in this HitCollection.
 		// Instantiating the ProcessHitRoutine only once for the first hit.
