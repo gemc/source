@@ -170,14 +170,33 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	banks["chargeTime"] = abank;
 
 	
-	// flux bank integrated digitized infos
+	// flux bank digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
-	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information integrated over the hit");
+	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information");
 	abank.load_variable("hitn",   99,  "Di", "Hit Number");
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["flux"]   = abank;
 	banks["mirror"] = abank;
+
+	// counter bank integrated digitized infos
+	// flux digitized provide just one "digitized" variable, the detector id
+	abank =  gBank(COUNTER_BANK_TAG, "counter", "Geant4 counter digitized information");
+	abank.load_variable("hitn",           99,  "Di", "Hit Number");
+	abank.load_variable("gamma",           1,  "Di", "number of gamma");
+	abank.load_variable("e+",              2,  "Di", "number of electrons");
+	abank.load_variable("e-",              3,  "Di", "number of positrons");
+	abank.load_variable("pi+",             4,  "Di", "number of pi+");
+	abank.load_variable("pi-",             5,  "Di", "number of pi-");
+	abank.load_variable("pi0",             6,  "Di", "number of pi0");
+	abank.load_variable("k+",              7,  "Di", "number of k+");
+	abank.load_variable("k-",              8,  "Di", "number of k-");
+	abank.load_variable("k0",              9,  "Di", "number of k0");
+	abank.load_variable("proton",         10,  "Di", "number of protons");
+	abank.load_variable("neutron",        11,  "Di", "number of neutrons");
+	abank.load_variable("opticalphoton",  12,  "Di", "number of optical photons");
+	abank.orderNames();
+	banks["counter"]   = abank;
 
 	
 	// Loading all banks related to a system
@@ -187,7 +206,8 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 		string systemName    = sit->first;
 		string systemFactory = sit->second;
 		
-		if(systemName == "flux") continue;
+		// these are already loaded
+		if(systemName == "flux" || systemName == "mirror" || systemName == "counter") continue;
 		
 		// text factory
 		if(systemFactory == "TEXT")

@@ -40,7 +40,7 @@ using namespace std;
 #define FLUX_BANK_TAG 50
 
 // COUNTER Bank
-#define FLUX_BANK_TAG 51
+#define COUNTER_BANK_TAG 51
 
 // Mirrors Bank
 #define MIRRORS_BANK_TAG 60

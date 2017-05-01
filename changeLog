@@ -4,6 +4,8 @@ Changelog for GEMC
 5/1/17
  - prepending "g" to all library names to avoid potential conflicts with other external packages
  - fixed cases where the hit collection may be empty, for example by geant4 messenger command hits/inactivate
+ - added identifier definitions for new detector type: Counter
+ - added bank definitions for new detector type: Counter
 
 4/20/17
  - added optional argument (appended at the end) to BEAM_P: "KE" can specify that the momentum is kinematic energy instead.
