@@ -22,8 +22,8 @@ Changelog for GEMC
    - optphoton 
 
  - the counter sensitivity and id are defined the same way as the flux detector.
- - The output bank will have the number of each particles that goes through the sensitive detector.
-
+ - the output bank will have the number of each particles that goes through the sensitive detector.
+ - making sure we do not count the same track twice
 
 4/20/17
  - added optional argument (appended at the end) to BEAM_P: "KE" can specify that the momentum is kinematic energy instead.

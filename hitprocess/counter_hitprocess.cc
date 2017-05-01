@@ -17,6 +17,8 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// now counting the particles
 	vector<int> pids = aHit->GetPIDs();
+	vector<int> tids = aHit->GetTIds();
+
 	int ngamma, nep, nem, npip, npim, npi0, nkp, nkm, nk0, nproton, nneutron, noptphoton;
 	ngamma     = 0;
 	nep        = 0;
@@ -31,20 +33,30 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	nneutron   = 0;
 	noptphoton = 0;
 	
+	set<int> trackIds;
+	
 	for(unsigned int p=0; p<pids.size(); p++) {
 		int pid = pids[p];
-		     if(pid == 22)   { ngamma++; }
-		else if(pid == 11)   { nem++; }
-		else if(pid == -11)  { nep++; }
-		else if(pid == 211)  { npip++; }
-		else if(pid == -211) { npim++; }
-		else if(pid == 111)  { npi0++; }
-		else if(pid == 321)  { ngamma++; }
-		else if(pid == -321) { ngamma++; }
-		else if(pid == 311)  { ngamma++; }
-		else if(pid == 2212) { nproton++; }
-		else if(pid == 2112) { nneutron++; }
-		else if(pid == 0)    { noptphoton++; }
+		int tid = tids[p];
+		
+		if(trackIds.find(tid) == trackIds.end() ) {
+			
+				 if(pid == 22)   { ngamma++; }
+			else if(pid == 11)   { nem++; }
+			else if(pid == -11)  { nep++; }
+			else if(pid == 211)  { npip++; }
+			else if(pid == -211) { npim++; }
+			else if(pid == 111)  { npi0++; }
+			else if(pid == 321)  { ngamma++; }
+			else if(pid == -321) { ngamma++; }
+			else if(pid == 311)  { ngamma++; }
+			else if(pid == 2212) { nproton++; }
+			else if(pid == 2112) { nneutron++; }
+			else if(pid == 0)    { noptphoton++; }
+			
+			trackIds.insert(tid);
+		}
+		
 	}
 
 	dgtz["ngamma"]     = ngamma;
