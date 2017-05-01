@@ -2,7 +2,7 @@ from init_env import init_environment
 
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
-env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh root")
+env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh")
 
 # env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
 # env.Replace(CXX = "/usr/bin/clang++")
