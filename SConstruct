@@ -102,6 +102,7 @@ env.Append(CPPPATH = ['hitprocess/Aprime', 'hitprocess/GlueX', 'hitprocess/solid
 hitp_sources = Split("""
 	hitprocess/HitProcess_MapRegister.cc
 	hitprocess/flux_hitprocess.cc
+	hitprocess/counter_hitprocess.cc
 	hitprocess/clas12/micromegas/FMT_hitprocess.cc
 	hitprocess/clas12/micromegas/fmt_strip.cc	
 	hitprocess/clas12/micromegas/BMT_hitprocess.cc

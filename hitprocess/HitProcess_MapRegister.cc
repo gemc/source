@@ -2,6 +2,7 @@
 #include "HitProcess.h"
 #include "HitProcess_MapRegister.h"
 #include "flux_hitprocess.h"         ///< flux hit process common to all
+#include "counter_hitprocess.h"      ///< counter hit process common to all
 
 // CLAS12
 #include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
@@ -59,6 +60,8 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		hitMap["flux"]           = &flux_HitProcess::createHitClass;
 		// mirror is also a flux detector
 		hitMap["mirror"]         = &flux_HitProcess::createHitClass;
+		// counter is also a flux detector
+		hitMap["counter"]         = &counter_HitProcess::createHitClass;
 
 		// CLAS12
 		if(EXP == "clas12")

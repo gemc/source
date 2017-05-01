@@ -20,8 +20,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 	system           = s;
 
 	// iF SD is FLUX, returns special sensitiveID
-	if(SD == "flux")
-	{
+	if(SD == "flux") {
 		description = "generic flux detector";
 		identifiers.push_back("id");
 		signalThreshold = 0;
@@ -31,7 +30,17 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 		return;
 	}
 	
-	
+	// iF SD is COUNTER, returns special sensitiveID
+	if(SD == "counter") {
+		description = "generic counter detector";
+		identifiers.push_back("id");
+		signalThreshold = 0;
+		timeWindow      = -1;
+		prodThreshold   = 1*mm;  // standard 1 mm production threshold
+		maxStep         = 1*mm;
+		return;
+	}
+
 	// TEXT sensitivity infos. For now, CAD and GDML are loaded with TEXT
 	if(factory == "TEXT" || factory == "CAD" || factory == "GDML")
 	{

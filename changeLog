@@ -6,6 +6,24 @@ Changelog for GEMC
  - fixed cases where the hit collection may be empty, for example by geant4 messenger command hits/inactivate
  - added identifier definitions for new detector type: Counter
  - added bank definitions for new detector type: Counter
+ - added counter hit process to store the multiplicity of these particles::
+
+   - gamma     
+   - ep        
+   - em        
+   - pip       
+   - pim       
+   - pi0       
+   - kp        
+   - km        
+   - k0        
+   - proton    
+   - neutron   
+   - optphoton 
+
+ - the counter sensitivity and id are defined the same way as the flux detector.
+ - The output bank will have the number of each particles that goes through the sensitive detector.
+
 
 4/20/17
  - added optional argument (appended at the end) to BEAM_P: "KE" can specify that the momentum is kinematic energy instead.
