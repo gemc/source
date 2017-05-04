@@ -124,10 +124,10 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	sliceXEdit = new QLineEdit(tr("0"));
 	sliceXEdit->setMaximumWidth(100);
 
-	sliceXActi = new QCheckBox(tr("&Active: "));
+	sliceXActi = new QCheckBox(tr("&On"));
 	sliceXActi->setChecked(false);
 
-	sliceXInve = new QCheckBox(tr("&Invert: "));
+	sliceXInve = new QCheckBox(tr("&Flip"));
 	sliceXInve->setChecked(false);
 
 	QHBoxLayout *sliceXLayout = new QHBoxLayout;
@@ -143,10 +143,10 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	sliceYEdit = new QLineEdit(tr("0"));
 	sliceYEdit->setMaximumWidth(100);
 	
-	sliceYActi = new QCheckBox(tr("&Active: "));
+	sliceYActi = new QCheckBox(tr("&On"));
 	sliceYActi->setChecked(false);
 	
-	sliceYInve = new QCheckBox(tr("&Invert: "));
+	sliceYInve = new QCheckBox(tr("&Flip"));
 	sliceYInve->setChecked(false);
 	
 	QHBoxLayout *sliceYLayout = new QHBoxLayout;
@@ -163,10 +163,10 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	sliceZEdit = new QLineEdit(tr("0"));
 	sliceZEdit->setMaximumWidth(100);
 	
-	sliceZActi = new QCheckBox(tr("&Active: "));
+	sliceZActi = new QCheckBox(tr("&On"));
 	sliceZActi->setChecked(false);
 
-	sliceZInve = new QCheckBox(tr("&Invert: "));
+	sliceZInve = new QCheckBox(tr("&Flip"));
 	sliceZInve->setChecked(false);
 
 	QHBoxLayout *sliceZLayout = new QHBoxLayout;
@@ -178,6 +178,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	sliceZLayout->addStretch(1);
 
 	
+	
 	connect ( sliceXEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
 	connect ( sliceYEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
 	connect ( sliceZEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
@@ -186,19 +187,45 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	connect ( sliceYActi , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
 	connect ( sliceZActi , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
 	
+	connect ( sliceXInve , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
+	connect ( sliceYInve , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
+	connect ( sliceZInve , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
 
+	
 	QPushButton *clearSliceButton = new QPushButton(tr("Clear Slices"));
 	clearSliceButton->setToolTip("Clear Slice Planes");
 	clearSliceButton->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
 	connect ( clearSliceButton , SIGNAL(clicked()), this, SLOT( clearSlice() ) );
 
 	
+	
+	// slice style: Intersection or Union
+	QGroupBox *sliceChoiceBox = new QGroupBox(tr("Slices Style"));
+	sliceSectn = new QRadioButton(tr("&Intersection"), sliceChoiceBox);
+	sliceUnion = new QRadioButton(tr("&Union"),        sliceChoiceBox);
+	sliceSectn->setChecked(true);
+
+	connect ( sliceSectn , SIGNAL(clicked()), this, SLOT( slice() ) );
+	connect ( sliceUnion , SIGNAL(clicked()), this, SLOT( slice() ) );
+	
+	QHBoxLayout *sliceChoiceLayout = new QHBoxLayout;
+	sliceChoiceLayout->addWidget(sliceSectn);
+	sliceChoiceLayout->addWidget(sliceUnion);
+	sliceChoiceBox->setLayout(sliceChoiceLayout);
+	
+	
+	
 	// slices layout
 	QVBoxLayout *sliceLayout = new QVBoxLayout;
 	sliceLayout->addLayout(sliceXLayout);
 	sliceLayout->addLayout(sliceYLayout);
 	sliceLayout->addLayout(sliceZLayout);
+	sliceLayout->addWidget(sliceChoiceBox);
 	sliceLayout->addWidget(clearSliceButton);
+
+	
+	
+	
 	
 	// slices group
 	QGroupBox *sliceGroup = new QGroupBox(tr("Slices   [mm]"));
@@ -358,8 +385,15 @@ void camera_control::slice()
 	}
 	
 	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-	UImanager->ApplyCommand("/vis/viewer/set/cutawayMode intersection");
 	
+	if(sliceSectn->isChecked()) {
+		UImanager->ApplyCommand("/vis/viewer/set/cutawayMode intersection");
+	} else if(sliceUnion->isChecked()) {
+		UImanager->ApplyCommand("/vis/viewer/set/cutawayMode union");
+	}
+
+	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
+
 	char command[200] = "";
 		
 	if(sliceXActi->isChecked() )
@@ -556,8 +590,6 @@ void camera_control::addScale()
 	UImanager->ApplyCommand(command);
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }
-
-
 
 
 
