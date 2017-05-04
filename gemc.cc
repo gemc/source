@@ -332,11 +332,11 @@ int main( int argc, char **argv )
 
 	// if it is not set explicitely, and it is a file input, then run all the event in the file by default
 	// only in batch mode
-	if(use_gui == 0 && gemcOpt.optMap["N"].arg == 0 && gemcOpt.optMap["INPUT_GEN_FILE"].args != "gemc_internal")
+	if(use_gui == 0 && gemcOpt.optMap["N"].arg == 0 && gemcOpt.optMap["INPUT_GEN_FILE"].args != "gemc_internal") {
 		nEventsToProcess = 1000000000;
+	}
 
-	if(use_gui)
-	{
+	if(use_gui) {
 		gemc_splash.message("Starting GUI...");
 		qApp->processEvents();
 		
@@ -359,7 +359,10 @@ int main( int argc, char **argv )
 			UImanager->ApplyCommand(init_vcommands[i].c_str());
 		}
 		
-		if(exec_macro != "/control/execute no") UImanager->ApplyCommand(exec_macro.c_str());
+		if(exec_macro != "/control/execute no") {
+			UImanager->ApplyCommand(exec_macro.c_str());
+		}
+
 		if(nEventsToProcess > 0)
 		{
 			start_events = clock();
@@ -380,9 +383,7 @@ int main( int argc, char **argv )
 		// in the gemc_quit slot
 		delete visManager;
 		if(session != NULL) delete session;
-	}
-	else
-	{
+	} else {
 		if(exec_macro != "/control/execute no") UImanager->ApplyCommand(exec_macro.c_str());
 		start_events = clock();
 		if(nEventsToProcess > 0)

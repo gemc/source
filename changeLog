@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/2/17
+ - making slices more responsive
+
 5/1/17
  - prepending "g" to all library names to avoid potential conflicts with other external packages
  - fixed cases where the hit collection may be empty, for example by geant4 messenger command hits/inactivate

@@ -723,7 +723,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	// there will be some remaining particles, these will be added at the last bunch
 	int NREMAINING = NP - NBUNCHES*PBUNCH;
 
-	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << endl;
+	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << " " << NREMAINING << endl;
 
 	if(PBUNCH > 0)
 	{
@@ -744,7 +744,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				L_Mom   = L_mom + (2.0*G4UniformRand()-1.0)*L_dmom;
 				L_Theta = acos(G4UniformRand()*(cos(L_theta/rad-L_dtheta/rad)-cos(L_theta/rad+L_dtheta/rad)) + cos(L_theta/rad+L_dtheta/rad))/rad;
 				if(lumiFlat)
-				L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
+					L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
 
 				L_Phi = L_phi + (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
@@ -756,16 +756,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// vertex has uniform density across the cilinder
 			double lvx = L_vx;
 			double lvy = L_vy;
-      
-      if( L_dvr > 0.){
-        double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
-        double tmp_phi = 2*pi*G4UniformRand();
 
-        // This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
-        lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
-        lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
-      }
-      
+			if( L_dvr > 0.){
+				double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
+				double tmp_phi = 2*pi*G4UniformRand();
+
+				// This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
+				lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
+				lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
+			}
+
 			double lvz = L_vz;
 
 			// spread vertex if requested
@@ -777,7 +777,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetNumberOfParticles(PBUNCH);
 
 			if(b == NBUNCHES-1)
-			particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
+				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
 
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
@@ -792,6 +792,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	int NBUNCHES2   = (int) floor(TWINDOW/TBUNCH2);
 	int PBUNCH2     = (int) floor((double)NP2/NBUNCHES2);
 
+
 	if(PBUNCH2 > 0)
 	{
 		particleGun->SetParticleDefinition(L2_Particle);
@@ -805,12 +806,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
 		// all particles in a bunch are identical
-		for(int b=0; b<NBUNCHES2; b++)
-		{
+		for(int b=0; b<NBUNCHES2; b++) {
 			particleGun->SetParticleTime(TBUNCH2*b);
 			// spread momentum if requested
-			if(L2_dmom > 0)
-			{
+			if(L2_dmom > 0) {
 				L2_Mom   += (2.0*G4UniformRand()-1.0)*L2_dmom;
 				L2_Theta = acos(G4UniformRand()*(cos(L2_theta/rad-L2_dtheta/rad)-cos(L2_theta/rad+L2_dtheta/rad)) + cos(L2_theta/rad+L2_dtheta/rad))/rad;
 				if(lumi2Flat)

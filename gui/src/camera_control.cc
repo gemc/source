@@ -18,7 +18,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 {
 	gemcOpt = Opts;
 	UImanager  = G4UImanager::GetUIpointer();
-	
+	solidVis = false;
 	
 	QGroupBox *anglesGroup = new QGroupBox(tr("Camera Control"));
 	anglesGroup->setMinimumWidth(450);
@@ -178,9 +178,9 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	sliceZLayout->addStretch(1);
 
 	
-	connect ( sliceXEdit , SIGNAL( textChanged(const QString &) ), this, SLOT( slice() ) );
-	connect ( sliceYEdit , SIGNAL( textChanged(const QString &) ), this, SLOT( slice() ) );
-	connect ( sliceZEdit , SIGNAL( textChanged(const QString &) ), this, SLOT( slice() ) );
+	connect ( sliceXEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
+	connect ( sliceYEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
+	connect ( sliceZEdit , SIGNAL( returnPressed() ), this, SLOT( slice() ) );
 
 	connect ( sliceXActi , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
 	connect ( sliceYActi , SIGNAL( stateChanged(int) ), this, SLOT( slice() ) );
@@ -353,11 +353,11 @@ void camera_control::slice()
 {
 	// can't have a mix of wireframe / solid when doing a slice.
 	// forcing all to be solid
-	UImanager->ApplyCommand("/vis/geometry/set/forceSolid all -1 1");
-
+	if(!solidVis) {
+		UImanager->ApplyCommand("/vis/geometry/set/forceSolid all -1 1");
+	}
 	
 	UImanager->ApplyCommand("/vis/viewer/clearCutawayPlanes");
-
 	UImanager->ApplyCommand("/vis/viewer/set/cutawayMode intersection");
 	
 	char command[200] = "";
@@ -377,6 +377,7 @@ void camera_control::slice()
 		sprintf(command, "/vis/viewer/addCutawayPlane   0   0 %d mm 0 0 %d ", (int) qs_toDouble(sliceZEdit->text()), sliceZInve->isChecked() ? -1 : 1);
 		UImanager->ApplyCommand(command);
 	}
+	solidVis = true;
 
 }
 
