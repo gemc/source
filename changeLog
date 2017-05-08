@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/8/17
+ - fixed bug that affected imports of multiple cad systems
+
 5/2/17
  - making slices more responsive
 

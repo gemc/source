@@ -19,8 +19,8 @@ map<string, detector> cad_det_factory::loadDetectors()
 		return dets;
 
 
-	// saving directories so we can look for cad.gxml on those locations
-	vector<string> possibleDirs;
+	// looking for possible gxml files
+	vector<string> possibleGXML;
 
   	// there is at least one build with this factory.
 	// building all detectors that are tagged with CAD factory
@@ -38,7 +38,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 			DIR *thisDir = opendir(dir.c_str());
 
 			if(thisDir != NULL) {
-				possibleDirs.push_back(dir + "/");
+				possibleGXML.push_back(dname + "cad.gxml");
 				struct dirent *thisDirent = readdir(thisDir);
 				while (thisDirent != NULL){
 
@@ -118,134 +118,145 @@ map<string, detector> cad_det_factory::loadDetectors()
 		}
 	}
 
-	// parsing attribute modifications. All cad imported volumes are stored in cad.gxml
-	string fname = "cad.gxml";
+	for(unsigned g=0; g<possibleGXML.size(); g++) {
 
-	QFile *gxml = new QFile(fname.c_str());
+		QFile *gxml = new QFile(possibleGXML[g].c_str());
 
-	if( !gxml->exists() ) {
+		// checking that file exists
+		if( !gxml->exists() ) {
+			cout << hd_msg << " " << possibleGXML[g] << " not found. Cad volumes will be imported as original." << endl;
+		} else {
 
-		for(auto &dirs: possibleDirs) {
-
-			gxml = NULL;
-
-			string fullName = dirs + fname;
-			gxml = new QFile(fullName.c_str());
-
-			// first found, exit
-			if( gxml->exists() ) {
-				continue;
+			QDomDocument domDocument;
+			// opening gcard and filling domDocument
+			if(!domDocument.setContent(gxml)) {
+				cout << " >>  xml format for file <" << possibleGXML[g] << "> is wrong - check XML syntax. Exiting." << endl;
+				exit(0);
 			}
-		}
-	}
-	// checking again
-	if( !gxml->exists() ) {
-			cout << hd_msg << " " << fname << " not found. All cad volumes are imported as original." << endl;
-	} else {
+			gxml->close();
 
-		QDomDocument domDocument;
-		// opening gcard and filling domDocument
-		if(!domDocument.setContent(gxml)) {
-			cout << " >>  xml format for file <" << fname << "> is wrong - check XML syntax. Exiting." << endl;
-			exit(0);
-		}
-		gxml->close();
+			QDomNodeList volumes = domDocument.firstChildElement().elementsByTagName("volume");
+			for(int i = 0; i < volumes.count(); i++) {
+				QDomNode elm = volumes.at(i);
+				if(elm.isElement()) {
+					QDomElement e = elm.toElement();
+					string volumeName   = e.attribute("name").toStdString();
+					string color        = e.attribute("color").toStdString();
+					string material     = e.attribute("material").toStdString();
+					string sensitivity  = e.attribute("sensitivity").toStdString();
+					string hitType      = e.attribute("hitType").toStdString();
+					string identifiers  = e.attribute("identifiers").toStdString();
+					string visible      = e.attribute("visible").toStdString();
+					string style        = e.attribute("style").toStdString();
+					string position     = e.attribute("position").toStdString();
+					string rotation     = e.attribute("rotation").toStdString();
+					string mother       = e.attribute("mother").toStdString();
 
-		QDomNodeList volumes = domDocument.firstChildElement().elementsByTagName("volume");
-		for(int i = 0; i < volumes.count(); i++) {
-			QDomNode elm = volumes.at(i);
-			if(elm.isElement()) {
-				QDomElement e = elm.toElement();
-				string volumeName   = e.attribute("name").toStdString();
-				string color        = e.attribute("color").toStdString();
-				string material     = e.attribute("material").toStdString();
-				string sensitivity  = e.attribute("sensitivity").toStdString();
-				string hitType      = e.attribute("hitType").toStdString();
-				string identifiers  = e.attribute("identifiers").toStdString();
-				string visible      = e.attribute("visible").toStdString();
-				string style        = e.attribute("style").toStdString();
-				string position     = e.attribute("position").toStdString();
-				string rotation     = e.attribute("rotation").toStdString();
-				string mother       = e.attribute("mother").toStdString();
+					// assigning attributes to volume
+					if(dets.find(volumeName) != dets.end()) {
 
-				// assigning attributes to volume
-				if(dets.find(volumeName) != dets.end()) {
-
-					if(verbosity>3)
+						if(verbosity>3)
 						cout << " Modifying attributes for volume: " << volumeName ;
 
 
-					if(color != "") {
-						if(verbosity>3)
+						if(color != "") {
+							if(verbosity>3)
 							cout << " color: " << color ;
 
-						G4Colour thisCol = gcol(color);
-						dets[volumeName].VAtts = G4VisAttributes(thisCol);
-					}
+							G4Colour thisCol = gcol(color);
+							dets[volumeName].VAtts = G4VisAttributes(thisCol);
+						}
 
-					visible == "no" ? dets[volumeName].VAtts.SetVisibility(false) : dets[volumeName].VAtts.SetVisibility(true);
-					style == "wireframe" ?  dets[volumeName].VAtts.SetForceWireframe(true) : dets[volumeName].VAtts.SetForceSolid(true);
+						visible == "no" ? dets[volumeName].VAtts.SetVisibility(false) : dets[volumeName].VAtts.SetVisibility(true);
+						style == "wireframe" ?  dets[volumeName].VAtts.SetForceWireframe(true) : dets[volumeName].VAtts.SetForceSolid(true);
 
-					if(sensitivity != "") {
-						if(verbosity>3)
+						if(sensitivity != "") {
+							if(verbosity>3)
 							cout << " sensitivity: " << sensitivity ;
 
-						// same hitType as sensitivity
-						// setting system as sensitivity, so the hit definitions can be loaded
-						// this should be modified later
-						dets[volumeName].system = sensitivity;
-						dets[volumeName].sensitivity = sensitivity;
+							// same hitType as sensitivity
+							// setting system as sensitivity, so the hit definitions can be loaded
+							// this should be modified later
+							dets[volumeName].system = sensitivity;
+							dets[volumeName].sensitivity = sensitivity;
 
-						// identifier must be defined
-						if(identifiers != "") {
-							if(verbosity>3)
+							// identifier must be defined
+							if(identifiers != "") {
+								if(verbosity>3)
 								cout << " identifiers: " << identifiers ;
 
-							dets[volumeName].identity = get_identifiers(identifiers);
+								dets[volumeName].identity = get_identifiers(identifiers);
 
-						} else {
-							cout << " !! Error: volume " << volumeName << " has sensitivity but not identifier. " << endl;
+							} else {
+								cout << " !! Error: volume " << volumeName << " has sensitivity but not identifier. " << endl;
+							}
 						}
-					}
-					
-					if(hitType != "") {
-						if(verbosity>3)
+
+						if(hitType != "") {
+							if(verbosity>3)
 							cout << " hitType: " << hitType ;
-						dets[volumeName].hitType = hitType;
-					} else {
-						dets[volumeName].hitType = sensitivity;
-					}
+							dets[volumeName].hitType = hitType;
+						} else {
+							dets[volumeName].hitType = sensitivity;
+						}
 
-					if(material != "") {
-						if(verbosity>3)
-						cout << " material: " << material ;
-						dets[volumeName].material = material;
-					}
+						if(material != "") {
+							if(verbosity>3)
+							cout << " material: " << material ;
+							dets[volumeName].material = material;
+						}
 
-					if(position != "") {
-						if(verbosity>3)
+						if(position != "") {
+							if(verbosity>3)
 							cout << " position: " << position ;
-						dets[volumeName].pos = calc_position(position);
-					}
+							dets[volumeName].pos = calc_position(position);
+						}
 
-					if(rotation != "") {
-						if(verbosity>3)
+						if(rotation != "") {
+							if(verbosity>3)
 							cout << " rotation: " << rotation ;
-						dets[volumeName].rot = calc_rotation(rotation, volumeName);
-					}
-					
-					if(mother != "") {
-						if(verbosity>3)
-							cout << " mother: " << mother ;
-						dets[volumeName].mother = mother;
-					}
+							dets[volumeName].rot = calc_rotation(rotation, volumeName);
+						}
 
-					if(verbosity>3)
+						if(mother != "") {
+							if(verbosity>3)
+							cout << " mother: " << mother ;
+							dets[volumeName].mother = mother;
+						}
+						
+						if(verbosity>3)
 						cout << endl;
+					}
 				}
 			}
 		}
+
+
+
+
 	}
+
+
+
+
+//	if( !gxml->exists() ) {
+//
+//		for(auto &dirs: possibleGXML) {
+//
+//			gxml = NULL;
+//
+//			string fullName = dirs + fname;
+//			gxml = new QFile(fullName.c_str());
+//
+//			// first found, exit
+//			if( gxml->exists() ) {
+//				continue;
+//			}
+//		}
+//	}
+//
+
+
 
 	for(const auto &dd : dets)
 		if(verbosity>3)
