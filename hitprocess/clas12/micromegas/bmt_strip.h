@@ -29,47 +29,44 @@ public:
 	string variation;
 	string date;
 	string connection;
-
+	char   database[80];
 	double SigmaDrift;	 // Max transverse diffusion value (GEMC value)
 	double hDrift;			 // Size of the drift gap
 	double hStrip2Det;	 // Distance between strips and the middle of the conversion gap (~half the drift gap)
+	int nb_sigma;            // Define the number of strips to look around the closest strip
 	double ThetaL;		    // Lorentz angle
 	double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
 
 	// THE GEOMETRY CONSTANTS
-	const static int NREGIONS = 3  ;	// 3 regions of MM
+	const static int NLAYERS = 6  ;	// 6 layers of MM
+	const static int NSECTORS = 3  ;	// 3 tiles per layer of MM
 
-	// Z detector characteristics
-	double CRZRADIUS[NREGIONS] ; 	       // the radius of the Z detector in mm
-	int CRZNSTRIPS[NREGIONS] ; 	       // the number of strips
-	double CRZSPACING[NREGIONS] ;        // the strip spacing in mm
-	double CRZWIDTH[NREGIONS] ; 	       // the strip width in mm
-	double CRZLENGTH[NREGIONS] ; 	       // the strip length in mm
-	double CRZZMIN[NREGIONS] ; 	       // PCB upstream extremity mm
-	double CRZZMAX[NREGIONS] ; 	       // PCB downstream extremity mm
-	double CRZOFFSET[NREGIONS] ; 	       // Beginning of strips in mm
-	double CRZXPOS[NREGIONS]; 	          // Distance on the PCB between the PCB first edge and the edge of the first strip in mm
-	double CRZEDGE1[NREGIONS][NREGIONS]; // the angle of the first edge of each PCB detector A, B, C
-	double CRZEDGE2[NREGIONS][NREGIONS]; // the angle of the second edge of each PCB detector A, B, C
+	// Detector geometrical characteristics
+	double RADIUS[NLAYERS] ; 	// the radius of the Z detector in mm
+	int AXIS[NLAYERS] ;             // 0 if C-detector, 1 if Z detector
+	int NSTRIPS[NLAYERS] ; 	       // the number of strips
+	double LENGTH[NLAYERS] ; 	       // the strip length in mm
+	double ZMIN[NLAYERS] ; 	       // PCB upstream extremity mm
+	double ZMAX[NLAYERS] ; 	       // PCB downstream extremity mm
+	double EDGE1[NLAYERS][NSECTORS]; // the angle of the first edge of each PCB detector A, B, C
+	double EDGE2[NLAYERS][NSECTORS]; // the angle of the second edge of each PCB detector A, B, C
+	
+	vector<vector<int> >     GROUP;   // Number of strips with same width
+	vector<vector<double> >  PITCH;   // the width of the corresponding group of strips
 
-	// C detector characteristics
-	double CRCRADIUS[NREGIONS]; 		    // the radius of the Z detector in mm
-	int CRCNSTRIPS[NREGIONS]; 			    // the number of strips
-	double CRCSPACING[NREGIONS]; 		    // the strip spacing in mm
-	double CRCLENGTH[NREGIONS]; 		    // the strip length in mm
-	double CRCZMIN[NREGIONS]; 			    // PCB upstream extremity mm
-	double CRCZMAX[NREGIONS]; 			    // PCB downstream extremity mm
-	double CRCOFFSET[NREGIONS]; 		    // Beginning of strips in mm
-	double CRCXPOS[NREGIONS]; 			    // Distance on the PCB between the PCB first edge and the edge of the first strip in mm
-	double CRCEDGE1[NREGIONS][NREGIONS]; // the angle of the first edge of each PCB detector A, B, C
-	double CRCEDGE2[NREGIONS][NREGIONS]; // the angle of the second edge of each PCB detector A, B, C
-	vector<vector<int> >     CRCGROUP; 	 // Number of strips with same width
-	vector<vector<double> >  CRCWIDTH;   // the width of the corresponding group of strips
+	// Detector response characteristics
+	double HV_DRIFT[NLAYERS][NSECTORS]; //Need to know the HV to compute the lorentz angle
+	double HV_STRIPS[NLAYERS][NSECTORS]; //Might be needed for the gain
+	vector<vector<int> >     STRIP_STATUS; // Say if strip is dead or alive
+	vector<vector<double> >     STRIP_GAIN; // Give the gain where the strip is
+	vector<vector<double> >     STRIP_EFFICIENCY; // Give the efficiency (correlated to gain fluctuation)
+
+	double w_i=25; //ionization potential assumed to be 25 eV
 
 	void changeFieldScale(double newFieldScale)
 	{
 		fieldScale = newFieldScale;
-		ThetaL     = fieldScale*20.*degree;
+		ThetaL     = fieldScale*25.*degree;
 	}
 
 };
@@ -78,24 +75,23 @@ public:
 class bmt_strip
 {
 public:
-
-
-
-	vector<double> FindStrip( int layer, int sector, G4ThreeVector xyz, double Edep, bmtConstants bmtc);   // Strip Finding Routine
-
-
-	double getEnergyFraction(double z0, double z, double sigma); 			// gaussian pdf
-	int getDetectorIndex(int sector);										// index of the detector (0...2): sector 1 corresponds to detector B, 2 to A,  3 to C in the geometry created by GEMC
-
-	double getSigmaLongit( int layer, double x, double y, bmtConstants bmtc);     // sigma for C-detector
-	double getSigmaAzimuth(int layer, double x, double y, bmtConstants bmtc);     // sigma for Z-detectors
-	int getZStrip(int layer, double angle, bmtConstants bmtc); 						   // the Z strip as a function of azimuthal angle
-	int getCStrip(int layer, double trk_z, bmtConstants bmtc); 					 	   // the Z strip as a function of z
-	double CRCStrip_GetZ(int layer, int strip, bmtConstants bmtc); 				   // the z position of a given C strip. Not used?
-	double CRZStrip_GetPhi(int sector, int layer, int strip, bmtConstants bmtc);	// the phi angle of a given Z strip. Not used?
-	int isInSector(int layer, double angle, bmtConstants bmtc);							// the sector according to this geometry defined in fillinfos()
-
-
+  
+  double sigma; // Transverse diffusion value computed from SigmaDrift
+  double sigma_phi; // sigma/radius of the tile... for Z-detector 
+  
+  vector<double> FindStrip( int layer, int sector, G4ThreeVector xyz, double Edep, bmtConstants bmtc);   // Strip Finding Routine
+  
+  
+  int getDetectorIndex(int sector);										// index of the detector (0...2): sector 1 corresponds to detector B, 2 to A,  3 to C in the geometry created by GEMC
+  
+  double getSigma( int layer, double x, double y, bmtConstants bmtc);     // sigma for C-detector
+  int getClosestStrip( int layer, int sector, double angle, double z,bmtConstants bmtc);
+  int getStripGroup(int layer, int strip, bmtConstants bmtc);
+  double GetStripInfo(int layer, int sector, int strip, bmtConstants bmtc); 				   // the z position of a given C strip. Not used?
+  int isInSector(int layer, double angle, bmtConstants bmtc);// the sector according to this geometry defined in fillinfos()
+  double Weight_td(int layer, int sector, int strip, double angle, double z, bmtConstants bmtc); //Compute the likelihood to get an electron
+  double GetBinomial(double n, double p); //Compute the number of electrons collected following the likelihood from Weight_td
+  
 };
 
 #endif
