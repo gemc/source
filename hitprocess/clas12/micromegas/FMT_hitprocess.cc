@@ -26,9 +26,41 @@ static fmtConstants initializeFMTConstants(int runno)
 	else
 		fmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	fmtc.variation  = "main";
+	fmtc.variation  = "default";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
+	vector<vector<double> > data;
+	//Load the geometrical constant for all layers
+	sprintf(fmtc.database,"/geometry/fmt/fmt_global");
+	data.clear(); calib->GetCalib(data,fmtc.database);
+	// all dimensions are in mm
 
+	fmtc.hDrift          = data[0][0];
+	fmtc.pitch           = data[0][1];
+	fmtc.R_min           = data[0][3];
+	fmtc.N_str           = data[0][4]; //16 connectors * 64 strips = 1024 strips for each fmt
+	fmtc.N_halfstr       = data[0][5]; //number of bottom strips in the central part
+	fmtc.sigma_td_max    = 0.01; // very small transverse diffusion because of B field
+	fmtc.w_i             = 25.0;
+
+	
+	//Load the geometrical constant for all layers
+	sprintf(fmtc.database,"/geometry/fmt/fmt_layer");
+	data.clear(); calib->GetCalib(data,fmtc.database);
+	fmtc.Z0.resize(data.size());
+	fmtc.alpha.resize(data.size());
+	for(unsigned row = 0; row < data.size(); row++)
+	    {
+	      fmtc.Z0[row]=data[row][1];
+	      fmtc.alpha[row]=data[row][2]*degree;
+	      
+	    }
+	// Number of strips and pixels
+	fmtc.N_sidestr = (fmtc.N_str-2*fmtc.N_halfstr)/2; //number of strips one side
+	fmtc.y_central = fmtc.N_halfstr*fmtc.pitch/2.; // Y-limit of the central part
+	fmtc.nb_sigma=4;
+
+	fmtc.R_max = fmtc.pitch*(fmtc.N_halfstr+2*fmtc.N_sidestr)/2.;
+	
 	return fmtc;
 }
 
@@ -69,11 +101,10 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	x = xyz.x()/mm;
 	y = xyz.y()/mm;
 	z = xyz.z()/mm;
-	
+
 	vector<identifier> yid = id;
 	class fmt_strip fmts;
-	fmts.fill_infos();
-	
+		
 	int layer  = 1*yid[0].id + yid[1].id - 1 ; // modified on 7/27/2015 to match new geometry (Frederic Georges)
 	//int layer  = 2*yid[0].id + yid[1].id - 2 ;
 	int sector = yid[2].id;
@@ -81,7 +112,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = fmts.FindStrip(layer-1, sector-1, x, y, z, depe);
+	vector<double> multi_hit = fmts.FindStrip(layer-1, sector-1, x, y, z, depe, fmtc);
 	
 	int n_multi_hits = multi_hit.size()/2;
 	
