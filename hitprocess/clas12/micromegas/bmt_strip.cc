@@ -29,7 +29,6 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	vector<double> strip_id;
 
-	int strip = -1;
 	double Delta_drift = sqrt(x*x+y*y) - bmtc.RADIUS[layer-1];
 
 	double phi = atan2(y,x) - Delta_drift*tan(bmtc.ThetaL)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
@@ -75,7 +74,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	    double renorm=0;
 	    double weight_this_strip;
 	    int Nel_this_strip=0;
-	    for (int i=0;i<strip_id.size()/2;i++){
+	    for (unsigned int i=0;i<strip_id.size()/2;i++){
 	      if (renorm!=1&&Nel_left!=0){
 		weight_this_strip=strip_id.at(2*i+1)/(1-renorm);
 		Nel_this_strip=GetBinomial(Nel_left,weight_this_strip);
@@ -116,7 +115,9 @@ double bmt_strip::getSigma(int layer, double x, double y,  bmtConstants bmtc)
 }
 
 int bmt_strip::getClosestStrip(int layer, int sector, double angle, double z, bmtConstants bmtc){
-  double var, var_min, var_max; //var=z if it is a C detector, var=angle if Z detector
+  double var=0;
+  double var_min=0;
+  double var_max=0; //var=z if it is a C detector, var=angle if Z detector
   int group=0;
   double strip_offset=0; //For C because of the variable pitch
   int ClosestStrip=-1;
@@ -174,7 +175,7 @@ int bmt_strip::getStripGroup(int layer, int strip, bmtConstants bmtc){
 double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bmtc)
 {
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
-	double var;
+	double var=0.;
 	if (bmtc.AXIS[layer-1]==0) var=bmtc.ZMIN[layer-1]; //C detector so we look at Z
 	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1][getDetectorIndex(sector)]; //Z detector so we look at phi
 

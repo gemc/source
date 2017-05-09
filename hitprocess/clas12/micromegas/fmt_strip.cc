@@ -78,7 +78,7 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	    double renorm=0;
 	    double weight_this_strip;
 	    int Nel_this_strip=0;
-	    for (int i=0;i<strip_id.size()/2;i++){
+	    for (unsigned int i=0;i<strip_id.size()/2;i++){
 	      if (renorm!=1&&Nel_left!=0){
 		weight_this_strip=strip_id.at(2*i+1)/(1-renorm);
 		Nel_this_strip=GetBinomial(Nel_left,weight_this_strip);
