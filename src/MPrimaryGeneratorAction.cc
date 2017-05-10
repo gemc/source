@@ -909,9 +909,11 @@ void MPrimaryGeneratorAction::setBeam()
 			dmom   = get_number(values[0]);
 			dtheta = get_number(values[1]);
 			dphi   = get_number(values[2]);
-			if(values.size() == 4)
-			if(trimSpacesFromString(values[3]) == "flat")
-			primaryFlat = 1;
+			if(values.size() > 3) {
+				if(trimSpacesFromString(values[3]) == "flat") {
+					primaryFlat = 1;
+				}
+			}
 
 			// Getting vertex from option value
 			values = get_info(gemcOpt->optMap["BEAM_V"].args);
