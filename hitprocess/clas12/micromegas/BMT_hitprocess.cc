@@ -37,12 +37,12 @@ static bmtConstants initializeBMTConstants(int runno)
 	  bmtc.RADIUS[row] = data[row][3];
 	  bmtc.ZMIN[row]   = data[row][4];
 	  bmtc.ZMAX[row] = data[row][5];
-	  bmtc.EDGE1[row][0] = (data[row][6])*degree;
-	  bmtc.EDGE2[row][0] = (data[row][7])*degree;
-	  bmtc.EDGE1[row][1] = (data[row][6]+240.)*degree;
-	  bmtc.EDGE2[row][1] = (data[row][7]-120.)*degree;
-	  bmtc.EDGE1[row][2] = (data[row][6]+120.)*degree;
-	  bmtc.EDGE2[row][2] = (data[row][7]+120.)*degree;
+	  bmtc.EDGE1[row][0] = (data[row][6]+120.)*degree;
+	  bmtc.EDGE2[row][0] = (data[row][7]+120.)*degree;
+	  bmtc.EDGE1[row][1] = (data[row][6])*degree;
+	  bmtc.EDGE2[row][1] = (data[row][7])*degree;
+	  bmtc.EDGE1[row][2] = (data[row][6]+240.)*degree;
+	  bmtc.EDGE2[row][2] = (data[row][7]-120.)*degree;
 	  bmtc.NSTRIPS[row] = data[row][8];
 	  bmtc.hDrift =  data[row][9];
 	}
@@ -127,6 +127,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
 	dgtz["Edep"]   = tInfos.eTot;
+	dgtz["ADC"]   = (int) tInfos.eTot;
 	return dgtz;
 }
 
