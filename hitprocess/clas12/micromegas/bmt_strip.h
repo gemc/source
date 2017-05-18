@@ -80,15 +80,12 @@ public:
   double sigma_phi; // sigma/radius of the tile... for Z-detector 
   
   vector<double> FindStrip( int layer, int sector, G4ThreeVector xyz, double Edep, bmtConstants bmtc);   // Strip Finding Routine
-  
-  
-  int getDetectorIndex(int sector);										// index of the detector (0...2): sector 1 corresponds to detector B, 2 to A,  3 to C in the geometry created by GEMC
-  
+    
   double getSigma( int layer, double x, double y, bmtConstants bmtc);     // sigma for C-detector
   int getClosestStrip( int layer, int sector, double angle, double z,bmtConstants bmtc);
   int getStripGroup(int layer, int strip, bmtConstants bmtc);
   double GetStripInfo(int layer, int sector, int strip, bmtConstants bmtc); 				   // the z position of a given C strip. Not used?
-  int isInSector(int layer, double angle, bmtConstants bmtc);// the sector according to this geometry defined in fillinfos()
+  int isInSector(int layer, double angle, bmtConstants bmtc);
   double Weight_td(int layer, int sector, int strip, double angle, double z, bmtConstants bmtc); //Compute the likelihood to get an electron
   double GetBinomial(double n, double p); //Compute the number of electrons collected following the likelihood from Weight_td
   

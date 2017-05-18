@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-
+#include <time.h>
 
 // Veronique Ziegler (Dec. 3 2015)
 // Note: this method only contains the constants for the third micromegas region,
@@ -32,8 +32,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	double Delta_drift = sqrt(x*x+y*y) - bmtc.RADIUS[layer-1];
 
 	double phi = atan2(y,x) - Delta_drift*tan(bmtc.ThetaL)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
-	int sector_bis =isInSector( layer,  phi, bmtc);
-	
+	int sector_bis=isInSector(layer,atan2(y,x),bmtc);
 	int strip_num = getClosestStrip(layer, sector_bis, phi, z, bmtc);
 	sigma = getSigma(layer, x, y, bmtc);
 	sigma_phi = sigma/bmtc.RADIUS[layer-1];
@@ -177,7 +176,7 @@ double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bm
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	double var=0.;
 	if (bmtc.AXIS[layer-1]==0) var=bmtc.ZMIN[layer-1]; //C detector so we look at Z
-	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1][getDetectorIndex(sector)]; //Z detector so we look at phi
+	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1][sector]; //Z detector so we look at phi
 
 	int group=0;
 	int limit = bmtc.GROUP[layer-1][group];
@@ -196,22 +195,6 @@ double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bm
 	}
 	var+=0.5*bmtc.PITCH[layer-1][group];
 	return var; 
-}
-
-
-int bmt_strip::getDetectorIndex(int sector)
-{
-	//sector 1 corresponds to detector B, 2 to A,  3 to C
-	// A is detIdx 0, B 1, C 2.
-	int DetIdx = -1;
-	if(sector == 1)
-		DetIdx = 1;
-	if(sector == 2)
-		DetIdx = 0;
-	if(sector == 3)
-		DetIdx = 2;
-
-	return DetIdx;
 }
 
 
@@ -274,8 +257,8 @@ double bmt_strip::Weight_td(int layer, int sector, int strip, double angle, doub
 
 double bmt_strip::GetBinomial(double n, double p){
   double answer;
-  answer=CLHEP::RandBinomial::shoot(n,p);
-  //Very bad method when n=0 or p close to 0 or 1... return easily -1 in these case.
+   answer=CLHEP::RandBinomial::shoot(n,p);
+   //Very bad method when n=0 or p close to 0 or 1... return easily -1 in these case.
   //So need to help in the limit condition
   if (answer==-1){
     answer=n;
