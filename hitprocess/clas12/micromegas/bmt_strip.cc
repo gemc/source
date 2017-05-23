@@ -88,7 +88,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	    //Final check... Energy must be conserved unfortunately
 	    if (Nel_left<0) cout<<"Warning in BMT hitprocess!!!!!!!!"<<endl;
 	  }
-	else
+	if (strip_id.size()==0)
 	  { // Nel=0, consider the Edep is 0
 	    strip_id.push_back(-1);
 	    strip_id.push_back(1);
