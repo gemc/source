@@ -40,7 +40,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	
 	ftc.dEdxMIP       = 1.956;  // muons in polyvinyltoluene
 	ftc.pmtPEYld      = 500;
-	ftc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
+//	ftc.tdcLSB        = 42.5532;// counts per ns (23.5 ps LSB)
 	
 	cout<<"FTOF:Setting time resolution"<<endl;
 	for(int p=0; p<3; p++)
@@ -128,7 +128,17 @@ static ftofConstants initializeFTOFConstants(int runno)
         ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][4]);
     }
 
-	// setting voltage signal parameters
+    cout<<"FTOF:Getting tdc_conv"<<endl;
+    sprintf(ftc.database,"/calibration/ftof/tdc_conv:%d",ftc.runNo);
+    data.clear() ; calib->GetCalib(data,ftc.database);
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+        ftc.tdcconv[isec-1][ilay-1][0].push_back(data[row][3]);
+        ftc.tdcconv[isec-1][ilay-1][1].push_back(data[row][4]);
+    }
+
+    // setting voltage signal parameters
 	ftc.vpar[0] = 50;  // delay, ns
 	ftc.vpar[1] = 10;  // rise time, ns
 	ftc.vpar[2] = 20;  // fall time, ns
@@ -184,6 +194,10 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Attenuated light at PMT
 	double eneL = tInfos.eTot*attLeft;
 	double eneR = tInfos.eTot*attRight;
+    
+    // TDC conversion factors
+    double tdcconvL = ftc.tdcconv[sector-1][panel-1][0][paddle-1];
+    double tdcconvR = ftc.tdcconv[sector-1][panel-1][1][paddle-1];
 
 	// giving geantinos some energies
 	if(aHit->GetPID() == 0)
@@ -225,8 +239,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double timeWalkLeft = A/pow(adcl,B);
 	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + ftc.toff_LR[sector-1][panel-1][paddle-1]/2. - ftc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkLeft;
 	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]);
-	                tdclu = tLeftU*ftc.tdcLSB;
-	                 tdcl = tLeft*ftc.tdcLSB;
+                    tdclu = tLeftU/tdcconvL;
+	                 tdcl = tLeft/tdcconvL;
 	}  
 	
 	double npheR = G4Poisson(eneR*ftc.pmtPEYld);
@@ -240,8 +254,8 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double timeWalkRight = A/pow(adcr,B);	
 	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm - ftc.toff_LR[sector-1][panel-1][paddle-1]/2. - ftc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkRight;
 	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]);	
-                     tdcru = tRightU*ftc.tdcLSB;
-	                  tdcr = tRight*ftc.tdcLSB;
+                     tdcru = tRightU/tdcconvR;
+                      tdcr = tRight/tdcconvR;
 	}
 	
 	// Status flags
