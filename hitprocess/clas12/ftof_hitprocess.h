@@ -27,6 +27,9 @@ public:
 	//      5 - any other reconstruction problem
 	vector<int> status[6][3][2];
 
+    // tdc_conc: tdc conversion factors
+    vector<double> tdcconv[6][3][2];
+    
 	// veff: effective velocity
 	vector<double> veff[6][3][2];
 
@@ -56,7 +59,7 @@ public:
 	double pmtDynodeGain; // PMT dynode gain
 	double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
-	double tdcLSB;        // Conversion from ns to TDC channel.
+//	double tdcLSB;        // Conversion from ns to TDC channel.
 
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
