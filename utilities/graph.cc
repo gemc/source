@@ -134,7 +134,7 @@ void graph::plot_graph(vector<double> x, vector<double> y, vector<int> pid)
 {
 	if(x.size()<2) return;
 	
-	QGraphicsRectItem    *rect;
+	QGraphicsRectItem *rect = nullptr;
 	
 	for(unsigned int i=0; i<x.size(); i++)
 	{
