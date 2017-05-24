@@ -752,14 +752,14 @@ void MDetectorConstruction::buildMirrors()
 					mirrorSurfaces.back()->SetSigmaAlpha(sigmaAlpha);
 				}
 
-				if(borderv=="SkinSurface")
-				{
+				// documentation on sigma alhpa:
+				// http://geant4.slac.stanford.edu/UsersWorkshop/PDF/Peter/OpticalPhoton.pdf
+				// http://hypernews.slac.stanford.edu/HyperNews/geant4/get/opticalphotons/397.html
+
+				if(borderv=="SkinSurface") {
 					mirrorLSkinSurf.push_back(new G4LogicalSkinSurface(name,
 											  (*hallMap)[name].GetLogical(), mirrorSurfaces.back()));
-				}
-				else
-				{
-					
+				} else {
 					mirrorLBorderSurf.push_back(new G4LogicalBorderSurface(name,
 																		   (*hallMap)[name].GetPhysical(),
 																		   (*hallMap)[borderv].GetPhysical(), mirrorSurfaces.back()));
