@@ -261,7 +261,6 @@ void closeGdb(QSqlDatabase db)
 }
 
 
-
 map<string, string> getFilesInDirectory(string directory)
 {
 	map<string, string> filesMap;
@@ -294,33 +293,9 @@ map<string, string> getFilesInDirectory(string directory)
 	return filesMap;
 }
 
-string assignAttribute(QDomElement e, string attribute, string defaultValue)
-{
-	if(e.attributeNode(attribute.c_str()).isAttr())
-		return trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString());
-	
-	// otherwise
-	return defaultValue;
-}
-int assignAttribute(QDomElement e, string attribute, int defaultValue)
-{
-	if(e.attributeNode(attribute.c_str()).isAttr())
-		return get_number(trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString()));
-	
-	return defaultValue;
-}
-double assignAttribute(QDomElement e, string attribute, double defaultValue)
-{
-	if(e.attributeNode(attribute.c_str()).isAttr())
-		return get_number(trimSpacesFromString(e.attributeNode(attribute.c_str()).value().toStdString()));
-	
-	return defaultValue;
-}
-
 #include "ctime"
 string timeStamp()
 {
-	
 	time_t now = time(NULL);
 	struct tm * ptm = localtime(&now);
 	char buffer[32];
@@ -329,8 +304,6 @@ string timeStamp()
 	
 	return string(buffer);
 }
-
-
 
 // returns value + best units as a string
 string bestValueUnits(double value, string unitType)

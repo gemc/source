@@ -107,16 +107,6 @@ void closeGdb(QSqlDatabase db);
 // returns a map of files (name is key) and their types (value)
 map<string, string> getFilesInDirectory(string);
 
-
-// if an attributeNode exists, return its value
-// otherwise assign a default value
-string assignAttribute(QDomElement e, string attribute, string defaultValue);
-
-// attention: when using a default value of "0" instead of "0.0" it
-// can return an integer.
-int assignAttribute(QDomElement e, string attribute, int defaultValue);
-double assignAttribute(QDomElement e, string attribute, double defaultValue);
-
 // returns a string with the current time
 string timeStamp();
 

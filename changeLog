@@ -1,6 +1,14 @@
 Changelog for GEMC
 ==================
 
+530/17
+ - moved assignAttribute to mlibrary defs
+
+5/24/17
+ - gui: initialize rect to null
+ - added documentation links for sigmaAlpha
+
+
 5/8/17
  - fixed bug that affected imports of multiple cad systems
 
