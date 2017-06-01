@@ -1,7 +1,10 @@
 Changelog for GEMC
 ==================
 
-530/17
+6/1/17
+ - initializing hit properly, in case it is an electronic noise hit
+
+5/30/17
  - moved assignAttribute to mlibrary defs
 
 5/24/17
