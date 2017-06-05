@@ -127,6 +127,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 			string thisDetName = dd.first;
 
+			// if the mother volume
+
 			// filename has been already verified to exist
 			string filename = dd.second.variation;
 			if(VERB > 1)
@@ -171,6 +173,10 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			
 		}
 	}
+
+
+
+
 
 	// now build GDML volumes.
 	set<string> gdmlAlreadyProcessed;
@@ -447,8 +453,10 @@ void MDetectorConstruction::isSensitive(detector detect)
 	string catch_v = gemcOpt.optMap["CATCH"].args;
 	
 	string sensi   = detect.sensitivity;
-	
-	if(sensi != "no" && sensi.find("mirror:") == string::npos)
+
+	// forgot why this was removed since RECORD_MIRRORS should take care of it
+//	if(sensi != "no" && sensi.find("mirror:") == string::npos)
+	if(sensi != "no" )
 	{
 		G4SDManager* SDman = G4SDManager::GetSDMpointer();
 		if (!SDman) throw "Can't get G4SDManager";
@@ -478,6 +486,7 @@ void MDetectorConstruction::isSensitive(detector detect)
 		// Setting Max Acceptable Step for this SD
 		detect.SetUserLimits(new G4UserLimits(SeDe_Map[sensi]->SDID.maxStep, SeDe_Map[sensi]->SDID.maxStep));
 	}
+
 }
 
 

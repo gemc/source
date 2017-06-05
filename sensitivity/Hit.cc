@@ -12,11 +12,11 @@ MHit::MHit() : G4VHit()
 	// If the energy is above threshold, red circle.
 	// If the energy is below threshold, blue smaller circle.
 	// If no energy deposited, green smaller circle.
-	
+
 	colour_touch  = G4Colour(0.0, 0.0, 1.0);
 	colour_hit    = G4Colour(1.0, 0.0, 0.0);
 	colour_passby = G4Colour(0.0, 1.0, 0.0);
-	
+
 	hasTrigger = 0;
 	isElectronicNoise = 0;
 
@@ -31,13 +31,13 @@ void MHit::Draw()
 	{
 		G4Circle circle(pos[0]);
 		circle.SetFillStyle(G4Circle::filled);
-		
-		
+
+
 		// summing all energies
 		double Etot = 0;
 		for(unsigned int i=0; i<edep.size(); i++)
 			Etot += edep[i];
-		
+
 		if(Etot > SID.signalThreshold)
 		{
 			circle.SetVisAttributes(G4VisAttributes(colour_hit));
@@ -53,8 +53,11 @@ void MHit::Draw()
 			circle.SetVisAttributes(G4VisAttributes(colour_passby));
 			circle.SetScreenSize(3);
 		}
-		
-		pVVisManager->Draw(circle);
+
+		if(PID[0] != 0) {
+			pVVisManager->Draw(circle);
+		}
+
 	}
 }
 
@@ -82,8 +85,8 @@ MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
 	mgnf.push_back(0);
 
 	identity = vid;
-
-
-
+	
+	
+	
 }
 
