@@ -13,18 +13,20 @@ void goptions::setGoptions()
 	// type = 1 for argumenst that are strings, 0 for numbers.
     
 	// Generator
-	optMap["BEAM_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
+	optMap["BEAM_P"].args  = "e-, 11*GeV, 0*deg, 0*deg, [optional KE]";
 	optMap["BEAM_P"].help  = "Beam particle, momentum, angles (in respect of z-axis). \n";
 	optMap["BEAM_P"].help += "      Example: -BEAM_P=\"e-, 6*GeV, 15*deg, 20*deg\" sets 6 GeV electrons 15 degrees in theta, 20 degrees in phi. \n";
 	optMap["BEAM_P"].help += "      Use -BEAM_P=\"show_all\" to print the list of G4 supported particles.\n";
+	optMap["BEAM_P"].help += "      An optional string \"KE\" can be appended to this option to specify Kinetic energy instead of momentum.\n";
 	optMap["BEAM_P"].name  = "Primary particle, Energy, Theta, Phi";
 	optMap["BEAM_P"].type  = 1;
 	optMap["BEAM_P"].ctgr  = "generator";
 	
-	optMap["SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
+	optMap["SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg, [optional KE]";
 	optMap["SPREAD_P"].help  = "Spread Primary Particle energy and angles (in respect of z-axis). \n";
 	optMap["SPREAD_P"].help += "      Example: -SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
-	optMap["SPREAD_P"].help += "      If the word flat is added to the option, theta is flat instead of cos(theta). \n";
+	optMap["SPREAD_P"].help += "      If the word flat is added as last argument to the option, theta is flat instead of cos(theta). \n";
+	optMap["SPREAD_P"].help += "      An optional argument \"KE\" can be appended to this option to specify Kinetic energy instead of momentum.\n";
 	optMap["SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["SPREAD_P"].type  = 1;
 	optMap["SPREAD_P"].ctgr  = "generator";

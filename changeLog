@@ -1,6 +1,57 @@
 Changelog for GEMC
 ==================
 
+6/1/17
+ - initializing hit properly, in case it is an electronic noise hit
+
+5/30/17
+ - moved assignAttribute to mlibrary defs
+
+5/24/17
+ - gui: initialize rect to null
+ - added documentation links for sigmaAlpha
+
+
+5/8/17
+ - fixed bug that affected imports of multiple cad systems
+
+5/2/17
+ - making slices more responsive
+
+5/1/17
+ - prepending "g" to all library names to avoid potential conflicts with other external packages
+ - fixed cases where the hit collection may be empty, for example by geant4 messenger command hits/inactivate
+ - added identifier definitions for new detector type: Counter
+ - added bank definitions for new detector type: Counter
+ - added counter hit process to store the multiplicity of these particles::
+
+   - gamma     
+   - ep        
+   - em        
+   - pip       
+   - pim       
+   - pi0       
+   - kp        
+   - km        
+   - k0        
+   - proton    
+   - neutron   
+   - optphoton 
+
+ - the counter sensitivity and id are defined the same way as the flux detector.
+ - the output bank will have the number of each particles that goes through the sensitive detector.
+ - making sure we do not count the same track twice
+
+4/20/17
+ - added optional argument (appended at the end) to BEAM_P: "KE" can specify that the momentum is kinematic energy instead.
+   For example, to simulate a K=250 MeV proton::
+
+   -BEAM_P="proton, 250*MeV, 90*deg, 90*deg, KE"
+
+
+4/18/17
+ - clearing user information for custom generator - it was accumulating each event.
+
 4/13/17
  - added documentation for processID multihit sharing
 

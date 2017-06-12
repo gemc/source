@@ -13,16 +13,30 @@ using namespace std;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// todo: optimize the algorithm
 bool identifier::operator == (const identifier& I) const
 {
-	// If the volume is the same, and if hits are within the time window, it's one hit
-	if(I.name == this->name && I.rule == this->rule && I.id == this->id && fabs(I.time - this->time) <= this->TimeWindow)
-		return true;
 	
-	// If the volume is the same, if it's a "flux" detector, and if it's the same track, it's one hit
-	if(I.name == this->name && I.rule == this->rule && I.id == this->id && this->TimeWindow == 0 && I.TrackId == this->TrackId)
-		return true;
-		
+	// FLUX detector
+	if(this->TimeWindow == 0) {
+		// One hit per track
+		if(I.name == this->name && I.rule == this->rule && I.id == this->id && I.TrackId == this->TrackId) {
+			return true;
+		}
+	// COUNTER detector
+	} else if(this->TimeWindow == -1) {
+		// All steps are grouped in one hit only
+		if(I.name == this->name && I.rule == this->rule && I.id == this->id) {
+			return true;
+		}
+	// REALISTIC detectors
+	} else {
+		// One hit if steps are within the time window
+		if(I.name == this->name && I.rule == this->rule && I.id == this->id && fabs(I.time - this->time) <= this->TimeWindow) {
+			return true;
+		}
+	}
+	
 //	cout << " name1 " << I.name << " name2 " << this->name
 //	     << " rule1 " << I.rule << " rule2 " << this->rule
 //	     << " id1 "   << I.id   << " id2 "   << this->id

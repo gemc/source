@@ -55,6 +55,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["side"]    = -idside;
 	dgtz["segment"] = -idsegment;
 	dgtz["nphe"]    = thisPid;
+	dgtz["npheD"]   = 0;
 	dgtz["time"]    = tInfos.time;
 	dgtz["hitn"]    = hitn;
 	

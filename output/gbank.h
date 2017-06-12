@@ -42,6 +42,9 @@ using namespace std;
 // Mirrors Bank
 #define MIRRORS_BANK_TAG 60
 
+// COUNTER Bank
+#define COUNTER_BANK_TAG 70
+
 // These Bank Types ID can be left hardcoded here
 #define DETECTOR_BANK_ID 0
 

@@ -170,14 +170,34 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	banks["chargeTime"] = abank;
 
 	
-	// flux bank integrated digitized infos
+	// flux bank digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
-	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information integrated over the hit");
+	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information");
 	abank.load_variable("hitn",   99,  "Di", "Hit Number");
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["flux"]   = abank;
 	banks["mirror"] = abank;
+
+	// counter bank integrated digitized infos
+	// flux digitized provide just one "digitized" variable, the detector id
+	abank =  gBank(COUNTER_BANK_TAG, "counter", "Geant4 counter digitized information");
+	abank.load_variable("id",              1,  "Di", "ID of counter element");
+	abank.load_variable("hitn",           99,  "Di", "Hit Number");
+	abank.load_variable("ngamma",          10,  "Di", "number of gamma");
+	abank.load_variable("nep",             11,  "Di", "number of electrons");
+	abank.load_variable("nem",             12,  "Di", "number of positrons");
+	abank.load_variable("npip",            13,  "Di", "number of pi+");
+	abank.load_variable("npim",            14,  "Di", "number of pi-");
+	abank.load_variable("npi0",            15,  "Di", "number of pi0");
+	abank.load_variable("nkp",             16,  "Di", "number of k+");
+	abank.load_variable("nkm",             17,  "Di", "number of k-");
+	abank.load_variable("nk0",             18,  "Di", "number of k0");
+	abank.load_variable("nproton",         19,  "Di", "number of protons");
+	abank.load_variable("nneutron",        20,  "Di", "number of neutrons");
+	abank.load_variable("nopticalphoton",  21,  "Di", "number of optical photons");
+	abank.orderNames();
+	banks["counter"]   = abank;
 
 	
 	// Loading all banks related to a system
@@ -187,7 +207,8 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 		string systemName    = sit->first;
 		string systemFactory = sit->second;
 		
-		if(systemName == "flux") continue;
+		// these are already loaded
+		if(systemName == "flux" || systemName == "mirror" || systemName == "counter") continue;
 		
 		// text factory
 		if(systemFactory == "TEXT")

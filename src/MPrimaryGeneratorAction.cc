@@ -181,7 +181,18 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			double Phi   = phi/rad   + (2.0*G4UniformRand()-1.0)*dphi/rad;
 			double mass = Particle->GetPDGMass();
+
+
+			// recalculating momentun, if isKINE its value is kinetic energy
+			if(isKINE) {
+				double kk = Mom;
+				double p2 = kk*kk+2*mass*kk;
+				if(p2 >= 0) Mom = sqrt(p2);
+				else        Mom = sqrt(-p2);
+			}
 			double akine = sqrt(Mom*Mom + mass*mass) - mass ;
+
+
 			if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "no")
 			beam_dir = G4ThreeVector(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad));
 			else if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "beamp")
@@ -265,7 +276,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			if(GEN_VERBOSITY > 3)
 			{
 				cout << hd_msg << " Particle id=" <<  Particle->GetParticleName()
-				<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << Mom/GeV << " GeV, theta="
+				<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << Mom/GeV << " GeV, Kinematic Energy=" << akine/GeV << " GeV, theta="
 				<< Theta/deg <<  " degrees,   phi=" << Phi/deg << " degrees" << endl;
 				if( partPol > 0 )
 				cout << hd_msg << "   with polarization  angles: polar - " << polTheta/deg << " degrees, "
@@ -433,6 +444,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				for(auto &s : infoStrings) {
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
+				userInfo.clear();
 				userInfo.push_back(thisParticleInfo);
 
 				// necessary geant4 info. Lund specifics:
@@ -516,6 +528,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				for(auto &s : infoStrings) {
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
+				userInfo.clear();
 				userInfo.push_back(thisParticleInfo);
 
 				// necessary geant4 info. Lund specifics:
@@ -710,7 +723,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	// there will be some remaining particles, these will be added at the last bunch
 	int NREMAINING = NP - NBUNCHES*PBUNCH;
 
-	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << endl;
+	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << " " << NREMAINING << endl;
 
 	if(PBUNCH > 0)
 	{
@@ -731,7 +744,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				L_Mom   = L_mom + (2.0*G4UniformRand()-1.0)*L_dmom;
 				L_Theta = acos(G4UniformRand()*(cos(L_theta/rad-L_dtheta/rad)-cos(L_theta/rad+L_dtheta/rad)) + cos(L_theta/rad+L_dtheta/rad))/rad;
 				if(lumiFlat)
-				L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
+					L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
 
 				L_Phi = L_phi + (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
@@ -743,16 +756,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// vertex has uniform density across the cilinder
 			double lvx = L_vx;
 			double lvy = L_vy;
-      
-      if( L_dvr > 0.){
-        double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
-        double tmp_phi = 2*pi*G4UniformRand();
 
-        // This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
-        lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
-        lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
-      }
-      
+			if( L_dvr > 0.){
+				double tmp_sqrt_rho = sqrt(G4UniformRand());  // Square root gives uniform spread over circle.
+				double tmp_phi = 2*pi*G4UniformRand();
+
+				// This *should* have an l_dvr_x and l_dvr_y for ellipsoidal beams!!!
+				lvx = L_vx + L_dvr*tmp_sqrt_rho * cos(tmp_phi);
+				lvy = L_vy + L_dvr*tmp_sqrt_rho * sin(tmp_phi);
+			}
+
 			double lvz = L_vz;
 
 			// spread vertex if requested
@@ -764,7 +777,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetNumberOfParticles(PBUNCH);
 
 			if(b == NBUNCHES-1)
-			particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
+				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
 
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
@@ -779,6 +792,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	int NBUNCHES2   = (int) floor(TWINDOW/TBUNCH2);
 	int PBUNCH2     = (int) floor((double)NP2/NBUNCHES2);
 
+
 	if(PBUNCH2 > 0)
 	{
 		particleGun->SetParticleDefinition(L2_Particle);
@@ -792,12 +806,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
 		// all particles in a bunch are identical
-		for(int b=0; b<NBUNCHES2; b++)
-		{
+		for(int b=0; b<NBUNCHES2; b++) {
 			particleGun->SetParticleTime(TBUNCH2*b);
 			// spread momentum if requested
-			if(L2_dmom > 0)
-			{
+			if(L2_dmom > 0) {
 				L2_Mom   += (2.0*G4UniformRand()-1.0)*L2_dmom;
 				L2_Theta = acos(G4UniformRand()*(cos(L2_theta/rad-L2_dtheta/rad)-cos(L2_theta/rad+L2_dtheta/rad)) + cos(L2_theta/rad+L2_dtheta/rad))/rad;
 				if(lumi2Flat)
@@ -850,9 +862,13 @@ void MPrimaryGeneratorAction::setBeam()
 			// Getting particle name,  momentum from option value
 			values       = get_info(gemcOpt->optMap["BEAM_P"].args, string(",\""));
 			string pname = trimSpacesFromString(values[0]);
-
-			if(values.size() == 4)
-			{
+			isKINE  = false;
+			if(values.size() == 5) {
+				if(values[4].find("KE") != string::npos){
+					isKINE = true;
+				}
+			}
+			if(values.size() == 4 || (values.size() == 5 && isKINE)) {
 				mom          = get_number(values[1]);
 				theta        = get_number(values[2]);
 				phi          = get_number(values[3]);
@@ -868,7 +884,7 @@ void MPrimaryGeneratorAction::setBeam()
 					for(int i=0; i<particleTable->entries(); i++)
 					cout << hd_msg << " g4 particle: "  << particleTable->GetParticleName(i)
 					<< " pdg encoding: " << particleTable->GetParticle(i)->GetPDGEncoding() << endl;
- 			}
+ 				}
 				// otherwise it's not found. Need to exit here.
 				else
 				cout << hd_msg << " Particle " << pname << " not found in G4 table. Exiting" << endl << endl;
@@ -893,9 +909,11 @@ void MPrimaryGeneratorAction::setBeam()
 			dmom   = get_number(values[0]);
 			dtheta = get_number(values[1]);
 			dphi   = get_number(values[2]);
-			if(values.size() == 4)
-			if(trimSpacesFromString(values[3]) == "flat")
-			primaryFlat = 1;
+			if(values.size() > 3) {
+				if(trimSpacesFromString(values[3]) == "flat") {
+					primaryFlat = 1;
+				}
+			}
 
 			// Getting vertex from option value
 			values = get_info(gemcOpt->optMap["BEAM_V"].args);

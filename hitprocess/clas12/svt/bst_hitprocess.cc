@@ -43,6 +43,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	class bst_strip bsts;
 	bsts.fill_infos();
 
+	if(!aHit->isElectronicNoise) {
 	// double checking dimensions
 	double SensorLength = 2.0*aHit->GetDetector().dimensions[2]/mm;  // length of 1 card
 	double SensorWidth  = 2.0*aHit->GetDetector().dimensions[0]/mm;  // width 1 card
@@ -54,6 +55,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// there may be precision issues that's why it is not compared to zero
 	if( diffLen > 1E-3 || diffWid > 1E-3 )
 		cout << "  Warning: dimensions mismatch between sensor reconstruction dimensions and gemc card dimensions." << endl << endl;
+	}
 
 	int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int sector = identity[2].id;
@@ -225,6 +227,44 @@ vector<MHit*> bst_HitProcess :: electronicNoise()
 
 	// push to noiseHits collection:
 	// noiseHits.push_back(thisNoiseHit)
+
+
+	vector<identifier> fullID;
+
+	identifier superLayerID;
+	superLayerID.id = 1;
+	superLayerID.name = "svtNoise";
+
+	identifier regionID;
+	regionID.id = 1;
+	regionID.name = "svtNoise";
+
+	identifier sectorID;
+	sectorID.id = 1;
+	sectorID.name = "svtNoise";
+
+	identifier sensorID;
+	sensorID.id = 1;
+	sensorID.name = "svtNoise";
+
+	identifier stripID;
+	stripID.id = 1;
+	stripID.name = "svtNoise";
+
+	fullID.push_back(superLayerID);
+	fullID.push_back(regionID);
+	fullID.push_back(sectorID);
+	fullID.push_back(sensorID);
+	fullID.push_back(stripID);
+
+	double energy = 0.5;
+	double time = 5.5;
+	int pid = 123;
+
+	MHit* thisNoiseHit = new MHit(energy, time, fullID, pid);
+	noiseHits.push_back(thisNoiseHit);
+
+
 
 	return noiseHits;
 }

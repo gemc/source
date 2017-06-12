@@ -3,28 +3,7 @@
 
 // gemc headers
 #include "HitProcess.h"
-
-
-
-// constants to be used in the digitization routine
-class fmtConstants
-{
-public:
-
-	// database
-	int    runNo;
-	string variation;
-	string date;
-	string connection;
-
-	// translation table
-	TranslationTable TT;
-
-	// add constants here
-
-};
-
-
+#include "fmt_strip.h"
 
 
 // Class definition
