@@ -163,6 +163,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<G4ThreeVector> pos         = aHit->GetPos();
     vector<G4ThreeVector> Lpos        = aHit->GetLPos();
     vector<G4ThreeVector> mom         = aHit->GetMoms();
+    vector<double>        E           = aHit->GetEs();
 
 	unsigned nsteps = Edep.size();
 
