@@ -103,6 +103,11 @@ static dcConstants initializeDCConstants(int runno)
     dcc.dmaxsuperlayer[3] = 1.32446;
     dcc.dmaxsuperlayer[4] = 1.72947;
     dcc.dmaxsuperlayer[5] = 1.80991;
+    
+    //Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
+    dcc.smear_time_walk[0] = 0.001; //Corresponds to smearing at low distances from the wire (given in mm)
+    dcc.smear_time_walk[1] = 3.0; //Adjusts ratio between time walk effects close and far away from the wire
+    dcc.smear_time_walk[2] = 30; //Adjusts random time walk smearing
     //********************************************
 
 
@@ -158,6 +163,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<G4ThreeVector> pos         = aHit->GetPos();
     vector<G4ThreeVector> Lpos        = aHit->GetLPos();
     vector<G4ThreeVector> mom         = aHit->GetMoms();
+    vector<double>        E           = aHit->GetEs();
 
 	unsigned nsteps = Edep.size();
 
@@ -213,6 +219,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double rotate_to_wire = 6*sl_sign*deg; //Angle for the final rotation into the wire system
     double const2 = sl_sign*sin(6*deg);
     double const1= cos(6*deg);
+    double beta_particle = 0.0; //beta-value of the particle --> Needed for determining time walks
     
     G4ThreeVector rotated_vector;
 
@@ -240,6 +247,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
             thisMgnf = mgnf[s]; //Given in Tesla
+            
+            //Get beta-value of the particle:
+            beta_particle = mom[s].mag()/E[s];
+            
 		}
 	}
 	//******************************************************************
@@ -259,9 +270,21 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	//unsmeared time, based on the dist-time-function and alpha;
 	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
+    
+    // Now include (random) time walk contributions:
+    
+    // Include ionisation effects:
+    double dt_walk_in = time_walk_core(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.smear_time_walk[0]*beta_particle*beta_particle,dcc.smear_time_walk[1],1,dcc.v0[SECI][SLI]);
+    //Translate value into detector response (landau-function):
+    double dt_walk = dt_walk_in + 0.5*dt_walk_in*CLHEP::RandLandau::shoot();
 	
-	//smeared time, same as above, but using the smeared doca quantity:
-	double smeared_time = calc_Time(sdoca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
+    // Include random time walks:
+    double dt_random_in = time_rnd_core(doca/cm,dcc.smear_time_walk[2],dcc.v0[SECI][SLI]);
+    //And translate it to a proper detector response (gaussian):
+    double dt_random = CLHEP::RandGauss::shoot(0,dt_random_in);
+    
+    //Now calculate the smeared time:
+    double smeared_time = unsmeared_time + dt_walk + dt_random;
 	
 	int ineff = 1;
 	if(random < ddEff || X > 1) ineff = -1;
@@ -410,6 +433,47 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
     return rtime;
 }
 
+//Taking care of time walks due to discrete ionization processes:
+// x       = distance from the wire, in cm
+// dmax    = cell size in superlayer
+// epsilon = adjustable factor (in mm) times beta² of the particle, the factor is adjusted according to data at small distances from the wire
+// R       = Another (relative) parameter to adjust data at large distances from the wire
+// kappa   = Parameter to adjust the matching between the two time walk distributions --> Should not be touched!
+// v0      = velocity of the particle
+//The time returned is given in ns
+double dc_HitProcess :: time_walk_core(double x, double dmax, double epsilon, double R, double kappa, double v0){
+    double out_walk = 0.0;
+    
+    if(epsilon > 0 && v0 > 0){//We dont want any trouble with 1/0...
+        double xcrit = 0.615*dmax; //Reflection point
+        //Two extreme cases have to be considered:
+        
+        //i) x < xcrit: Distances close to the wire
+        double dt_close = (sqrt(epsilon*epsilon + x*x) - x)/v0; //This expression is based on geometrical considerations (i.e. ions along a particle track)
+        
+        //ii) x >= xcrit: Distances far from the wire
+        double dt_far = R*epsilon*epsilon/(v0*((dmax-x) + epsilon)); //Using the approach electric field ~ 1/r
+        
+        //Now merge both expression via a sigmoid function, in order to have a continious distribution without discrete steps:
+        double arg = 1 + exp(-kappa*(x-xcrit));
+        out_walk = (dt_far - dt_close)/arg + dt_close;
+    }
+    return out_walk;
+}
+
+//Include random walk contributions (basically scattering):
+// x      = distance from the wire, in cm
+// f      = factor (in 10⁻3) to adjust the random contributions to data
+//v0      = velocity of the particle
+//The time returned is given in ns
+double dc_HitProcess :: time_rnd_core(double x, double f, double v0){
+    double out_rnd = 0.0;
+    
+    if(x >= 0 && v0 > 0){
+        out_rnd = f*(1e-3)*sqrt(x)/v0;
+    }
+    return out_rnd;
+}
 
 
 
