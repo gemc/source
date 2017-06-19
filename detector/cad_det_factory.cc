@@ -141,6 +141,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 				if(elm.isElement()) {
 					QDomElement e = elm.toElement();
 					string volumeName   = e.attribute("name").toStdString();
+					string mother       = e.attribute("mother").toStdString();
 					string color        = e.attribute("color").toStdString();
 					string material     = e.attribute("material").toStdString();
 					string sensitivity  = e.attribute("sensitivity").toStdString();
@@ -150,7 +151,6 @@ map<string, detector> cad_det_factory::loadDetectors()
 					string style        = e.attribute("style").toStdString();
 					string position     = e.attribute("position").toStdString();
 					string rotation     = e.attribute("rotation").toStdString();
-					string mother       = e.attribute("mother").toStdString();
 
 					// assigning attributes to volume
 					if(dets.find(volumeName) != dets.end()) {

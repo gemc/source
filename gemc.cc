@@ -236,8 +236,7 @@ int main( int argc, char **argv )
 
 	///< User Interface manager
 	gemc_splash.message(" Initializing User Interface...");
-	G4UIsession *session = NULL;
-	
+
 	///< Vis Manager
 	G4VisManager *visManager = NULL;
 	if(use_gui)
@@ -249,6 +248,7 @@ int main( int argc, char **argv )
 		visManager->Initialize();
 	}
 
+	G4UIsession *session = NULL;
 	if(use_gui)
 		session = new G4UIQt(1, argv);
 

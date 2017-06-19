@@ -386,7 +386,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 
 	// 0,1,2: Id, Mother, Description
 	det.name        = pv->GetLogicalVolume()->GetName();
-	det.mother      = pv->GetMotherLogical()->GetName();;
+	det.mother      = pv->GetMotherLogical()->GetName();
 	det.description = "gdmlParsed";
 
 	// 3: Position Vector

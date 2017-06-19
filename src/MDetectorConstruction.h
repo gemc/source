@@ -52,7 +52,18 @@ class MDetectorConstruction : public G4VUserDetectorConstruction
 	private:		
 		detector findDetector(string);   // returns map detector
 		void buildDetector(string);      // build detector
-		
+		void buildCADDetector(string, string, int);   // build CAD detector
+
+		void scanDetectors(int VERB, string catch_v);
+		void scanCadDetectors(int VERB, string catch_v);
+
+		vector<string> nativeRelativesOfCad;
+		vector<string> cadRelativesOfNative;
+		vector<string> remainingCad;
+		vector<string> remainingNative;
+
+		vector<string> regions;  // all volumes for which mom is "root"
+
 	public:
 		void isSensitive(detector);
 		void assignRegions(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector

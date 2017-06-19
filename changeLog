@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+6/19/17
+ - added utilities to scan detectors and cad detectors. This will allow unlimited cross-hierarchy between CAD and native geant4 volumes.
+   The introduced algorithm is a bit ugly. It will be a lot more elegant in gemc 3.0.
+
 6/1/17
  - initializing hit properly, in case it is an electronic noise hit
 

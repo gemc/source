@@ -853,8 +853,10 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	if(PhysicalV) delete PhysicalV;
 
 	// cad, gdml obects will not be built
-	if(description.find("gdmlParsed") != string::npos) return 0;
+	// actually this for cad should never happen
+	if(description.find("gdmlParsed")  != string::npos) return 0;
 	if(description.find("cadImported") != string::npos) return 0;
+
 
 	// don't build physical volumes for components or replicas.
 	// Replicas are built in the dedicated routine
@@ -888,7 +890,7 @@ int detector::create_physical_volumes(goptions gemcOpt, G4LogicalVolume *mamma)
 	if(VERB>4 || name.find(catch_v) != string::npos)
 	{
 		if(mamma)
-			cout << hd_msg << " " << name << " Physical Volume(s) built inside " << mamma->GetName() << "." << endl;
+			cout << hd_msg << " " << name << " Native Physical Volume(s) built inside " << mamma->GetName() << "." << endl;
 	}
 	
 	return 1;
@@ -1159,7 +1161,7 @@ ostream &operator<<(ostream &stream, detector Detector)
 	cout << "   Type:  "           << Detector.type                                   << endl;
 	vector< vector<string> > dtypes = dimensionstype( Detector.type.c_str() );
 	
-	if(dtypes.size() != Detector.dimensions.size() && Detector.type.find("CopyOf") != 0)
+	if(dtypes.size() != Detector.dimensions.size() && Detector.type.find("CopyOf") != string::npos)
 	{
 		for(unsigned int i=0; i<Detector.dimensions.size(); i++)
 			cout << "   Size " << i + 1 << ":  "  << Detector.dimensions[i]  << endl;
@@ -1185,7 +1187,7 @@ ostream &operator<<(ostream &stream, detector Detector)
 		cout << "   Volume: "       << bestValueUnits(Detector.SolidV->GetCubicVolume(), "Volume") << endl;
 		cout << "   Surface Area: " << bestValueUnits(Detector.SolidV-> GetSurfaceArea(), "Surface") << endl;
 	}
-	if(Detector.LogicV) {
+	if(Detector.LogicV && Detector.type.find("CopyOf") == string::npos) {
 		cout << "   Mass: " << bestValueUnits(Detector.LogicV->GetMass(), "Mass") << endl;
 	}
 	cout << endl;
