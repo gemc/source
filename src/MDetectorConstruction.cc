@@ -62,7 +62,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	(*hallMap)["root"].create_logical_volume(mats, gemcOpt);
 	(*hallMap)["root"].create_physical_volumes(gemcOpt, NULL);
 	hasMagfield((*hallMap)["root"]);
-	
+	(*hallMap)["root"].scanned = 1;
+
 	if(VERB > 3 || catch_v == "root") cout << hd_msg << "    " << (*hallMap)["root"] ;
 	
 	
@@ -76,7 +77,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	
 	for(map<string, detector>::iterator i =  hallMap->begin(); i!=hallMap->end(); i++)
 	{
-		if(VERB > 3) cout << hd_msg << " Scanning Detector " << i->first << " - existance: " << i->second.exist << endl;
+		if(VERB > 3) cout << hd_msg << " Native Scanning Detector " << i->first << " - existance: " << i->second.exist << endl;
 		
 		// Find the mother up to "root" - disable kid if ancestor does not exist
 		detector mother = findDetector(i->second.mother);
@@ -104,9 +105,8 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 			replicants.insert(original);
 		}
-		
 	}
-	
+
 	
 	// ########################################################################
 	// Building Solids, Logical Volumes, Physical Volumes from the detector Map
@@ -696,7 +696,7 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 
 void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 {
-	string hd_msg = "  Scanning: ";
+	string hd_msg = "  Native Scanning: ";
 	vector<string> relatives;
 
 	for( map<string, detector>::iterator i =  hallMap->begin(); i!=hallMap->end(); i++)
@@ -712,6 +712,7 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 		{
 			detector kid = findDetector(relatives.back());
 			detector mom = findDetector(kid.mother);
+			// cout << " ASD " << kid.name << " " << kid.mother <<  " " << kid.scanned << " " << mom.scanned << " " << mom.factory << endl;
 
 			// production cut affects all volumes in a system rather than just the sensitive volumes
 			// if the mother system is different than the kid system
@@ -738,8 +739,7 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 			}
 
 			// Mom is built, kid not built yet.
-			if(kid.scanned == 0 && mom.scanned == 1)
-			{
+			if(kid.scanned == 0 && mom.scanned == 1) {
 				if(VERB > 3 || kid.name.find(catch_v) != string::npos)
 				{
 					for(unsigned int ir=0; ir<relatives.size()-1; ir++) cout << "\t";
@@ -862,13 +862,22 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 
 			// if the kid still doesn't exists and its mom doesn't exist.
 			// adding mom to the relatives list
-			if(kid.scanned == 0 && mom.scanned == 0)
+			else if(kid.scanned == 0 && mom.scanned == 0)
 			{
 				if(mom.factory == "TEXT") {
-					relatives.push_back(kid.mother);
+					// we can still build this unless the mother is inside remainingNative
+					if(find(remainingNative.begin(), remainingNative.end(), kid.mother) == remainingNative.end()) {
+						relatives.push_back(kid.mother);
+					} else {
+						relatives.pop_back();
+						remainingNative.push_back(kid.name);
+					}
 				} else {
+					// need to build this later, popping this from the local list
 					cadRelativesOfNative.push_back(kid.mother);
 					remainingNative.push_back(kid.name);
+					relatives.pop_back();
+
 				}
 			}
 
@@ -907,13 +916,13 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 
 void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 {
-	string hd_msg = "  Scanning: ";
+	string hd_msg = "  CAD Scanning: ";
 	vector<string> relatives;
 	// building these first in case we want to make copies of these
 	for(auto &dd : *hallMap) {
 
 		// don't build anything if the exist flag is not set
-		if(dd.second.exist == 0 || dd.second.scanned == 1 || dd.second.factory != "CAD" ) continue;
+		if(dd.second.exist == 0 || dd.second.scanned == 1 || dd.second.factory != "CAD" || dd.first == "root" ) continue;
 
 
 		string thisDetName = dd.first;
@@ -923,12 +932,11 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 		// if everything is good, it will be built right away
 		if(thisDetName != "root") relatives.push_back(dd.second.name);
 
-
 		while(relatives.size() > 0)
 		{
 			detector kid = findDetector(relatives.back());
 			detector mom = findDetector(kid.mother);
-			//cout << " ASD " << kid.name << " " << kid.mother <<  " " << kid.scanned << " " << mom.scanned << " " << mom.factory << endl;
+			// cout << " ASD " << kid.name << " " << kid.mother <<  " " << kid.scanned << " " << mom.scanned << " " << mom.factory << endl;
 
 			// Mom doesn't exists in the hallMap. Stopping everything.
 			if(mom.name != "akasha"  && mom.name == "notfound") {
@@ -945,14 +953,22 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 
 			} else if(kid.scanned == 0 && mom.scanned == 0 ) {
 				if(mom.factory == "CAD") {
-					relatives.push_back(kid.mother);
+					// we can still build this unless the mother is inside remainingCad
+					if(find(remainingCad.begin(), remainingCad.end(), kid.mother) == remainingCad.end()) {
+						relatives.push_back(kid.mother);
+					} else {
+						relatives.pop_back();
+						remainingCad.push_back(kid.name);
+				}
+
 				} else {
 					// need to build this later, popping this from the local list
 					nativeRelativesOfCad.push_back(kid.mother);
 					remainingCad.push_back(kid.name);
 					relatives.pop_back();
 				}
-			} else if(kid.scanned == 1 && relatives.size()) { // the kid has been built. Can go down one step in geneaology
+				// the kid has been built. Can go down one step in geneaology
+			} else if(kid.scanned == 1 && relatives.size()) {
 
 				if(VERB > 3 || kid.name.find(catch_v) != string::npos)
 					cout << hd_msg  << " " <<  kid.name << " is built." <<  endl << endl;
@@ -975,10 +991,6 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 					remainingCad.erase(remainingCadIT);
 					remainingCadIT = find(remainingCad.begin(), remainingCad.end(), kid.name);
 				}
-
-
-
-
 
 			}
 		}
