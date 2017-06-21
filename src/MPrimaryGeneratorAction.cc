@@ -473,13 +473,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			//
 			// BEAGLE EVENT FILE
 			// ============================================
-			// I, ievent, genevent, lepton, Atarg, Ztarg, pzlep, pztarg  pznucl, crang, crori, subprocess, nucleon, \
-			// targetparton,          xtargparton, beamparton, xbeamparton, thetabeamprtn, truey,       trueQ2, truex, \
-			// trueW2, trueNu, leptonphi, s_hat, t_hat, u_hat,    pt2_hat, Q2_hat, F2, F1, R, sigma_rad, SigRadCor, EBrems,  \
-			// photonflux, b, Phib, Thickness, ThickScl, Ncollt, Ncolli,         Nwound, Nwdch, Nnevap, Npevap, Aremn, \
+			// I, ievent, genevent, lepton, Atarg, Ztarg, pzlep, pztarg  pznucl, crang, crori, subprocess, nucleon,
+			// targetparton,          xtargparton, beamparton, xbeamparton, thetabeamprtn, truey,       trueQ2, truex,
+			// trueW2, trueNu, leptonphi, s_hat, t_hat, u_hat,    pt2_hat, Q2_hat, F2, F1, R, sigma_rad, SigRadCor, EBrems,
+			// photonflux, b, Phib, Thickness, ThickScl, Ncollt, Ncolli,         Nwound, Nwdch, Nnevap, Npevap, Aremn,
 			// NINC, NINCch, d1st, davg,   pxf, pyf, pzf, Eexc, RAevt, User1, User2, User3, nrTracks
 			// ============================================
-			// I  ISTHKK(I)  IDHKK(I)  JMOHKK(2,I)  JMOHKK(1,I)       JDAHKK(1,I)  JDAHKK(2,I)  PHKK(1,I)  PHKK(2,I)  PHKK(3,I)  \
+			// I  ISTHKK(I)  IDHKK(I)  JMOHKK(2,I)  JMOHKK(1,I)       JDAHKK(1,I)  JDAHKK(2,I)  PHKK(1,I)  PHKK(2,I)  PHKK(3,I)
 			// PHKK(4,I)  PHKK(5,I)  VHKK(1,I) VHKK(2,I) VHKK(3,I) IDRES(I)      IDXRES(I) NOBAM(I)
 			// ============================================
 
@@ -511,7 +511,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
 			// getting info for each particle
-			for(unsigned p=0; p<nparticles; p++) {
+			for(int p=0; p<nparticles; p++) {
 
 				getline(gif, theWholeLine);
 
