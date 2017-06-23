@@ -105,7 +105,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double>  dgtz;
 	vector<identifier> identity = aHit->GetId();
-	
+
 	// BMT ID:
 	// layer, type, sector, strip
 	
@@ -116,18 +116,24 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 
 	if(verbosity>4)
-	{
-		trueInfos tInfos(aHit);
+	  {
+	  trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
-	}
-
+	  }
+	
 	dgtz["hitn"]   = hitn;
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
 	dgtz["Edep"]   = tInfos.eTot;
-	dgtz["ADC"]   = (int) tInfos.eTot;
+	dgtz["ADC"]   = (int) (tInfos.eTot*1e6/bmtc.w_i);
+	
+	if (strip==-1) {
+	  dgtz["Edep"]   = 0;
+	  dgtz["ADC"]   = 0;
+	}
+
 	return dgtz;
 }
 
@@ -166,14 +172,13 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	vector<identifier> yid = id;
 	class bmt_strip bmts;
 	
-	//int layer  = 2*yid[0].id + yid[1].id - 2 ;
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
 	
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 
-	vector<double> multi_hit = bmts.FindStrip(layer, sector, xyz, depe, bmtc);
+	vector<double> multi_hit = bmts.FindStrip(layer, sector, xyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization
 	
 	int n_multi_hits = multi_hit.size()/2;
 	
@@ -185,6 +190,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
+	if (multi_hit[1]!=-1) yid[3].id_sharing = multi_hit[1]/(1.0*(int) (1e6*depe/bmtc.w_i));
 	// yid[4].id_sharing = multi_hit[1];
 	
 	// additional strip
@@ -199,18 +205,18 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 		this_id.time       = yid[j].time;
 		this_id.TimeWindow = yid[j].TimeWindow;
 		this_id.TrackId    = yid[j].TrackId;
-		this_id.id_sharing = multi_hit[3];
+		this_id.id_sharing = multi_hit[2*h+1]; //Number of electron collected by the strip for this step
 		yid.push_back(this_id);
 	      }
 	    // last id is strip
 	    identifier this_id;
 	    this_id.name       = yid[3].name;
 	    this_id.rule       = yid[3].rule;
-	    this_id.id         = (int) multi_hit[2];
+	    this_id.id         = (int) multi_hit[2*h];
 	    this_id.time       = yid[3].time;
 	    this_id.TimeWindow = yid[3].TimeWindow;
 	    this_id.TrackId    = yid[3].TrackId;
-	    this_id.id_sharing = multi_hit[3];
+	    this_id.id_sharing = multi_hit[2*h+1]/(1.0*(int) (1e6*depe/bmtc.w_i));//Fraction of depe: Mcoll/Nel
 	    yid.push_back(this_id);
 	  }
 	

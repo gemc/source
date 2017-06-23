@@ -76,11 +76,10 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
-	
+	trueInfos tInfos(aHit);
 	if(verbosity>4)
 	{
-		trueInfos tInfos(aHit);
-		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
+	  cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	
@@ -88,6 +87,13 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["layer"]  = layer;
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
+	dgtz["Edep"]   = tInfos.eTot;
+	dgtz["ADC"]   = (int) (tInfos.eTot*1e6/fmtc.w_i);
+	
+	if (strip==-1) {
+	  dgtz["Edep"]   = 0;
+	  dgtz["ADC"]   = 0;
+	}
 	
 	return dgtz;
 }
@@ -124,6 +130,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
+	if (multi_hit[1]!=-1) yid[3].id_sharing = multi_hit[1]/(1.0*(int) (1e6*depe/fmtc.w_i));
 	// yid[4].id_sharing = multi_hit[1];
 	
 	// additional strip
@@ -138,18 +145,18 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 			this_id.time       = yid[j].time;
 			this_id.TimeWindow = yid[j].TimeWindow;
 			this_id.TrackId    = yid[j].TrackId;
-			this_id.id_sharing = multi_hit[3];
+			this_id.id_sharing = multi_hit[2*h+1];
 			yid.push_back(this_id);
 		}
 		// last id is strip
 		identifier this_id;
 		this_id.name       = yid[3].name;
 		this_id.rule       = yid[3].rule;
-		this_id.id         = (int) multi_hit[2];
+		this_id.id         = (int) multi_hit[2*h];
 		this_id.time       = yid[3].time;
 		this_id.TimeWindow = yid[3].TimeWindow;
 		this_id.TrackId    = yid[3].TrackId;
-		this_id.id_sharing = multi_hit[3];
+		this_id.id_sharing = multi_hit[2*h+1]/(1.0*(int) (1e6*depe/fmtc.w_i));
 		yid.push_back(this_id);
 	}
 	
