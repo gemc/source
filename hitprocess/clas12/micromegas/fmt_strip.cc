@@ -79,6 +79,9 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	    double weight_this_strip;
 	    int Nel_this_strip=0;
 	    for (unsigned int i=0;i<strip_id.size()/2;i++){
+	      if (Nel_left==0||renorm==1){
+		strip_id.at(2*i+1)=0;
+	      }
 	      if (renorm!=1&&Nel_left!=0){
 		weight_this_strip=strip_id.at(2*i+1)/(1-renorm);
 		Nel_this_strip=GetBinomial(Nel_left,weight_this_strip);
@@ -99,10 +102,10 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	  }
 	}
 	if (strip_id.size()==0)
-	  { // Nel=0, consider the Edep is 0
-	    strip_id.push_back(-1);
-	    strip_id.push_back(1);
-	  }
+	{ // Nel=0, consider the Edep is 0
+		strip_id.push_back(-1);
+		strip_id.push_back(1);
+	}
 
 	return strip_id;
 }
