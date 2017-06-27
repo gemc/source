@@ -120,7 +120,7 @@ void gsignal::createHitListTree()
 		if(MHC) nhits = MHC->GetSize();
 		
 		// Creating sensitive detectors name tree if it's different than "mirrors"
-		if(it->first != "mirror")
+		// if(it->first != "mirrora")
 		{
 			QTreeWidgetItem *newItem = new QTreeWidgetItem(hitList);
 			newItem->setText(0, QString(it->first.c_str()));

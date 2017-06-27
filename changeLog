@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+6/27/17
+ - fixed mirror sensitivity
+
 6/20/17
  - fixes to the cross-hierarchy between CAD and native
 

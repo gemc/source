@@ -241,6 +241,8 @@ void MDetectorConstruction::isSensitive(detector detect)
 	
 	string sensi   = detect.sensitivity;
 
+	if(sensi.find("mirror:") != string::npos) sensi = "mirror";
+
 	// forgot why this was removed since RECORD_MIRRORS should take care of it
 //	if(sensi != "no" && sensi.find("mirror:") == string::npos)
 	if(sensi != "no" )

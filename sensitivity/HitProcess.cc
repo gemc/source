@@ -9,7 +9,13 @@ HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string
 {
 	if(HCname == "no")
 		return NULL;
-	
+
+	if(HCname.find("mirror:") != string::npos)
+		if(hitProcessMap->find("mirror") != hitProcessMap->end())
+			return (*hitProcessMap)["mirror"]();
+
+
+
 	if(hitProcessMap->find(HCname) == hitProcessMap->end())
 	{
 		cout << endl << "  !!! Error: >" << HCname << "< NOT FOUND IN  ProcessHit Map for volume " << vname << " - exiting." << endl;
