@@ -128,7 +128,7 @@ private:
 	double cosmicNeutBeam(double, double);
 
 
-	void setParticleFromPars(int, int, int, int, double, double, double,  double, double, double, G4Event* anEvent);
+	void setParticleFromPars(int, int, int, int, double, double, double,  double, double, double, G4Event* anEvent, int A=0, int Z=0);
 
 };
 

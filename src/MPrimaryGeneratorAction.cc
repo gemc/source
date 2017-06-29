@@ -429,6 +429,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			if(beamPol>1)
 				beamPol = 1;
 
+			userInfo.clear();
 			for(int p=0; p<nparticles; p++) {
 				string theWholeLine;
 				getline(gif, theWholeLine);
@@ -444,7 +445,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				for(auto &s : infoStrings) {
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
-				userInfo.clear();
 				userInfo.push_back(thisParticleInfo);
 
 				// necessary geant4 info. Lund specifics:
@@ -470,6 +470,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		else if((gformat == "BEAGLE" || gformat == "beagle") && !gif.eof())
 		{
 			// Format:
+			// https://wiki.bnl.gov/eic/index.php/BeAGLE#Output_Data_Format
 			//
 			// BEAGLE EVENT FILE
 			// ============================================
@@ -485,7 +486,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			string theWholeLine;
 
-			// first 5 lines are file header
+			// first 6 lines are file header
 			if(beagleHeader == 0) {
 				getline(gif, theWholeLine);
 				getline(gif, theWholeLine);
@@ -511,16 +512,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
 			// getting info for each particle
+			userInfo.clear();
 			for(int p=0; p<nparticles; p++) {
 
 				getline(gif, theWholeLine);
 
-				// still need one more particle
+				// reaching eof prematurely
 				if(gif.eof()) {
 					cout << " Input file " << gfilename << " appear to be truncated." << endl;
 					return;
 				}
-
 
 				vector<string> infoStrings = getStringVectorFromString(theWholeLine);
 
@@ -528,7 +529,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				for(auto &s : infoStrings) {
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
-				userInfo.clear();
+				if(thisParticleInfo.infos.size() != 18) {
+					cout << " !!! Error: Beagle particle info size is " << thisParticleInfo.infos.size() << " instead of 18." << endl;
+				}
 				userInfo.push_back(thisParticleInfo);
 
 				// necessary geant4 info. Lund specifics:
@@ -541,8 +544,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx     = thisParticleInfo.infos[12]/10;  // beagle vertex unit is mm
 				double Vy     = thisParticleInfo.infos[13]/10;
 				double Vz     = thisParticleInfo.infos[14]/10;
+				double A      = thisParticleInfo.infos[15];
+				double Z      = thisParticleInfo.infos[16];
 
-				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);
+				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent, A, Z);
 			}
 
 			if(eventIndex <= ntoskip) {
@@ -1244,16 +1249,21 @@ double MPrimaryGeneratorAction::cosmicNeutBeam(double t, double p)
 }
 
 
-void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, int pdef, double px, double py, double pz,  double Vx, double Vy, double Vz, G4Event* anEvent) {
+void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, int pdef, double px, double py, double pz,  double Vx, double Vy, double Vz, G4Event* anEvent, int A, int Z) {
 
 	if(type == 1 && pindex == p+1) {
 		// Primary Particle
-		Particle = particleTable->FindParticle(pdef);
-		if(!Particle)
-		{
-			cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-			return;
+		if(pdef != 80000) {
+			Particle = particleTable->FindParticle(pdef);
+			if(!Particle)
+			{
+				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
+
+				return;
+			}
+		} else {
+			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
 		}
 		particleGun->SetParticleDefinition(Particle);
 

@@ -1,5 +1,9 @@
 Changelog for GEMC
 ==================
+6/29/17
+ - fixed beagle format
+ - fixed user info clearing for each particle
+ - added ion definition in BEAGLE format
 
 6/27/17
  - fixed mirror sensitivity
