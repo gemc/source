@@ -26,10 +26,12 @@ static dcConstants initializeDCConstants(int runno)
 	if(runno == -1) return dcc;
 	
 	dcc.NWIRES = 113;
+	// mac I think 50 eV corresponds to about 2 ionization electrons; should be ok
 	dcc.dcThreshold  = 50;  // eV
 
 	// database
 	dcc.runNo = runno;
+	// mac Why are we using this fixed date for the data-base?
 	dcc.date       = "2016-03-15";
 	if(getenv ("CCDB_CONNECTION") != NULL)
 		dcc.connection = (string) getenv("CCDB_CONNECTION");
@@ -54,6 +56,9 @@ static dcConstants initializeDCConstants(int runno)
 		dcc.iScale[sl] = data[row][5];
 	}
 	
+	// mac I think these are parameters to smear the doca directly.  If so we no longer need these
+	// because we smear the time after the doca to time function is called.
+	//
 	// reading smearing parameters
 	database   = "/calibration/dc/signal_generation/dc_resolution";
 	data.clear();
@@ -83,6 +88,8 @@ static dcConstants initializeDCConstants(int runno)
     data.clear();
     calib->GetCalib(data, database);
     
+	//mac I think this is no longer consistent with the reconstruction/calibration distance to
+	// time function, which now includes a constant term "t0".
     for(unsigned row = 0; row < data.size(); row++)
     {
         int sec = data[row][0] - 1;
@@ -97,6 +104,7 @@ static dcConstants initializeDCConstants(int runno)
         dcc.deltatime_bfield_par4[sec][sl] = data[row][9];
     }
     
+	//mac Shouldn't we be betting these numbers from the geometry data-base?
     dcc.dmaxsuperlayer[0] = 0.77665;
     dcc.dmaxsuperlayer[1] = 0.81285;
     dcc.dmaxsuperlayer[2] = 1.25065;
@@ -104,6 +112,7 @@ static dcConstants initializeDCConstants(int runno)
     dcc.dmaxsuperlayer[4] = 1.72947;
     dcc.dmaxsuperlayer[5] = 1.80991;
     
+	//mac Let's put these in CCDB
     //Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
     dcc.smear_time_walk[0] = 0.001; //Corresponds to smearing at low distances from the wire (given in mm)
     dcc.smear_time_walk[1] = 3.0; //Adjusts ratio between time walk effects close and far away from the wire
@@ -118,10 +127,12 @@ static dcConstants initializeDCConstants(int runno)
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++)
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
 	
+	// mac This code is for constant drift velocity.  It is obsolete and should be removed.
 	dcc.driftVelocity[0] = dcc.driftVelocity[1] = 0.053;  ///< drift velocity is 53 um/ns for region1
 	dcc.driftVelocity[2] = dcc.driftVelocity[3] = 0.026;  ///< drift velocity is 26 um/ns for region2
 	dcc.driftVelocity[4] = dcc.driftVelocity[5] = 0.036;  ///< drift velocity is 36 um/ns for region3
-	
+
+	// mac The ministagger should be read from the geometry data-base.
 	for(int l=0; l<6; l++)
 		dcc.miniStagger[l] = 0;
 
@@ -130,6 +141,7 @@ static dcConstants initializeDCConstants(int runno)
 	dcc.TT = TranslationTable("dcTT");
 	cout << "  > Data loaded in translation table " << dcc.TT.getName() << endl;
 
+	// Mac This code is not relevant nor used by the DC's.  Please remove.
 	// setting voltage signal parameters
 	dcc.vpar[0] = 50;  // delay, ns
 	dcc.vpar[1] = 10;  // rise time, ns
@@ -154,6 +166,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// nwire position information
 	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;                ///< Y length of cell
+	
+	//mac Check on this; the mini-stagger alternates in sign layer to layer
 	double WIRE_Y  = nwire*deltay + dcc.miniStagger[SLI];   ///< Center of wire hit
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
@@ -177,9 +191,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
+		
+		// mac here we are using a constant drift velocity to find the point of minimum time
+		//so I suppose we are finding the point of minimum doca which is ok
 		signal_t = stepTime[s]/ns + DOCA.mag()/dcc.driftVelocity[SLI];
 
 		// threshold hardcoded, please get from parameters
+		// mac I'm not sure what this is supposed to do
 		if(signal_t < minTime)
 		{
 			trackIdw = stepTrackId[s];
@@ -219,6 +237,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double rotate_to_wire = 6*sl_sign*deg; //Angle for the final rotation into the wire system
     double const2 = sl_sign*sin(6*deg);
     double const1= cos(6*deg);
+	
+	// mac  Where do we (or do we?) get the actual beta of the particle?  Here it is hard-coded to 0.
     double beta_particle = 0.0; //beta-value of the particle --> Needed for determining time walks
     
     G4ThreeVector rotated_vector;
@@ -241,6 +261,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//Finally, rotate px'' and py' into the wire coordinate system:
 			rotated_vector.rotateZ(rotate_to_wire);
 			
+			// mac  Let's take a look at alpha for a known particle trajectory
 			//Now calculate alpha according to Macs definition:
 			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg;
 			doca = DOCA.mag();
@@ -258,6 +279,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
+	// mac I think this independent smearing of doca is obsolete and no longer used
 	// smeading doca by DOCA dependent function. This is the sigma of doca.
 	double smearF = dcc.smearP1[SECI][SLI] + dcc.smearP2[SECI][SLI]/pow(dcc.smearP3[SECI][SLI] + X, 2) + dcc.smearP4[SECI][SLI]*pow(X, 8);
 	
@@ -298,6 +320,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["LR"]         = LR;
 	dgtz["doca"]       = doca;
 	dgtz["sdoca"]      = sdoca;
+	
+	// mac we have to be careful here; we are using negative times to mark an inefficiency BUT times can be negative
 	dgtz["time"]       = ineff*unsmeared_time;
 	dgtz["stime"]      = ineff*smeared_time;
 	
@@ -369,7 +393,7 @@ map< int, vector <double> > dc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	return CT;
 }
 
-
+// mac This is obsolete and not used
 // - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
@@ -381,6 +405,8 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 
 
 
+// mac Need to keep this function synchronized with the dist --> time function used by calibration and reconstruction
+// For example, they have added a t0 term which does not appear here
 
 // returns a time in ns give:
 // x      = distance from the wire, in cm
@@ -476,7 +502,7 @@ double dc_HitProcess :: time_rnd_core(double x, double f, double v0){
 }
 
 
-
+// mac This is not used; perhaps in the future?
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> dc_HitProcess :: electronicNoise()
 {
@@ -496,6 +522,7 @@ vector<MHit*> dc_HitProcess :: electronicNoise()
 // this static function will be loaded first thing by the executable
 dcConstants dc_HitProcess::dcc = initializeDCConstants(1);
 
+// mac We do not measure voltage in the DC.  This is obsolete.
 // - voltage: returns a voltage value for a given time. The inputs are:
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
