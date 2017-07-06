@@ -20,7 +20,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 	system           = s;
 
 	// iF SD is FLUX, returns special sensitiveID
-	if(SD == "flux") {
+	if(SD == "flux" || SD == "mirror") {
 		description = "generic flux detector";
 		identifiers.push_back("id");
 		signalThreshold = 0;
