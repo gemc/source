@@ -103,7 +103,7 @@ vector<string> init_dmesg(goptions gemcOpt)
 vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 {
 	vector<string> commands;
-	commands.push_back("/vis/scene/create Hall-B");
+	commands.push_back("/vis/scene/create gemcLab");
 	double use_gui   = gemcOpt.optMap["USE_GUI"].arg;
 	int   HIGH_RES  = (int) gemcOpt.optMap["HIGH_RES"].arg ;
 	vector<string> wpos =  get_info(gemcOpt.optMap["GUIPOS"].args);
