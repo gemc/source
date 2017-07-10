@@ -11,10 +11,8 @@ HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string
 		return NULL;
 
 	if(HCname.find("mirror:") != string::npos)
-		if(hitProcessMap->find("mirror") != hitProcessMap->end())
-			return (*hitProcessMap)["mirror"]();
-
-
+		if(hitProcessMap->find("flux") != hitProcessMap->end())
+			return (*hitProcessMap)["flux"]();
 
 	if(hitProcessMap->find(HCname) == hitProcessMap->end())
 	{

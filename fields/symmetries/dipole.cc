@@ -88,12 +88,15 @@ void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)
 
 				// The values are indexed as B1_2D[longi][transverse]
 				if(   map->getCoordinateWithSpeed(0).name == "longitudinal"
-					&& map->getCoordinateWithSpeed(1).name == "transverse")
+				   && map->getCoordinateWithSpeed(1).name == "transverse") {
 					map->B1_2D[t1][t2] = b;
+				} else if(   map->getCoordinateWithSpeed(0).name == "transverse"
+						  && map->getCoordinateWithSpeed(1).name == "longitudinal") {
 
-				if(   map->getCoordinateWithSpeed(0).name == "transverse"
-					&& map->getCoordinateWithSpeed(1).name == "longitudinal")
+					t1 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;
+					t2 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
 					map->B1_2D[t2][t1] = b;
+				}
 			}
 		}
 
@@ -120,20 +123,15 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	double LC = 0;     	// longitudinal
 	double TC = 0;     	// transverse
 
-	if(symmetry == "dipole-x")
-	{
-		TC  = x[1];
-		LC  = x[2];
-	}
-	if(symmetry == "dipole-y")
-	{
-		TC  = x[0];
-		LC  = x[2];
-	}
-	if(symmetry == "dipole-z")
-	{
+	if(symmetry == "dipole-z") {
 		TC  = x[0];
 		LC  = x[1];
+	} else if(symmetry == "dipole-x") {
+		TC  = x[1];
+		LC  = x[2];
+	} else if(symmetry == "dipole-y") {
+		TC  = x[0];
+		LC  = x[2];
 	}
 
 	// map indexes, bottom of the cell
@@ -153,9 +151,9 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 		if( fabs( startMap[0] + IL*cellSize[0] - LC) > fabs( startMap[0] + (IL+1)*cellSize[0] - LC)  ) IL++;
 		if( fabs( startMap[1] + IT*cellSize[1] - TC) > fabs( startMap[1] + (IT+1)*cellSize[1] - TC)  ) IT++;
 
-		if(symmetry == "dipole-x") Bfield[0] = B1_2D[IL][IT];
-		if(symmetry == "dipole-y") Bfield[1] = B1_2D[IL][IT];
-		if(symmetry == "dipole-z") Bfield[2] = B1_2D[IL][IT];
+			 if(symmetry == "dipole-x") Bfield[0] = B1_2D[IL][IT];
+		else if(symmetry == "dipole-y") Bfield[1] = B1_2D[IL][IT];
+		else if(symmetry == "dipole-z") Bfield[2] = B1_2D[IL][IT];
 	}
 	else if (interpolation == "linear")
 	{
@@ -168,9 +166,9 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 		double b11 = B1_2D[IL+1][IT] * (1.0 - xtr) + B1_2D[IL+1][IT+1] * xtr;
 		double b1  = b10 * (1.0 - xlr) + b11 * xlr;
 
-		if(symmetry == "dipole-x") Bfield[0] = b1;
-		if(symmetry == "dipole-y") Bfield[1] = b1;
-		if(symmetry == "dipole-z") Bfield[2] = b1;
+		     if(symmetry == "dipole-x") Bfield[0] = b1;
+		else if(symmetry == "dipole-y") Bfield[1] = b1;
+		else if(symmetry == "dipole-z") Bfield[2] = b1;
 	}
 	else
 	{

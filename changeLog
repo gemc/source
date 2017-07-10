@@ -4,6 +4,7 @@ Changelog for GEMC
 7/10/17
  - fixed taggin scheme for smeared info in particle summary bank
  - better name for general scene: gemcLab
+ - field routine: skipping remaining symmetries after a match is found
 
 7/6/17
  - fixed timewindow for mirror object, now behaving like flux correctly

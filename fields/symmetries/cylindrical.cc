@@ -204,20 +204,15 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 		double b21 = B2_2D[IT][IL+1] * (1.0 - xtr) + B2_2D[IT+1][IL+1] * xtr;
 		double b2 = b20 * (1.0 - xlr) + b21 * xlr;
 
-		if(symmetry == "cylindrical-z")
-		{
+		if(symmetry == "cylindrical-z") {
 			Bfield[0] = b1 * cos(phi);
 			Bfield[1] = b1 * sin(phi);
 			Bfield[2] = b2;
-		}
-		else if(symmetry == "cylindrical-x")
-		{
+		} else if(symmetry == "cylindrical-x") {
 			Bfield[0] = b2;
 			Bfield[1] = b1 * cos(phi);
 			Bfield[2] = b1 * sin(phi);
-		}
-		else if(symmetry == "cylindrical-y")
-		{
+		} else if(symmetry == "cylindrical-y") {
 			Bfield[1] = b2;
 			Bfield[0] = b1 * sin(phi);
 			Bfield[2] = b1 * cos(phi);
