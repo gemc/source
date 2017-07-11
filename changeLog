@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+7/11/17
+ - added culling combo option in the GUI
+ - added button to show 100cm long axes
+
 7/10/17
  - fixed taggin scheme for smeared info in particle summary bank
  - better name for general scene: gemcLab

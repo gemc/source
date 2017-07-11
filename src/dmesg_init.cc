@@ -111,7 +111,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 
 	double newxpos = 700 + get_number(wpos[0]);
 	string newpos = "+" + stringify(newxpos) + "+" + wpos[1];
-		
+
 	// OpenGL immediate mode
 	if(use_gui==1)
 		commands.push_back("/vis/open OGLSQt " + gemcOpt.optMap["geometry"].args + newpos);
@@ -119,12 +119,12 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	else if(use_gui==2)
 		commands.push_back("/vis/open OGLIQt " + gemcOpt.optMap["geometry"].args + newpos);
 	
- 	commands.push_back("/vis/viewer/set/autoRefresh 1");
-		
+
 	if(HIGH_RES==1)
 	{
-		commands.push_back("/vis/scene/add/trajectories rich smooth");
 		commands.push_back("/vis/viewer/set/background .8 .9 .98 1");   // 205, 230, 251 = CD, E6, FA
+		commands.push_back("/vis/viewer/set/autoRefresh 1");
+		commands.push_back("/vis/scene/add/trajectories rich smooth");
 		commands.push_back("/vis/scene/add/hits");
 		// This rendering can be problematic for some operation solid.
 		// Leaving this out for now, and letting G4 do what's more comfy.

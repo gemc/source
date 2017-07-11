@@ -46,7 +46,8 @@ private:
 	QComboBox *aliasing;
 	QComboBox *sides_per_circle;
 	QComboBox *auxiliary;
-	
+	QComboBox *cullingOption;
+
 	// slices
 	QLineEdit *sliceXEdit, *sliceYEdit, *sliceZEdit;
 	QCheckBox *sliceXActi, *sliceYActi, *sliceZActi;
@@ -79,9 +80,11 @@ private slots:
 	void switch_antialiasing(int);
 	void switch_auxiliary_edges(int);
 	void switch_sides_per_circle(int);
-	
+	void switch_culling(int);
+
 	void addFieldsArrows();
 	void addScale();
+	void addAxes();
 };
 
 #endif

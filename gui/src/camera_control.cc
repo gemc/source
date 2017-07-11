@@ -262,12 +262,25 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	auxedgesLayout->addWidget(auxiliaryEdgesLabel);
 	auxedgesLayout->addWidget(auxiliary);
 	connect ( auxiliary   , SIGNAL( currentIndexChanged (int) ), this, SLOT( switch_auxiliary_edges(int)    ) );
-	
+
+	QLabel *cullingLabel = new QLabel(tr("Culling"));
+	cullingOption = new QComboBox;
+	cullingOption->addItem(tr("reset culling"));
+	cullingOption->addItem(tr("coveredDaughters"));
+	cullingOption->addItem(tr("density: Air"));
+	cullingOption->addItem(tr("density: Water"));
+	QHBoxLayout *cullingLayout = new QHBoxLayout;
+	cullingLayout->addWidget(cullingLabel);
+	cullingLayout->addWidget(cullingOption);
+	connect ( cullingOption   , SIGNAL( currentIndexChanged (int) ), this, SLOT( switch_culling(int)    ) );
+
+
 	QVBoxLayout *voptionsLayout = new QVBoxLayout;
 	voptionsLayout->addLayout(aliasingLayout);
 	voptionsLayout->addLayout(sides_per_circleLayout);
 	voptionsLayout->addLayout(auxedgesLayout);
-	
+	voptionsLayout->addLayout(cullingLayout);
+
 	// options group
 	QGroupBox *vOptionsGroup = new QGroupBox(tr("Visualization Options"));
 	vOptionsGroup->setLayout(voptionsLayout);
@@ -320,6 +333,11 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	showFieldLines->setIcon(style()->standardIcon(QStyle::SP_FileDialogDetailedView));
 	connect ( showFieldLines , SIGNAL(clicked()), this, SLOT( addFieldsArrows() ));
 
+	QPushButton *addAxesB = new QPushButton(tr("Add Axes"));
+	addAxesB->setToolTip("Add axes 100cm long at (0, 0, 0)");
+	addAxesB->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
+	connect ( addAxesB , SIGNAL(clicked()), this, SLOT( addAxes() ));
+
 	QPushButton *addScaleButton = new QPushButton(tr("Add Scale"));
 	addScaleButton->setToolTip("Add Automatic Scale on screen");
 	addScaleButton->setIcon(style()->standardIcon(QStyle::SP_DialogHelpButton));
@@ -327,6 +345,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 
 	QHBoxLayout *fieldAndScale = new QHBoxLayout;
 	fieldAndScale->addWidget(showFieldLines);
+	fieldAndScale->addWidget(addAxesB);
 	fieldAndScale->addWidget(addScaleButton);
 
 	QGroupBox *fieldAndScaleGroup = new QGroupBox(tr("Utilities"));
@@ -539,6 +558,24 @@ void camera_control::switch_auxiliary_edges(int index)
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }
 
+
+void camera_control::switch_culling(int index)
+{
+	if(index == 0) {
+		UImanager->ApplyCommand("/vis/viewer/set/culling global false");
+	} else 	if(index == 1) {
+		UImanager->ApplyCommand("/vis/viewer/set/culling coveredDaughters true");
+	} else if(index == 2) {
+		UImanager->ApplyCommand("/vis/viewer/set/culling density true 0.001");
+	} else if(index == 3) {
+		UImanager->ApplyCommand("/vis/viewer/set/culling density 1 1");
+	}
+	UImanager->ApplyCommand("/vis/viewer/flush");
+}
+
+
+
+
 void camera_control::switch_sides_per_circle(int index)
 {
 	char command[100];
@@ -582,14 +619,20 @@ void camera_control::addFieldsArrows()
 
 
 
-void camera_control::addScale()
+void camera_control::addAxes()
 {
-	char command[100];
 
-	sprintf(command,"/vis/scene/add/scale");
-	UImanager->ApplyCommand(command);
+	UImanager->ApplyCommand("/vis/scene/add/axes 0 0 0 100 cm");
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }
+
+
+void camera_control::addScale()
+{
+	UImanager->ApplyCommand("/vis/scene/add/scale");
+	UImanager->ApplyCommand("/vis/viewer/flush");
+}
+
 
 
 
