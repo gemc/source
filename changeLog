@@ -2,7 +2,8 @@ Changelog for GEMC
 ==================
 
 7/14/17
- - implemented mini-stagger for clas12 dc 
+ - implemented mini-stagger for clas12 dc
+ - LTCC digitization: reading spe and sigma constants from CCDB. Using to produce adc spectrum
 
 7/13/17
  - removing duplicate instructions in sensitive detector
