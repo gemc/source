@@ -62,7 +62,7 @@ static ftofConstants initializeFTOFConstants(int runno)
 	vector<vector<double> > data;
 	
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftc.connection));
-        cout<<"Connecting to "<<ftc.connection<<"/calibration/ftof"<<endl;
+	cout<<"Connecting to "<<ftc.connection<<"/calibration/ftof"<<endl;
 
 	cout<<"FTOF:Getting attenuation"<<endl;
 	sprintf(ftc.database,"/calibration/ftof/attenuation:%d",ftc.runNo);

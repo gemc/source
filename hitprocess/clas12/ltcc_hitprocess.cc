@@ -30,6 +30,26 @@ static ltccConstants initializeLTCCConstants(int runno)
 
 	ltccc.variation  = "main";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
+	
+	vector<vector<double> > data;
+	// layer = left or right side
+	// component = segment number
+	int sector, layer, component;
+
+	sprintf(ltccc.database,"/calibration/ltcc/spe:%d",ltccc.runNo);
+	data.clear(); calib->GetCalib(data,ltccc.database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		sector    = data[row][0] - 1;
+		layer     = data[row][1] - 1;
+		component = data[row][2] - 1;
+		
+		ltccc.speMean[sector][layer][component]  = data[row][3];
+		ltccc.speSigma[sector][layer][component] = data[row][4];
+		
+//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
+//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
+	}
 
 	return ltccc;
 }
@@ -123,13 +143,15 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-
+	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
+		
 	dgtz["sector"]  = idsector;
 	dgtz["side"]    = idside;
 	dgtz["segment"] = idsegment;
+	dgtz["adc"]     = adc;
+	dgtz["time"]    = tInfos.time;
 	dgtz["nphe"]    = narrived;
 	dgtz["npheD"]   = ndetected;
-	dgtz["time"]    = tInfos.time;
 	dgtz["hitn"]    = hitn;
 
 	

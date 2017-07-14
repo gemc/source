@@ -14,11 +14,15 @@ public:
 	string variation;
 	string date;
 	string connection;
+	char   database[80];
 
 	// translation table
 	TranslationTable TT;
 
 	// add constants here
+	double speMean[6][2][18];
+	double speSigma[6][2][18];
+	
 
 };
 
