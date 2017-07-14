@@ -121,9 +121,16 @@ static dcConstants initializeDCConstants(int runno)
 	dcc.driftVelocity[0] = dcc.driftVelocity[1] = 0.053;  ///< drift velocity is 53 um/ns for region1
 	dcc.driftVelocity[2] = dcc.driftVelocity[3] = 0.026;  ///< drift velocity is 26 um/ns for region2
 	dcc.driftVelocity[4] = dcc.driftVelocity[5] = 0.036;  ///< drift velocity is 36 um/ns for region3
-	
-	for(int l=0; l<6; l++)
-		dcc.miniStagger[l] = 0;
+
+	// even closer:
+	// layers 1,3,5 have +300
+	// layers 2,4,6 have -300
+	dcc.miniStagger[0] = 300;
+	dcc.miniStagger[1] = -300;
+	dcc.miniStagger[2] = 300;
+	dcc.miniStagger[3] = -300;
+	dcc.miniStagger[4] = 300;
+	dcc.miniStagger[5] = -300;
 
 
 	// loading translation table
@@ -154,7 +161,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// nwire position information
 	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;                ///< Y length of cell
-	double WIRE_Y  = nwire*deltay + dcc.miniStagger[SLI];   ///< Center of wire hit
+	double WIRE_Y  = nwire*deltay;                          ///< Center of wire hit
+ 	if(SLI > 3) WIRE_Y += dcc.miniStagger[SLI];             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
     vector<double>        stepTime    = aHit->GetTime();
@@ -323,7 +331,7 @@ vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	
 	double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;
-	double loc_y   = Lxyz.y() + ylength - dcc.miniStagger[SLI];    ///< Distance from bottom of G4Trap - modified by ministaggger
+	double loc_y   = Lxyz.y() + ylength;    ///< Distance from bottom of G4Trap. ministaggger does not affect it since the field/guardwires are fixed.
 	
 	int nwire = (int) floor(loc_y/deltay);
 	
