@@ -30,7 +30,8 @@ public:
 	/* vector<double> uturn_e[24][3][2]; */
 	/* vector<double> ecal[24][3][4]; */
 
-	int status[24][3][2];
+	/*	int status[24][3][2];
+	double slope[24][3][2];
 	double veff[24][3][2];
 	double att_length[24][3][2];
 	double time_offset_LR[24][3][1];
@@ -39,7 +40,16 @@ public:
 	double uturn_e[24][3][1];
 	double ecalD[24][3][2];
 	double ecalN[24][3][2];
+	*/
 
+	int status_L[24][3][2];                                                                       int status_R[24][3][2];             
+        double slope_L[24][3][2];                                                                     double slope_R[24][3][2];               
+        double veff_L[24][3][2];                                                                      double veff_R[24][3][2]; 
+	double attlen_L[24][3][2]; 
+        double attlen_R[24][3][2];                                                            
+        double time_offset_LR[24][3][1];                                                              double time_offset_layer[24][3][1];                                                           double uturn_tloss[24][3][1];                                                                 double uturn_e[24][3][1];                                                                     double mip_dir_L[24][3][2];                                                                   double mip_dir_R[24][3][2];          
+        double mip_indir_L[24][3][2];                                                         
+        double mip_indir_R[24][3][2];
 
 };
 
