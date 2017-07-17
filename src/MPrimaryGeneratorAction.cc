@@ -425,7 +425,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			}
 
 			int nparticles = headerUserDefined[0];
-			beamPol = headerUserDefined[5];
+			beamPol = headerUserDefined[4];
 			if(beamPol>1)
 				beamPol = 1;
 
