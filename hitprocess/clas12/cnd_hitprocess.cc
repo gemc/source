@@ -279,7 +279,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  
 	  // Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
 	  e_up   = Edep_B * 0.5 * exp(-dUp/cm/attlength_D);
-	  e_down = Edep_B * 0.5 * exp(-dDown/cm/attlength_D) * uturn_scale[layer-1] * exp(-2*length/cm/attlength_N);
+	  e_down = Edep_B * 0.5 * exp(-dDown/cm/attlength_D);
 	  
 	  // Integrate energy over entire hit. These values are used for time-smearing:
 	  etotUp = etotUp + e_up;
@@ -374,7 +374,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  TDCN = (int) ((G4RandGauss::shoot(timeN,sigmaTN/sqrt(etotDown)))/slope_N);
 	  double npheN = G4Poisson(etotDown*pmtPEYldN);
 	  double eneN = npheN/pmtPEYldN;
-	  ADCN = (int) (eneN*adc_mip_D*2./(dEdxMIP*thickness));	  
+	  ADCN = (int) (eneN*adc_mip_N*2./(dEdxMIP*thickness));	  
 	}
       
       if (TDCD < 0) TDCD = 0;
