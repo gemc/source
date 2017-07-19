@@ -97,12 +97,12 @@ static dcConstants initializeDCConstants(int runno)
         dcc.deltatime_bfield_par4[sec][sl] = data[row][9];
     }
     
-    dcc.dmaxsuperlayer[0] = 0.77665;
-    dcc.dmaxsuperlayer[1] = 0.81285;
-    dcc.dmaxsuperlayer[2] = 1.25065;
-    dcc.dmaxsuperlayer[3] = 1.32446;
-    dcc.dmaxsuperlayer[4] = 1.72947;
-    dcc.dmaxsuperlayer[5] = 1.80991;
+    dcc.dmaxsuperlayer[0] = 0.77232;
+    dcc.dmaxsuperlayer[1] = 0.80844;
+    dcc.dmaxsuperlayer[2] = 1.24381;
+    dcc.dmaxsuperlayer[3] = 1.31719;
+    dcc.dmaxsuperlayer[4] = 1.87028;
+    dcc.dmaxsuperlayer[5] = 1.95596;
     
     //Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
     dcc.smear_time_walk[0] = 0.001; //Corresponds to smearing at low distances from the wire (given in mm)
