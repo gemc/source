@@ -29,8 +29,9 @@ static dcConstants initializeDCConstants(int runno)
 	dcc.dcThreshold  = 50;  // eV
 
 	// database
-	dcc.runNo = runno;
-	dcc.date       = "2016-03-15";
+	dcc.runNo = runno; 
+//	dcc.date       = "2016-03-15";
+	dcc.date       = "2017-08-01";
 	if(getenv ("CCDB_CONNECTION") != NULL)
 		dcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
@@ -90,11 +91,16 @@ static dcConstants initializeDCConstants(int runno)
         dcc.v0[sec][sl] = data[row][2];
         dcc.deltanm[sec][sl] = data[row][3];
         dcc.tmaxsuperlayer[sec][sl] = data[row][4];
-        dcc.delta_bfield_coefficient[sec][sl] = data[row][5];
-        dcc.deltatime_bfield_par1[sec][sl] = data[row][6];
-        dcc.deltatime_bfield_par2[sec][sl] = data[row][7];
-        dcc.deltatime_bfield_par3[sec][sl] = data[row][8];
-        dcc.deltatime_bfield_par4[sec][sl] = data[row][9];
+//        dcc.delta_bfield_coefficient[sec][sl] = data[row][5];
+//        dcc.deltatime_bfield_par1[sec][sl] = data[row][6];
+//        dcc.deltatime_bfield_par2[sec][sl] = data[row][7];
+//        dcc.deltatime_bfield_par3[sec][sl] = data[row][8];
+//        dcc.deltatime_bfield_par4[sec][sl] = data[row][9];
+        dcc.delta_bfield_coefficient[sec][sl] = data[row][6];
+        dcc.deltatime_bfield_par1[sec][sl] = data[row][7];
+        dcc.deltatime_bfield_par2[sec][sl] = data[row][8];
+        dcc.deltatime_bfield_par3[sec][sl] = data[row][9];
+        dcc.deltatime_bfield_par4[sec][sl] = data[row][10];
     }
     
     dcc.dmaxsuperlayer[0] = 0.77232;
@@ -125,12 +131,12 @@ static dcConstants initializeDCConstants(int runno)
 	// even closer:
 	// layers 1,3,5 have +300
 	// layers 2,4,6 have -300
-	dcc.miniStagger[0] = 300;
-	dcc.miniStagger[1] = -300;
-	dcc.miniStagger[2] = 300;
-	dcc.miniStagger[3] = -300;
-	dcc.miniStagger[4] = 300;
-	dcc.miniStagger[5] = -300;
+	dcc.miniStagger[0] = 0.0300;
+	dcc.miniStagger[1] = -0.0300;
+	dcc.miniStagger[2] = 0.0300;
+	dcc.miniStagger[3] = -0.0300;
+	dcc.miniStagger[4] = 0.0300;
+	dcc.miniStagger[5] = -0.0300;
 
 
 	// loading translation table
@@ -165,13 +171,13 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
  	if(SLI > 3) WIRE_Y += dcc.miniStagger[SLI];             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
-    vector<double>        stepTime    = aHit->GetTime();
-    vector<double>        mgnf        = aHit->GetMgnf();
+    	vector<double>        stepTime    = aHit->GetTime();
+    	vector<double>        mgnf        = aHit->GetMgnf();
 	vector<G4double>      Edep        = aHit->GetEdep();
 	vector<G4ThreeVector> pos         = aHit->GetPos();
-    vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-    vector<G4ThreeVector> mom         = aHit->GetMoms();
-    vector<double>        E           = aHit->GetEs();
+    	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+    	vector<G4ThreeVector> mom         = aHit->GetMoms();
+    	vector<double>        E           = aHit->GetEs();
 
 	unsigned nsteps = Edep.size();
 
@@ -197,7 +203,6 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				trackIds = stepTrackId[s];
 			}
 		}
-
 	}
 
 
@@ -210,7 +215,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Finding DOCA
 	double LR       = 0;
 	double doca     = 10000;
-    double thisMgnf = 0;
+    	double thisMgnf = 0;
     
     //Quantities needed for the calculation of alpha:
     //******************************************************************
@@ -251,6 +256,21 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			
 			//Now calculate alpha according to Macs definition:
 			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg;
+			
+
+			// compute reduced alpha (VZ)
+		     	// alpha in radians
+			double ralpha = fabs(alpha*deg);
+
+			while (ralpha > pi / 3.) {
+				ralpha -= pi / 3.;
+			}
+			if (ralpha > pi / 6.) {
+				ralpha = pi / 3. - ralpha;
+			}
+			//alpha in degrees (reduced alpha always between 0 and 30 deg.)
+			alpha = ralpha/deg;
+
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
@@ -277,7 +297,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double random = G4UniformRand();
 	
 	//unsmeared time, based on the dist-time-function and alpha;
-	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
+	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf/tesla,SECI,SLI);
     
     // Now include (random) time walk contributions:
     
@@ -309,7 +329,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["time"]       = ineff*unsmeared_time;
 	dgtz["stime"]      = ineff*smeared_time;
 	
-    // cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << " " << dgtz["stime"]  << endl;
+     //cout << SECI+1 << " " << SLI+1 << " " << dgtz["layer"] <<  " " << thisMgnf/tesla << " " << alpha << " " << dgtz["tdc"] << " " << sdoca <<  " " <<  dcc.driftVelocity[SLI] << " " << dgtz["stime"]  << endl;
 
 	return dgtz;
 }
@@ -400,6 +420,7 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 // superlayer      = superlayer
 double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
+  
     double rtime = 0.0;
     double FracDmaxAtMinVel = 0.615;
     // Assume a functional form (time=x/v0+a*(x/dmax)**n+b*(x/dmax)**m)
@@ -434,7 +455,7 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
     
     double deltatime_bfield = dcc.delta_bfield_coefficient[sector][superlayer]*pow(bfield,2)*tmax*(dcc.deltatime_bfield_par1[sector][superlayer]*xhatalpha+dcc.deltatime_bfield_par2[sector][superlayer]*pow(xhatalpha, 2)+ dcc.deltatime_bfield_par3[sector][superlayer]*pow(xhatalpha, 3)+dcc.deltatime_bfield_par4[sector][superlayer]*pow(xhatalpha, 4));
    
-    
+    //cout<<"dt = "<<deltatime_bfield<<" C0 "<<dcc.delta_bfield_coefficient[sector][superlayer]<<endl;
     //calculate the time at alpha deg. and at a non-zero bfield
     rtime += deltatime_bfield;
 
