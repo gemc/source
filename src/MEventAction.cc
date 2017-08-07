@@ -643,7 +643,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 				}
 				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);
-				processOutputFactory->writeFADCMode1(outContainer, allVTOutput);
+				
+				// Event number (evtN) is needed in FADCMode1, therefore this is also passed as an argument
+				processOutputFactory->writeFADCMode1(outContainer, allVTOutput, evtN);
 			}
 
 			delete hitProcessRoutine;

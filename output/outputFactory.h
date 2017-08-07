@@ -253,10 +253,10 @@ public:
 	virtual void writeChargeTime(outputContainer*, vector<hitOutput>, string, map<string, gBank>*) = 0;
 
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
-	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>) = 0;
+	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int) = 0;
 
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
-	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>) = 0;
+	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int) = 0;
 
 	// write event and close stream if necessary
 	virtual void writeEvent(outputContainer*) = 0;
