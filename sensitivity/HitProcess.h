@@ -146,7 +146,11 @@ protected:
 		//			cout << t0 << " " << rise << " " << fall << " " << ampl << " " << peds <<
 		//			 peds - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) << endl;
 
-		return  - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2));
+		
+			// output, I should study this a bit more to see how closer this can be approximated to 
+			// real data
+			return  -( ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) );
+		
 	}
 };
 

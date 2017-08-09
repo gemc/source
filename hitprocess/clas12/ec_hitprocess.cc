@@ -59,6 +59,15 @@ static ecConstants initializeECConstants(int runno)
 		ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
 
+	
+	// ================= FOR now we will initilalize pedestals and sigmas to a random value, then they will be initialized from DB ===============
+	const double const_ped_value = 101;
+	const double const_ped_sigm_value = 2;
+	std::fill(&ecc.pedestal[0][0][0], &ecc.pedestal[0][0][0] + sizeof(ecc.pedestal)/sizeof(ecc.pedestal[0][0][0]), const_ped_value);
+	std::fill(&ecc.pedestal_sigm[0][0][0], &ecc.pedestal_sigm[0][0][0] + sizeof(ecc.pedestal_sigm)/sizeof(ecc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
+	
+
+
     sprintf(ecc.database,"/calibration/ec/gain:%d",ecc.runNo);
     data.clear(); calib->GetCalib(data,ecc.database);
     
@@ -268,6 +277,11 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	hardware.push_back(thisHardware.getCrate());
 	hardware.push_back(thisHardware.getSlot());
 	hardware.push_back(thisHardware.getChannel());
+	
+	// Adding pedestal mean and sigma into the hardware as well
+	// All of these variables start from 1, therefore -1 is sbutracted, e.g. sector-1
+	hardware.push_back(ecc.pedestal[sector - 1][layer - 1][view - 1]);
+	hardware.push_back(ecc.pedestal_sigm[sector - 1][layer - 1][view - 1]);
 
 	// getting charge and time
 	trueInfos tInfos(aHit);
@@ -287,7 +301,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	double A = ecc.attlen[sector-1][layer-1][0][strip-1];
 	double B = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C = ecc.attlen[sector-1][layer-1][2][strip-1];
-    double G = ecc.gain[sector-1][layer-1][strip-1];
+	double G = ecc.gain[sector-1][layer-1][strip-1];
+	
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
