@@ -78,8 +78,8 @@ static ecConstants initializeECConstants(int runno)
     }
     
 	// setting voltage signal parameters
-	ecc.vpar[0] = 50;  // delay, ns
-	ecc.vpar[1] = 10;  // rise time, ns
+	ecc.vpar[0] = 0.;  // delay, ns
+	ecc.vpar[1] = 2.8;  // rise time, ns
 	ecc.vpar[2] = 20;  // fall time, ns
 	ecc.vpar[3] = 1;   // amplifier
 
@@ -255,8 +255,6 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	vector<double> hardware;
 	hitNumbers.push_back(hitn);
 
-
-
 	// getting identifiers
 	vector<identifier> identity = aHit->GetId();
 	int sector = identity[0].id;
@@ -321,6 +319,9 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			double stepE = Edep[s]*att;
 			double stepTime = time[s] + latt/ecc.veff;
 
+			// cout<<"time[s] = "<<time[s]<<endl;
+			// cout<<"att time  = "<<latt/ecc.veff<<endl;
+
 			if (stepE > 0) {
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
 				if (EC_npe>0) {
@@ -355,7 +356,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 double ec_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	//	return 0.0;
-	return DGauss(forTime, ecc.vpar, charge, time);
+  //return DGauss(forTime, ecc.vpar, charge, time);
+  return PulseShape(forTime, ecc.vpar, charge, time);
 }
 
 

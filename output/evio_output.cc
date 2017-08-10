@@ -452,6 +452,9 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
   unsigned int *b32;
   unsigned long long *b64;
 
+  unsigned int *tmp_slo_begin; // Testing
+  unsigned int *tmp_crate_begin; // Testing
+
   int banktag = 0xe101;
 
   map<string, map<int, int> > hardwareData;
@@ -481,6 +484,8 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
     if(hardwareData.find(hardwareKey) == hardwareData.end()) {
       hardwareData[hardwareKey] = HO[nh].getQuantumS();
     } else {
+
+	cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
       continue;
     }
 
@@ -507,6 +512,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
   evioDOMNodeP newCrate;
 
   int nchannelThisSlot = 0;
+  int ncrates = 0;
 
   for(auto &hd : hardwareData) {
 
@@ -526,15 +532,31 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 
       //cout << " creating new crate node " << endl;
 
-      newCrate = evioDOMNode::createEvioDOMNode(crate, 1);
+      newCrate = evioDOMNode::createEvioDOMNode(crate, 0);
+      
+
+      if( ncrates ){ // Check if already a previous crate filled, 
+	
+
+	//int finalNumberOfWords = (b08out - (uint8_t*)tmp_crate_begin + 3) / 4;
+	int finalNumberOfWords = (b08out - (uint8_t*)tmp_crate_begin + 3) / 4;
+	
+	*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, tmp_crate_begin, finalNumberOfWords);
+	*event << newCrate;
+      }
+
+      tmp_crate_begin = (unsigned int*)b08out;
+      ncrates = ncrates + 1;
     }
 
     // every slot has its own bank
     if(oldSlot != slot) {
-
+      
       nchannelThisSlot = 0;
-
+      
       // cout << " !  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey << endl;
+      
+      tmp_slo_begin = (unsigned int*)b08out;
 
       oldSlot = slot;
 
@@ -556,7 +578,8 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
     nsamples = (uint32_t*) b08out; // put multi-hit dinamically: first, save current position
     PUT32(0); // now reserve space for sample counter
     for( map<int, int>::iterator it_isample = (hd.second).begin(); it_isample != (hd.second).end(); it_isample++ ) {
-
+      
+      // Remember 1st three elements are crate/slot/chann, therefore we want other elements hd[3], hd[4] ... hd[nsample + 3 -1]
       if( it_isample->first < 3 ){
         continue;
       }
@@ -566,17 +589,19 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       *nsamples = *nsamples + 1;
     }
 
-
     // cout << " >  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey  << endl;
 
     // channel is new, writing
     if(nchannelThisSlot == numberOfChannelsPerSlot[hardwareKey]) {
 
-      int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
+      //int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
+      //int finalNumberOfWords = (b08out - (uint8_t*)tmp_slo_begin + 3) / 4;
 
       // filling crate bank
-      *newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, buf,finalNumberOfWords);
-      *event << newCrate;
+      //*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, buf,finalNumberOfWords);
+      //*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, tmp_slo_begin, finalNumberOfWords);
+
+      //*event << newCrate;
 
     }
   }
@@ -673,7 +698,7 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 			// cout << " !  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey << endl;
 
 			oldSlot = slot;
-
+			
 			PUT8(slot); // slot number
 			PUT32(ev_number);   // event number
 			PUT64(1);   // time stamp
@@ -702,11 +727,11 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 		// channel is new, writing
 		if(nchannelThisSlot == numberOfChannelsPerSlot[hardwareKey]) {
 
-			int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
-
-			// filling crate bank
-			*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 65, "c,i,l,N(c,N(s,i,s,s))", 66, 67, buf,finalNumberOfWords);
-			*event << newCrate;
+		  int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
+		  
+		  // filling crate bank
+		  *newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 65, "c,i,l,N(c,N(s,i,s,s))", 66, 67, buf,finalNumberOfWords);
+		  *event << newCrate;
 
 		}
 	}

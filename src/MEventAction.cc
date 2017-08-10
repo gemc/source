@@ -605,6 +605,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					vSignal[1] = hardware[1];
 					vSignal[2] = hardware[2];
 
+					// Add comments what are these
 					double pedestal_mean = hardware[3];
 					double pedestal_sigm = hardware[4];
 
@@ -619,6 +620,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 							double stepTime   = stepTimes[s];
 							double stepCharge = stepCharges[s];
 							
+							// cout<<"StepTime = "<<stepTime<<endl;
+							// cout<<"StepCharge =  = "<<stepCharge<<endl;
+
 							voltage += hitProcessRoutine->voltage(stepCharge, stepTime, forTime);
 							
 							//cout<<"setpCharge = "<<stepCharge<<endl;
@@ -633,7 +637,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						
 						// need conversion factor from double to int
 						// the first 3 entries are crate/slot/channels above
-						// the total signal is the pedestal + voltage (from actuall hit)
+						// the total signal is the pedestal + voltage (from actuall hit), here voltage is actually represents
+						// FADC counts
 						vSignal[ts+3] = int(pedestal) + (int) voltage;
 					}
 					thisHitOutput.createQuantumS(vSignal);
