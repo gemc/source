@@ -55,14 +55,14 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 
 		int bankId = bank.getVarId(it->first);
 
-
-		if(bankId != -1)
+		// bankID 1 is time, no need to repeat that info here.
+		if(bankId != -1 && bankId !=1) {
 			*headerBank << addVariable(HEADER_BANK_TAG, bankId, bank.getVarType(it->first), it->second);
 
-		// user info may not be indexed
-		if(bankId == -1)
+		// user info have bank id = -1. they will be put with banknum index
+		} else if(bankId == -1) {
 			*headerBank << addVariable(HEADER_BANK_TAG, banknum, bank.getVarType(it->first), it->second);
-
+		}
 
 		// storing event number in memory
 		if(it->first == "evn")

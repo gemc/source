@@ -72,6 +72,7 @@ private:
 	// index 2: charge at electronics
 	// index 3: time at electronics
 	// index 4: vector of identifiers - have to match the translation table
+	// index 5: hardware - it's a vector[3] with crate/slot/channel
 	map< int, vector <double> >  chargeTime;
 
 public:
