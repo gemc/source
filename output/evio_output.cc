@@ -444,62 +444,79 @@ void evio_output :: writeG4RawAll(outputContainer* output, vector<hitOutput> HO,
 }
 
 // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+// This function takes as an argument vector of hitOutputs, and writes all hits into evio in a Mode1 format
 void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO, int ev_number)
 {
 
+  // ==== Following variables are needed for EVIO util functions PUT16, PUT31 etc
   unsigned char *b08out;
   unsigned short *b16;
   unsigned int *b32;
   unsigned long long *b64;
 
-  unsigned int *tmp_slo_begin; // Testing
-  unsigned int *tmp_crate_begin; // Testing
-
+  
+  // This variable will store the buffer address when crate changes
+  unsigned int *buf_crate_begin; // 
+  
+  // The FADC Mode1 Bank tag
   int banktag = 0xe101;
 
+
+  // The map of hardware data, The Key is the crate/slot/channel combintation,
+  // and the value is a map of FADC counts as a function of sample number.
+  // Note: 1st three counts represents actually the hardware identification infor, i.e. crate/slot/channel, and other elemtnts starting from 3 up to nsamples+3
+  // represet FADC counts
   map<string, map<int, int> > hardwareData;
 
-  // map that counts how many channels are active / slot
-  map<string, int> numberOfChannelsPerSlot;
+  // map that counts how many channels are in the crate
+  map<string, int> numberOfChannelsPerCrate;
 
   for(unsigned int nh=0; nh<HO.size(); nh++) {
-
- 
+    
+    // Quantum is a map, KEY is an FADC sample number, and value is the FADC counts
+    // NOTE 1st three elements of it (KEY = 0, 1, 2) represent crate/slot/chann, and KEYs (3, 4, ... nsampes+2 ) represent FADC counts
     map<int, int> quantumS = HO[nh].getQuantumS();
-
-    //   cout<<"Size of quantumS is "<<quantumS.size()<<endl;
-
+    
+    // Let's get hardware identifiers
     string crate = fillDigits(to_string((int) quantumS[0]), "#", 5);
     string slot  = fillDigits(to_string((int) quantumS[1]), "#", 5);
     string chann = fillDigits(to_string((int) quantumS[2]), "#", 5);
-
-    //cout<<" crate/slot/channel "<<crate<<" : "<<slot<<" : "<<chann<<endl;
-
+    
     // crate-slot-channel key
     string hardwareKey = crate + "-" + slot + "-" + chann;
 
     // only fill hardware if it's not present already
     // the time window of a detector could be smaller than
     // the electronic time window
-    if(hardwareData.find(hardwareKey) == hardwareData.end()) {
+    // Make sure also the vector of step times is not empty, 
+    if(hardwareData.find(hardwareKey) == hardwareData.end() && (HO[nh].getChargeTime()[3]).size() > 0  ) {
       hardwareData[hardwareKey] = HO[nh].getQuantumS();
-    } else {
 
-	cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
+      vector<double> stepTimes   = HO[nh].getChargeTime()[3];
+
+    } else {
+      
+      // ======== It was checked, here we have only empty hits, or hits that way off in time, e.g. hit_t = 1200ns
+      //cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
       continue;
     }
 
-    // crate-slot key
-    hardwareKey = crate + "-" + slot;
-
-    // keeping track of how many channels / slot so we know when to write data
-    if(numberOfChannelsPerSlot.find(hardwareKey) == numberOfChannelsPerSlot.end()) {
-      numberOfChannelsPerSlot[hardwareKey] = 1;
+    // We should keeptrack of number of channels in the crate
+    // With this counter, This counter will show, whether all the channels in that crate are already processed
+    
+    string CrateKey = crate;
+    
+    if( numberOfChannelsPerCrate.find(CrateKey) == numberOfChannelsPerCrate.end() ){
+      numberOfChannelsPerCrate[CrateKey] = 1;
     } else {
-      numberOfChannelsPerSlot[hardwareKey]++;
+      numberOfChannelsPerCrate[CrateKey] ++;
     }
+    
 
   }
+
+  
+  // Now we hav hardware data for all crate/slot/channe combinateions, and can start filling the buffer
 
   int oldCrate    = -1;
   int oldSlot     = -1;
@@ -511,7 +528,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 
   evioDOMNodeP newCrate;
 
-  int nchannelThisSlot = 0;
+  int nchannelThisCrate = 0;
   int ncrates = 0;
 
   for(auto &hd : hardwareData) {
@@ -525,39 +542,27 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
     string scrate = fillDigits(to_string(crate), "#", 5);
     string sslot  = fillDigits(to_string(slot),  "#", 5);
     string hardwareKey = scrate + "-" + sslot;
+    string sCrateKey = scrate;
 
+
+    //  Check, if the crate is new crate, then save the current buffer position
     if(oldCrate != crate) {
       oldCrate = crate;
       oldSlot = -1;  // resetting slot, it's a new crate
+      nchannelThisCrate  = 0;
 
-      //cout << " creating new crate node " << endl;
+      buf_crate_begin = (unsigned int*)b08out;
+      ncrates = ncrates + 1;
 
       newCrate = evioDOMNode::createEvioDOMNode(crate, 0);
-      
 
-      if( ncrates ){ // Check if already a previous crate filled, 
-	
-
-	//int finalNumberOfWords = (b08out - (uint8_t*)tmp_crate_begin + 3) / 4;
-	int finalNumberOfWords = (b08out - (uint8_t*)tmp_crate_begin + 3) / 4;
-	
-	*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, tmp_crate_begin, finalNumberOfWords);
-	*event << newCrate;
-      }
-
-      tmp_crate_begin = (unsigned int*)b08out;
-      ncrates = ncrates + 1;
     }
 
+    nchannelThisCrate = nchannelThisCrate + 1;
+    
     // every slot has its own bank
     if(oldSlot != slot) {
       
-      nchannelThisSlot = 0;
-      
-      // cout << " !  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey << endl;
-      
-      tmp_slo_begin = (unsigned int*)b08out;
-
       oldSlot = slot;
 
       PUT8(slot); // slot number
@@ -567,13 +572,10 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       PUT32(0);   // now reserve space for channel counter
     }
 
-    // every entry is a new channel
-    nchannelThisSlot++;
 
     *nchannels = *nchannels + 1;
-
+    
     PUT8(chann); // channel number
-
 
     nsamples = (uint32_t*) b08out; // put multi-hit dinamically: first, save current position
     PUT32(0); // now reserve space for sample counter
@@ -589,21 +591,17 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       *nsamples = *nsamples + 1;
     }
 
-    // cout << " >  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey  << endl;
-
-    // channel is new, writing
-    if(nchannelThisSlot == numberOfChannelsPerSlot[hardwareKey]) {
-
-      //int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
-      //int finalNumberOfWords = (b08out - (uint8_t*)tmp_slo_begin + 3) / 4;
-
-      // filling crate bank
-      //*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, buf,finalNumberOfWords);
-      //*newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, tmp_slo_begin, finalNumberOfWords);
-
-      //*event << newCrate;
-
+    // Check if all the data under this crate is processed, if yes, the 
+    // data should be dumped into evio
+    if( nchannelThisCrate == numberOfChannelsPerCrate[sCrateKey] ){
+      
+      //int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
+      int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
+      
+      *newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, finalNumberOfWords);
+      *event << newCrate;
     }
+
   }
 
 }
