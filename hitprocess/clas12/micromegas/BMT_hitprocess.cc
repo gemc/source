@@ -175,7 +175,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
 	
-	double depe = aStep->GetTotalEnergyDeposit()-aStep->GetNonIonizingEnergyDeposit();
+	double depe = aStep->GetTotalEnergyDeposit();
 	
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 
