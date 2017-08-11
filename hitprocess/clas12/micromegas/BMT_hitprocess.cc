@@ -85,7 +85,7 @@ static bmtConstants initializeBMTConstants(int runno)
 	}
 	
 	// all dimensions are in mm
-	bmtc.SigmaDrift = 0.4;
+	bmtc.SigmaDrift = 0.036; //mm-1
 	bmtc.hStrip2Det = bmtc.hDrift/2.;
 	bmtc.nb_sigma=4;
 	bmtc.changeFieldScale(-1);  // this needs to be read from DB
@@ -127,8 +127,8 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = sector;
 	dgtz["strip"]  = strip;
 	dgtz["Edep"]   = tInfos.eTot;
-	dgtz["ADC"]   = (int) (tInfos.eTot*1e6/bmtc.w_i);
-	
+	dgtz["ADC"]   = int(1e6*tInfos.eTot/bmtc.w_i);
+
 	if (strip==-1) {
 	  dgtz["Edep"]   = 0;
 	  dgtz["ADC"]   = 0;
@@ -175,7 +175,8 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
 	
-	double depe = aStep->GetTotalEnergyDeposit();
+	double depe = aStep->GetTotalEnergyDeposit()-aStep->GetNonIonizingEnergyDeposit();
+	
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 
 	vector<double> multi_hit = bmts.FindStrip(layer, sector, xyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization

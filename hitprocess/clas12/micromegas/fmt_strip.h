@@ -21,7 +21,7 @@ public:
 	string date;
 	string connection;
 	char   database[80];
-	double sigma_td_max;	 // Max transverse diffusion value (GEMC value)
+	double SigmaDrift;	 // Max transverse diffusion value (GEMC value)
 	double hDrift;			 // Size of the drift gap
 	double hStrip2Det;	 // Distance between strips and the middle of the conversion gap (~half the drift gap)
 	int nb_sigma;            // Define the number of strips to look around the closest strip
@@ -50,7 +50,7 @@ public:
 	vector<vector<double> >     STRIP_GAIN; // Give the gain where the strip is
 	vector<vector<double> >     STRIP_EFFICIENCY; // Give the efficiency (correlated to gain fluctuation)
 
-	double w_i=25; //ionization potential assumed to be 25 eV
+	double w_i=20; //ionization potential assumed to be 25 eV
 
 	void changeFieldScale(double newFieldScale)
 	{
