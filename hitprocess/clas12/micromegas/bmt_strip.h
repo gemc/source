@@ -61,7 +61,12 @@ public:
 	vector<vector<double> >     STRIP_GAIN; // Give the gain where the strip is
 	vector<vector<double> >     STRIP_EFFICIENCY; // Give the efficiency (correlated to gain fluctuation)
 
-	double w_i=25; //ionization potential assumed to be 25 eV
+	double w_i=20; //ionization potential assumed to be 25 eV... 
+	double density=1.86e-3; //g*cm-3
+	double np=30.27; //cm-1 number of primary ionization
+	double nt=104.1; //cm-1 number of total ionizations
+	double averA=36.4143;
+	double averZ=16.4429;
 
 	void changeFieldScale(double newFieldScale)
 	{
@@ -88,7 +93,6 @@ public:
   int isInSector(int layer, double angle, bmtConstants bmtc);
   double Weight_td(int layer, int sector, int strip, double angle, double z, bmtConstants bmtc); //Compute the likelihood to get an electron
   double GetBinomial(double n, double p); //Compute the number of electrons collected following the likelihood from Weight_td
-  
 };
 
 #endif

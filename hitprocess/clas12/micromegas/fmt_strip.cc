@@ -13,7 +13,7 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	vector<double> strip_id;
 	// number of electrons (Nt)
 	Nel = (int) (1e6*Edep/fmtc.w_i);
-	sigma_td = fmtc.sigma_td_max* sqrt((z-fmtc.Z0[layer])/fmtc.hDrift); // expression without Lorentz angle
+	sigma_td = fmtc.SigmaDrift*(z-fmtc.Z0[layer]); // expression without Lorentz angle
 	//if(z>fmtc.Z0[layer]+7.697 || z<fmtc.Z0[layer]+2.697) cout << "Warning! z position of the FMT hit is not in the sensitive volume: " << z <<" for bottom of gas at "<<fmtc.Z0[layer]<< endl;
 
 	

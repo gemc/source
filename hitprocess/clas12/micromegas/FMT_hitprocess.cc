@@ -39,7 +39,8 @@ static fmtConstants initializeFMTConstants(int runno)
 	fmtc.R_min           = data[0][3];
 	fmtc.N_str           = data[0][4]; //16 connectors * 64 strips = 1024 strips for each fmt
 	fmtc.N_halfstr       = data[0][5]; //number of bottom strips in the central part
-	fmtc.sigma_td_max    = 0.01; // very small transverse diffusion because of B field
+	fmtc.SigmaDrift = 0.01; //mm-1
+
 	fmtc.w_i             = 25.0;
 
 	
