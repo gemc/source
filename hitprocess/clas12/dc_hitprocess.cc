@@ -338,7 +338,6 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
 	vector<identifier> yid = id;
-	int SLI = yid[1].id - 1;
 	
 	G4StepPoint   *prestep   = aStep->GetPreStepPoint();
 	G4StepPoint   *poststep  = aStep->GetPostStepPoint();
