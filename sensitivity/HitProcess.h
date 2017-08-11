@@ -146,8 +146,37 @@ protected:
 		//			cout << t0 << " " << rise << " " << fall << " " << ampl << " " << peds <<
 		//			 peds - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) << endl;
 
-		return  - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2));
+		
+			// output, I should study this a bit more to see how closer this can be approximated to 
+			// real data
+			return  -( ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) );
+		
 	}
+
+	inline double PulseShape(double x, double *par, double Edep, double stepTime)
+	{
+
+	  // The HPS uses this function, to fil Mode1 ECal pulses
+	  // The integral of this function is 2b^3, therefore it is scaled by (1/2b^3), in order
+	  // the integral to be Edep
+	  // The peak value of this function is at "Peak_x = a + 2b"
+	  // Edep is in ADC units
+
+	  double a = par[0] + stepTime;        // delay + start time of signal so that peak is t0 + rise.
+	  double b = par[1];                   // rise time = 2*b, 
+	  double ampl = par[3];                // Overall Correction to the signal gain, should be an empirical factor
+
+	  double ret_val;
+
+	  if( x < a ){ret_val = 0.; return ret_val;}
+	  else {
+	    ret_val = ampl*(1./(2*b*b*b))*Edep*(x-a)*(x-a)*exp( -(x-a)/b ); 
+	    return ret_val;
+	  }
+		
+	}
+
+
 };
 
 // Define HitProcess as a pointer to a function that returns a pointer

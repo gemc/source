@@ -16,11 +16,21 @@ public:
 	string connection;
 	char   database[80];
 
+        static const int nsect = 6;  // Number of sectors
+        static const int nlayer = 9; // layer=1-3 (PCAL) 4-6 (ECinner) 7-9 (ECouter)
+        static const int nview = 3;  // Number of views, U,V and W
+
+
 	// For strip dependent constants read from CCDB
 	// Array [6][9][3] -> sector,layer,view sector=1-6 layer=1-3 (PCAL) 4-6 (ECinner) 7-9 (ECouter) view=1-3 (U,V,W)
 
 	//attlen: attenuation length
 	vector<double> attlen[6][9][3];
+
+	
+        // ======== FADC Pesestals and sigmas ===========
+        double pedestal[nsect][nlayer][nview] = {};
+	double pedestal_sigm[nsect][nlayer][nview] = {};
 
     //gain: pmt gain
     vector<double> gain[6][9];
