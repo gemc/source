@@ -594,9 +594,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					// process each step to produce a charge/time digitized information / step
 					thisHitOutput.setChargeTime(hitProcessRoutine->chargeTime(aHit, h));
 
-					vector<double> stepTimes   = thisHitOutput.getChargeTime()[3];
-					vector<double> stepCharges = thisHitOutput.getChargeTime()[2];
-					vector<double> hardware    = thisHitOutput.getChargeTime()[5];
+					vector<double> stepTimes   = thisHitOutput.getChargeTime()[3]; // time at electronics
+					vector<double> stepCharges = thisHitOutput.getChargeTime()[2]; // charge at electronics
+					vector<double> hardware    = thisHitOutput.getChargeTime()[5]; // crate/slot/channel
 
 					map<int, int> vSignal;
 
