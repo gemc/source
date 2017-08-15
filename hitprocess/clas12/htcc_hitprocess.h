@@ -14,11 +14,23 @@ public:
 	string variation;
 	string date;
 	string connection;
+        char   database[80];
 
 	// translation table
 	TranslationTable TT;
 
 	// add constants here
+	// status:                                                                                                                                                          
+        //      0 - fully functioning                                                                                                                                       
+        //      1 - noADC                                                                                                                                                   
+        //      2 - noTDC                                                                                                                                                   
+        //      3 - noADC, noTDC (PMT is dead)                                                                                                                              
+        //      5 - any other reconstruction problem                                                                                                                        
+        vector<int> status[6][2];
+
+	// veff: time shift
+        vector<double> tshift[6][2];
+
 
 };
 
