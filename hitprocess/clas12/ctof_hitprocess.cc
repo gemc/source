@@ -256,8 +256,8 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double    timeWalkUp = 0.;
 		double          tUpU = tInfos.time + dUp/ctc.veff[sector-1][panel-1][0][paddle-1]/cm + ctc.toff_UD[sector-1][panel-1][paddle-1]/2. - ctc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkUp;
 		double           tUp = G4RandGauss::shoot(tUpU,  sqrt(2)*ctc.tres[paddle-1]);
-		tdcuu = tUpU*tdcconvUp;
-		tdcu = tUp*tdcconvUp;
+		tdcuu = tUpU/tdcconvUp;
+		tdcu = tUp/tdcconvUp;
 	}
 
 	double npheDn = G4Poisson(eneDn*ctc.pmtPEYld);
@@ -272,8 +272,8 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double    timeWalkDn = 0.;
 		double          tDnU = tInfos.time + dDn/ctc.veff[sector-1][panel-1][1][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2. - ctc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkDn;
 		double           tDn = G4RandGauss::shoot(tDnU,  sqrt(2)*ctc.tres[paddle-1]);
-		tdcdu = tDnU*tdcconvDn;
-		tdcd = tDn*tdcconvDn;
+		tdcdu = tDnU/tdcconvDn;
+		tdcd = tDn/tdcconvDn;
 	}
 
 	// Status flags
