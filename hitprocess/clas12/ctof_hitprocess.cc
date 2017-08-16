@@ -39,7 +39,7 @@ static ctofConstants initializeCTOFConstants(int runno)
 	ctc.dEdxMIP       = 1.956;   // muons in polyvinyltoluene
 	ctc.dEMIP         = ctc.thick*ctc.dEdxMIP;
 	ctc.pmtPEYld      = 500;
-	ctc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
+//	ctc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
 
 	cout<<"CTOF:Setting time resolution"<<endl;
 
@@ -121,6 +121,16 @@ static ctofConstants initializeCTOFConstants(int runno)
         ctc.toff_P2P[isec-1][ilay-1].push_back(data[row][4]);
     }
 
+    cout<<"CTOF:Getting tdc_conv"<<endl;
+    sprintf(ctc.database,"/calibration/ctof/tdc_conv:%d",ctc.runNo);
+    data.clear() ; calib->GetCalib(data,ctc.database);
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+        ctc.tdcconv[isec-1][ilay-1][0].push_back(data[row][3]);
+        ctc.tdcconv[isec-1][ilay-1][1].push_back(data[row][4]);
+    }
+    
     
     ctc.lengthHighPitch  = 35.013*25.4/2;  // length of long bar
 	ctc.lengthLowPitch   = 34.664*25.4/2;  // length of short bar
@@ -210,7 +220,11 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double eneUp = tInfos.eTot*attUp;
 	double eneDn = tInfos.eTot*attDn;
 
-	double adcu = 0.;
+    // TDC conversion factors
+    double tdcconvUp = ctc.tdcconv[sector-1][panel-1][0][paddle-1];
+    double tdcconvDn = ctc.tdcconv[sector-1][panel-1][1][paddle-1];
+
+    double adcu = 0.;
 	double adcd = 0.;
 	double tdcu = 0.;
 	double tdcd = 0.;
@@ -242,8 +256,8 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double    timeWalkUp = 0.;
 		double          tUpU = tInfos.time + dUp/ctc.veff[sector-1][panel-1][0][paddle-1]/cm + ctc.toff_UD[sector-1][panel-1][paddle-1]/2. - ctc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkUp;
 		double           tUp = G4RandGauss::shoot(tUpU,  sqrt(2)*ctc.tres[paddle-1]);
-		tdcuu = tUpU*ctc.tdcLSB;
-		tdcu = tUp*ctc.tdcLSB;
+		tdcuu = tUpU*tdcconvUp;
+		tdcu = tUp*tdcconvUp;
 	}
 
 	double npheDn = G4Poisson(eneDn*ctc.pmtPEYld);
@@ -258,8 +272,8 @@ map<string, double> ctof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double    timeWalkDn = 0.;
 		double          tDnU = tInfos.time + dDn/ctc.veff[sector-1][panel-1][1][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2. - ctc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkDn;
 		double           tDn = G4RandGauss::shoot(tDnU,  sqrt(2)*ctc.tres[paddle-1]);
-		tdcdu = tDnU*ctc.tdcLSB;
-		tdcd = tDn*ctc.tdcLSB;
+		tdcdu = tDnU*tdcconvDn;
+		tdcd = tDn*tdcconvDn;
 	}
 
 	// Status flags

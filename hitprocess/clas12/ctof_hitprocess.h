@@ -26,7 +26,10 @@ public:
 	//      5 - any other reconstruction problem
 	vector<int> status[1][1][2];
 
-	// veff: effective velocity
+    // tdc_conc: tdc conversion factors
+    vector<double> tdcconv[1][1][2];
+
+    // veff: effective velocity
 	vector<double> veff[1][1][2];
 
 	// attlen: attenuation length
