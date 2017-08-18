@@ -15,6 +15,17 @@ using namespace CLHEP;
 #define MAXEVIOBUF 10000000
 static unsigned int buf[MAXEVIOBUF];
 
+
+
+// This variable is just a flag for checking, whether the FADC configuration parameters
+// are written into. This should be written only once, in the 1st physics event
+// it is now set false, and when configuration parameters are written, it will be
+// changed to true
+bool evio_output::is_conf_written = false;
+
+
+vector<int> evio_output::ec_crates = {1, 7, 13, 19, 25, 31};
+
 // record the simulation conditions
 // the format is a string for each variable
 // the num is 0 for the mother bank, 1 for the data
@@ -70,6 +81,7 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 
 	}
 	*event << headerBank;
+
 }
 
 void evio_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
@@ -457,6 +469,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
   
   // This variable will store the buffer address when crate changes
   unsigned int *buf_crate_begin; // 
+  //char *buf_crate_begin; //
   
   // The FADC Mode1 Bank tag
   int banktag = 0xe101;
@@ -545,17 +558,64 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
     string sCrateKey = scrate;
 
 
-    //  Check, if the crate is new crate, then save the current buffer position
+    //  Check, if the crate is new crate, then save the curre
     if(oldCrate != crate) {
       oldCrate = crate;
       oldSlot = -1;  // resetting slot, it's a new crate
       nchannelThisCrate  = 0;
 
       buf_crate_begin = (unsigned int*)b08out;
+      //buf_crate_begin = (char*)b08out;
       ncrates = ncrates + 1;
 
       newCrate = evioDOMNode::createEvioDOMNode(crate, 0);
+      
+      // We want to check whether FADC conf data is written into evio, if not it will
+      // write data and will erase corresponding crate element from the vector, for the
+      // next time this data to not be written
+      std::vector<int>::iterator it_crate = find(ec_crates.begin(), ec_crates.end(), crate);
+      
+      // 
+      if( it_crate != ec_crates.end() ){
+	
+	int confbankbanktag = 0xe10e;
 
+	evioDOMNodeP confbank = evioDOMNode::createEvioDOMNode<string>(confbankbanktag, crate);
+
+	int n_slotes = 19;
+	int n_chann = 16;
+
+	string conf_parms;
+	
+	conf_parms = conf_parms + "\n";
+	for( int i_sl = 0; i_sl < n_slotes; i_sl++ ){
+
+	  conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) + "\nFADC250_ALLCH_PED ";
+	  for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	    conf_parms = conf_parms + " " + to_string(101.0);
+	  }
+	  conf_parms = conf_parms +"\n";
+	  conf_parms = conf_parms + "FADC250_ALLCH_TET ";
+	  for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	    conf_parms = conf_parms + " " + to_string(20);
+	  }
+	  conf_parms = conf_parms +"\n";
+	  conf_parms = conf_parms + "FADC250_ALLCH_GAIN ";
+	  for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	    conf_parms = conf_parms + " " + to_string(1.);
+	  }
+   
+	  conf_parms = conf_parms +"\n";
+    
+	}
+	
+	*confbank<<conf_parms;
+	*newCrate << confbank;
+	*event << newCrate;
+	
+	ec_crates.erase(it_crate);
+      }
+      
     }
 
     nchannelThisCrate = nchannelThisCrate + 1;
@@ -591,6 +651,8 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       *nsamples = *nsamples + 1;
     }
 
+
+    
     // Check if all the data under this crate is processed, if yes, the 
     // data should be dumped into evio
     if( nchannelThisCrate == numberOfChannelsPerCrate[sCrateKey] ){
@@ -598,11 +660,63 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       //int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
       int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
       
-      *newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 62, "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, finalNumberOfWords);
+      *newCrate << evioDOMNode::createEvioDOMNode(banktag, 0, 62, "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, finalNumberOfWords);  // Sergei wanted num to be set 0
       *event << newCrate;
     }
 
   }
+
+  // ======= At this moment all the FADCMode1 data is already written, so below
+  // the program should iterate over remaining elements of ec_crates, and for each one
+  // write FADC_conf paratmeters into evio
+
+
+  if( ec_crates.size() >=1 ){
+    
+    for( vector<int>::iterator it_crate = ec_crates.begin(); it_crate != ec_crates.end(); it_crate++ ){
+      
+      int cur_crate = *it_crate;
+
+      newCrate = evioDOMNode::createEvioDOMNode(cur_crate, 0);
+
+      int confbanktag = 0xe10e;
+
+      evioDOMNodeP confbank = evioDOMNode::createEvioDOMNode<string>(confbanktag, cur_crate);  // Sergei mentioned that Num should be crate number, 
+
+      int n_slotes = 19;
+      int n_chann = 16;
+
+      string conf_parms;
+	
+      conf_parms = conf_parms + "\n";
+      for( int i_sl = 0; i_sl < n_slotes; i_sl++ ){
+
+	conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) + "\nFADC250_ALLCH_PED ";
+	for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	  conf_parms = conf_parms + " " + to_string(101.0);
+	}
+	conf_parms = conf_parms +"\n";
+	conf_parms = conf_parms + "FADC250_ALLCH_TET ";
+	for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	  conf_parms = conf_parms + " " + to_string(20);
+	}
+	conf_parms = conf_parms +"\n";
+	conf_parms = conf_parms + "FADC250_ALLCH_GAIN ";
+	for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
+	  conf_parms = conf_parms + " " + to_string(1.);
+	}
+   
+	conf_parms = conf_parms +"\n";
+    
+      }
+	
+      *confbank<<conf_parms;
+      *newCrate << confbank;
+      *event << newCrate;
+    }
+    ec_crates.clear();
+  }
+
 
 }
 
@@ -728,7 +842,7 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 		  int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
 		  
 		  // filling crate bank
-		  *newCrate << evioDOMNode::createEvioDOMNode(banktag, crate, 65, "c,i,l,N(c,N(s,i,s,s))", 66, 67, buf,finalNumberOfWords);
+		  *newCrate << evioDOMNode::createEvioDOMNode(banktag, 0, 65, "c,i,l,N(c,N(s,i,s,s))", 66, 67, buf,finalNumberOfWords); // Sergei wanted num to be set 0
 		  *event << newCrate;
 
 		}

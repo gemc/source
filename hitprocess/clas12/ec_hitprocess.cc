@@ -60,9 +60,11 @@ static ecConstants initializeECConstants(int runno)
 	}
 
 	
-	// ================= FOR now we will initilalize pedestals and sigmas to a random value, then they will be initialized from DB ===============
+	// ================= FOR now we will initilalize pedestals and sigmas to a random value, in the future
+	// they will be initialized from DB ===============
 	const double const_ped_value = 101;
 	const double const_ped_sigm_value = 2;
+	// commands below fill all the elements of ecc.pedestal and ecc.pedestal_sigm with their values (const_ped_value, and const_ped_sigm_value respectively)
 	std::fill(&ecc.pedestal[0][0][0], &ecc.pedestal[0][0][0] + sizeof(ecc.pedestal)/sizeof(ecc.pedestal[0][0][0]), const_ped_value);
 	std::fill(&ecc.pedestal_sigm[0][0][0], &ecc.pedestal_sigm[0][0][0] + sizeof(ecc.pedestal_sigm)/sizeof(ecc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
 	
