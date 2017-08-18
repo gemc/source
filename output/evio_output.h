@@ -71,6 +71,10 @@ class evio_output : public outputFactory
 	map<string, bool> insideChargeTimeBank;
 
 	int evn;
+
+
+	static bool is_conf_written;
+	static vector<int> ec_crates;
 	
 };
 
