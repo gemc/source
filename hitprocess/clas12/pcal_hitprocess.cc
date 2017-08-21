@@ -24,15 +24,18 @@ static pcConstants initializePCConstants(int runno)
 	// database
 	pcc.runNo      = runno;
 	pcc.date       = "2015-11-29";
-	if(getenv ("CCDB_CONNECTION") != NULL)
-	pcc.connection = (string) getenv("CCDB_CONNECTION");
-	else
-	pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	if(getenv ("CCDB_CONNECTION") != NULL) {
+	  pcc.connection = (string) getenv("CCDB_CONNECTION");
+	} else {
+	  pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	}
+	
 	pcc.variation  = "default";
 
-	pcc.TDC_time_to_evio    = 1000.   ;  // Currently EVIO banks receive time from rol2.c in ps (raw counts x 24 ps/chan. for both V1190/1290), so convert ns to ps.
-	pcc.ADC_GeV_to_evio     = 1./10000;  // MIP based calibration is nominally 10 channels/MeV
-	pcc.veff                = 160.    ;  // Effective velocity of scintillator light (mm/ns)
+	pcc.TDC_time_to_evio    = 1.      ;  	                                   
+	pcc.ADC_GeV_to_evio     = 1./10000; // MIP based calibration is nominally 10 channels/MeV
+	pcc.veff                = 160.    ; // Effective velocity of scintillator light (mm/ns)
 	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.pmtQE               = 0.27    ;
 	pcc.pmtDynodeGain       = 4.0     ;
@@ -47,32 +50,86 @@ static pcConstants initializePCConstants(int runno)
 	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
 
+	sprintf(pcc.database,"/calibration/ec/gain:%d",pcc.runNo);
+	data.clear(); calib->GetCalib(data,pcc.database);
+    
+	for(unsigned row = 0; row < data.size(); row++)
+	  {
+	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
+	  }
+
 	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
 	data.clear(); calib->GetCalib(data,pcc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
-	{
-		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
-		pcc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
-		pcc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
-		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
-	}
-    
-    sprintf(pcc.database,"/calibration/ec/gain:%d",pcc.runNo);
-    data.clear(); calib->GetCalib(data,pcc.database);
-    
-    for(unsigned row = 0; row < data.size(); row++)
-    {
-        isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
-        pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
-    }
+	  {
+	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    pcc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
+	    pcc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
+	    pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
+	  }
+	
+	sprintf(pcc.database,"/calibration/ec/timing:%d",pcc.runNo);
+	data.clear(); calib->GetCalib(data,pcc.database);
 
-    // setting voltage signal parameters
+	for(unsigned row = 0; row < data.size(); row++)
+	  {
+	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    pcc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
+	    pcc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
+	    pcc.timing[isec-1][ilay-1][2].push_back(data[row][5]);
+	    pcc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
+	    pcc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
+	  }
+	
+	// FOR now we will initialize pedestals and sigmas to a random value, in the future
+	// they will be initialized from CCDB
+	const double const_ped_value = 101;
+	const double const_ped_sigm_value = 2;
+	// commands below fill all the elements of pcc.pedestal and pcc.pedestal_sigm with their values (const_ped_value, and const_ped_sigm_value respectively)
+	std::fill(&pcc.pedestal[0][0][0], &pcc.pedestal[0][0][0] + sizeof(pcc.pedestal)/sizeof(pcc.pedestal[0][0][0]), const_ped_value);
+	std::fill(&pcc.pedestal_sigm[0][0][0], &pcc.pedestal_sigm[0][0][0] + sizeof(pcc.pedestal_sigm)/sizeof(pcc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
+	
+	// setting voltage signal parameters
 	pcc.vpar[0] = 50;  // delay, ns
 	pcc.vpar[1] = 10;  // rise time, ns
 	pcc.vpar[2] = 20;  // fall time, ns
 	pcc.vpar[3] = 1;   // amplifier
 
+
+	// loading translation table
+	pcc.TT = TranslationTable("pcTT");
+
+	// loads translation table from CLAS12 Database:
+	// Translation table for EC (ECAL+PCAL).
+	// Crate sector assignments: ECAL/FADC=1,7,13,19,25,31 ECAL/TDC=2,8,14,20,26,32
+	// PCAL/FADC=3,9,15,21,27,33 PCAL/TDC=4,10,16,22,28,34.
+	// ORDER: 0=FADC 2=TDC.
+
+	string database   = "/daq/tt/ec:1";
+
+
+	data.clear(); calib->GetCalib(data, database);
+	cout << "  > " << pcc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
+
+	// filling translation table
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		int crate   = data[row][0];
+		int slot    = data[row][1];
+		int channel = data[row][2];
+
+		int sector  = data[row][3];
+		int layer   = data[row][4];
+		int pmt     = data[row][5];
+		int order   = data[row][6];
+
+		// order is important as we could have duplicate entries w/o it
+		pcc.TT.addHardwareItem({sector, layer, pmt, order}, Hardware(crate, slot, channel));
+	}
+	cout << "  > Data loaded in translation table " << pcc.TT.getName() << endl;
+	
 	return pcc;
 }
 
@@ -109,20 +166,23 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Get Total Energy deposited
 	double Etota = 0;
 	double Ttota = 0;
-	double latt = 0;
+	double latt  = 0;
 
-	vector<G4double> Edep = aHit->GetEdep();
+	vector<G4double>      Edep = aHit->GetEdep();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 
 	double att;
 
-	double A = pcc.attlen[sector-1][view-1][0][strip-1];
-	double B = pcc.attlen[sector-1][view-1][1][strip-1]*10.;
-	double C = pcc.attlen[sector-1][view-1][2][strip-1];
-    double G = pcc.gain[sector-1][view-1][strip-1];
-
-	//cout<<"sector "<<sector<<"view "<<view<<"strip "<<strip<<"B "<<B<<endl;
-
+	double A  = pcc.attlen[sector-1][view-1][0][strip-1];
+	double B  = pcc.attlen[sector-1][view-1][1][strip-1]*10.;
+	double C  = pcc.attlen[sector-1][view-1][2][strip-1];
+        double G  = pcc.gain[sector-1][view-1][strip-1];
+	double a0 = pcc.timing[sector-1][view-1][0][strip-1];
+	double a1 = pcc.timing[sector-1][view-1][1][strip-1];
+	double a2 = pcc.timing[sector-1][view-1][2][strip-1];
+	double a3 = pcc.timing[sector-1][view-1][3][strip-1]/100;
+	double a4 = pcc.timing[sector-1][view-1][4][strip-1]/1000;
+	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
 		if(B>0)
@@ -133,7 +193,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==3) latt=pDx2+xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/pcc.veff;
+			Ttota = Ttota + latt/pcc.veff + a3*latt*latt + a4*latt*latt*latt;
 		}
 		else
 		{
@@ -142,8 +202,8 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 
 	// initialize ADC and TDC
-	int ADC = 0;
-	int TDC = 0;
+	double ADC = 0;
+	double TDC = 0;
 
 	// simulate the adc value.
 	if (Etota > 0) {
@@ -152,14 +212,15 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double sigma = pcc.pmtFactor/sqrt(PC_npe);
 			double PC_GeV = G4RandGauss::shoot(PC_npe,sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 			if (PC_GeV>0) {
-				ADC = (int) PC_GeV;
-				TDC = (int) ((tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio);
+				ADC = PC_GeV;
+				TDC = (tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio + a0 + a2/sqrt(ADC);
 			}
 		}
 	}
 
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
-	// around 1.4 us.  This offset is omitted in the simulation.
+	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
+	// simulated at present.
 
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
@@ -167,7 +228,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["view"]   = view;
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = ADC;
-	dgtz["TDC"]    = TDC;
+	dgtz["TDC"]    = TDC/a1;
 
 	//cout << "sector = " << sector << " layer = " << module << " view = " << view << " strip = " << strip << " PL_ADC = " << ADC << " TDC = " << TDC << " Edep = " << Etot << endl;
 
