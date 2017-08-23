@@ -129,14 +129,14 @@ static dcConstants initializeDCConstants(int runno)
 	dcc.driftVelocity[4] = dcc.driftVelocity[5] = 0.036;  ///< drift velocity is 36 um/ns for region3
 
 	// even closer:
-	// layers 1,3,5 have +300
-	// layers 2,4,6 have -300
-	dcc.miniStagger[0] = 0.0300;
-	dcc.miniStagger[1] = -0.0300;
-	dcc.miniStagger[2] = 0.0300;
-	dcc.miniStagger[3] = -0.0300;
-	dcc.miniStagger[4] = 0.0300;
-	dcc.miniStagger[5] = -0.0300;
+	// layers 1,3,5 have +300 micron
+	// layers 2,4,6 have -300 micron
+	dcc.miniStagger[0] =  0.300*mm;
+	dcc.miniStagger[1] = -0.300*mm;
+	dcc.miniStagger[2] =  0.300*mm;
+	dcc.miniStagger[3] = -0.300*mm;
+	dcc.miniStagger[4] =  0.300*mm;
+	dcc.miniStagger[5] = -0.300*mm;
 
 
 	// loading translation table
