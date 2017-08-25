@@ -330,9 +330,14 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 	// user header should be in a different tag than the normal header
 	// for now, we're ok
-	for(unsigned i=0; i<gen_action->headerUserDefined.size(); i++)
-	{
-		string tmp = "user var " + stringify((int) i+1);
+	// assuming 100 user vars max
+	for(unsigned i=0; i<gen_action->headerUserDefined.size(); i++) {
+		string tmp = "userVar" ;
+		if(i<9)        tmp +="00";
+		else if (i<99) tmp +="0";
+
+		tmp += to_string(i+1);
+
 		header[tmp] = gen_action->headerUserDefined[i];
 	}
 	

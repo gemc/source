@@ -1,6 +1,56 @@
 Changelog for GEMC
 ==================
 
+8/25/17
+ - fixed an issue with the header bank where the LUND info index was not correct
+
+8/24/17
+ - fix to LTCC dgtz bank
+
+8/23/17
+ - fixed dc stagger units
+
+8/20/17
+ - Added TDC calibration constants to ec,pcal hitprocess
+
+8/18/17
+ - some quick fixes on bank structures: Bank 0xe10e now has num=crate-id, and the evio
+   composite bank with tag='57601' ( 0xe101 ) has now num=0
+
+8/16/17
+ - reading tdc_conv for ctof from database
+
+8/15/17
+ - updated HTCC hitprocess (status and timing offset) to prepare to calibration challenge
+
+8/11/17
+ - 1st version of FADC Mode1 output implementation in EC
+ - removed unused SLI in processID
+ - Adjust transverse diffusion and ionization potential to reproduce cosmics and experimental data
+
+8/10/17
+ - Some fixes are implemented om evio_output.cc, i.e. missing sector 1 was fixed,
+   and also the way how to not have multiple hits with the same hardare key is fixed
+
+8/8/17
+ - Constant pedestal mean and sigmas (i.e. it is the same for all FADCs) are added.
+   The DGauss function needs to be investigated to see how close it can be approximated to real data FADC signal shape
+
+8/7/17
+ - An initial version of writing  FADC1Mode1 banks is implemented. o It has only EC. pedestals yet to be implemented
+
+8/5/17
+ - fixes to b-field dependent term in time-2-distance
+
+7/29/17
+ - corrected time2distance parameterization
+
+7/19/17
+ - correct values for wpdist. These should be read from CCDB
+
+7/17/17
+ - new cnd hit process by Silvia, with upgrade and fixes
+
 7/14/17
  - implemented mini-stagger for clas12 dc
  - LTCC digitization: reading spe and sigma constants from CCDB. Using to produce adc spectrum
