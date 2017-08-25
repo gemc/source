@@ -130,8 +130,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal")
 	{
-		headerUserDefined.clear();
-		for(unsigned i=0; i<8; i++) headerUserDefined.push_back(0);
 
 		// internal, no cosmic
 		if(cosmics == "no")
