@@ -59,7 +59,8 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 	string time = timeStamp();
 	*headerBank << addVariable(HEADER_BANK_TAG, bank.getVarId("time"), "s", time);
 
-	int banknum = 0;
+	// bank starts from 2 cause timestamp already there
+	int banknum = 1;
 	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++)
 	{
 		banknum++;

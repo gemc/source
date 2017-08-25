@@ -44,14 +44,6 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("evn",        3, "Ni", "Event Number");
 	abank.load_variable("evn_type",   4, "Ni", "Event Type. 1 for physics events, 10 for scaler. Negative sign for MC.");
 	abank.load_variable("beamPol",    5, "Nd", "Beam Polarization");
-	abank.load_variable("var1",       6, "Nd", "User defined. In LUND this was: Target Polarization");
-	abank.load_variable("var2",       7, "Nd", "User defined. In LUND this was: Number of nucleons in the target");
-	abank.load_variable("var3",       8, "Nd", "User defined. In LUND this was: Number of protons in the target");
-	abank.load_variable("var4",       9, "Nd", "User defined. In LUND this was: Bjorken x");
-	abank.load_variable("var5",      10, "Nd", "User defined. In LUND this was: Fraction of energy loss");
-	abank.load_variable("var6",      11, "Nd", "User defined. In LUND this was: W square");
-	abank.load_variable("var7",      12, "Nd", "User defined. In LUND this was: Q square");
-	abank.load_variable("var8",      13, "Nd", "User defined. In LUND this was: Energy loss");
 	abank.orderNames();
 	banks["header"] = abank;
 	
