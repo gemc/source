@@ -73,6 +73,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_MIRROR == 0) return false;
 	
 	G4Track *trk = aStep->GetTrack();
+	// this is expensive should we really check?
 	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) return false;
 	
 	G4StepPoint   *prestep     = aStep->GetPreStepPoint();
@@ -360,6 +361,8 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "ionIoni")               return 120;
 	if(procName == "ionInelastic")          return 121;
 	if(procName == "tInelastic")            return 130;
+	if(procName == "xi0Inelastic")          return 140;
+	if(procName == "omega-Inelastic")       return 150;
 
 	if(procName == "na")                    return 999;
 
