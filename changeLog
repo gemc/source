@@ -1,8 +1,13 @@
 Changelog for GEMC
 ==================
 
+8/30/17
+ - do not initialize ltcc before digitization starts (not needed)"
+ - added two processes to catalogue
+
 8/25/17
  - fixed an issue with the header bank where the LUND info index was not correct
+ - no user info for internal generator
 
 8/24/17
  - fix to LTCC dgtz bank
