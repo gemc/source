@@ -19,6 +19,9 @@ static ltccConstants initializeLTCCConstants(int runno)
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
 
+	// do not initialize at the beginning, only after the end of the first event,
+	// with the proper run number coming from options or run table
+	if(runno == -1) return ltccc;
 
 	// database
 	ltccc.runNo = runno;
