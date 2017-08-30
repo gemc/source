@@ -162,22 +162,23 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int SECI  = identity[0].id - 1;
 	int SLI   = identity[1].id - 1;
+	int LAY   = identity[2].id - 1;
 	int nwire = identity[3].id;
 	
 	// nwire position information
 	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semilength
 	double deltay  = 2.0*ylength/dcc.NWIRES;                ///< Y length of cell
 	double WIRE_Y  = nwire*deltay;                          ///< Center of wire hit
- 	if(SLI > 3) WIRE_Y += dcc.miniStagger[SLI];             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
+ 	if(SLI > 3) WIRE_Y += dcc.miniStagger[LAY];             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
-    	vector<double>        stepTime    = aHit->GetTime();
-    	vector<double>        mgnf        = aHit->GetMgnf();
+	vector<double>        stepTime    = aHit->GetTime();
+	vector<double>        mgnf        = aHit->GetMgnf();
 	vector<G4double>      Edep        = aHit->GetEdep();
 	vector<G4ThreeVector> pos         = aHit->GetPos();
-    	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-    	vector<G4ThreeVector> mom         = aHit->GetMoms();
-    	vector<double>        E           = aHit->GetEs();
+	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+	vector<G4ThreeVector> mom         = aHit->GetMoms();
+	vector<double>        E           = aHit->GetEs();
 
 	unsigned nsteps = Edep.size();
 
