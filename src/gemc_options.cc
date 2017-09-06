@@ -610,7 +610,7 @@ void goptions::setGoptions()
 	optMap["FASTMCMODE"].type  = 0;
 	optMap["FASTMCMODE"].ctgr  = "output";
 
-	optMap["HALL_MATERIAL"].args = "Vacuum";
+	optMap["HALL_MATERIAL"].args = "G4_AIR";
 	optMap["HALL_MATERIAL"].help = "Composition of the Experimental Hall. \n";
 	optMap["HALL_MATERIAL"].help += "            Air normal simulation\n";
 	optMap["HALL_MATERIAL"].help += "            Air_Opt Simulation with Optical Physics\n";
