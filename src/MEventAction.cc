@@ -406,6 +406,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			//MHit* aHit = (*MHC)[0];
 			string vname = (*MHC)[0]->GetDetector().name;
 			string hitType = it->second->GetDetectorHitType(vname);
+			
 
 			if(hitType.find("mirror:") != string::npos) hitType = "mirror";
 
@@ -589,7 +590,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// using the SIGNALVT option
 			if(SIGNALVT.find(hitType) != string::npos) {
 				vector<hitOutput> allVTOutput;
-
+				
+				
 				for(int h=0; h<nhits; h++) {
 
 					hitOutput thisHitOutput;

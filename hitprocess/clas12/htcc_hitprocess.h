@@ -14,6 +14,10 @@ public:
 	string variation;
 	string date;
 	string connection;
+        
+        static const int nsect = 6;
+        static const int nhalfes = 2;
+        static const int nring = 4;
         char   database[80];
 
 	// translation table
@@ -31,6 +35,14 @@ public:
 	// veff: time shift
         vector<double> tshift[6][2];
 
+        
+        // ======== FADC Pedestals and sigmas ===========
+        double pedestal[nsect][nhalfes][nring] = {};
+	double pedestal_sigm[nsect][nhalfes][nring] = {};
+        
+        
+        // voltage signal parameters for the Pulse shape function
+	double vpar[4];
 
 };
 
@@ -44,13 +56,13 @@ public:
 	~htcc_HitProcess(){;}
 
 	// - integrateDgt: returns digitized information integrated over the hit
-	map<string, double> integrateDgt(MHit*, int);
+	map<string, double> integrateDgt(MHit*, int); 
 
 	// - multiDgt: returns multiple digitized information / hit
-	map< string, vector <int> > multiDgt(MHit*, int);
+	map< string, vector <int> > multiDgt(MHit*, int); 
 
 	// - charge: returns charge/time digitized information / step
-	virtual map< int, vector <double> > chargeTime(MHit*, int);
+	virtual map< int, vector <double> > chargeTime(MHit*, int); 
 
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double);

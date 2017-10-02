@@ -385,6 +385,21 @@ map< int, vector <double> > ctof_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 
+	vector<double> hitNumbers;
+	vector<double> stepIndex;
+	vector<double> chargeAtElectronics;
+	vector<double> timeAtElectronics;
+	vector<double> identifiers;
+	vector<double> hardware;
+	hitNumbers.push_back(hitn);
+	
+	vector<identifier> identity = aHit->GetId();
+
+	cout<<"Size of identity in ctof is "<<identity.size()<<endl;
+	cout<<"identity[0].id = "<<identity[0].id<<endl;
+	
+	
+
 	return CT;
 }
 
@@ -393,8 +408,9 @@ map< int, vector <double> > ctof_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double ctof_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	//	return 0.0;
-	return DGauss(forTime, ctc.vpar, charge, time);
+  //	return 0.0;
+  //return DGauss(forTime, ctc.vpar, charge, time);
+  return PulseShape(forTime, ctc.vpar, charge, time);
 }
 
 // this static function will be loaded first thing by the executable

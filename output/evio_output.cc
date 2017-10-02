@@ -21,10 +21,11 @@ static unsigned int buf[MAXEVIOBUF];
 // are written into. This should be written only once, in the 1st physics event
 // it is now set false, and when configuration parameters are written, it will be
 // changed to true
-bool evio_output::is_conf_written = false;
+//bool evio_output::is_conf_written = false;
 
 
-vector<int> evio_output::ec_crates = {1, 7, 13, 19, 25, 31};
+vector<int> evio_output::detector_crates = {1, 7, 13, 19, 25, 31,     // EC
+                                            3, 9, 15, 21, 26, 33};    // PCal
 
 // record the simulation conditions
 // the format is a string for each variable
@@ -574,10 +575,10 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       // We want to check whether FADC conf data is written into evio, if not it will
       // write data and will erase corresponding crate element from the vector, for the
       // next time this data to not be written
-      std::vector<int>::iterator it_crate = find(ec_crates.begin(), ec_crates.end(), crate);
+      std::vector<int>::iterator it_crate = find(detector_crates.begin(), detector_crates.end(), crate);
       
       // 
-      if( it_crate != ec_crates.end() ){
+      if( it_crate != detector_crates.end() ){
 	
 	int confbankbanktag = 0xe10e;
 
@@ -591,7 +592,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 	conf_parms = conf_parms + "\n";
 	for( int i_sl = 0; i_sl < n_slotes; i_sl++ ){
 
-	  conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) + "\nFADC250_ALLCH_PED ";
+	  conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) + "\nFADC250_NSB " + to_string(12) + "\nFADC250_NSA " + to_string(36) + "\nFADC250_ALLCH_PED ";
 	  for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
 	    conf_parms = conf_parms + " " + to_string(101.0);
 	  }
@@ -605,7 +606,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 	  for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
 	    conf_parms = conf_parms + " " + to_string(1.);
 	  }
-   
+	  
 	  conf_parms = conf_parms +"\n";
     
 	}
@@ -614,7 +615,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 	*newCrate << confbank;
 	*event << newCrate;
 	
-	ec_crates.erase(it_crate);
+	detector_crates.erase(it_crate);
       }
       
     }
@@ -659,22 +660,26 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
     if( nchannelThisCrate == numberOfChannelsPerCrate[sCrateKey] ){
       
       //int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
-      int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
+      //int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
+      //int finalNumberOfWords = (b08out + 4 - (uint8_t*)buf_crate_begin) / 4;
+ 
+      //int padding = (uint8_t*)buf_crate_begin + 4*finalNumberOfWords - b08out;
       
-      *newCrate << evioDOMNode::createEvioDOMNode(banktag, 0, 62, "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, finalNumberOfWords);  // Sergei wanted num to be set 0
+      //*newCrate << evioDOMNode::createEvioDOMNode(banktag, 0, strlen("c,i,l,N(c,Ns)"), "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, finalNumberOfWords, padding);  // Sergei wanted num to be set 0
+      *newCrate << evioDOMNode::createEvioDOMNode(banktag, 0, "c,i,l,N(c,Ns)", 63, 64, buf_crate_begin, (uint32_t*)b08out);  // Sergei wanted num to be set 0
       *event << newCrate;
     }
 
   }
 
   // ======= At this moment all the FADCMode1 data is already written, so below
-  // the program should iterate over remaining elements of ec_crates, and for each one
+  // the program should iterate over remaining elements of detector_crates, and for each one
   // write FADC_conf paratmeters into evio
 
 
-  if( ec_crates.size() >=1 ){
+  if( detector_crates.size() >=1 ){
     
-    for( vector<int>::iterator it_crate = ec_crates.begin(); it_crate != ec_crates.end(); it_crate++ ){
+    for( vector<int>::iterator it_crate = detector_crates.begin(); it_crate != detector_crates.end(); it_crate++ ){
       
       int cur_crate = *it_crate;
 
@@ -692,7 +697,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       conf_parms = conf_parms + "\n";
       for( int i_sl = 0; i_sl < n_slotes; i_sl++ ){
 
-	conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) + "\nFADC250_ALLCH_PED ";
+	conf_parms = conf_parms + "FADC250_SLOT " + to_string(i_sl) +  "\nFADC250_NSB " + to_string(12) + "\nFADC250_NSA " + to_string(36) + "\nFADC250_ALLCH_PED ";
 	for( int i_ch = 0; i_ch < n_chann; i_ch++ ){
 	  conf_parms = conf_parms + " " + to_string(101.0);
 	}
@@ -715,7 +720,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       *newCrate << confbank;
       *event << newCrate;
     }
-    ec_crates.clear();
+    detector_crates.clear();
   }
 
 

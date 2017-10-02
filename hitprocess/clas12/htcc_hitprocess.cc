@@ -35,7 +35,7 @@ static htccConstants initializeHTCCConstants(int runno)
 		htccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
 	htccc.variation  = "main";
-	int isec,ilay,istr;
+        int isec,ilay,istr;
 
         vector<vector<double> > data;
 
@@ -59,6 +59,47 @@ static htccConstants initializeHTCCConstants(int runno)
 
 	  }
 
+        
+        	string database   = "/daq/tt/htcc:1";
+
+
+	data.clear(); calib->GetCalib(data, database);
+	cout << "  > " << htccc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
+
+	// filling translation table
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		int crate   = data[row][0];
+		int slot    = data[row][1];
+		int channel = data[row][2];
+
+		int idsector = data[row][3];
+		int idhalf   = data[row][4];
+		int idring   = data[row][5];
+		int order   = data[row][6];  // 0 Corresponds to FADC, and 2 corresponds to TDC
+
+		// order is important as we could have duplicate entries w/o it
+		htccc.TT.addHardwareItem({idsector, idhalf, idring, order}, Hardware(crate, slot, channel));
+	}
+	cout << "  > Data loaded in translation table " << htccc.TT.getName() << endl;
+
+        // FOR now we will initialize pedestals and sigmas to a random value, in the future
+	// they will be initialized from DB 
+	const double const_ped_value = 101;
+	const double const_ped_sigm_value = 2;
+
+        std::fill(&htccc.pedestal[0][0][0], &htccc.pedestal[0][0][0] + sizeof(htccc.pedestal)/sizeof(htccc.pedestal[0][0][0]), const_ped_value);
+	std::fill(&htccc.pedestal_sigm[0][0][0], &htccc.pedestal_sigm[0][0][0] + sizeof(htccc.pedestal_sigm)/sizeof(htccc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
+
+        // setting voltage signal parameters
+        // THese values are copied from EC and PCal code, later when we will have a better understanding 
+        // of signal shapes of each channel they probably can be defined channel dependent
+	htccc.vpar[0] = 0.;  // delay, ns
+	htccc.vpar[1] = 2.8; // rise time, ns
+	htccc.vpar[2] = 20;  // fall time, ns
+	htccc.vpar[3] = 1;   // amplifier
+
+        
 	return htccc;
 }
 
@@ -79,7 +120,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // if anything else than a photon hits the PMT
     // the nphe is the particle id
     // and identifiers are negative
-	 // this should be changed, what if we still have a photon later?
+    // this should be changed, what if we still have a photon later?
     dgtz["sector"] = -idsector;
     dgtz["ring"]   = -idring;
     dgtz["half"]   = -idhalf;
@@ -228,7 +269,7 @@ void htcc_HitProcess::initWithRunNumber(int runno)
 }
 
 
-// - electronicNoise: returns a vector of hits generated / by electronics.
+// - electronicNoise: returns a vector of hits generated / by electronics. 
 vector<MHit*> htcc_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
@@ -257,6 +298,50 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 
+        vector<double> hitNumbers;
+        vector<double> stepIndex;
+	vector<double> chargeAtElectronics;
+	vector<double> timeAtElectronics;
+	vector<double> identifiers;
+	vector<double> hardware;
+        
+        hitNumbers.push_back(hitn);
+
+     // getting identifiers
+     // we want to crash if identity doesn't have size 3
+        vector<identifier> identity = aHit->GetId();
+        int idsector = identity[0].id;
+        int idring   = identity[1].id;
+        int idhalf   = identity[2].id;
+        int thisPid  = aHit->GetPID();
+    
+        identifiers.push_back(idsector);
+        identifiers.push_back(idhalf);
+        identifiers.push_back(idring);
+        identifiers.push_back(0);       // 0=> FADC, 2=>TDC
+        
+        // getting hardware
+	Hardware thisHardware = htccc.TT.getHardware({idsector, idhalf, idring, 0}); // 0=> FADC, 2=>TDC
+	hardware.push_back(thisHardware.getCrate());
+	hardware.push_back(thisHardware.getSlot());
+	hardware.push_back(thisHardware.getChannel());
+
+        // Adding pedestal mean and sigma into the hardware as well
+	// All of these variables start from 1, therefore -1 is sbutracted, e.g. sector-1
+	hardware.push_back(htccc.pedestal[idsector - 1][idhalf][idring]);
+	hardware.push_back(htccc.pedestal_sigm[idsector][idhalf][idring]);
+
+        trueInfos tInfos(aHit);
+       
+        
+        CT[0] = hitNumbers;
+	CT[1] = stepIndex;
+	CT[2] = chargeAtElectronics;
+	CT[3] = timeAtElectronics;
+	CT[4] = identifiers;
+	CT[5] = hardware;
+
+        
 	return CT;
 }
 
@@ -265,7 +350,7 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double htcc_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+    return PulseShape(forTime, htccc.vpar, charge, time);
 }
 
 // this static function will be loaded first thing by the executable
