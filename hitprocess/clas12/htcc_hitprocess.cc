@@ -333,7 +333,7 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 
         trueInfos tInfos(aHit);
 
-        	// Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
+        // Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
 	// we want to implement QE here in a flexible way:
 	
 	// That means we want to find out if the material of the photocathode has been defined,
@@ -396,6 +396,10 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			bool outofrange = false;
 			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) )
 				//ndetected++;
+                        stepIndex.push_back(iphoton);
+			chargeAtElectronics.push_back(100.); //  For the moment 100 is an arbitrary number
+			timeAtElectronics.push_back(tInfos.time);
+
 			
 			if( verbosity > 4 )
 			{
@@ -410,6 +414,11 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 		{
 			// No efficiency definition, "detect" all photons
 			//ndetected++;
+                    
+                        stepIndex.push_back(iphoton);
+			chargeAtElectronics.push_back(100.); //  For the moment 100 is an arbitrary number
+			timeAtElectronics.push_back(tInfos.time);
+
 		}
 	}
 
