@@ -332,7 +332,87 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	hardware.push_back(htccc.pedestal_sigm[idsector][idhalf][idring]);
 
         trueInfos tInfos(aHit);
+
+        	// Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
+	// we want to implement QE here in a flexible way:
+	
+	// That means we want to find out if the material of the photocathode has been defined,
+	// and if so, find out if it has a material properties table which defines an efficiency.
+	// if we find both of these properties, then we accept this event with probability QE:
+	
+	vector<int> tids = aHit->GetTIds(); // track ID at EACH STEP
+	vector<int> pids = aHit->GetPIDs(); // particle ID at EACH STEP
+	set<int> TIDS;                      // an array containing all UNIQUE tracks in this hit
+	vector<double> photon_energies;
+	
+	vector<double> Energies = aHit->GetEs();
+	
+        
+        // Some temporary tests (Rafo)
+        cout<<"tInfos.nsteps = "<<tInfos.nsteps<<endl;
+        cout<<"tids.size() = "<<tids.size()<<endl;
+        
+	
+	// this needs to be optimized
+	// uaing the return value of insert is unnecessary
+
+	for(unsigned int s=0; s<tids.size(); s++)
+	{
+		// selecting optical photons
+		if(pids[s] == 0)
+		{
+			// insert this step into the set of track ids (set can only have unique values).
+			pair< set<int> ::iterator, bool> newtrack = TIDS.insert(tids[s]);
+			
+			// if we found a new track, then add the initial photon energy of this
+			// track to the list of photon energies, for when we calculate quantum efficiency later
+			if( newtrack.second ) photon_energies.push_back( Energies[s] );
+		}
+	}
+
+ 	// here is the fun part: figure out the number of photons we detect based
+	// on the quantum efficiency of the photocathode material, if defined:
+	
+	
+	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
+	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
+	G4MaterialPropertyVector* efficiency = NULL;
+//	ndetected = 0;
+	bool gotefficiency = false;
+	if( MPT != NULL )
+	{
+		efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
+		if( efficiency != NULL ) gotefficiency = true;
+	}
        
+        
+        for( unsigned int iphoton = 0; iphoton<TIDS.size(); iphoton++ )
+	{
+		//loop over all unique photons contributing to the hit:
+		if( gotefficiency )
+		{
+			// If the material of this detector has a material properties table
+			// with "EFFICIENCY" defined, then "detect" this photon with probability = efficiency
+			bool outofrange = false;
+			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) )
+				//ndetected++;
+			
+			if( verbosity > 4 )
+			{
+				cout << log_msg << " Found efficiency definition for material "
+				<< aHit->GetDetector().GetLogical()->GetMaterial()->GetName()
+				<< ": (Ephoton, efficiency)=(" << photon_energies[iphoton] << ", "
+				<< ( (G4MaterialPropertyVector*) efficiency )->GetValue( photon_energies[iphoton], outofrange )
+				<< ")" << endl;
+			}
+		}
+		else
+		{
+			// No efficiency definition, "detect" all photons
+			//ndetected++;
+		}
+	}
+
         
         CT[0] = hitNumbers;
 	CT[1] = stepIndex;
