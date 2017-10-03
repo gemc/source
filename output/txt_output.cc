@@ -158,6 +158,8 @@ void txt_output ::  initBank(outputContainer* output, gBank thisHitBank)
 // and not contained in the banks definitions
 void txt_output ::  writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank rawBank = getBankFromMap("raws", banksMap);
 
@@ -195,6 +197,8 @@ void txt_output ::  writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 // and not contained in the banks definitions
 void txt_output ::  writeG4RawAll(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank allRawsBank = getBankFromMap("allraws", banksMap);
 
@@ -232,6 +236,8 @@ void txt_output ::  writeG4RawAll(outputContainer* output, vector<hitOutput> HO,
 
 void txt_output ::  writeG4DgtIntegrated(outputContainer* output, vector<hitOutput> HO,  string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank dgtBank = getDgtBankFromMap(hitType, banksMap);
 	
@@ -272,6 +278,8 @@ void txt_output ::  writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 // index 4: vector of identifiers - have to match the translation table
 void txt_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
 	gBank chargeTimeBank = getBankFromMap("chargeTime", banksMap);
 

@@ -565,9 +565,15 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					hitOutput thisHitOutput;
 					MHit* aHit = (*MHC)[h];
 					
+					// calling integrateDgt will also set writeHit
 					thisHitOutput.setDgtz(hitProcessRoutine->integrateDgt(aHit, h+1));
-					allDgtOutput.push_back(thisHitOutput);
-					
+                    
+                    // include this hit. Users can set writeHit to false to avoid writing the hit
+                    // the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
+                    if(hitProcessRoutine->writeHit) {
+                        allDgtOutput.push_back(thisHitOutput);
+                    }
+                    
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
 					if(VERB > 4 || vname.find(catch_v) != string::npos)
 					{

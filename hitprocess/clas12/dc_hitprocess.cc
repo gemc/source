@@ -149,14 +149,12 @@ static dcConstants initializeDCConstants(int runno)
     dcc.vpar[2] = 20;  // fall time, ns
     dcc.vpar[3] = 1;   // amplifier
     
-    
     return dcc;
 }
 
 
 map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
-    
     map<string, double> dgtz;
     vector<identifier> identity = aHit->GetId();
     
@@ -323,6 +321,15 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     dgtz["time"]       = ineff*unsmeared_time;
     dgtz["stime"]      = ineff*smeared_time;
     
+    // decide if write an hit or not
+    writeHit = true;
+    // define conditions to reject hit
+    bool rejectHitConditions = false;
+    if(rejectHitConditions) {
+         writeHit = false;
+    }
+	writeHit = false;
+
     return dgtz;
 }
 

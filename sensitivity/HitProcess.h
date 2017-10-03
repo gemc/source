@@ -66,14 +66,17 @@ class HitProcess
 {
 public:
 	virtual ~HitProcess(){;}
-	void init(string name, goptions go,map<string, double> gp)
-	{
-		HCname    = name;
+    void init(string name, goptions go, map<string, double> gp) {
 		gemcOpt   = go;
 		gpars     = gp;
 		verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 		log_msg   = "  > " + HCname + "  Hit Process ";
+        HCname = name;
+        detectorThreshold = 0;
+        writeHit = true;
 	}
+    bool writeHit;
+
 
 	// local initializations
 	// init_subclass is used at the END of the event level
@@ -133,6 +136,7 @@ protected:
 	map<string, double> gpars;
 	double verbosity;
 	string log_msg;
+    double detectorThreshold;
 
 	inline double DGauss(double x, double *par, double Edep, double stepTime)
 	{
