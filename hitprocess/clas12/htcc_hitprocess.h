@@ -11,10 +11,11 @@ public:
 
 	// database
 	int    runNo;
-	string variation;
+	string variation; 
 	string date;
 	string connection;
         
+        // Constants below are self explanatory
         static const int nsect = 6;
         static const int nhalfes = 2;
         static const int nring = 4;
@@ -37,6 +38,8 @@ public:
 
         
         // ======== FADC Pedestals and sigmas ===========
+        // These pedestals (and sigmas) for each channel
+        // are initialized in the initializeHTCCConstants(int runNo) method
         double pedestal[nsect][nhalfes][nring] = {};
 	double pedestal_sigm[nsect][nhalfes][nring] = {};
         
@@ -56,13 +59,13 @@ public:
 	~htcc_HitProcess(){;}
 
 	// - integrateDgt: returns digitized information integrated over the hit
-	map<string, double> integrateDgt(MHit*, int); 
+	map<string, double> integrateDgt(MHit*, int);
 
 	// - multiDgt: returns multiple digitized information / hit
 	map< string, vector <int> > multiDgt(MHit*, int); 
 
 	// - charge: returns charge/time digitized information / step
-	virtual map< int, vector <double> > chargeTime(MHit*, int); 
+	virtual map< int, vector <double> > chargeTime(MHit*, int);
 
 	// - voltage: returns a voltage value for a given time. The input are charge value, time
 	virtual double voltage(double, double, double);

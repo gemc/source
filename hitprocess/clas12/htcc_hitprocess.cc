@@ -56,13 +56,11 @@ static htccConstants initializeHTCCConstants(int runno)
 	  {
 	    isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
 	    htccc.tshift[isec-1][ilay-1].push_back(data[row][3]);
-
 	  }
 
+        // we should read the database and and fill the Hardware object
+        string database   = "/daq/tt/htcc:1";
         
-        	string database   = "/daq/tt/htcc:1";
-
-
 	data.clear(); calib->GetCalib(data, database);
 	cout << "  > " << htccc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
 
@@ -98,7 +96,6 @@ static htccConstants initializeHTCCConstants(int runno)
 	htccc.vpar[1] = 2.8; // rise time, ns
 	htccc.vpar[2] = 20;  // fall time, ns
 	htccc.vpar[3] = 1;   // amplifier
-
         
 	return htccc;
 }
@@ -306,6 +303,8 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
 
+        // Following variables that are defined, will be "KEY"s of
+        // CT
         vector<double> hitNumbers;
         vector<double> stepIndex;
 	vector<double> chargeAtElectronics;
@@ -336,9 +335,15 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 
         // Adding pedestal mean and sigma into the hardware as well
 	// All of these variables start from 1, therefore -1 is sbutracted, e.g. sector-1
-	hardware.push_back(htccc.pedestal[idsector - 1][idhalf][idring]);
-	hardware.push_back(htccc.pedestal_sigm[idsector][idhalf][idring]);
+	hardware.push_back(htccc.pedestal[idsector - 1][idhalf - 1][idring - 1]);
+	hardware.push_back(htccc.pedestal_sigm[idsector - 1][idhalf - 1][idring - 1]);
 
+        
+        // Code below is mostly copied from the integrateDgt(MHit*, int) method,
+        // Main difference is that here all optical photons here one by one will be
+        // added into chargeAtElectronics and timeAtElectronics, while in the 
+        // integrateDgt, photons were added, and the digital integration was performed.
+        
         trueInfos tInfos(aHit);
 
         // Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
@@ -354,12 +359,6 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	vector<double> photon_energies;
 	
 	vector<double> Energies = aHit->GetEs();
-	
-        
-        // Some temporary tests (Rafo)
-        cout<<"tInfos.nsteps = "<<tInfos.nsteps<<endl;
-        cout<<"tids.size() = "<<tids.size()<<endl;
-        
 	
 	// this needs to be optimized
 	// uaing the return value of insert is unnecessary
@@ -409,9 +408,8 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			bool outofrange = false;
 			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) ){
 				//ndetected++;
-                            
-                            
-  
+                        // It passed through the quantum efficiency cut, then let's add charge, time,
+                        // and stepindex (should always be 1 for optical photons) into  CT components.
                         stepIndex.push_back(iphoton);
 			chargeAtElectronics.push_back(charge_PMT); //  For the moment 100 is an arbitrary number
 			timeAtElectronics.push_back(tInfos.time);
@@ -454,6 +452,7 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 // time (coming from timeAtElectronics)
 double htcc_HitProcess :: voltage(double charge, double time, double forTime)
 {
+    // The shape of the "PulseShape" function is defined in the HitProcess.h
     return PulseShape(forTime, htccc.vpar, charge, time);
 }
 
