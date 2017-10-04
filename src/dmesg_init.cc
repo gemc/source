@@ -120,6 +120,9 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		commands.push_back("/vis/open OGLIQt " + gemcOpt.optMap["geometry"].args + newpos);
 	
 
+	commands.push_back("/vis/viewer/set/culling coveredDaughters true");
+
+
 	if(HIGH_RES==1)
 	{
 		commands.push_back("/vis/viewer/set/background .8 .9 .98 1");   // 205, 230, 251 = CD, E6, FA

@@ -71,7 +71,15 @@ map<string, double> ecs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["strip"]  = strip;
 	dgtz["ADC"]    = ADC;
 	dgtz["TDC"]    = TDC;
-		
+	
+	// decide if write an hit or not
+	writeHit = true;
+	// define conditions to reject hit
+	bool rejectHitConditions = false;
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 

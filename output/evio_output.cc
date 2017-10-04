@@ -304,6 +304,8 @@ void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 
 void evio_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank rawBank = getBankFromMap("raws", banksMap);
 
@@ -334,6 +336,8 @@ void evio_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 
 void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+	
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank dgtBank = getDgtBankFromMap(hitType, banksMap);
 
@@ -368,6 +372,8 @@ void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 // index 4: vector of identifiers - have to match the translation table
 void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
 	gBank chargeTimeBank = getBankFromMap("chargeTime", banksMap);
 
@@ -425,6 +431,8 @@ void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> H
 
 void evio_output :: writeG4RawAll(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
+	if(HO.size() == 0) return;
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank allRawsBank = getBankFromMap("allraws", banksMap);
 
@@ -462,6 +470,7 @@ void evio_output :: writeG4RawAll(outputContainer* output, vector<hitOutput> HO,
 // This function takes as an argument vector of hitOutputs, and writes all hits into evio in a Mode1 format
 void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO, int ev_number)
 {
+	if(HO.size() == 0) return;
 
   // ==== Following variables are needed for EVIO util functions PUT16, PUT31 etc
   unsigned char *b08out;

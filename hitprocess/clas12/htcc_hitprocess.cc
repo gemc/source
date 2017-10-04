@@ -249,6 +249,14 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["time"]   = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 	dgtz["hitn"]   = hitn;
 
+	// decide if write an hit or not
+	writeHit = true;
+	// define conditions to reject hit
+	bool rejectHitConditions = false;
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 

@@ -169,7 +169,15 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     dgtz["component"] = icomponent;
 	dgtz["adc"]       = ADC;
 	dgtz["tdc"]       = TDC;
-		
+	
+	// decide if write an hit or not
+	writeHit = true;
+	// define conditions to reject hit
+	bool rejectHitConditions = false;
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 

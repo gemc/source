@@ -253,6 +253,14 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//	cout<<sector<<" "<<layer<<" "<<strip<<" "<<ADC<<" "<<TDC/a1<<endl;
 	//	cout<<" "<<endl;
 
+	// decide if write an hit or not
+	writeHit = true;
+	// define conditions to reject hit
+	bool rejectHitConditions = false;
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 
