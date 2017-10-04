@@ -388,19 +388,26 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
         
         for( unsigned int iphoton = 0; iphoton<TIDS.size(); iphoton++ )
 	{
+      
+                 // Here for each photon we will define the charge, which is number of ADC counts/per photon
+                 // For now we will use a Gaussian distribution with a mean of 200 counts and sigma = 20 counts
+                 double charge_PMT = G4RandGauss::shoot(200., 20.);
+                
 		//loop over all unique photons contributing to the hit:
 		if( gotefficiency )
 		{
 			// If the material of this detector has a material properties table
 			// with "EFFICIENCY" defined, then "detect" this photon with probability = efficiency
 			bool outofrange = false;
-			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) )
+			if( G4UniformRand() <= efficiency->GetValue( photon_energies[iphoton], outofrange ) ){
 				//ndetected++;
+                            
+                            
+  
                         stepIndex.push_back(iphoton);
-			chargeAtElectronics.push_back(100.); //  For the moment 100 is an arbitrary number
+			chargeAtElectronics.push_back(charge_PMT); //  For the moment 100 is an arbitrary number
 			timeAtElectronics.push_back(tInfos.time);
-
-			
+			}
 			if( verbosity > 4 )
 			{
 				cout << log_msg << " Found efficiency definition for material "
@@ -416,7 +423,7 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			//ndetected++;
                     
                         stepIndex.push_back(iphoton);
-			chargeAtElectronics.push_back(100.); //  For the moment 100 is an arbitrary number
+			chargeAtElectronics.push_back(charge_PMT); //  For the moment 100 is an arbitrary number
 			timeAtElectronics.push_back(tInfos.time);
 
 		}

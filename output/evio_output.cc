@@ -25,7 +25,8 @@ static unsigned int buf[MAXEVIOBUF];
 
 
 vector<int> evio_output::detector_crates = {1, 7, 13, 19, 25, 31,     // EC
-                                            3, 9, 15, 21, 26, 33};    // PCal
+                                            3, 9, 15, 21, 26, 33,     // PCal
+                                            59};                      // HTCC
 
 // record the simulation conditions
 // the format is a string for each variable
