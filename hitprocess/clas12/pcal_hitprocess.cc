@@ -84,7 +84,7 @@ static pcConstants initializePCConstants(int runno)
 	  }
 	
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
-	// they will be initialized from CCDB
+	// they will be initialized from CCDB, when the DB will be ready
 	const double const_ped_value = 101;
 	const double const_ped_sigm_value = 2;
 	// commands below fill all the elements of pcc.pedestal and pcc.pedestal_sigm with their values (const_ped_value, and const_ped_sigm_value respectively)
@@ -92,8 +92,8 @@ static pcConstants initializePCConstants(int runno)
 	std::fill(&pcc.pedestal_sigm[0][0][0], &pcc.pedestal_sigm[0][0][0] + sizeof(pcc.pedestal_sigm)/sizeof(pcc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
 	
 	// setting voltage signal parameters
-	pcc.vpar[0] = 50;  // delay, ns
-	pcc.vpar[1] = 10;  // rise time, ns
+	pcc.vpar[0] = 0;  // delay, ns
+	pcc.vpar[1] = 2.8;  // rise time, ns
 	pcc.vpar[2] = 20;  // fall time, ns
 	pcc.vpar[3] = 1;   // amplifier
 
@@ -285,6 +285,107 @@ map< string, vector <int> >  pcal_HitProcess :: multiDgt(MHit* aHit, int hitn)
 map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
+	
+	vector<double> hitNumbers;
+	vector<double> stepIndex;
+	vector<double> chargeAtElectronics;
+	vector<double> timeAtElectronics;
+	vector<double> identifiers;
+	vector<double> hardware;
+	hitNumbers.push_back(hitn);
+
+
+	vector<identifier> identity = aHit->GetId();
+
+	// get sector, stack (inner or outer), view (U, V, W), and strip.
+	int sector = identity[0].id;
+	int stack  = identity[1].id;
+	int view   = identity[2].id;
+	int strip  = identity[3].id;
+	int layer  = (stack-1)*3+view; // layer=1-3 (PCAL) 4-9 (ECAL)
+
+	identifiers.push_back(sector);
+	identifiers.push_back(layer);
+	identifiers.push_back(strip);    // component (pmt)
+	identifiers.push_back(0);        // order
+
+	// getting hardware
+	Hardware thisHardware = pcc.TT.getHardware({sector, layer, strip, 0});
+	hardware.push_back(thisHardware.getCrate());
+	hardware.push_back(thisHardware.getSlot());
+	hardware.push_back(thisHardware.getChannel());
+
+
+	// Adding pedestal mean and sigma into the hardware as well
+	// All of these variables start from 1, therefore -1 is sbutracted, e.g. sector-1
+	hardware.push_back(pcc.pedestal[sector - 1][layer - 1][view - 1]);
+	hardware.push_back(pcc.pedestal_sigm[sector - 1][layer - 1][view - 1]);
+
+
+	trueInfos tInfos(aHit);
+	
+	// Get scintillator mother volume dimensions (mm)
+	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
+	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
+	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+
+	vector<G4ThreeVector> pos  = aHit->GetPos();
+	vector<G4ThreeVector> Lpos = aHit->GetLPos();
+
+
+	vector<G4double> Edep = aHit->GetEdep();
+	vector<G4double> time = aHit->GetTime();
+
+	double A  = pcc.attlen[sector-1][layer-1][0][strip-1];
+	double B  = pcc.attlen[sector-1][layer-1][1][strip-1]*10.;
+	double C  = pcc.attlen[sector-1][layer-1][2][strip-1];
+	double G  = pcc.gain[sector-1][layer-1][strip-1];
+
+	for(unsigned int s=0; s<tInfos.nsteps; s++) {
+		if(B>0) {
+			double xlocal = Lpos[s].x();
+			//double ylocal = Lpos[s].y();
+			double latt = 0;
+
+			//if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
+			//if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
+			//if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
+		      	if(view==1) latt = pDx2+xlocal;
+	       		if(view==2) latt = pDx2+xlocal;
+			if(view==3) latt = pDx2-xlocal;
+			double att   = A*exp(-latt/B)+C;
+
+			double stepE = Edep[s]*att;
+			double stepTime = time[s] + latt/pcc.veff;
+
+			// cout<<"time[s] = "<<time[s]<<endl;
+			// cout<<"att time  = "<<latt/pcc.veff<<endl;
+
+			if (stepE > 0) {
+				double PC_npe = G4Poisson(stepE*pcc.pmtPEYld); //number of photoelectrons
+				if (PC_npe>0) {
+					double sigma  = pcc.pmtFactor/sqrt(PC_npe);
+					double PC_GeV = G4RandGauss::shoot(PC_npe, sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
+					if (PC_GeV>0) {
+						stepIndex.push_back(s);
+						chargeAtElectronics.push_back(PC_GeV);
+						timeAtElectronics.push_back(stepTime);
+					}
+				}
+			}
+		}
+	}
+
+	CT[0] = hitNumbers;
+	CT[1] = stepIndex;
+	CT[2] = chargeAtElectronics;
+	CT[3] = timeAtElectronics;
+	CT[4] = identifiers;
+	CT[5] = hardware;
+
+
+	// cout << " SIGNAL done with n steps: " << CT[3].size() << " and identifier " <<  CT[4].size() << endl;
+
 
 	return CT;
 }
@@ -295,7 +396,8 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 double pcal_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	//	return 0.0;
-	return DGauss(forTime, pcc.vpar, charge, time);
+//	return DGauss(forTime, pcc.vpar, charge, time);
+	return PulseShape(forTime, pcc.vpar, charge, time);
 }
 
 
