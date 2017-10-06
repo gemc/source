@@ -73,8 +73,8 @@ class evio_output : public outputFactory
 	int evn;
 
 
-	static bool is_conf_written;
-	static vector<int> ec_crates;
+//	static bool is_conf_written;
+	static vector<int> detector_crates;
 	
 };
 
