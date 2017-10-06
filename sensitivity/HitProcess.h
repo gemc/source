@@ -160,7 +160,7 @@ protected:
 	inline double PulseShape(double x, double *par, double Edep, double stepTime)
 	{
 
-	  // The HPS uses this function, to fit Mode1 ECal pulses
+	  // The HPS uses this function, to fil Mode1 ECal pulses
 	  // The integral of this function is 2b^3, therefore it is scaled by (1/2b^3), in order
 	  // the integral to be Edep
 	  // The peak value of this function is at "Peak_x = a + 2b"

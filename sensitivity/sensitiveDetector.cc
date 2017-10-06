@@ -1,4 +1,3 @@
-
 // G4 headers
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
@@ -103,8 +102,6 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	vector<identifier> VID = SetId(GetDetectorIdentifier(name), TH,
 								   ctime, SDID.timeWindow, tid);                              ///< Identifier at the geant4 level, using the G4 hierarchy to set the copies
 	
-	//cout<<" Kuku name = "<<name<<endl;
-
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
 	if(ProcessHitRoutine == NULL)
 	{
@@ -157,7 +154,6 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			this_shit.TrackId    = thisPID.TrackId;
 			this_shit.id_sharing = thisPID.id_sharing;
 			mhPID.push_back(this_shit);
-
 		}
 		
 		if(verbosity > 9 || name.find(catch_v) != string::npos)

@@ -487,10 +487,10 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
   int banktag = 0xe101;
 
 
-  // The map of hardware data, The Key is the crate/slot/channel combintation,
+  // The map of hardware data, The Key is the crate/slot/channel combination,
   // and the value is a map of FADC counts as a function of sample number.
-  // Note: 1st three counts represents actually the hardware identification infor, i.e. crate/slot/channel, and other elemtnts starting from 3 up to nsamples+3
-  // represet FADC counts
+  // Note: 1st three counts represents actually the hardware identification info, i.e. crate/slot/channel, and other elements starting 
+  // from 3 up to nsamples+3 represent FADC counts
   map<string, map<int, int> > hardwareData;
 
   // map that counts how many channels are in the crate
@@ -498,7 +498,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 
   for(unsigned int nh=0; nh<HO.size(); nh++) {
     
-    // Quantum is a map, KEY is an FADC sample number, and value is the FADC counts
+    // QuantumS is a map, KEY is an FADC sample number, and value is the FADC counts
     // NOTE 1st three elements of it (KEY = 0, 1, 2) represent crate/slot/chann, and KEYs (3, 4, ... nsampes+2 ) represent FADC counts
     map<int, int> quantumS = HO[nh].getQuantumS();
     
@@ -526,7 +526,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
       continue;
     }
 
-    // We should keeptrack of number of channels in the crate
+    // We should keep track of number of channels in the crate
     // With this counter, This counter will show, whether all the channels in that crate are already processed
     
     string CrateKey = crate;
@@ -541,7 +541,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
   }
 
   
-  // Now we hav hardware data for all crate/slot/channe combinateions, and can start filling the buffer
+  // Now we have hardware data for all crate/slot/channel combinations, and can start filling the buffer
 
   int oldCrate    = -1;
   int oldSlot     = -1;
