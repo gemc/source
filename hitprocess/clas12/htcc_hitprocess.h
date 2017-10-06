@@ -11,9 +11,14 @@ public:
 
 	// database
 	int    runNo;
-	string variation;
+	string variation; 
 	string date;
 	string connection;
+        
+        // Constants below are self explanatory
+        static const int nsect = 6;
+        static const int nhalfes = 2;
+        static const int nring = 4;
         char   database[80];
 
 	// translation table
@@ -31,6 +36,16 @@ public:
 	// veff: time shift
         vector<double> tshift[6][2];
 
+        
+        // ======== FADC Pedestals and sigmas ===========
+        // These pedestals (and sigmas) for each channel
+        // are initialized in the initializeHTCCConstants(int runNo) method
+        double pedestal[nsect][nhalfes][nring] = {};
+	double pedestal_sigm[nsect][nhalfes][nring] = {};
+        
+        
+        // voltage signal parameters for the Pulse shape function
+	double vpar[4];
 
 };
 
@@ -47,7 +62,7 @@ public:
 	map<string, double> integrateDgt(MHit*, int);
 
 	// - multiDgt: returns multiple digitized information / hit
-	map< string, vector <int> > multiDgt(MHit*, int);
+	map< string, vector <int> > multiDgt(MHit*, int); 
 
 	// - charge: returns charge/time digitized information / step
 	virtual map< int, vector <double> > chargeTime(MHit*, int);
