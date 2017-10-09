@@ -256,6 +256,11 @@ public:
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int) = 0;
 
+        // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+        // This method should be called once at the end of event action, and the 1st argument 
+        // is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
+	virtual void writeFADCMode1( map<int, vector<hitOutput> >, int)  = 0;
+        
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int) = 0;
 
