@@ -390,6 +390,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	if(SAVE_ALL_MOTHERS>1)
 		saveBGPartsToLund();
 	
+        
+        
+        map<int, vector<hitOutput> > hit_outputs_from_AllSD;
+       
+        
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHC = it->second->GetMHitCollection();
@@ -406,6 +411,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			//MHit* aHit = (*MHC)[0];
 			string vname = (*MHC)[0]->GetDetector().name;
 			string hitType = it->second->GetDetectorHitType(vname);
+			
 
 			if(hitType.find("mirror:") != string::npos) hitType = "mirror";
 
@@ -595,7 +601,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// using the SIGNALVT option
 			if(SIGNALVT.find(hitType) != string::npos) {
 				vector<hitOutput> allVTOutput;
-
+				
+				
 				for(int h=0; h<nhits; h++) {
 
 					hitOutput thisHitOutput;
@@ -612,9 +619,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					map<int, int> vSignal;
 
 					// crate, slot, channels as from translation table
-					vSignal[0] = hardware[0];
-					vSignal[1] = hardware[1];
-					vSignal[2] = hardware[2];
+					vSignal[0] = hardware[0];           // crate
+					vSignal[1] = hardware[1];           // slot
+					vSignal[2] = hardware[2];           // channel
 
 					// Add comments what are these
 					double pedestal_mean = hardware[3];
@@ -654,6 +661,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 					thisHitOutput.createQuantumS(vSignal);
 					
+                                        hit_outputs_from_AllSD[vSignal[0]].push_back(thisHitOutput);
 					allVTOutput.push_back(thisHitOutput);
 					
 					// this is not written out yet
@@ -672,12 +680,16 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);
 				
 				// Event number (evtN) is needed in FADCMode1, therefore this is also passed as an argument
-				processOutputFactory->writeFADCMode1(outContainer, allVTOutput, evtN);
+				//processOutputFactory->writeFADCMode1(outContainer, allVTOutput, evtN);
+                                
 			}
 
 			delete hitProcessRoutine;
 		}
 	}
+        
+        processOutputFactory->writeFADCMode1( hit_outputs_from_AllSD, evtN);
+        
 	// writing out generated particle infos
 	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap, gen_action->userInfo);
 	
