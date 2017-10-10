@@ -50,6 +50,11 @@ class evio_output : public outputFactory
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int);
 
+        // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+        // This method should be called once at the end of event action, and the 1st argument 
+        // is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
+	virtual void writeFADCMode1( map<int, vector<hitOutput> >, int);
+
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int);
 
@@ -76,6 +81,10 @@ class evio_output : public outputFactory
 //	static bool is_conf_written;
 	static vector<int> detector_crates;
 	
+        private:
+            
+        static const int fadc_mode1_banktag;
+        
 };
 
 // returns a evioDOMNodeP based on the type specified by the string

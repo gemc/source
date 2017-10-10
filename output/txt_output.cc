@@ -338,6 +338,11 @@ void txt_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO,
 {
 }
 
+
+void txt_output :: writeFADCMode1( map<int, vector<hitOutput> >, int)
+{
+}
+
 // write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 void txt_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO, int event_number)
 {
