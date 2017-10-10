@@ -16,8 +16,8 @@
 class txt_output : public outputFactory
 {
 	public:
-		~txt_output(){;}  ///< event is deleted in WriteEvent routine
-		static outputFactory *createOutput() {return new txt_output;}
+	~txt_output(){;}  ///< event is deleted in WriteEvent routine
+	static outputFactory *createOutput() {return new txt_output;}
 
 	// record the simulation conditions on the file
 	void recordSimConditions(outputContainer*, map<string, string>);
@@ -49,6 +49,9 @@ class txt_output : public outputFactory
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int);
 
+        // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+        virtual void writeFADCMode1( map<int, vector<hitOutput> >, int);
+        
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int);
 
