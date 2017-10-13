@@ -328,7 +328,6 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     if(rejectHitConditions) {
          writeHit = false;
     }
-	writeHit = false;
 
     return dgtz;
 }
