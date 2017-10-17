@@ -26,6 +26,9 @@ class evio_output : public outputFactory
 	// write header
 	void writeHeader(outputContainer*, map<string, double>, gBank);
 
+	// write user infos header
+ 	void writeUserInfoseHeader(outputContainer*, map<string, double>);
+
 	// format output and set insideBank
 	void initBank(outputContainer*, gBank, int what);
  

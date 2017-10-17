@@ -24,6 +24,9 @@ using namespace std;
 #define HEADER_BANK_TAG 10
 
 // header bank
+#define USER_HEADER_BANK_TAG 11
+
+// RF bank
 #define RF_BANK_TAG 30
 
 

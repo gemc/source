@@ -63,21 +63,13 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 	string time = timeStamp();
 	*headerBank << addVariable(HEADER_BANK_TAG, bank.getVarId("time"), "s", time);
 
-	// bank starts from 2 cause timestamp already there
-	int banknum = 1;
-	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++)
-	{
-		banknum++;
+	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++) {
 
 		int bankId = bank.getVarId(it->first);
 
 		// bankID 1 is time, no need to repeat that info here.
-		if(bankId != -1 && bankId !=1) {
+		if(bankId > 0) {
 			*headerBank << addVariable(HEADER_BANK_TAG, bankId, bank.getVarType(it->first), it->second);
-
-			// user info have bank id = -1. they will be put with banknum index
-		} else if(bankId == -1) {
-			*headerBank << addVariable(HEADER_BANK_TAG, banknum, bank.getVarType(it->first), it->second);
 		}
 
 		// storing event number in memory
@@ -86,8 +78,30 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 
 	}
 	*event << headerBank;
-
 }
+
+// write user infos header
+void evio_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
+{
+	evioDOMNodeP userHeaderBank = evioDOMNode::createEvioDOMNode(USER_HEADER_BANK_TAG, 0);
+	// bank starts from 2 cause timestamp already there
+	int banknum = 1;
+	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++) {
+		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", it->second);
+		banknum++;
+	}
+
+
+	int minNumberOfVarsToWrite = 10;
+	for(unsigned i=data.size(); i<minNumberOfVarsToWrite; i++) {
+		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0);
+		banknum++;
+
+	}
+
+	*event << userHeaderBank;
+}
+
 
 void evio_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
 {
@@ -131,7 +145,6 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> vz;
 	vector<double> btime;
 	vector<double> multiplicity;
-
 
 
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++)

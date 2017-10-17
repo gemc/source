@@ -25,6 +25,9 @@ class txt_output : public outputFactory
 	// write header
 	void writeHeader(outputContainer*, map<string, double>, gBank);
 
+	// write user infos header
+	void writeUserInfoseHeader(outputContainer*, map<string, double>);
+
 	// write RF Signal
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank);
 

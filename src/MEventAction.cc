@@ -328,9 +328,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	header["evn_type"] = -1;  // physics event. Negative is MonteCarlo event
 	header["beamPol"]  = gen_action->getBeamPol();
 
+	// write event header bank
+	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
+
 	// user header should be in a different tag than the normal header
 	// for now, we're ok
 	// assuming 100 user vars max
+	map<string, double> userHeader;
 	for(unsigned i=0; i<gen_action->headerUserDefined.size(); i++) {
 		string tmp = "userVar" ;
 		if(i<9)        tmp +="00";
@@ -338,11 +342,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 		tmp += to_string(i+1);
 
-		header[tmp] = gen_action->headerUserDefined[i];
+		userHeader[tmp] = gen_action->headerUserDefined[i];
 	}
-	
+
 	// write event header bank
-	processOutputFactory->writeHeader(outContainer, header, getBankFromMap("header", banksMap));
+	processOutputFactory->writeUserInfoseHeader(outContainer, userHeader);
 
 	// write RF bank if present
 	// do not write in FASTMC mode

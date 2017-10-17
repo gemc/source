@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+10/17/17
+ - added user info header bank, passed by generator
+ - user info produced by both evio and txt output factories
+
 10/11/17
  - user info bank defaulted to size 25, indexed by particle like the rest of the bank
 
