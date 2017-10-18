@@ -91,7 +91,6 @@ void evio_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 		banknum++;
 	}
 
-
 	int minNumberOfVarsToWrite = 10;
 	for(unsigned i=data.size(); i<minNumberOfVarsToWrite; i++) {
 		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0);
@@ -173,22 +172,6 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("time"),          bank.getVarType("time"), btime);
 	*generatedp << addVector(GENERATED_PARTICLES_BANK_TAG, bank.getVarId("multiplicity"),  bank.getVarType("multiplicity"), multiplicity);
 
-	// user information
-	// storing 25 info / particles
-	// if no user infos, these are all 0s
-	evioDOMNodeP userInfoBank = evioDOMNode::createEvioDOMNode(GENERATED_USE_INFO_TAG, 0);
-	for(unsigned i=0; i<=25; i++) {
-		// particle is the index
-		vector<double> userVar(userInfo.size(), 0);
-
-		for(unsigned p=0; p<userInfo.size(); p++) {
-			if(userInfo[p].infos.size() > i) {
-				userVar[p] = userInfo[p].infos[i];
-			}
-		}
-		*userInfoBank << addVector(GENERATED_USE_INFO_TAG, i+1, "d", userVar);
-	}
-	*generatedp << userInfoBank;
 
 
 	if(SAVE_ALL_MOTHERS)
@@ -262,6 +245,23 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	}
 
 	*event << generatedp;
+
+	// user information
+	// storing 25 info / particles
+	// if no user infos, these are all 0s
+	evioDOMNodeP userInfoBank = evioDOMNode::createEvioDOMNode(GENERATED_USE_INFO_TAG, 0);
+	for(unsigned i=0; i<25; i++) {
+		// particle is the index
+		vector<double> userVar(userInfo.size(), 0);
+
+		for(unsigned p=0; p<userInfo.size(); p++) {
+			if(userInfo[p].infos.size() > i) {
+				userVar[p] = userInfo[p].infos[i];
+			}
+		}
+		*userInfoBank << addVector(GENERATED_USE_INFO_TAG, i+1, "d", userVar);
+	}
+	*event << userInfoBank;
 
 }
 
