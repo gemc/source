@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+10/23/17
+ - added mfield attribute for CAD volumes in cad.gxml
+
+10/18/17
+- moving GENERATED_USE_INFO_TAG bank outside the GENERATED_PARTICLES_BANK_TAG
+
 10/17/17
  - added user info header bank, passed by generator
  - user info produced by both evio and txt output factories
