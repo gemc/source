@@ -71,9 +71,14 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 		vector<string> emstripped = getStringVectorFromStringWithDelimiter(allEM[i], "_");
 		string stripped;
 
-		if(emstripped.size() == 2) stripped = trimSpacesFromString(emstripped[1]);
-		if(stripped != "")
-			g4EMList.push_back(stripped);
+		if(emstripped.size() == 2)
+			stripped = trimSpacesFromString(emstripped[1]);
+		else if (emstripped.size() == 1)
+			stripped = emstripped[0];
+		else
+			continue;
+
+		g4EMList.push_back(stripped);
 
 	}
 
@@ -405,13 +410,3 @@ void PhysicsList::ConstructProcess()
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
