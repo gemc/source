@@ -93,7 +93,7 @@ void evio_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 
 	int minNumberOfVarsToWrite = 10;
 	for(unsigned i=data.size(); i<minNumberOfVarsToWrite; i++) {
-		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0);
+		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0.0);
 		banknum++;
 
 	}

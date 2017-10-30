@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+10/30/17
+ - fixed mismatch typo for internal generator 
+
 10/23/17
  - added mfield attribute for CAD volumes in cad.gxml
 
