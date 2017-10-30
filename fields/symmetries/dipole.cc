@@ -124,13 +124,13 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	double TC = 0;     	// transverse
 
 	if(symmetry == "dipole-z") {
-		TC  = x[0];
+		TC  = fabs(x[0]);
 		LC  = x[1];
 	} else if(symmetry == "dipole-x") {
-		TC  = x[1];
+		TC  = fabs(x[1]);
 		LC  = x[2];
 	} else if(symmetry == "dipole-y") {
-		TC  = x[0];
+		TC  = fabs(x[0]);
 		LC  = x[2];
 	}
 
@@ -139,11 +139,17 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	unsigned int IT = floor( ( TC - startMap[1] ) / cellSize[1] );
 
 	// outside map, returning no field
-	if (LC < startMap[0] || TC < startMap[1]) return;
+	if (LC < startMap[0] || TC < startMap[1])  {
+		// cout << "  Field is outside limits LC: "  << LC << " TC: " << TC << " startMap0: " << startMap[0] << " startMap1: " << startMap[1] << endl;
+		return;
+	}
 
 	// outside map, returning no field
-	if(IL>=np[0] - 1 || IT>=np[1] - 1) return;
-
+	if(IL>=np[0] - 1 || IT>=np[1] - 1) {
+		// cout << "  Field is outside limits IL: "  << IL << "  IT:" << IT << "  np[0] - 1: " << np[0] - 1 << " np[1] - 1: " << np[1] - 1 << endl;
+		return;
+	}
+	
 	// no interpolation
 	if(interpolation == "none")
 	{
