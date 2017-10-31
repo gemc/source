@@ -47,10 +47,14 @@ static ecConstants initializeECConstants(int runno)
 	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
 	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
 	ecc.pmtFactor           = sqrt(1-ecc.pmtQE+(ecc.pmtDynodeK*ecc.pmtDynodeGain+1)/(ecc.pmtDynodeGain-1));
+	
 
+	// The callibration data will be filled in this vector data
 	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
+	
 
+	// ======== Initialization of EC gains ===========
 	sprintf(ecc.database,"/calibration/ec/gain:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
     
@@ -59,7 +63,9 @@ static ecConstants initializeECConstants(int runno)
 	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
 	    ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	  }
+	
 
+	// ========= Initializations of attenuation lengths ========
 	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
 
@@ -71,6 +77,7 @@ static ecConstants initializeECConstants(int runno)
 	    ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	  }
 	
+	// ========== Initialization of timings ===========
 	sprintf(ecc.database,"/calibration/ec/timing:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
 
@@ -83,7 +90,10 @@ static ecConstants initializeECConstants(int runno)
 	    ecc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
 	    ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	  }
-	
+
+
+	// =========== Initialization of FADC250 related informations, pedestals, nsa, nsb ======================
+
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
 	// they will be initialized from DB 
 	const double const_ped_value = 101;
@@ -290,18 +300,17 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 
 	// getting identifiers
 	vector<identifier> identity = aHit->GetId();
+
 	int sector = identity[0].id;
 	int stack  = identity[1].id;
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
 	int layer  = (stack-1)*3+view+3; // layer=1-3 (PCAL) 4-9 (ECAL)
-
-
+	
 	identifiers.push_back(sector);   // sector
 	identifiers.push_back(layer);    // laylayer=1-3 (PCAL) 4-9 (ECAL)er
 	identifiers.push_back(strip);    // component (pmt)
 	identifiers.push_back(0);        // order
-
 
 	// getting hardware
 	Hardware thisHardware = ecc.TT.getHardware({sector, layer, strip, 0});
@@ -310,7 +319,7 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	hardware.push_back(thisHardware.getChannel());
 	
 	// Adding pedestal mean and sigma into the hardware as well
-	// All of these variables start from 1, therefore -1 is sbutracted, e.g. sector-1
+	// All of these variables start from 1, therefore -1 is subtracted, e.g. sector-1
 	hardware.push_back(ecc.pedestal[sector - 1][layer - 1][view - 1]);
 	hardware.push_back(ecc.pedestal_sigm[sector - 1][layer - 1][view - 1]);
 

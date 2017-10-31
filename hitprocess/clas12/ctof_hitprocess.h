@@ -15,6 +15,10 @@ public:
 	string connection;
 	char   database[80];
 
+        static const int n_paddle  = 48;  // Number of ctof paddles
+        static const int n_pmt = 2;  // number of PMTs per paddle
+
+        
 	// For paddle dependent constants read from CCDB
 	// Array [1][1][2] -> sector,panel,UD
 
@@ -45,6 +49,12 @@ public:
     vector<double> toff_UD[1][1];
     vector<double> toff_P2P[1][1];
     
+            // ======== FADC Pedestals and sigmas ===========
+        double pedestal[n_paddle][n_pmt] = {};
+	double pedestal_sigm[n_paddle][n_pmt] = {};
+
+    
+    
 	// tres: Gaussian sigma for smearing time resolution
 	vector<double> tres;
 
@@ -67,6 +77,10 @@ public:
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
+        
+        
+	// translation table
+	TranslationTable TT;        
 };
 
 // Class definition
