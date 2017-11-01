@@ -119,13 +119,14 @@ static ftofConstants initializeFTOFConstants(int runno)
 	}
 
     cout<<"FTOF:Getting time_offset"<<endl;
-    sprintf(ftc.database,"/calibration/ftof/timing_offset:%d",ftc.runNo);
+    sprintf(ftc.database,"/calibration/ftof/time_offsets:%d",ftc.runNo);
     data.clear() ; calib->GetCalib(data,ftc.database);
     for(unsigned row = 0; row < data.size(); row++)
     {
         isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
         ftc.toff_LR[isec-1][ilay-1].push_back(data[row][3]);
-        ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][4]);
+        ftc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
+        ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
     }
 
     cout<<"FTOF:Getting tdc_conv"<<endl;
@@ -237,7 +238,10 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double            B = ftc.twlk[sector-1][panel-1][1][paddle-1];
 	  //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
 	  double timeWalkLeft = A/pow(adcl,B);
-	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + ftc.toff_LR[sector-1][panel-1][paddle-1]/2. - ftc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkLeft;
+	  double       tLeftU = tInfos.time + dLeft/ftc.veff[sector-1][panel-1][0][paddle-1]/cm + ftc.toff_LR[sector-1][panel-1][paddle-1]/2. 
+                                                                                                - ftc.toff_RFpad[sector-1][panel-1][paddle-1] 
+                                                                                                - ftc.toff_P2P[sector-1][panel-1][paddle-1] 
+                                                                                                + timeWalkLeft;
 	  double        tLeft = G4RandGauss::shoot(tLeftU,  sqrt(2)*ftc.tres[panel-1][paddle-1]);
                     tdclu = tLeftU/tdcconvL;
 	                 tdcl = tLeft/tdcconvL;
@@ -252,7 +256,10 @@ map<string, double> ftof_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double             B = ftc.twlk[sector-1][panel-1][4][paddle-1];
 	  //double             C = ftc.twlk[sector-1][panel-1][5][paddle-1];	
 	  double timeWalkRight = A/pow(adcr,B);	
-	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm - ftc.toff_LR[sector-1][panel-1][paddle-1]/2. - ftc.toff_P2P[sector-1][panel-1][paddle-1] + timeWalkRight;
+	  double       tRightU = tInfos.time + dRight/ftc.veff[sector-1][panel-1][1][paddle-1]/cm - ftc.toff_LR[sector-1][panel-1][paddle-1]/2. 
+                                                                                                  - ftc.toff_RFpad[sector-1][panel-1][paddle-1] 
+                                                                                                  - ftc.toff_P2P[sector-1][panel-1][paddle-1] 
+                                                                                                  + timeWalkRight;
 	  double        tRight = G4RandGauss::shoot(tRightU, sqrt(2)*ftc.tres[panel-1][paddle-1]);	
                      tdcru = tRightU/tdcconvR;
                       tdcr = tRight/tdcconvR;

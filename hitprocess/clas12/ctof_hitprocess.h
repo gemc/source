@@ -1,4 +1,4 @@
-#ifndef CTOF_HITPROCESS_H
+    #ifndef CTOF_HITPROCESS_H
 #define CTOF_HITPROCESS_H 1
 
 // gemc headers
@@ -26,10 +26,10 @@ public:
 	//      5 - any other reconstruction problem
 	vector<int> status[1][1][2];
 
-    // tdc_conc: tdc conversion factors
-    vector<double> tdcconv[1][1][2];
+        // tdc_conc: tdc conversion factors
+        vector<double> tdcconv[1][1][2];
 
-    // veff: effective velocity
+        // veff: effective velocity
 	vector<double> veff[1][1][2];
 
 	// attlen: attenuation length
@@ -41,9 +41,10 @@ public:
 	// twlk: Time walk correction, 3 constants each for L and R
 	vector<double> twlk[1][1][6];
 
-    // toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
-    vector<double> toff_UD[1][1];
-    vector<double> toff_P2P[1][1];
+        // toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
+        vector<double> toff_UD[1][1];
+        vector<double> toff_RFpad[1][1];
+        vector<double> toff_P2P[1][1];
     
 	// tres: Gaussian sigma for smearing time resolution
 	vector<double> tres;
