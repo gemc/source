@@ -40,6 +40,8 @@ momControls::momControls(goptions *Opts, string type)
 	beam_particle->addItem("pi-");
 	beam_particle->addItem("kaon+");
 	beam_particle->addItem("kaon-");
+	beam_particle->addItem("mu+");
+	beam_particle->addItem("mu-");
 	for(int i=0; i<particleTable->entries(); i++)
 		beam_particle->addItem(particleTable->GetParticleName(i).c_str());
 	

@@ -1,6 +1,21 @@
 Changelog for GEMC
 ==================
 
+10/30/17
+ - fixed mismatch typo for internal generator
+ - preferred directions on field is "z". Added else to skip cases in expensive method GetFieldValue
+ - fixed bug in dipole field calculation: the transverse coordinate was not computed correctly in some cases.
+
+10/23/17
+ - added mfield attribute for CAD volumes in cad.gxml
+
+10/18/17
+- moving GENERATED_USE_INFO_TAG bank outside the GENERATED_PARTICLES_BANK_TAG
+
+10/17/17
+ - added user info header bank, passed by generator
+ - user info produced by both evio and txt output factories
+
 10/11/17
  - user info bank defaulted to size 25, indexed by particle like the rest of the bank
 

@@ -238,6 +238,9 @@ public:
 	// write RF Signal
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank)  = 0;
 
+	// write user infos header
+	virtual void writeUserInfoseHeader(outputContainer*, map<string, double>)  = 0;
+
 	// write generated particles
 	virtual void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo) = 0;
 

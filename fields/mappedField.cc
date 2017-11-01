@@ -15,19 +15,22 @@ void gMappedField::GetFieldValue( const double point[3], double *Bfield) const
 	Bfield[0] = Bfield[1] = Bfield[2] = 0;
 
 	// dipole field
-	if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
+	if(symmetry == "dipole-z" || symmetry == "dipole-y" || symmetry == "dipole-x") {
 		GetFieldValue_Dipole(Point, Bfield, FIRST_ONLY);
-
+	}
+	else if(symmetry == "cylindrical-z" || symmetry == "cylindrical-y" || symmetry == "cylindrical-x") {
 	// phi-symmetric cylindrical field
-	if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
 		GetFieldValue_Cylindrical(Point, Bfield, FIRST_ONLY);
-	
+	} else 	if(symmetry == "phi-segmented") {
 	// phi-segmented
-	if(symmetry == "phi-segmented")
 		GetFieldValue_phiSegmented(Point, Bfield, FIRST_ONLY);
-	
+	}
+
 	if(verbosity == 99)
 		FIRST_ONLY = 99;
+
+
+	// cout << " CHECK FIELD " << " (" << Bfield[0]/gauss << ",  " << Bfield[1]/gauss << ",  " << Bfield[2]/gauss << ") gauss " << endl;
 	
 }
 

@@ -36,24 +36,37 @@ void txt_output :: writeHeader(outputContainer* output, map<string, double> data
 	*txtout << " --- Header Bank -- " << endl;
 	*txtout << "    - (" << HEADER_BANK_TAG << ", " << bank.getVarId("time") << ") " << "time:\t" << timeStamp() << endl;
 	
-	int banknum = 0;
 	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++)
 	{
-		banknum++;
 		int bankId = bank.getVarId(it->first);
 		
-		if(bankId != -1)
+		if(bankId > 0)
 			*txtout << "    - (" << HEADER_BANK_TAG << ", " << bankId << ") " << it->first << ":\t" << it->second << endl;
-
-		if(bankId == -1)
-			*txtout << "    - (" << HEADER_BANK_TAG << ", " << banknum << ") " << it->first << ":\t" << it->second << endl;
-
 
 	}
 	*txtout << " --- End of Header Bank -- " << endl;
-	
-	
 }
+
+
+// write user header bank
+// initialize insideBank to zero
+void txt_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
+{
+
+	ofstream *txtout = output->txtoutput ;
+
+	*txtout << " --- User Header Bank -- " << endl;
+
+	int banknum = 1;
+	for(map<string, double> :: iterator it = data.begin(); it != data.end(); it++) {
+		*txtout << "    - (" << USER_HEADER_BANK_TAG << ", " << banknum << ") " << it->first << ":\t" << it->second << endl;
+		banknum++;
+	}
+	*txtout << " --- End of User Header Bank -- " << endl;
+}
+
+
+
 
 void txt_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
 {
