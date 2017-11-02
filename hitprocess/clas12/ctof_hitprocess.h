@@ -1,4 +1,4 @@
-    #ifndef CTOF_HITPROCESS_H
+#ifndef CTOF_HITPROCESS_H
 #define CTOF_HITPROCESS_H 1
 
 // gemc headers
@@ -15,8 +15,8 @@ public:
 	string connection;
 	char   database[80];
 
-        static const int n_paddle  = 48;  // Number of ctof paddles
-        static const int n_pmt = 2;  // number of PMTs per paddle
+        int n_paddle;  // Number of ctof paddles
+        int n_pmt;  // number of PMTs per paddle
 
         
 	// For paddle dependent constants read from CCDB
@@ -45,14 +45,13 @@ public:
 	// twlk: Time walk correction, 3 constants each for L and R
 	vector<double> twlk[1][1][6];
 
-        // toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
         vector<double> toff_UD[1][1];
         vector<double> toff_RFpad[1][1];
         vector<double> toff_P2P[1][1];
-    
+   
             // ======== FADC Pedestals and sigmas ===========
-        double pedestal[n_paddle][n_pmt] = {};
-	double pedestal_sigm[n_paddle][n_pmt] = {};
+        double pedestal[48][2] = {};
+	double pedestal_sigm[48][2] = {};
 
     
     

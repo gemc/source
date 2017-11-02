@@ -15,7 +15,7 @@ public:
 	string date;
 	string connection;
 	char   database[80];
-
+        
 	// For paddle dependent constants read from CCDB
 	// Array [6][3][2] -> sector,panel,LR
 
@@ -47,8 +47,12 @@ public:
         vector<double> toff_RFpad[6][3];
         vector<double> toff_P2P[6][3];
 
-        // tres: Gaussian sigma for smearing time resolution
-        vector<double> tres[3];
+    // ======== FADC Pedestals and sigmas ===========
+    double pedestal[6][3][62][2] = {};
+    double pedestal_sigm[6][3][62][2] = {};
+    
+    // tres: Gaussian sigma for smearing time resolution
+    vector<double> tres[3];
     
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
@@ -65,6 +69,10 @@ public:
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
+ 	// translation table
+	TranslationTable TT;        
+       
+        
 };
 
 
