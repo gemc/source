@@ -111,7 +111,7 @@ public:
 		bdescription = d;
 		bankName = bname;
 		name.clear();
-		id.clear();
+		gid.clear();
 		description.clear();
 	}
 	~gBank(){;}
@@ -122,7 +122,7 @@ public:
 	string bankName;              ///< name of the bank, it's also key in the map but we store it here as well
 
 	vector<string>  name;         ///< Variable name.
-	vector<int>     id;           ///< Output variable identifier
+	vector<int>     gid;           ///< Output variable identifier
 	// variable type is 2 chars. The first char represent the type of bank:
 	// N is for no level banks, the rest are defined above (N, R, D, S, M, V).
 	// "i"nt , "d"ouble, "s"tring

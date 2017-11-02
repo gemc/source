@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+1/2/17
+ - renamed variable id to gid in gbank class
+
+10/31/17
+ - added mu+ and mu- to top of list in the gui
+
 10/30/17
  - fixed mismatch typo for internal generator
  - preferred directions on field is "z". Added else to skip cases in expensive method GetFieldValue

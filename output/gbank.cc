@@ -392,7 +392,7 @@ void gBank::load_variable(string n, int i, string t, string d)
 {
 	// adding the variable index to order the map
 	name.push_back(n);
-	id.push_back(i);
+	gid.push_back(i);
 	type.push_back(t);
 	description.push_back(d);
 }
@@ -402,7 +402,7 @@ int gBank::getVarId(string bank)
 {
 	for(unsigned int i=0; i<name.size(); i++)
 	{
-		if(name[i].find(bank) == 0) return id[i];
+		if(name[i].find(bank) == 0) return gid[i];
 	}
 	return -1;
 }
@@ -444,18 +444,18 @@ void gBank::orderNames()
 	int maxId = 0;
 	
 	// first find min, max ID
-	for(unsigned i=0; i<id.size(); i++)
+	for(unsigned i=0; i<gid.size(); i++)
 	{
-		if(id[i] < minId) minId = id[i];
-		if(id[i] > maxId) maxId = id[i];
+		if(gid[i] < minId) minId = gid[i];
+		if(gid[i] > maxId) maxId = gid[i];
 	}
 	
 	int j = 0;
 	for(int i=minId; i<=maxId; i++)
 	{
-		for(unsigned k=0; k<id.size(); k++)
+		for(unsigned k=0; k<gid.size(); k++)
 		{
-			if(i == id[k])
+			if(i == gid[k])
 			{
 				orderedNames[j++] = name[k];
 			}
@@ -497,7 +497,7 @@ gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap)
 		{
 			if(thisBank.getVarBankType(thisBank.name[i]) == DGTINT_ID)
 			{
-				dgtBank.load_variable(thisBank.name[i], thisBank.id[i], thisBank.type[i], thisBank.description[i]);
+				dgtBank.load_variable(thisBank.name[i], thisBank.gid[i], thisBank.type[i], thisBank.description[i]);
 			}
 		}
 		
@@ -514,7 +514,7 @@ ostream &operator<<(ostream &stream, gBank bank)
 	
 	for(unsigned i = 0; i<bank.name.size(); i++)
 	{
-		cout << "  > Variable : " << bank.name[i] << "\t id: " << bank.id[i] << "\t type: " << bank.type[i] << " : " << bank.description[i] << endl;
+		cout << "  > Variable : " << bank.name[i] << "\t id: " << bank.gid[i] << "\t type: " << bank.type[i] << " : " << bank.description[i] << endl;
 	}
 	cout << endl;
 	return stream;
