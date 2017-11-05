@@ -598,7 +598,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				
 			} // end of geant4 integrated digitized information
 			
-			
+
 			// geant4 voltage versus time
 			// by default they are all DISABLED
 			// user can enable them one by one

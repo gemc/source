@@ -28,7 +28,11 @@ const int evio_output::fadc_mode1_banktag = 0xe101;
 
 vector<int> evio_output::detector_crates = {1, 7, 13, 19, 25, 31,     // EC
 	3, 9, 15, 21, 26, 33,     // PCal
-	59};                      // HTCC
+	59,                       // HTCC, CTOF
+        70, 71,                   // FTCalo
+        72,                       // FT Hodo
+        5, 11, 17, 23, 29, 35,     // FTOF        
+};
 
 // record the simulation conditions
 // the format is a string for each variable
@@ -533,10 +537,16 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 			if(hardwareData.find(hardwareKey) == hardwareData.end() && (it_crate->second.at(i_hit).getChargeTime()[3]).size() > 0  ) {
 				hardwareData[hardwareKey] = it_crate->second.at(i_hit).getQuantumS();
 			} else {
-
 				// ======== It was checked, here we have only empty hits, or hits that way off in time, e.g. hit_t = 1200ns
-				//cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
-				continue;
+//                            cout<<"Warning this hardware is already filled"<<endl;
+//			    cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
+//                            for( int ii = 0; ii < (it_crate->second.at(i_hit).getChargeTime()[3]).size();ii++ ){
+//                            
+//                               cout<<"       time = " <<(it_crate->second.at(i_hit).getChargeTime()[3]).at(ii)<<"     ";
+//                            }
+//                            cout<<endl;
+                            
+		            continue;
 			}
 
 			// We should keep track of number of channels in the crate

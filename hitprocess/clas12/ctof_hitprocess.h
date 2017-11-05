@@ -15,6 +15,10 @@ public:
 	string connection;
 	char   database[80];
 
+        int n_paddle;  // Number of ctof paddles
+        int n_pmt;  // number of PMTs per paddle
+
+        
 	// For paddle dependent constants read from CCDB
 	// Array [1][1][2] -> sector,panel,UD
 
@@ -26,10 +30,10 @@ public:
 	//      5 - any other reconstruction problem
 	vector<int> status[1][1][2];
 
-    // tdc_conc: tdc conversion factors
-    vector<double> tdcconv[1][1][2];
+        // tdc_conc: tdc conversion factors
+        vector<double> tdcconv[1][1][2];
 
-    // veff: effective velocity
+        // veff: effective velocity
 	vector<double> veff[1][1][2];
 
 	// attlen: attenuation length
@@ -41,9 +45,15 @@ public:
 	// twlk: Time walk correction, 3 constants each for L and R
 	vector<double> twlk[1][1][6];
 
-    // toff_LR and tof_P2P: time offsets for Left-Right and Paddle-to-Paddle
-    vector<double> toff_UD[1][1];
-    vector<double> toff_P2P[1][1];
+        vector<double> toff_UD[1][1];
+        vector<double> toff_RFpad[1][1];
+        vector<double> toff_P2P[1][1];
+   
+            // ======== FADC Pedestals and sigmas ===========
+        double pedestal[48][2] = {};
+	double pedestal_sigm[48][2] = {};
+
+    
     
 	// tres: Gaussian sigma for smearing time resolution
 	vector<double> tres;
@@ -67,6 +77,10 @@ public:
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
+        
+        
+	// translation table
+	TranslationTable TT;        
 };
 
 // Class definition
