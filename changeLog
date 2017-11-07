@@ -3,6 +3,7 @@ Changelog for GEMC
 
 11/7/17
  - removed unnecessary checks on hitType: it will never be mirror:. Good catch by Angus Hollands. Addressed issue 116
+ - added txt_simple output format (Contribution by Angus Hollands): removed some formatting and makes txt output easier to parse.
 
 11/2/17
  - renamed variable id to gid in gbank class
