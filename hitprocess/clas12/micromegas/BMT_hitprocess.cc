@@ -108,8 +108,6 @@ static bmtConstants initializeBMTConstants(int runno)
 		return bmtc;
 	}
 
-	//bmtc.ZMIN[0] -= CR4C_group[j]*CR4C_width[j];
-	
 	return bmtc;
 }
 
@@ -121,7 +119,6 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// BMT ID:
 	// layer, type, sector, strip
 	
-	//int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int layer  = identity[0].id;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
