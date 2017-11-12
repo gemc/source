@@ -346,7 +346,7 @@ map< int, vector <double> > ft_cal_HitProcess :: chargeTime(MHit* aHit, int hitn
     int layer = 0; // Always 0;
     int iX = identity[0].id;
     int iY = identity[1].id;
-    int crystal = (iY - 1) * ftCalConstants::calo_size + iX - 1;
+    int crystal = (iY - 1) * 22 + iX - 1;
     int order = 0; // Always 0
 
     identifiers.push_back(sector); // sector Always 1
