@@ -416,9 +416,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			string vname = (*MHC)[0]->GetDetector().name;
 			string hitType = it->second->GetDetectorHitType(vname);
 			
-
-			if(hitType.find("mirror:") != string::npos) hitType = "mirror";
-
 			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType, vname);
 			if(!hitProcessRoutine)
 				return;

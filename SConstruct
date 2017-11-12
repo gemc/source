@@ -89,7 +89,7 @@ field_sources = Split("""
 	fields/fieldFactory.cc
 	fields/asciiField.cc
 	fields/mappedField.cc
-	fields/multipoleField.cc 
+	fields/multipoleField.cc
 	fields/symmetries/dipole.cc
 	fields/symmetries/cylindrical.cc
 	fields/symmetries/phi-segmented.cc""")
@@ -104,7 +104,7 @@ hitp_sources = Split("""
 	hitprocess/flux_hitprocess.cc
 	hitprocess/counter_hitprocess.cc
 	hitprocess/clas12/micromegas/FMT_hitprocess.cc
-	hitprocess/clas12/micromegas/fmt_strip.cc	
+	hitprocess/clas12/micromegas/fmt_strip.cc
 	hitprocess/clas12/micromegas/BMT_hitprocess.cc
 	hitprocess/clas12/micromegas/bmt_strip.cc
 	hitprocess/clas12/micromegas/ftm_hitprocess.cc
@@ -131,7 +131,7 @@ hitp_sources = Split("""
 	hitprocess/eic/eic_dirc_hitprocess.cc
 	hitprocess/eic/eic_ec_hitprocess.cc
 	hitprocess/eic/eic_preshower_hitprocess.cc
-	hitprocess/eic/eic_rich_hitprocess.cc	
+	hitprocess/eic/eic_rich_hitprocess.cc
 	hitprocess/injector/bubble_hitprocess.cc
 	hitprocess/HPS/ECAL_hitprocess.cc
 	hitprocess/HPS/SVT_hitprocess.cc
@@ -145,6 +145,7 @@ output_sources = Split("""
 	output/outputFactory.cc
 	output/evio_output.cc
 	output/txt_output.cc
+	output/txt_simple_output.cc
 	output/gbank.cc""")
 env.Library(source = output_sources, target = "lib/goutput")
 
@@ -193,10 +194,3 @@ if env['LIBRARY'] == "static":
 
 if env['LIBRARY'] == "shared":
 	env.SharedLibrary(source = gemc_sources, target = "gemc")
-
-
-
-
-
-
-
