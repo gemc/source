@@ -22,6 +22,8 @@ public:
     // For crystal dependent constants read from CCDB
     // Array [332] -> sector,layer,component
     
+    //static const int calo_size = 22;
+    
     // status:
     //	0 - fully functioning
     //	1 - noisy channel

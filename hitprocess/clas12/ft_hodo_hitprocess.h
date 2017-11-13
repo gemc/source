@@ -16,6 +16,8 @@ public:
 	string connection;
     char   database[80];
 
+    // translation table
+    TranslationTable TT;
 
 	// add constants here
     // For crystal dependent constants read from CCDB
