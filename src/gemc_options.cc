@@ -665,6 +665,13 @@ void goptions::setGoptions()
 	optMap["NO_FIELD"].ctgr = "physics";
 	optMap["NO_FIELD"].repe  = 0;
 
+	optMap["G4FIELDCACHESIZE"].args = 3;
+	optMap["G4FIELDCACHESIZE"].help = "Sets Geant4 Magnetic Field Cache Size (in mm) \n";
+	optMap["G4FIELDCACHESIZE"].name = "Sets Geant4 Magnetic Field Cache Size (in mm). ";
+	optMap["G4FIELDCACHESIZE"].type = 1;
+	optMap["G4FIELDCACHESIZE"].ctgr = "physics";
+	optMap["G4FIELDCACHESIZE"].repe  = 0;
+
 	optMap["PHYS_VERBOSITY"].arg = 0;
 	optMap["PHYS_VERBOSITY"].help = "Physics List Verbosity";
 	optMap["PHYS_VERBOSITY"].name = "Physics List Verbosity";

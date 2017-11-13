@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+11/13/17
+ - added option G4FIELDCACHESIZE to set the geant4 field cache size. 
+
 11/7/17
  - removed unnecessary checks on hitType: it will never be mirror:. Good catch by Angus Hollands. Addressed issue 116
  - added txt_simple output format (Contribution by Angus Hollands): removed some formatting and makes txt output easier to parse.
