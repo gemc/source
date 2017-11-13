@@ -14,8 +14,12 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// number of electrons (Nt)
 	Nel = (int) (1e6*Edep/fmtc.w_i);
 	sigma_td = fmtc.SigmaDrift*(z-fmtc.Z0[layer]); // expression without Lorentz angle
-	//if(z>fmtc.Z0[layer]+7.697 || z<fmtc.Z0[layer]+2.697) cout << "Warning! z position of the FMT hit is not in the sensitive volume: " << z <<" for bottom of gas at "<<fmtc.Z0[layer]<< endl;
 
+	//Lorentz Angle correction
+	x=x+(z-fmtc.Z0[layer])*tan(fmtc.ThetaL)*cos(fmtc.Theta_Ls);
+	y=y+(z-fmtc.Z0[layer])*tan(fmtc.ThetaL)*sin(fmtc.Theta_Ls);
+
+	if (fmtc.HV_DRIFT[layer]==0||(fmtc.HV_STRIPS_IN[layer]==0&&sqrt(x*x+y*y)<fmtc.R_IR)||(fmtc.HV_STRIPS_OUT[layer]==0&&sqrt(x*x+y*y)>=fmtc.R_IR&&sqrt(x*x+y*y)<fmtc.R_max)) Nel=0;
 	
 	int ClosestStrip=0;
 	int clust_size=fmtc.nb_sigma*sigma_td/fmtc.pitch+1; //+1 might be a little bit conservative
@@ -96,7 +100,7 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	  }
 	  else
 	  {// Warning - something is wrong
-	    cout<<"WARNING!!!!!! Something is wrong in FMT strip finder..... "<<ClosestStrip<<" "<<x_real<<" "<<y_real<<endl;
+	    //cout<<"WARNING!!!!!! Something is wrong in FMT strip finder..... "<<ClosestStrip<<" "<<x_real<<" "<<y_real<<endl;
 	    strip_id.push_back(-1);
 	    strip_id.push_back(1);
 	  }

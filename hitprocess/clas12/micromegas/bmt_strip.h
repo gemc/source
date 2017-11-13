@@ -11,6 +11,7 @@ using namespace CLHEP;
 // c++
 #include <vector>
 #include <string>
+#include "Lorentz.h"
 using namespace std;
 
 /// \class bmt_strip
@@ -35,7 +36,9 @@ public:
 	double hStrip2Det;	 // Distance between strips and the middle of the conversion gap (~half the drift gap)
 	int nb_sigma;            // Define the number of strips to look around the closest strip
 	double ThetaL;		    // Lorentz angle
-	double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
+	double Theta_Ls_Z;         //Angle between the Lorentz deviation and the strip.
+	double Theta_Ls_C;         //Angle between the Lorentz deviation and the strip.
+	//double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
 
 	// THE GEOMETRY CONSTANTS
 	const static int NLAYERS = 6  ;	// 6 layers of MM
@@ -67,12 +70,7 @@ public:
 	double nt=104.1; //cm-1 number of total ionizations
 	double averA=36.4143;
 	double averZ=16.4429;
-
-	void changeFieldScale(double newFieldScale)
-	{
-		fieldScale = newFieldScale;
-		ThetaL     = fieldScale*25.*degree;
-	}
+	Lorentz Lor_Angle;
 
 };
 
