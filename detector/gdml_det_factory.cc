@@ -116,6 +116,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 					string color        = e.attribute("color").toStdString();
 					string material     = e.attribute("material").toStdString();
 					string sensitivity  = e.attribute("sensitivity").toStdString();
+					string hitType      = e.attribute("hitType").toStdString();
 					string identifiers  = e.attribute("identifiers").toStdString();
 					string visible      = e.attribute("visible").toStdString();
 					string style        = e.attribute("style").toStdString();
@@ -143,9 +144,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 						if(sensitivity != "") {
 							cout << " sensitivity: " << sensitivity ;
 
-							// same hitType as sensitivity
 							dets[volumeName].sensitivity = sensitivity;
-							dets[volumeName].hitType = sensitivity;
 
 							// identifier must be defined
 							if(identifiers != "") {
@@ -156,6 +155,13 @@ map<string, detector> gdml_det_factory::loadDetectors()
 								cout << " !! Error: volume " << volumeName << " has sensitivity but not identifier. " << endl;
 							}
 						}
+
+						if(hitType != "") {
+							if(verbosity>3)
+								cout << " hitType: " << hitType ;
+							dets[volumeName].hitType = hitType;
+						}
+
 
 						if(material != "") {
 							//if(verbosity>3)

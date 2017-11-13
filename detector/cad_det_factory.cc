@@ -175,7 +175,6 @@ map<string, detector> cad_det_factory::loadDetectors()
 							if(verbosity>3)
 							cout << " sensitivity: " << sensitivity ;
 
-							// same hitType as sensitivity
 							// setting system as sensitivity, so the hit definitions can be loaded
 							// this should be modified later
 							dets[volumeName].system = sensitivity;
@@ -197,9 +196,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 							if(verbosity>3)
 							cout << " hitType: " << hitType ;
 							dets[volumeName].hitType = hitType;
-						} else {
-							dets[volumeName].hitType = sensitivity;
-						}
+						} 
 
 						if(material != "") {
 							if(verbosity>3)
