@@ -11,6 +11,8 @@ using namespace CLHEP;
 #include <vector>
 using namespace std;
 
+#include "Lorentz.h"
+
 class fmtConstants
 {
 public:
@@ -26,6 +28,7 @@ public:
 	double hStrip2Det;	 // Distance between strips and the middle of the conversion gap (~half the drift gap)
 	int nb_sigma;            // Define the number of strips to look around the closest strip
 	double ThetaL;		    // Lorentz angle
+	double Theta_Ls;         //Angle of the Lorentz drift in xy plane 
 	double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
 
 	// THE GEOMETRY CONSTANTS
@@ -36,6 +39,7 @@ public:
 	vector<double> alpha;    // strip angles of layers
 	double R_max;            // outer radius of strip part
 	double R_min;            // inner radius of strip part
+	double R_IR=84.05;             //Radius of the inner region of the strips
 	double pitch;   // the width of the corresponding group of strips
 	int N_str;               // Number of strips for 1 layer
 	int N_halfstr;           // number of bottom strips in the central part
@@ -51,12 +55,7 @@ public:
 	vector<vector<double> >     STRIP_EFFICIENCY; // Give the efficiency (correlated to gain fluctuation)
 
 	double w_i=20; //ionization potential assumed to be 25 eV
-
-	void changeFieldScale(double newFieldScale)
-	{
-		fieldScale = newFieldScale;
-		ThetaL     = fieldScale*25.*degree;
-	}
+	Lorentz Lor_Angle;
 
 };
 

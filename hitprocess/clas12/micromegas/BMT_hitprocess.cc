@@ -4,6 +4,7 @@
 // geant4 headers
 #include "G4FieldManager.hh"
 #include "G4Field.hh"
+#include "CLHEP/Vector/ThreeVector.h"
 
 #include <CCDB/Calibration.h>
 #include <CCDB/Model/Assignment.h>
@@ -82,22 +83,31 @@ static bmtConstants initializeBMTConstants(int runno)
 	
 	      }
 	    }
+
+	  	for (int j = 0; j <bmtc.NSECTORS ; ++j)
+		  {
+		    if (bmtc.AXIS[layer]==1) bmtc.HV_DRIFT[layer][j]=1800;
+		    if (bmtc.AXIS[layer]==0) bmtc.HV_DRIFT[layer][j]=1500;
+		    bmtc.HV_STRIPS[layer][j]=520;
+		  }
+		
 	}
+
 	
 	// all dimensions are in mm
 	bmtc.SigmaDrift = 0.036; //mm-1
 	bmtc.hStrip2Det = bmtc.hDrift/2.;
 	bmtc.nb_sigma=4;
-	bmtc.changeFieldScale(-1);  // this needs to be read from DB
+	//bmtc.changeFieldScale(-1);  // this needs to be read from DB
 
+	bmtc.Lor_Angle.Initialize(runno);
+	
 	if(runno == -1)
 	{
 		cout << " > bmt pre-initizialization. " << endl;
 		return bmtc;
 	}
 
-	//bmtc.ZMIN[0] -= CR4C_group[j]*CR4C_width[j];
-	
 	return bmtc;
 }
 
@@ -109,7 +119,6 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// BMT ID:
 	// layer, type, sector, strip
 	
-	//int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int layer  = identity[0].id;
 	int sector = identity[2].id;
 	int strip  = identity[3].id;
@@ -149,40 +158,54 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
-	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();
-
-	  // if the scale is not set, then use fieldmanager to get the value
-	  // if fieldmanager is not found, the field is zero
-	if(bmtc.fieldScale == -1)
-	{
-		const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
-		double fieldValue[3] = {0, 0, 0};
-		
-		
-		G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
-		
-		// if no field manager, the field is zero
-		if(fmanager)
-		{
-			fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
-			if(bmtc.runNo == 0)
-				cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
-			bmtc.changeFieldScale((fieldValue[2]/gauss)/50000.0);
-		}
-		else
-		{
-			bmtc.changeFieldScale(0);
-			if(bmtc.runNo == 0)
-				cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
-		}
-	}
-	
-	vector<identifier> yid = id;
+  	vector<identifier> yid = id;
 	class bmt_strip bmts;
 	
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
+	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();
+
+	  // if the scale is not set, then use fieldmanager to get the value
+	  // if fieldmanager is not found, the field is zero
+	/*	if(bmtc.fieldScale == -1)
+		{*/
+	const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
+	double fieldValue[3] = {0, 0, 0};
+	double phi_p=atan2(xyz.y(),xyz.x());
 	
+	
+	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
+	
+	G4ThreeVector dm_Z(-sin(phi_p),cos(phi_p),0); //Unit vector indicating the direction of the measurement
+	G4ThreeVector dm_C(0,0,1); //Unit vector indicating the direction of measurement
+	
+	// if no field manager, the field is zero
+	if(fmanager)
+	  {
+	    fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+	    G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
+	    G4ThreeVector qEField(cos(phi_p),sin(phi_p),0); //Product qE
+	    G4ThreeVector Fdir=qEField.cross(BField); //Direction of lorentz drift
+	    bmtc.ThetaL=bmtc.Lor_Angle.GetAngle(bmtc.HV_DRIFT[layer-1][sector-1]/bmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+	    bmtc.Theta_Ls_Z=Fdir.angle(dm_Z);
+	    bmtc.Theta_Ls_C=dm_C.angle(Fdir);
+	   	    
+	    if(bmtc.runNo == 0){
+	      cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
+	      bmtc.ThetaL=bmtc.ThetaL=bmtc.Lor_Angle.GetAngle(bmtc.HV_DRIFT[layer-1][sector-1]/bmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+	      bmtc.Theta_Ls_Z=Fdir.angle(dm_Z);
+	      bmtc.Theta_Ls_C=dm_C.angle(Fdir);
+	    }
+	  }
+	else
+	  {
+	    bmtc.ThetaL=0;
+	    bmtc.Theta_Ls_Z=0;
+	    bmtc.Theta_Ls_C=0;
+	    if(bmtc.runNo == 0)
+	      cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
+	  }
+		
 	double depe = aStep->GetTotalEnergyDeposit();
 	
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;

@@ -23,14 +23,16 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	double x = xyz.x()/mm;
 	double y = xyz.y()/mm;
 	double z = xyz.z()/mm;
-		
+
 	int Nel = (int) (1e6*Edep/bmtc.w_i);
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
+	if (bmtc.HV_DRIFT[layer-1][sector-1]==0||bmtc.HV_STRIPS[layer-1][sector-1]==0) Nel=0;
 	vector<double> strip_id;
 
 	double Delta_drift = sqrt(x*x+y*y) - bmtc.RADIUS[layer-1];
 
-	double phi = atan2(y,x) - Delta_drift*tan(bmtc.ThetaL)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
+	double phi = atan2(y,x) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
+	z=z + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); //Not sure useful, but take into account LorentzAngle deviation if
 	int sector_bis=isInSector(layer,atan2(y,x),bmtc);
 	int strip_num = getClosestStrip(layer, sector_bis, phi, z, bmtc);
 	sigma = getSigma(layer, x, y, bmtc);
