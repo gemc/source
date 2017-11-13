@@ -2,6 +2,13 @@
 #include "FMT_hitprocess.h"
 #include "fmt_strip.h"
 
+// geant4 headers
+#include "G4FieldManager.hh"
+#include "G4Field.hh"
+#include "G4CachedMagneticField.hh"
+#include "CLHEP/Vector/ThreeVector.h"
+
+
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
@@ -61,6 +68,14 @@ static fmtConstants initializeFMTConstants(int runno)
 	fmtc.nb_sigma=4;
 
 	fmtc.R_max = fmtc.pitch*(fmtc.N_halfstr+2*fmtc.N_sidestr)/2.;
+
+	for (int i=0;i<fmtc.NLAYERS;i++){
+	  fmtc.HV_DRIFT[i]=600;
+	  fmtc.HV_STRIPS_IN[i]=520;
+	  fmtc.HV_STRIPS_OUT[i]=520;
+	}
+
+	fmtc.Lor_Angle.Initialize(runno);
 	
 	return fmtc;
 }
@@ -96,13 +111,13 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  dgtz["ADC"]   = 0;
 	}
 	
-    // decide if write an hit or not
-    writeHit = true;
-    // define conditions to reject hit
-    bool rejectHitConditions = false;
-    if(rejectHitConditions) {
-        writeHit = false;
-    }
+	// decide if write an hit or not
+	writeHit = true;
+	// define conditions to reject hit
+	bool rejectHitConditions = false;
+	if(rejectHitConditions) {
+	  writeHit = false;
+	}
 
 	return dgtz;
 }
@@ -113,16 +128,44 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 {
 	double x, y, z;
 	G4ThreeVector   xyz    = aStep->GetPostStepPoint()->GetPosition();
-	x = xyz.x()/mm;
-	y = xyz.y()/mm;
-	z = xyz.z()/mm;
+	x = xyz.x();
+	y = xyz.y();
+	z = xyz.z();
+	double point[4] = {xyz.x(), xyz.y(), xyz.z(),10};
+	double fieldValue[6] = {0, 0, 0, 0, 0, 0};
 
 	vector<identifier> yid = id;
 	class fmt_strip fmts;
 		
 	int layer  = 1*yid[0].id + yid[1].id - 1 ; // modified on 7/27/2015 to match new geometry (Frederic Georges)
-	//int layer  = 2*yid[0].id + yid[1].id - 2 ;
 	int sector = yid[2].id;
+	
+	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
+
+		// if no field manager, the field is zero
+	if(fmanager)
+	  {
+	    fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+	   
+	    G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
+	    G4ThreeVector qEField(0,0,1); //Product q*v
+	    G4ThreeVector Fdir=qEField.cross(BField); //Direction of lorentz drift
+	    fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+	    fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+	    fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
+	    	    	   	    
+	    if(fmtc.runNo == 0){
+	      cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
+	      fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+	      fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
+	    }
+	  }
+	else
+	  {
+	    fmtc.ThetaL=0;
+	    fmtc.Theta_Ls=0;
+	    if(fmtc.runNo == 0) cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
+	  }
 	
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
