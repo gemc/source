@@ -444,21 +444,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
 				userInfo.push_back(thisParticleInfo);
-				/*
-				
-				// necessary geant4 info. Lund specifics:
-				int pindex    = thisParticleInfo.infos[0];
-				int type      = thisParticleInfo.infos[2];
-				int pdef      = thisParticleInfo.infos[3];
-				double px     = thisParticleInfo.infos[6];
-				double py     = thisParticleInfo.infos[7];
-				double pz     = thisParticleInfo.infos[8];
-				double Vx     = thisParticleInfo.infos[11];
-				double Vy     = thisParticleInfo.infos[12];
-				double Vz     = thisParticleInfo.infos[13];
-
-				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);
-				//----------*/
 				
 				setParticleFromParsLund(p, userInfo, anEvent);  
 			}
