@@ -129,6 +129,7 @@ private:
 
 
 	void setParticleFromPars(int, int, int, int, double, double, double,  double, double, double, G4Event* anEvent, int A=0, int Z=0);
+	void setParticleFromParsLund(int, vector<userInforForParticle>, G4Event* anEvent, int A=0, int Z=0);  
 
 };
 
