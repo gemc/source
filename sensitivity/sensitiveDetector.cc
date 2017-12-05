@@ -96,11 +96,11 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	int            tid     = trk->GetTrackID();                                               ///< Track ID
 	int            pid     = trk->GetDefinition()->GetPDGEncoding();                          ///< Track PID
 	int            q       = (int) trk->GetDefinition()->GetPDGCharge();                      ///< Track Charge
-	if(trk->GetCreatorProcess())
+	if(trk->GetCreatorProcess()) {
 		processName     = trk->GetCreatorProcess()->GetProcessName();                      ///< Process that originated the track
+	}
 	string materialName    = poststep->GetMaterial()->GetName();                              ///< Material name in this step
-	vector<identifier> VID = SetId(GetDetectorIdentifier(name), TH,
-								   ctime, SDID.timeWindow, tid);                              ///< Identifier at the geant4 level, using the G4 hierarchy to set the copies
+	vector<identifier> VID = SetId(GetDetectorIdentifier(name), TH, ctime, SDID.timeWindow, tid);                              ///< Identifier at the geant4 level, using the G4 hierarchy to set the copies
 	
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
 	if(ProcessHitRoutine == NULL)
@@ -296,6 +296,8 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 
 	// adding electronic noise to hits
 	// only if requested by user
+	// notice: there should be routine to decide if hit is in the same TW
+	// (in that case it is not a new hit)
 	if(ELECTRONICNOISE.find(HCname) != string::npos)
 	{
 		vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
