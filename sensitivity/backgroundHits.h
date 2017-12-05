@@ -28,11 +28,13 @@ class GBackgroundHits {
 
 	// initialize map from file
 public:
-	GBackgroundHits(string filename);
-	
-	
+	GBackgroundHits() = default;
+	GBackgroundHits(string filename, int verbosity = 0);
+
+	vector<BackgroundHit*> getBackgroundForSystem(string system);
+
 private:
-	
+	// the key is detectorName____eventNumber
 	map<string, vector<BackgroundHit*> > *backgroundHitMap;
 	
 };

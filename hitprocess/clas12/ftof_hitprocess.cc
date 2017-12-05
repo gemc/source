@@ -491,10 +491,8 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 
         double adc = 0;
         double adcu = 0;
-        double tdc = 0;
-        double tdcu = 0;
 
-        // Fluctuate the light measured by the PMT with
+		// Fluctuate the light measured by the PMT with
         // Poisson distribution for emitted photoelectrons
         // Treat L and R separately, in case nphe=0
 

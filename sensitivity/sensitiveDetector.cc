@@ -29,6 +29,11 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
 	ELECTRONICNOISE  = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+	BGFILE = gemcOpt.optMap["MERGE_BGHITS"].arg;
+
+	if(BGFILE != "no") {
+		backgroundHits = GBackgroundHits(BGFILE, verbosity);
+	}
 
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy

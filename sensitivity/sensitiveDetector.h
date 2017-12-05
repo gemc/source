@@ -16,6 +16,7 @@
 #include "detector.h"
 #include "Hit.h"
 #include "HitProcess.h"
+#include "backgroundHits.h"
 
 // C++ headers
 #include <iostream>
@@ -50,6 +51,8 @@ public:
 	goptions    gemcOpt;   ///< gemc option class
 	sensitiveID SDID;      ///< sensitiveID used for identification, hit properties and digitization
 
+	
+
 private:
 	MHitCollection *hitCollection;                               ///< G4THitsCollection<MHit>
 	HitProcess     *ProcessHitRoutine;                           ///< To call PID
@@ -63,8 +66,11 @@ private:
 	double RECORD_PASSBY;    ///< If set to one, records particles even if they do not leave any energy
 	double RECORD_MIRROR;    ///< If set to one, records particles in the mirror detectors
 	string ELECTRONICNOISE;  ///< List of detectors for which electronic noise routines will be called
-	string BGFILE;           ///< filename containing background hits
 	int fastMCMode;          ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
+
+	// background hits
+	string BGFILE;           ///< filename containing background hits
+	GBackgroundHits backgroundHits;
 
 public:
 	vector<identifier> GetDetectorIdentifier(string name) {return (*hallMap)[name].identity;} ///< returns detector identity

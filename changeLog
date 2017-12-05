@@ -4,6 +4,7 @@ Changelog for GEMC
 12/5/17
  - infrastructure for background merging
  - option to load background hits from ascii file
+ - opening ascii file
 
 11/13/17
  - added option G4FIELDCACHESIZE to set the geant4 field cache size. 
