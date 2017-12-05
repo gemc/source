@@ -96,6 +96,15 @@ void goptions::setGoptions()
 	optMap["MERGE_LUND_BG"].type = 1;
 	optMap["MERGE_LUND_BG"].ctgr = "generator";
 	
+	optMap["MERGE_BGHITS"].args = "no";
+	optMap["MERGE_BGHITS"].help = "ASCII file to merge background hits\n";
+	optMap["MERGE_BGHITS"].help += "      example: -MERGE_BGHITS=\"background.dat\" \n";
+	optMap["MERGE_BGHITS"].name = "ASCII file to merge background hits";
+	optMap["MERGE_BGHITS"].type = 1;
+	optMap["MERGE_BGHITS"].ctgr = "generator";
+	
+
+	
 	optMap["NGENP"].arg  = 10;
 	optMap["NGENP"].help = "Max Number of Generated Particles to save in the Output.";
 	optMap["NGENP"].name = "Max Number of Generated Particles to save in the Output";

@@ -51,62 +51,62 @@ using namespace CLHEP;
 /// The class parameters are filled from the field factory
 class gfield
 {
-	public:
-		gfield(){;}
-	gfield(goptions opts) : MFM(nullptr), map(nullptr), symmetry("na"), format("na"), dimensions("na")
-		{
-			// initialize Magnetic Field Manager and Mapped field to NULL
-			scaleFactor	     = 1;
-			minStep          = 1*mm;
-			integration      = "G4ClassicalRK4";
-			verbosity        = opts.optMap["FIELD_VERBOSITY"].arg;
-			g4fieldCacheSize = opts.optMap["G4FIELDCACHESIZE"].arg*mm;
-		}
-	 ~gfield(){}
+public:
+	gfield(){;}
+	gfield(goptions opts) : symmetry("na"), format("na"), dimensions("na"), map(nullptr), MFM(nullptr)
+	{
+		// initialize Magnetic Field Manager and Mapped field to NULL
+		scaleFactor	     = 1;
+		minStep          = 1*mm;
+		integration      = "G4ClassicalRK4";
+		verbosity        = opts.optMap["FIELD_VERBOSITY"].arg;
+		g4fieldCacheSize = opts.optMap["G4FIELDCACHESIZE"].arg*mm;
+	}
+	~gfield(){}
 	
-	public:
-		string name;            ///< Field name - used as key in the map<string, gfield>
-		string symmetry;        ///< Field symmetry
-		string format;          ///< Field format (available: simple (for uniform) and map)
-		string factory;         ///< Field factory (format of magnetic field)
-		string description;     ///< Field Description
-		string dimensions;      ///< Field dimensions (with units), for non-mapped fields
-		string integration;     ///< Integration Method
-		double verbosity;       ///< Log verbosity
-		double minStep;         ///< Minimum Step for the G4ChordFinder
-		string unit;            ///< Field Unit
-		double g4fieldCacheSize;
-
-		// Scale factor, integration methods and map interpolations are set from options
-		double scaleFactor;     
-		void initialize(goptions);
+public:
+	string name;            ///< Field name - used as key in the map<string, gfield>
+	string symmetry;        ///< Field symmetry
+	string format;          ///< Field format (available: simple (for uniform) and map)
+	string factory;         ///< Field factory (format of magnetic field)
+	string description;     ///< Field Description
+	string dimensions;      ///< Field dimensions (with units), for non-mapped fields
+	string integration;     ///< Integration Method
+	double verbosity;       ///< Log verbosity
+	double minStep;         ///< Minimum Step for the G4ChordFinder
+	string unit;            ///< Field Unit
+	double g4fieldCacheSize;
 	
-		// creates simple magnetic field manager (uniform fields, etc)
-		void create_simple_MFM();
-		void create_simple_multipole_MFM();
+	// Scale factor, integration methods and map interpolations are set from options
+	double scaleFactor;
+	void initialize(goptions);
 	
-		// mapped Field. We need to factory to load the map
-		gMappedField *map;       ///< Mapped Field
-		fieldFactory *fFactory;  ///< fieldFactory that created the field
+	// creates simple magnetic field manager (uniform fields, etc)
+	void create_simple_MFM();
+	void create_simple_multipole_MFM();
 	
-	private:
-		G4FieldManager *MFM;             	///< G4 Magnetic Field Manager
-		void create_MFM();                ///< Creates the G4 Magnetic Field Manager
+	// mapped Field. We need to factory to load the map
+	gMappedField *map;       ///< Mapped Field
+	fieldFactory *fFactory;  ///< fieldFactory that created the field
 	
-	public:
-		// Returns Magnetic Field Manager Pointer
-		// creates one if it doesn't exist
-		G4FieldManager* get_MFM()
-		{
-			if(MFM == NULL)
-				create_MFM();
-				
-			return MFM;
-		} 	
-
-		///< Overloaded "<<" for gfield class. Dumps infos on screen.
-		friend ostream &operator<<(ostream &stream, gfield gf);
-				
+private:
+	G4FieldManager *MFM;             	///< G4 Magnetic Field Manager
+	void create_MFM();                ///< Creates the G4 Magnetic Field Manager
+	
+public:
+	// Returns Magnetic Field Manager Pointer
+	// creates one if it doesn't exist
+	G4FieldManager* get_MFM()
+	{
+		if(MFM == NULL)
+			create_MFM();
+		
+		return MFM;
+	}
+	
+	///< Overloaded "<<" for gfield class. Dumps infos on screen.
+	friend ostream &operator<<(ostream &stream, gfield gf);
+	
 };
 
 

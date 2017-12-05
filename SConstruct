@@ -70,6 +70,7 @@ sensi_sources = Split("""
 	sensitivity/sensitiveDetector.cc
 	sensitivity/identifier.cc
 	sensitivity/Hit.cc
+	sensitivity/backgroundHits.cc
 	sensitivity/HitProcess.cc
 	sensitivity/sensitiveID.cc""")
 env.Library(source = sensi_sources, target = "lib/gsensitivity")
