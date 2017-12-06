@@ -62,6 +62,7 @@ private:
 	string hd_msg;                    ///< Head Message Log
 	int ntoskip;                      ///< Number of events to skip
 	int eventIndex;                   ///< Set to 1
+	int PROPAGATOR_TIME;              ///< Flag for calculating propogation time of detached vertex events
 
 	G4ParticleTable* particleTable;   ///< Geant4 Particle Table
 
@@ -129,7 +130,7 @@ private:
 
 
 	void setParticleFromPars(int, int, int, int, double, double, double,  double, double, double, G4Event* anEvent, int A=0, int Z=0);
-	void setParticleFromParsLund(int, vector<userInforForParticle>, G4Event* anEvent, int A=0, int Z=0);  
+	void setParticleFromParsUpdate(int, vector<userInforForParticle>, G4Event* anEvent, int A=0, int Z=0);  
 
 };
 

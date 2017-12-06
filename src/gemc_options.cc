@@ -220,6 +220,15 @@ void goptions::setGoptions()
     optMap["SKIPNGEN"].name = "Skip N events";
     optMap["SKIPNGEN"].type = 0;
     optMap["SKIPNGEN"].ctgr = "generator";
+	
+	// disabled by default
+    optMap["PROPAGATOR_TIME"].arg  = 0;
+    optMap["PROPAGATOR_TIME"].help = "Calculate propogation time of detached vertex events and fire them at this later time. \n";
+	optMap["PROPAGATOR_TIME"].help += "         0: Off (default)\n";
+	optMap["PROPAGATOR_TIME"].help += "         1: On\n";								  
+    optMap["PROPAGATOR_TIME"].name = "Calculate Propogation Time";
+    optMap["PROPAGATOR_TIME"].type = 0;
+    optMap["PROPAGATOR_TIME"].ctgr = "generator";
 
 	
 	// MySQL Database
