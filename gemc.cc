@@ -165,6 +165,7 @@ int main( int argc, char **argv )
 	gemc_splash.message(" Registering Detectors Factories...");
 	// Initializing Detector Factory
 	map<string, detectorFactoryInMap> detectorFactoryMap = registerDetectorFactory();
+
 	// Building detector with factories
 	map<string, detector> hallMap = buildDetector(detectorFactoryMap, gemcOpt, runConds);
 	

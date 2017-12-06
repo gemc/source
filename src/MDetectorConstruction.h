@@ -26,52 +26,58 @@
 #include "field.h"
 #include "HitProcess.h"
 #include "sensitiveDetector.h"
-class MDetectorMessenger;
+#include "backgroundHits.h"
 
 // Class definition
 class MDetectorConstruction : public G4VUserDetectorConstruction
 {
-	public:
-		MDetectorConstruction(goptions Opts);
-		~MDetectorConstruction();
-		
-	public:
-		goptions gemcOpt;
-		
-		map<string, G4Material*>        *mats;
-		map<string, mirror*>            *mirs;
-		map<string, sensitiveDetector*>  SeDe_Map;
-		map<string, detector>           *hallMap;
-		map<string, gfield>             *fieldsMap;
-		map<string, G4Region*>           SeRe_Map;
-		map<string, G4ProductionCuts*>   SePC_Map;
-		set<string>                      activeFields;
-		set<string>                      replicants; // don't build these physical volumes
+public:
+	MDetectorConstruction(goptions Opts);
+	~MDetectorConstruction();
+	
+public:
+	goptions gemcOpt;
+	
+	map<string, G4Material*>        *mats;
+	map<string, mirror*>            *mirs;
+	map<string, sensitiveDetector*>  SeDe_Map;
+	map<string, detector>           *hallMap;
+	map<string, gfield>             *fieldsMap;
+	map<string, G4Region*>           SeRe_Map;
+	map<string, G4ProductionCuts*>   SePC_Map;
+	set<string>                      activeFields;
+	set<string>                      replicants; // don't build these physical volumes
 	
 	
-	private:		
-		detector findDetector(string);   // returns map detector
-		void buildDetector(string);      // build detector
-		void buildCADDetector(string, string, int);   // build CAD detector
+private:		
+	detector findDetector(string);   // returns map detector
+	void buildDetector(string);      // build detector
+	void buildCADDetector(string, string, int);   // build CAD detector
+	
+	void scanDetectors(int VERB, string catch_v);
+	void scanCadDetectors(int VERB, string catch_v);
+	
+	vector<string> nativeRelativesOfCad;
+	vector<string> cadRelativesOfNative;
+	vector<string> remainingCad;
+	vector<string> remainingNative;
+	
+	vector<string> regions;  // all volumes for which mom is "root"
 
-		void scanDetectors(int VERB, string catch_v);
-		void scanCadDetectors(int VERB, string catch_v);
 
-		vector<string> nativeRelativesOfCad;
-		vector<string> cadRelativesOfNative;
-		vector<string> remainingCad;
-		vector<string> remainingNative;
+	// background hits
+	string BGFILE;           ///< filename containing background hits
+	GBackgroundHits backgroundHits;
 
-		vector<string> regions;  // all volumes for which mom is "root"
-
-	public:
-		void isSensitive(detector);
-		void assignRegions(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector
-		void hasMagfield(detector);
-		void buildMirrors();
-		void assignRegions();
-		void updateGeometry();
-		G4VPhysicalVolume* Construct();
+	
+public:
+	void isSensitive(detector);
+	void assignRegions(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector
+	void hasMagfield(detector);
+	void buildMirrors();
+	void assignRegions();
+	void updateGeometry();
+	G4VPhysicalVolume* Construct();
 	
 };
 

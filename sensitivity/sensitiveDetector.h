@@ -51,6 +51,7 @@ public:
 	goptions    gemcOpt;   ///< gemc option class
 	sensitiveID SDID;      ///< sensitiveID used for identification, hit properties and digitization
 
+
 	
 
 private:
@@ -68,9 +69,8 @@ private:
 	string ELECTRONICNOISE;  ///< List of detectors for which electronic noise routines will be called
 	int fastMCMode;          ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
 
-	// background hits
-	string BGFILE;           ///< filename containing background hits
-	GBackgroundHits backgroundHits;
+	// background hits, key is event number
+	map<int, vector<BackgroundHit*> > *backgroundHits;
 
 public:
 	vector<identifier> GetDetectorIdentifier(string name) {return (*hallMap)[name].identity;} ///< returns detector identity
@@ -78,6 +78,7 @@ public:
 	MHitCollection* GetMHitCollection()                   {if(hitCollection) return hitCollection; else return NULL;}              ///< returns hit collection
 	MHit* find_existing_hit(vector<identifier>);                                               ///< returns hit collection hit inside identifer
 
+	void setBackgroundHits(map<int, vector<BackgroundHit*> > *bgh) {backgroundHits = bgh;}
 
 	int processID(string procName);   // return an ID from a process name.
 };

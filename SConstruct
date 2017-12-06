@@ -179,7 +179,6 @@ gemc_sources = Split("""
 	src/run_conditions.cc
 	src/gemc_options.cc
 	src/MDetectorConstruction.cc
-	src/MDetectorMessenger.cc
 	src/MEventAction.cc
 	src/MPrimaryGeneratorAction.cc
 	src/ActionInitialization.cc

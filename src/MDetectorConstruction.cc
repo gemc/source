@@ -20,7 +20,6 @@
 
 // gemc headers
 #include "MDetectorConstruction.h"
-#include "MDetectorMessenger.h"
 
 // mlibrary
 #include "gstring.h"
@@ -49,7 +48,12 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	string catch_v    = gemcOpt.optMap["CATCH"].args;
 	string hall_mat   = gemcOpt.optMap["HALL_MATERIAL"].args;
 	string hall_field = gemcOpt.optMap["HALL_FIELD"].args;
-	
+	BGFILE = gemcOpt.optMap["MERGE_BGHITS"].args;
+
+	if(BGFILE != "no") {
+		backgroundHits = GBackgroundHits(BGFILE, VERB);
+	}
+
 	// Clean old geometry, if any
 	G4GeometryManager::GetInstance()->OpenGeometry();
 	G4PhysicalVolumeStore::GetInstance()->Clean();

@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+12/6/17
+ - removed obsolete DetectorMessenger
+ - startint to read hits from bg file
+
 12/5/17
  - infrastructure for background merging
  - option to load background hits from ascii file
