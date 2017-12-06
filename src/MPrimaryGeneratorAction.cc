@@ -33,7 +33,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
     ntoskip        = gemcOpt->optMap["SKIPNGEN"].arg;
-	PROPAGATOR_TIME = gemcOpt->optMap["PROPAGATOR_TIME"].arg;
+	PROPAGATE_DVERTEXTIME = gemcOpt->optMap["PROPAGATE_DVERTEXTIME"].arg;
 
 	particleTable = G4ParticleTable::GetParticleTable();
 
@@ -457,12 +457,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vy     = thisParticleInfo.infos[12];
 				double Vz     = thisParticleInfo.infos[13];
 				
-				if(PROPAGATOR_TIME==0){
+				if(PROPAGATE_DVERTEXTIME==0){
 					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);   }
 				
 				// if this flag is set to 1 updated times are calculated for detached vertex events
-				if(PROPAGATOR_TIME==1){
-					setParticleFromParsUpdate(p, userInfo, anEvent);  }
+				if(PROPAGATE_DVERTEXTIME==1){
+					setParticleFromParsPropagateTime(p, userInfo, anEvent);  }
 			}
 			
             if(eventIndex <= ntoskip) {
@@ -1310,7 +1310,7 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 	}
 }
 
-void MPrimaryGeneratorAction::setParticleFromParsUpdate(int p, vector<userInforForParticle> Userinfo, G4Event* anEvent, int A, int Z) {
+void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<userInforForParticle> Userinfo, G4Event* anEvent, int A, int Z) {
 	
         int pindex        = Userinfo[p].infos[0];
 		int type		  = Userinfo[p].infos[2];
