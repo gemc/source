@@ -33,6 +33,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
     ntoskip        = gemcOpt->optMap["SKIPNGEN"].arg;
+	PROPAGATE_DVERTEXTIME = gemcOpt->optMap["PROPAGATE_DVERTEXTIME"].arg;
 
 	particleTable = G4ParticleTable::GetParticleTable();
 
@@ -444,7 +445,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					thisParticleInfo.infos.push_back(get_number(s));
 				}
 				userInfo.push_back(thisParticleInfo);
-
+				
 				// necessary geant4 info. Lund specifics:
 				int pindex    = thisParticleInfo.infos[0];
 				int type      = thisParticleInfo.infos[2];
@@ -455,9 +456,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx     = thisParticleInfo.infos[11];
 				double Vy     = thisParticleInfo.infos[12];
 				double Vz     = thisParticleInfo.infos[13];
-
-				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);
+				
+				if(PROPAGATE_DVERTEXTIME==0){
+					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);   }
+				
+				// if this flag is set to 1 updated times are calculated for detached vertex events
+				if(PROPAGATE_DVERTEXTIME==1){
+					setParticleFromParsPropagateTime(p, userInfo, anEvent);  }
 			}
+			
             if(eventIndex <= ntoskip) {
                 if(GEN_VERBOSITY > 3) {
                     cout << " This event will be skipped." << endl;
@@ -1302,6 +1309,142 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
 	}
 }
+
+void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<userInforForParticle> Userinfo, G4Event* anEvent, int A, int Z) {
+	
+        int pindex        = Userinfo[p].infos[0];
+		int type		  = Userinfo[p].infos[2];
+		int pdef          = Userinfo[p].infos[3];
+		double px         = Userinfo[p].infos[6];
+		double py         = Userinfo[p].infos[7];
+		double pz         = Userinfo[p].infos[8];
+		double Vx         = Userinfo[p].infos[11];
+		double Vy         = Userinfo[p].infos[12];
+		double Vz         = Userinfo[p].infos[13];
+		//Make a list of particles parents 
+		vector<int> parentindex;
+		parentindex.push_back(Userinfo[p].infos[4]);
+		
+				
+if(type == 1 && pindex == p+1) {
+		if(pdef != 80000) {
+			Particle = particleTable->FindParticle(pdef);
+			if(!Particle)
+			{
+				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
+
+				return;
+			}
+		} else {
+			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
+		}
+		particleGun->SetParticleDefinition(Particle);
+
+		// 4-momenta
+		G4ThreeVector pmom(px*GeV, py*GeV, pz*GeV);
+		double Mom   = pmom.mag();
+		double Phi   = pmom.getPhi();
+		double Theta = pmom.getTheta();
+		double mass = Particle->GetPDGMass();
+		double akine = sqrt(Mom*Mom + mass*mass) - mass ;
+
+		particleGun->SetParticleEnergy(akine);
+		particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad)));
+
+		// vertex
+		G4ThreeVector beam_vrt(Vx*cm, Vy*cm, Vz*cm);
+		particleGun->SetParticlePosition(beam_vrt);
+
+
+		// beam polarization only along the beam
+		// only for the first particle
+		if(p==0)
+		{
+			particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
+		}
+		if(GEN_VERBOSITY > 3)
+			cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+
+		
+		// Primary particle generated in the middle of Time window, while non primary particles have a time offset
+		if(eventIndex > ntoskip) {
+		    double timeoffset = 0;
+		    //determine if the particle has an inactive parent
+		    if(parentindex[0]!=0 && Userinfo[parentindex[0]-1].infos[2]!=1){
+		       
+		        double px_parent = Userinfo[parentindex[0]-1].infos[6];
+		        double py_parent = Userinfo[parentindex[0]-1].infos[7];
+		        double pz_parent = Userinfo[parentindex[0]-1].infos[8];
+		        double E_parent = Userinfo[parentindex[0]-1].infos[9];
+		        double Vx_parent = Userinfo[parentindex[0]-1].infos[11];
+		        double Vy_parent = Userinfo[parentindex[0]-1].infos[12];
+		        double Vz_parent = Userinfo[parentindex[0]-1].infos[13];
+				//Push back the parents parent to the list
+		        parentindex.push_back(Userinfo[parentindex[0]-1].infos[4]);
+			     
+		    	//vertex difference between particle and its parent  
+		    	double vertex_diff = sqrt(pow(Vx*cm - Vx_parent*cm, 2) + pow(Vy*cm -Vy_parent*cm, 2) + pow(Vz*cm-Vz_parent*cm, 2));
+		    	//set parent momentum
+		   	 	G4ThreeVector pmom_parent(px_parent*GeV, py_parent*GeV, pz_parent*GeV);
+		   	 	double Mom_parent = pmom_parent.mag();
+		  	  	//calculate beta of parent 
+		   	 	double beta_parent = Mom_parent/(E_parent*GeV);
+		    	double speedoflight = 29.979246*(cm/ns); 
+		 	    //calculate time between particle and its parent
+		   	 	timeoffset += vertex_diff/(beta_parent*speedoflight);
+		   	 	
+		   	 	//checking for any further parents  
+		     	for(int i=1; ; i++){
+		          if(parentindex[i]!=0 && userInfo[parentindex[i-1]-1].infos[2]!=1){
+		          
+		              double Vx_parent1 = Userinfo[parentindex[i-1]-1].infos[11];
+		              double Vy_parent1 = Userinfo[parentindex[i-1]-1].infos[12];
+		              double Vz_parent1 = Userinfo[parentindex[i-1]-1].infos[13];
+		               
+		              double px_parent2 = Userinfo[parentindex[i]-1].infos[6];
+		              double py_parent2 = Userinfo[parentindex[i]-1].infos[7];
+		              double pz_parent2 = Userinfo[parentindex[i]-1].infos[8];
+		              double E_parent2 = Userinfo[parentindex[i]-1].infos[9];
+		              double Vx_parent2 = Userinfo[parentindex[i]-1].infos[11];
+		              double Vy_parent2 = Userinfo[parentindex[i]-1].infos[12];
+		              double Vz_parent2 = Userinfo[parentindex[i]-1].infos[13];
+					  //push back further Parents to the list
+					  parentindex.push_back(Userinfo[parentindex[i]-1].infos[4]); 
+					  //vertex difference between the two parents
+		              double Parents_vertex_diff = sqrt(pow(Vx_parent1*cm-Vx_parent2*cm, 2) + pow(Vy_parent1*cm-Vy_parent2*cm, 2) + pow(Vz_parent1*cm-Vz_parent2*cm, 2));
+
+		              //set the second parents momentum
+		              G4ThreeVector pmom_parent2(px_parent2*GeV, py_parent2*GeV, pz_parent2*GeV);
+		              double Mom_parent2   = pmom_parent2.mag();
+		              //calculate beta of the second parent 
+		              double beta_parent2 = Mom_parent2/(E_parent2*GeV);
+		              //calculate additional time offset 
+		              double timeoffset2 = Parents_vertex_diff/(beta_parent2*speedoflight);
+		              timeoffset += timeoffset2;
+		               
+		          }
+				  
+		          else{ 
+				    break; }
+				   }
+		      
+			
+	          }
+			    
+		        particleGun->SetParticleTime(TWINDOW/2 + timeoffset);
+	            particleGun->SetNumberOfParticles(1);
+	            particleGun->GeneratePrimaryVertex(anEvent);
+	            
+	} 
+	
+}
+	else if(pindex != p+1) {
+		if(GEN_VERBOSITY > 3)
+			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
+	}
+}
+
 
 
 
