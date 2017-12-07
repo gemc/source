@@ -50,8 +50,11 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	string hall_field = gemcOpt.optMap["HALL_FIELD"].args;
 	BGFILE = gemcOpt.optMap["MERGE_BGHITS"].args;
 
+	// there's no check that the map is built correctly
 	if(BGFILE != "no") {
-		backgroundHits = GBackgroundHits(BGFILE, VERB);
+		backgroundHits = new GBackgroundHits(BGFILE, VERB);
+	} else {
+		backgroundHits = nullptr;
 	}
 
 	// Clean old geometry, if any
@@ -267,6 +270,7 @@ void MDetectorConstruction::isSensitive(detector detect)
 			
 			// passing detector infos to access factory, runMin, runMax and variation
 			SeDe_Map[sensi] = new sensitiveDetector(sensi, gemcOpt, detect.factory, detect.run, detect.variation, detect.system);
+			SeDe_Map[sensi].setBackgroundHits();
 			
 			// Pass Detector Map Pointer to Sensitive Detector
 			SeDe_Map[sensi]->hallMap        = hallMap;

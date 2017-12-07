@@ -67,7 +67,7 @@ private:
 
 	// background hits
 	string BGFILE;           ///< filename containing background hits
-	GBackgroundHits backgroundHits;
+	GBackgroundHits *backgroundHits;
 
 	
 public:

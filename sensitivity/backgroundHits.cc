@@ -72,21 +72,33 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 
 		string systemEventNumber = hitsData[0] + "____" + hitsData[1];
 
-		// load hits from string
-		BackgroundHit *thisHit = new BackgroundHit(hitsData, verbosity);
+		// load hit from string
+		(*backgroundHitMap)[systemEventNumber].push_back(new BackgroundHit(hitsData, verbosity));
 
-		// hits
-		if(backgroundHitMap->find(systemEventNumber) == backgroundHitMap->end()) {
+	}
+}
 
+
+map<int, vector<BackgroundHit*> >* GBackgroundHits::getBackgroundForSystem(string system)
+{
+	map<int, vector<BackgroundHit*> > *systemBGHits = new map<int, vector<BackgroundHit*> >;
+
+	for(auto allHits: (*backgroundHitMap)) {
+
+		vector<string> systemAndEvents = getStringVectorFromStringWithDelimiter(allHits.first, "____");
+
+		// found system
+		if(systemAndEvents[0] == system) {
+			int eventN = stoi(systemAndEvents[1]);
+			for(auto bghit: allHits.second) {
+				(*systemBGHits)[eventN].push_back(bghit);
+			}
 		}
-
 	}
 
 
-
-
+	return systemBGHits;
 }
-
 
 
 
