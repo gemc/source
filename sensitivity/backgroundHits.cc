@@ -9,9 +9,33 @@
 using namespace gstring;
 
 // initialize from string
-BackgroundHit::BackgroundHit(vector<string> hitsData)
+// notice hardcoded order
+BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 {
-	
+	int identifierSize = stoi(hitsData[2]);
+
+	timeAtElectronics = stod(hitsData[3 + identifierSize]);
+	energy            = stod(hitsData[3 + identifierSize + 1]);
+	npheD             = stod(hitsData[3 + identifierSize + 2]);
+
+	for(unsigned i=0; i<identifierSize; i++) {
+		identifier iden;
+		iden.name = hitsData[0];
+		iden.id   = stoi(hitsData[3+i]);
+		iden.time = timeAtElectronics;
+		identity.push_back(iden);
+	}
+
+	if(verbosity > 4) {
+		cout << " New background hit added for " << hitsData[0] << " event number " << hitsData[1] << ":  identifier: " ;
+		for(auto iden: identity) {
+			cout << " " << iden.id << " " ;
+		}
+		cout << "  time: " << timeAtElectronics;
+		cout << "[ns]  energy: " << energy;
+		cout << "[MeV]  number of photons: " << npheD << endl;
+
+	}
 }
 
 
@@ -49,7 +73,7 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 		string systemEventNumber = hitsData[0] + "____" + hitsData[1];
 
 		// load hits from string
-		BackgroundHit *thisHit = new BackgroundHit(hitsData);
+		BackgroundHit *thisHit = new BackgroundHit(hitsData, verbosity);
 
 		// hits
 		if(backgroundHitMap->find(systemEventNumber) == backgroundHitMap->end()) {

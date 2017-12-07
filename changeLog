@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+12/7/17
+ - background hits read from file finalized
+
 12/6/17
  - removed obsolete DetectorMessenger
  - startint to read hits from bg file

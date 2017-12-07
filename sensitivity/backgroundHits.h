@@ -12,7 +12,7 @@ class BackgroundHit {
 
 public:
 	// constructor from file directly
-	BackgroundHit(vector<string> hitsData);
+	BackgroundHit(vector<string> hitsData, int verbosity);
 
 private:
 	
