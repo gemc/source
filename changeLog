@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+12/8/17
+ - background read and passed correctly to SD
+
 12/7/17
  - background hits read from file finalized
 

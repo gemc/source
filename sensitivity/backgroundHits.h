@@ -14,7 +14,7 @@ public:
 	// constructor from file directly
 	BackgroundHit(vector<string> hitsData, int verbosity);
 
-private:
+//private:
 	
 	double energy; // in MeV
 	double timeAtElectronics; //

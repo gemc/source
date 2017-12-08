@@ -270,10 +270,11 @@ void MDetectorConstruction::isSensitive(detector detect)
 			
 			// passing detector infos to access factory, runMin, runMax and variation
 			SeDe_Map[sensi] = new sensitiveDetector(sensi, gemcOpt, detect.factory, detect.run, detect.variation, detect.system);
-			SeDe_Map[sensi].setBackgroundHits();
-			
+			if(backgroundHits != nullptr) {
+				SeDe_Map[sensi]->setBackgroundHits(backgroundHits->getBackgroundForSystem(sensi));
+			}
 			// Pass Detector Map Pointer to Sensitive Detector
-			SeDe_Map[sensi]->hallMap        = hallMap;
+			SeDe_Map[sensi]->hallMap = hallMap;
 			
 			SDman->AddNewDetector( SeDe_Map[sensi]);
 		}

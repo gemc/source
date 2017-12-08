@@ -37,6 +37,10 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 		RECORD_PASSBY = 1;
 		
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
+
+	backgroundHits = nullptr;
+
+
 }
 
 sensitiveDetector::~sensitiveDetector(){}
@@ -51,6 +55,20 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 	ProcessHitRoutine = NULL;
 	if(verbosity > 1)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
+
+
+	// checking bg hit map
+
+	// TODO: NEED UTILITY TO PRINT THIS FOR DEBUGGING PURPOSES
+	if(backgroundHits != nullptr) {
+		for(auto bgHits: (*backgroundHits)) {
+			cout << " ASD bg " << HCname << " " << bgHits.first << endl;
+			for(auto bgh: bgHits.second) {
+				cout << " id: " << bgh->identity[0].id << " " << bgh->timeAtElectronics << endl;
+			}
+		}
+	}
+
 }
 
 

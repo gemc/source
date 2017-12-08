@@ -45,7 +45,6 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 // initialize map from filename
 GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 {
-
 	backgroundHitMap = new map<string, vector<BackgroundHit*> >;
 
 	ifstream bgif(filename.c_str());
@@ -60,8 +59,7 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 	if(verbosity > 0) cout << " Loading background hits from " << filename << endl;
 
 	// file is good, loading hits
-	while(!bgif.eof())
-	{
+	while(!bgif.eof()) {
 		string bgline;
 		getline(bgif, bgline);
 
@@ -74,7 +72,6 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 
 		// load hit from string
 		(*backgroundHitMap)[systemEventNumber].push_back(new BackgroundHit(hitsData, verbosity));
-
 	}
 }
 
@@ -96,8 +93,11 @@ map<int, vector<BackgroundHit*> >* GBackgroundHits::getBackgroundForSystem(strin
 		}
 	}
 
-
-	return systemBGHits;
+	if(systemBGHits->size() > 0) {
+		return systemBGHits;
+	} else {
+		return nullptr;
+	}
 }
 
 
