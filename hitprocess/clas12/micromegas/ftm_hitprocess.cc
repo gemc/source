@@ -41,6 +41,8 @@ void ftm_HitProcess::initWithRunNumber(int runno)
 map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
 	vector<identifier> identity = aHit->GetId();
 
 	// FTM ID:

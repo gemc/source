@@ -14,11 +14,13 @@ public:
 	// constructor from file directly
 	BackgroundHit(vector<string> hitsData, int verbosity);
 
-//private:
+	friend ostream &operator<<(ostream &stream, BackgroundHit gbh);       ///< Overloaded "<<" for the class 'BackgroundHit'
+
+// private:
 	
 	double energy; // in MeV
-	double timeAtElectronics; //
-	double npheD; // number of photoelectrons detected
+	double timeFromEventStart;   //
+	double nphe;  // number of photoelectrons
 	
 	vector<identifier> identity;
 };
@@ -33,6 +35,7 @@ public:
 
 	// returns all events for a system, key is bg event number
 	map<int, vector<BackgroundHit*> > *getBackgroundForSystem(string system);
+
 
 private:
 	// events for all system, key is detectorName____eventNumber

@@ -156,8 +156,22 @@ static dcConstants initializeDCConstants(int runno)
 map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
     map<string, double> dgtz;
-    vector<identifier> identity = aHit->GetId();
-    
+	vector<identifier> identity = aHit->GetId();
+
+	if(aHit->isBackgroundHit == 1) {
+
+		vector<double>        stepTime    = aHit->GetTime();
+		cout << " This is a background hit with time " << stepTime[0] << endl;
+	// recording smeared and un-smeared quantities
+		dgtz["hitn"]       = hitn;
+		dgtz["sector"]     = identity[0].id;
+		dgtz["layer"]      = identity[1].id;
+		dgtz["wire"]       = identity[2].id;;
+		dgtz["tdc"]        = stepTime[0];
+		return dgtz;
+	}
+
+
     int SECI  = identity[0].id - 1;
     int SLI   = identity[1].id - 1;
     int LAY   = identity[2].id - 1;

@@ -146,6 +146,8 @@ void pcal_HitProcess::initWithRunNumber(int runno)
 map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
 	vector<identifier> identity = aHit->GetId();
 
 	// get sector, view (U, V, W), and strip.

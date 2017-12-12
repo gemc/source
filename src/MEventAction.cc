@@ -171,11 +171,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			
 			for(int h=0; h<nhits; h++)
 			{
-				vector<int>           tids = (*MHC)[h]->GetTIds();
+				vector<int> tids = (*MHC)[h]->GetTIds();
 				
-				for(unsigned int t=0; t<tids.size(); t++)
+				for(unsigned int t=0; t<tids.size(); t++) {
+					if((*MHC)[h]->isBackgroundHit == 0)
 					track_db.insert(tids[t]);
-				
+				}
 				
 				if(SAVE_ALL_MOTHERS>1)
 				{
@@ -198,7 +199,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// this won't get the mother particle infos except for their track ID
 	map<int, TInfos> tinfos;
 	set<int>::iterator it;
-	
+
 	// the container is full only if /tracking/storeTrajectory 2
 	G4TrajectoryContainer *trajectoryContainer;
 	
@@ -237,7 +238,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				}
 			}
 		}
-		
+
 		// building the hierarchy map
 		// for all secondary tracks
 		for(map<int, int>::iterator itm = momDaughter.begin(); itm != momDaughter.end(); itm++)
@@ -270,7 +271,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			}
 		}
 
-		// removing daughter tracks if mother also gave hits
+	// removing daughter tracks if mother also gave hits
 		if(SAVE_ALL_MOTHERS>2)
 		{
 			vector<int> bgtIDs;
@@ -411,11 +412,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		// Instantiating the ProcessHitRoutine only once for the first hit.
 		if(nhits)
 		{
-			// the bank idtag is the one that corresponds to the hitType
+			//  the bank idtag is the one that corresponds to the hitType
 			//MHit* aHit = (*MHC)[0];
 			string vname = (*MHC)[0]->GetDetector().name;
 			string hitType = it->second->GetDetectorHitType(vname);
-			
+
 			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType, vname);
 			if(!hitProcessRoutine)
 				return;
@@ -440,6 +441,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			for(int h=0; h<nhits; h++)
 			{
 				MHit* aHit = (*MHC)[h];
+
+				// electronic noise hits disable? Why? TODO
 				if(aHit->isElectronicNoise)
 					continue;
 

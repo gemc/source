@@ -203,9 +203,13 @@ void ctof_HitProcess::initWithRunNumber(int runno) {
     }
 }
 
-map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
-    map<string, double> dgtz;
-    vector<identifier> identity = aHit->GetId();
+map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
+{
+
+	map<string, double> dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
+   vector<identifier> identity = aHit->GetId();
     int sector = 1;
     int panel = 1;
     int paddle = identity[0].id;

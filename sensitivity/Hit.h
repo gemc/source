@@ -31,6 +31,8 @@ public:
 	
 	// electronic noise hit
 	MHit(double edep, double time, vector<identifier> identity, int pid);
+	// background hit
+	MHit(double edep, double time, int nphe, vector<identifier> identity);
 
 	virtual ~MHit();
 	const MHit& operator=(const MHit&){return *this;}
@@ -199,6 +201,7 @@ public:
 	inline int diditpassTrigger(){return hasTrigger;}
 
 	int isElectronicNoise;          ///< 1 if this is an electronic noise hit
+	int isBackgroundHit;            ///< 1 if this hit a background hit
 
 };
 

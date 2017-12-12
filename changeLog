@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+12/12/17
+ - background hits merging mechanism ready for tesring
+
 12/8/17
  - background read and passed correctly to SD
 

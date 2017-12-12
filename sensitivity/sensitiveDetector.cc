@@ -38,9 +38,9 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 		
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
 
+	// background hits
 	backgroundHits = nullptr;
-
-
+	backgroundEventNumber = 0;
 }
 
 sensitiveDetector::~sensitiveDetector(){}
@@ -57,20 +57,38 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
 
 
-	// checking bg hit map
-
-	// TODO: NEED UTILITY TO PRINT THIS FOR DEBUGGING PURPOSES
-	if(backgroundHits != nullptr) {
-		for(auto bgHits: (*backgroundHits)) {
-			cout << " ASD bg " << HCname << " " << bgHits.first << endl;
-			for(auto bgh: bgHits.second) {
-				cout << " id: " << bgh->identity[0].id << " " << bgh->timeAtElectronics << endl;
+	// checking the whole hit map
+	if(verbosity > 4) {
+		if(backgroundHits != nullptr) {
+			for(auto bgHits: (*backgroundHits)) {
+				cout << " >>> Background hits for " << HCname << " event number: " << bgHits.first << endl;
+				for(auto bgh: bgHits.second) {
+					cout << *bgh << endl;
+				}
 			}
 		}
 	}
 
+	// current background event bookkeeping
+	currentBackground.clear();
+	currentBackground = getNextBackgroundEvent();
 }
 
+vector<BackgroundHit*> sensitiveDetector::getNextBackgroundEvent()
+{
+
+	backgroundEventNumber++;
+
+	if(backgroundEventNumber == backgroundHits->size()) {
+		backgroundEventNumber = 1;
+	}
+
+	if(backgroundHits->find(backgroundEventNumber) != backgroundHits->end()) {
+		return (*backgroundHits)[backgroundEventNumber];
+	} else {
+		return {nullptr};
+	}
+}
 
 
 G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
@@ -323,8 +341,15 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 			hitCollection->insert(noiseHits[h]);
 	}
 
+	// adding background noise to hits
+	for(auto bgh: currentBackground) {
+		if(bgh != nullptr) {
+			hitCollection->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
+		}
+	}
+
+
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore
-	
 }
 
 

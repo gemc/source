@@ -14,15 +14,15 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 {
 	int identifierSize = stoi(hitsData[2]);
 
-	timeAtElectronics = stod(hitsData[3 + identifierSize]);
-	energy            = stod(hitsData[3 + identifierSize + 1]);
-	npheD             = stod(hitsData[3 + identifierSize + 2]);
+	timeFromEventStart = stod(hitsData[3 + identifierSize]);
+	energy             = stod(hitsData[3 + identifierSize + 1]);
+	nphe              = stod(hitsData[3 + identifierSize + 2]);
 
 	for(unsigned i=0; i<identifierSize; i++) {
 		identifier iden;
 		iden.name = hitsData[0];
 		iden.id   = stoi(hitsData[3+i]);
-		iden.time = timeAtElectronics;
+		iden.time = timeFromEventStart;
 		identity.push_back(iden);
 	}
 
@@ -31,12 +31,35 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 		for(auto iden: identity) {
 			cout << " " << iden.id << " " ;
 		}
-		cout << "  time: " << timeAtElectronics;
+		cout << "  time: " << timeFromEventStart;
 		cout << "[ns]  energy: " << energy;
-		cout << "[MeV]  number of photons: " << npheD << endl;
+		cout << "[MeV]  number of photons: " << nphe << endl;
 
 	}
 }
+
+
+
+ostream &operator<<(ostream &stream, BackgroundHit bgh)
+{
+	stream << " - identifiers: " ;
+	for(unsigned i=0; i<bgh.identity.size(); i++) {
+		stream << "#" << i+1 << ": " << bgh.identity[i].id ;
+		if(i < bgh.identity.size() - 1) stream << ", " ;
+	}
+	stream << endl;
+
+	stream << " - time from start of the event: " << bgh.timeFromEventStart/CLHEP::ns << " [ns]" << endl;
+	if(bgh.energy > 0) {
+		stream << " - energy: " << bgh.energy << endl;
+	}
+	if(bgh.nphe > 0) {
+		stream << " - number of photons: " << bgh.nphe << endl;
+	}
+	return stream;
+}
+
+
 
 
 

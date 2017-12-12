@@ -203,6 +203,8 @@ void ftof_HitProcess::initWithRunNumber(int runno) {
 
 map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
     map<string, double> dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
     vector<identifier> identity = aHit->GetId();
 
     int sector = identity[0].id;

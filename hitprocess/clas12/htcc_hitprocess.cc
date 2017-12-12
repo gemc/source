@@ -103,7 +103,9 @@ static htccConstants initializeHTCCConstants(int runno)
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
+
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector = identity[0].id;

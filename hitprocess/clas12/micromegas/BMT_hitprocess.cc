@@ -114,6 +114,8 @@ static bmtConstants initializeBMTConstants(int runno)
 map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double>  dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
 	vector<identifier> identity = aHit->GetId();
 
 	// BMT ID:

@@ -35,7 +35,9 @@ set<string> getListOfHitProcessHit(map<string, HitProcess_Factory> hitProcessMap
 map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBANK)
 {
 	map<string, double> raws;
-	
+	if(aHit->isBackgroundHit == 1) return raws;
+
+
 	trueInfos tInfos(aHit);
 	
 	if(WRITEBANK)

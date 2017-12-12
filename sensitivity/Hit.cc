@@ -19,6 +19,7 @@ MHit::MHit() : G4VHit()
 
 	hasTrigger = 0;
 	isElectronicNoise = 0;
+	isBackgroundHit = 0;
 
 }
 
@@ -57,7 +58,6 @@ void MHit::Draw()
 		if(PID[0] != 0) {
 			pVVisManager->Draw(circle);
 		}
-
 	}
 }
 
@@ -76,17 +76,50 @@ MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
 	q.push_back(0);
 	PID.push_back(pid);
 	mPID.push_back(0);
-	trackID.push_back(0);
-	mtrackID.push_back(0);
-	otrackID.push_back(0);
+	trackID.push_back(-1);
+	mtrackID.push_back(-1);
+	otrackID.push_back(-1);
 	mvert.push_back(G4ThreeVector(0,0,0));
 	materialName.push_back("noise");
 	processID.push_back(999);
 	mgnf.push_back(0);
 
 	identity = vid;
-	
-	
-	
+
 }
+
+
+MHit::MHit(double energy, double tim, int nphe, vector<identifier> vid)
+{
+	isBackgroundHit = 1;
+
+	pos.push_back(G4ThreeVector(0,0,0));
+	Lpos.push_back(G4ThreeVector(0,0,0));
+	vert.push_back(G4ThreeVector(0,0,0));
+	edep.push_back(energy);
+	dx.push_back(0);
+	time.push_back(tim);
+	mom.push_back(G4ThreeVector(0,0,0));
+	E.push_back(0);
+	q.push_back(nphe);
+	PID.push_back(0);
+	mPID.push_back(0);
+	trackID.push_back(-1);
+	mtrackID.push_back(-1);
+	otrackID.push_back(-1);
+	mvert.push_back(G4ThreeVector(0,0,0));
+	materialName.push_back("backgroundHit");
+	processID.push_back(999);
+	mgnf.push_back(0);
+
+	identity = vid;
+
+}
+
+
+
+
+
+
+
 

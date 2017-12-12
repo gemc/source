@@ -72,6 +72,12 @@ private:
 	// background hits, key is event number
 	map<int, vector<BackgroundHit*> > *backgroundHits;
 
+	// bookkeeping of background events
+	int backgroundEventNumber;
+	vector<BackgroundHit*> currentBackground;
+	vector<BackgroundHit*> getNextBackgroundEvent();
+
+
 public:
 	vector<identifier> GetDetectorIdentifier(string name) {return (*hallMap)[name].identity;} ///< returns detector identity
 	string GetDetectorHitType(string name)                {return (*hallMap)[name].hitType;}  ///< returns detector hitType

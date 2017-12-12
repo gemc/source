@@ -83,6 +83,8 @@ static fmtConstants initializeFMTConstants(int runno)
 map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
+	if(aHit->isBackgroundHit == 1) return dgtz;
+
 	vector<identifier> identity = aHit->GetId();
 	
 	// FMT ID:
