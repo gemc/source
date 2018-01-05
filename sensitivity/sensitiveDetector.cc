@@ -76,18 +76,19 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 
 vector<BackgroundHit*> sensitiveDetector::getNextBackgroundEvent()
 {
+	if(backgroundHits != nullptr) {
 
-	backgroundEventNumber++;
+		backgroundEventNumber++;
+		if(backgroundEventNumber == backgroundHits->size()) {
+			backgroundEventNumber = 1;
+		}
 
-	if(backgroundEventNumber == backgroundHits->size()) {
-		backgroundEventNumber = 1;
+
+		if(backgroundHits->find(backgroundEventNumber) != backgroundHits->end()) {
+			return (*backgroundHits)[backgroundEventNumber];
+		}
 	}
-
-	if(backgroundHits->find(backgroundEventNumber) != backgroundHits->end()) {
-		return (*backgroundHits)[backgroundEventNumber];
-	} else {
-		return {nullptr};
-	}
+	return {nullptr};
 }
 
 
