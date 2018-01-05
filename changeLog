@@ -1,8 +1,11 @@
 Changelog for GEMC
 ==================
 
+1/5/18
+ - fixes case where no background file was provided
+
 12/12/17
- - background hits merging mechanism ready for tesring
+ - background hits merging mechanism ready for testing
 
 12/8/17
  - background read and passed correctly to SD
