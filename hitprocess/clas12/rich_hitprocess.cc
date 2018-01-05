@@ -84,8 +84,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
   G4ThreeVector vtx = aStep->GetTrack()->GetVertexPosition();
   int pad = id2[1].id;
   int i;
-  int iPMT=-1;
-  int jPMT=-1;
+//  int iPMT=-1;
+//  int jPMT=-1;
   double lx=0.,ly=0.;
 
   //cout << " Pixalization begin " << id2[0].id << " " << id2[1].id << endl;
@@ -128,17 +128,17 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
     1.951,      1.946,      1.940,      1.934,      1.931,      1.922,      1.919,      1.914,      1.908,      1.902, 
     1.897,      1.894,      1.888,      1.883,      1.877,      1.872,      1.867,      1.861,      1.858,      1.853, 
     1.848}; 
-  static const double qUV[nbinsUV]={
-    0.09697,    0.10264,    0.11370,    0.12738,    0.13951,    0.15279,    0.16545,    0.18120,    0.19399,    0.20768, 
-    0.21983,    0.23268,    0.24629,    0.25775,    0.26070,    0.27282,    0.27594,    0.27594,    0.27594,    0.27282, 
-    0.26974,    0.26669,    0.26070,    0.25484,    0.24629,    0.23534,    0.22745,    0.21489,    0.20301,    0.18963, 
-    0.17713,    0.16358,    0.15279,    0.13951,    0.12738,    0.11500,    0.10381,    0.09161,    0.08177,    0.07298, 
-    0.06514,    0.05881,    0.05249,    0.04685,    0.04181,    0.03775,    0.03369,    0.03007,    0.02684,    0.02396, 
-    0.02163,    0.01887,    0.01703,    0.01503,    0.01342,    0.01184,    0.01045,    0.00933,    0.00832,    0.00726, 
-    0.00656,    0.00572,    0.00511,    0.00456,    0.00402,    0.00351,    0.00317,    0.00276,    0.00247,    0.00215, 
-    0.00192,    0.00169,    0.00150,    0.00130,    0.00118,    0.00103,    0.00093,    0.00082,    0.00072,    0.00063, 
-    0.00056,    0.00050,    0.00043,    0.00039,    0.00035,    0.00030,    0.00027,    0.00023,    0.00021,    0.00018, 
-    0.00016};
+//  static const double qUV[nbinsUV]={
+//    0.09697,    0.10264,    0.11370,    0.12738,    0.13951,    0.15279,    0.16545,    0.18120,    0.19399,    0.20768,
+//    0.21983,    0.23268,    0.24629,    0.25775,    0.26070,    0.27282,    0.27594,    0.27594,    0.27594,    0.27282,
+//    0.26974,    0.26669,    0.26070,    0.25484,    0.24629,    0.23534,    0.22745,    0.21489,    0.20301,    0.18963,
+//    0.17713,    0.16358,    0.15279,    0.13951,    0.12738,    0.11500,    0.10381,    0.09161,    0.08177,    0.07298,
+//    0.06514,    0.05881,    0.05249,    0.04685,    0.04181,    0.03775,    0.03369,    0.03007,    0.02684,    0.02396,
+//    0.02163,    0.01887,    0.01703,    0.01503,    0.01342,    0.01184,    0.01045,    0.00933,    0.00832,    0.00726,
+//    0.00656,    0.00572,    0.00511,    0.00456,    0.00402,    0.00351,    0.00317,    0.00276,    0.00247,    0.00215,
+//    0.00192,    0.00169,    0.00150,    0.00130,    0.00118,    0.00103,    0.00093,    0.00082,    0.00072,    0.00063,
+//    0.00056,    0.00050,    0.00043,    0.00039,    0.00035,    0.00030,    0.00027,    0.00023,    0.00021,    0.00018,
+//    0.00016};
 
 //  static const int nPMTs=28;
   /*static const double effPMT[nPMTs]={
@@ -239,11 +239,11 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
     if(new_xpos>ini && new_xpos<=ini+PXDX[i]){
       lx = new_xpos - ini - PXDX[i]/2.;
       if(abs(lx) < (PXDX[i]-PXLDeadSpace_x)/2.){
-	iPMT=i+1;
+//	iPMT=i+1;
 	// cout << " 2 pixel x is " << iPMT << endl ;
 
       }else{
-	iPMT=0;
+//	iPMT=0;
       }
       //cout << "       --> " << i << " " << ini << " lx " << lx << " " << iPMT << endl;
       break;
@@ -258,10 +258,10 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
     if(new_ypos>ini && new_ypos<=ini+PXDY[i]){
       ly = new_ypos - ini - PXDY[i]/2.;
       if(abs(ly) < (PXDY[i]-PXLDeadSpace_y)/2.){
-	jPMT=NJPXL-i;
+//	jPMT=NJPXL-i;
 	// cout << " 2 pixel y is " << jPMT << endl ;
       }else{
-	jPMT=0;
+//	jPMT=0;
       }
       //cout << "         --> " << i << " " << ini << " ly " << ly << " " << jPMT << endl;
       break;
@@ -290,7 +290,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	/* it was as below, but it seems to be wrong: && instead of || */
 	// if(Energy < pUV[0] && Energy >= pUV[nbinsUV-1])
 	double QE = -1;
-	double QEUV = -1;
+//	double QEUV = -1;
 	/* standard - non-UV - quantum efficiency */
 	for(int ie=0; ie<nbins-1; ie++)
 	  {
@@ -305,7 +305,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	  {
 	    if(Energy < pUV[ie] && Energy >= pUV[ie+1])
 	      {
-		QEUV = qUV[ie] + (Energy-pUV[ie])*(qUV[ie+1]-qUV[ie])/(pUV[ie+1]-pUV[ie]);
+//		QEUV = qUV[ie] + (Energy-pUV[ie])*(qUV[ie+1]-qUV[ie])/(pUV[ie+1]-pUV[ie]);
 		break;
 	      }
 	  }

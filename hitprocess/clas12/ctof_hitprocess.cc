@@ -46,7 +46,8 @@ static ctofConstants initializeCTOFConstants(int runno) {
         ctc.tres.push_back(1e-3 * 65.); //ps to ns
     }
 
-    int isec, ilay, istr;
+	int isec, ilay;
+//	int isec, ilay, istr;
 
     vector<vector<double> > data;
 
@@ -60,7 +61,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.attlen[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ctc.attlen[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -72,7 +73,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.veff[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ctc.veff[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -84,7 +85,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ctc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -96,7 +97,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.countsForMIP[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ctc.countsForMIP[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -124,7 +125,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.toff_UD[isec - 1][ilay - 1].push_back(data[row][3]);
         ctc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
         ctc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
@@ -137,7 +138,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
+//        istr = data[row][2];
         ctc.tdcconv[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ctc.tdcconv[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }

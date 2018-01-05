@@ -82,7 +82,7 @@ vector<double> ftm_strip::FindStrip(int layer, double x, double y, double z, dou
             strip_id.push_back(1);
         }
         // normalize weight to have integral equal to 1
-        for (int i=0; i<strip_id.size()/2; i++) {
+        for (unsigned i=0; i<strip_id.size()/2; i++) {
             strip_id[i*2+1]=strip_id[i*2+1]/weight_tot;
 //            cout << strip_id[i*2] << " " << strip_id[i*2+1] << endl;
         }

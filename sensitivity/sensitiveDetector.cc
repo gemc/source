@@ -79,7 +79,7 @@ vector<BackgroundHit*> sensitiveDetector::getNextBackgroundEvent()
 	if(backgroundHits != nullptr) {
 
 		backgroundEventNumber++;
-		if(backgroundEventNumber == backgroundHits->size()) {
+		if(backgroundEventNumber == (int) backgroundHits->size()) {
 			backgroundEventNumber = 1;
 		}
 

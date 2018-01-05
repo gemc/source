@@ -19,7 +19,8 @@ static pcConstants initializePCConstants(int runno)
 	// with the proper run number coming from options or run table
 	if(runno == -1) return pcc;
 
-	int isec,ilay,istr;
+	int isec,ilay;
+//	int isec,ilay,istr;
 
 	// database
 	pcc.runNo      = runno;
@@ -55,7 +56,8 @@ static pcConstants initializePCConstants(int runno)
     
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
+		  //istr = data[row][2];
 	    pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	  }
 
@@ -64,7 +66,8 @@ static pcConstants initializePCConstants(int runno)
 
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
+		  //istr = data[row][2];
 	    pcc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
 	    pcc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
 	    pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
@@ -75,7 +78,8 @@ static pcConstants initializePCConstants(int runno)
 
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
+		  //istr = data[row][2];
 	    pcc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
 	    pcc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
 	    pcc.timing[isec-1][ilay-1][2].push_back(data[row][5]);

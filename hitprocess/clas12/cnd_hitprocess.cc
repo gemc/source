@@ -212,7 +212,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Variables from the database:
 	
 	double attlength_D = 0.;
-	double attlength_N = 0.;
+//	double attlength_N = 0.;
 	double v_eff_D = 0.;
 	double v_eff_N = 0.;
 	double slope_D = 0.;
@@ -229,7 +229,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (paddle == 1){   // hit is in paddle L
 		
 		attlength_D = cndc.attlen_L[sector-1][layer-1][0];
-		attlength_N = cndc.attlen_R[sector-1][layer-1][0];
+//		attlength_N = cndc.attlen_R[sector-1][layer-1][0];
 		
 		v_eff_D = cndc.veff_L[sector-1][layer-1][0];
 		v_eff_N = cndc.veff_R[sector-1][layer-1][0];
@@ -247,7 +247,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	else if (paddle == 2) {   // hit is in paddle R
 		
 		attlength_D = cndc.attlen_R[sector-1][layer-1][0];
-		attlength_N = cndc.attlen_L[sector-1][layer-1][0];
+//		attlength_N = cndc.attlen_L[sector-1][layer-1][0];
 		
 		v_eff_D = cndc.veff_R[sector-1][layer-1][0];
 		v_eff_N = cndc.veff_L[sector-1][layer-1][0];

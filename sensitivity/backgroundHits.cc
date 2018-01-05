@@ -18,7 +18,7 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 	energy             = stod(hitsData[3 + identifierSize + 1]);
 	nphe              = stod(hitsData[3 + identifierSize + 2]);
 
-	for(unsigned i=0; i<identifierSize; i++) {
+	for(int i=0; i<identifierSize; i++) {
 		identifier iden;
 		iden.name = hitsData[0];
 		iden.id   = stoi(hitsData[3+i]);
@@ -58,9 +58,6 @@ ostream &operator<<(ostream &stream, BackgroundHit bgh)
 	}
 	return stream;
 }
-
-
-
 
 
 

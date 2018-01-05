@@ -3,6 +3,7 @@ Changelog for GEMC
 
 1/5/18
  - fixes case where no background file was provided
+ - making gcc happier (silencing comparison warnings and unused vars)
 
 12/12/17
  - background hits merging mechanism ready for testing
