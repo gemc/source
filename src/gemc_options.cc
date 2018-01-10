@@ -615,6 +615,11 @@ void goptions::setGoptions()
 	optMap["PHYSICS"].type = 1;
 	optMap["PHYSICS"].ctgr = "physics";
 
+	optMap["SYNRAD"].arg  = 0;
+	optMap["SYNRAD"].help = " Adds Synchrotron radiation";
+	optMap["SYNRAD"].name = " Adds Synchrotron radiation";
+	optMap["SYNRAD"].type = 0;
+	optMap["PHYSICS"].ctgr = "physics";
 
 	// voltage versus time resolution, in ns
 	optMap["FASTMCMODE"].arg   = 0;   // 1: production cut set to 5m. 2: turn off all physics but transportation

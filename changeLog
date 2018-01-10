@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+1/10/18
+ - added G4SynchrotronRadiation process, off by default, activated with option SYNRAD
+
 1/5/18
  - fixes case where no background file was provided
  - making gcc happier (silencing comparison warnings and unused vars)
