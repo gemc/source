@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+1/16/18
+ - added G4SynchrotronRadiationInMat. SYNRAD option activate that one if it is set to 2.
+
 1/10/18
  - added G4SynchrotronRadiation process, off by default, activated with option SYNRAD
 

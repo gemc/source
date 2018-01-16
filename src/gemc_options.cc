@@ -616,7 +616,11 @@ void goptions::setGoptions()
 	optMap["PHYSICS"].ctgr = "physics";
 
 	optMap["SYNRAD"].arg  = 0;
-	optMap["SYNRAD"].help = " Adds Synchrotron radiation";
+	optMap["SYNRAD"].help = " Adds Synchrotron Radiation";
+	optMap["SYNRAD"].help +=  "     Possible values:\n";
+	optMap["SYNRAD"].help +=  "     0: no Synchrotron Radiation (default)\n";
+	optMap["SYNRAD"].help +=  "     1: vacuum Synchrotron Radiation \n";
+	optMap["SYNRAD"].help +=  "     2: material Synchrotron Radiation \n";
 	optMap["SYNRAD"].name = " Adds Synchrotron radiation";
 	optMap["SYNRAD"].type = 0;
 	optMap["PHYSICS"].ctgr = "physics";

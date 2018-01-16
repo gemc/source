@@ -253,6 +253,7 @@ void PhysicsList::SetCutForProton(double cut)
 
 #include "G4OpticalPhysics.hh"
 #include "G4SynchrotronRadiation.hh"
+#include "G4SynchrotronRadiationInMat.hh"
 
 #include "G4StepLimiter.hh"
 
@@ -379,9 +380,11 @@ void PhysicsList::ConstructProcess()
 			g4HadronicPhysics[i]->ConstructProcess();
 
 		// sync radiation
-		G4SynchrotronRadiation* fSync = nullptr;
+		G4SynchrotronRadiation*      fSync    = nullptr;
+		G4SynchrotronRadiationInMat* fSyncMat = nullptr;
 
-		if (synrad) fSync = new G4SynchrotronRadiation();
+			 if (synrad == 1) fSync    = new G4SynchrotronRadiation();
+		else if (synrad == 2) fSyncMat = new G4SynchrotronRadiationInMat();
 		//G4AutoDelete::Register(fSync);
 
 		 auto theParticleIterator = GetParticleIterator();
@@ -406,7 +409,7 @@ void PhysicsList::ConstructProcess()
 			}
 
 			// G4SynchrotronRadiation if requested
-			if (synrad) {
+			if (synrad == 1) {
 
 				if (pname == "e-") {
 					//electron
@@ -416,6 +419,18 @@ void PhysicsList::ConstructProcess()
 				} else if (pname == "e+") {
 					//positron
 					pmanager->AddProcess(fSync,              -1,-1, 5);
+					pmanager->AddProcess(new G4StepLimiter,  -1,-1, 6);
+				}
+			} else if (synrad == 2) {
+
+				if (pname == "e-") {
+					//electron
+					pmanager->AddProcess(fSyncMat,            -1,-1, 4);
+					pmanager->AddProcess(new G4StepLimiter,   -1,-1, 5);
+
+				} else if (pname == "e+") {
+					//positron
+					pmanager->AddProcess(fSyncMat,           -1,-1, 5);
 					pmanager->AddProcess(new G4StepLimiter,  -1,-1, 6);
 				}
 			}
