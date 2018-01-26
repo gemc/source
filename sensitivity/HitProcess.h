@@ -187,7 +187,7 @@ protected:
 typedef HitProcess *(*HitProcess_Factory)();
 
 // Return HitProcess from the Hit Process Map
-HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string, string);
+HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string);
 
 // returns the list of Hit Factories registered
 set<string> getListOfHitProcessHit(map<string, HitProcess_Factory>);

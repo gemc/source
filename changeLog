@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+1/26/18
+ - removed volume name in getHitProcess function, was not necessary
+ - moved background merging algorithms to MEventAction: fix bug where BG events were not written unless a sensitive detector was already hit.
+
 1/16/18
  - added G4SynchrotronRadiationInMat. SYNRAD option activate that one if it is set to 2.
 

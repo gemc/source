@@ -38,9 +38,6 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 		
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
 
-	// background hits
-	backgroundHits = nullptr;
-	backgroundEventNumber = 0;
 }
 
 sensitiveDetector::~sensitiveDetector(){}
@@ -57,38 +54,6 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
 
 
-	// checking the whole hit map
-	if(verbosity > 4) {
-		if(backgroundHits != nullptr) {
-			for(auto bgHits: (*backgroundHits)) {
-				cout << " >>> Background hits for " << HCname << " event number: " << bgHits.first << endl;
-				for(auto bgh: bgHits.second) {
-					cout << *bgh << endl;
-				}
-			}
-		}
-	}
-
-	// current background event bookkeeping
-	currentBackground.clear();
-	currentBackground = getNextBackgroundEvent();
-}
-
-vector<BackgroundHit*> sensitiveDetector::getNextBackgroundEvent()
-{
-	if(backgroundHits != nullptr) {
-
-		backgroundEventNumber++;
-		if(backgroundEventNumber == (int) backgroundHits->size()) {
-			backgroundEventNumber = 1;
-		}
-
-
-		if(backgroundHits->find(backgroundEventNumber) != backgroundHits->end()) {
-			return (*backgroundHits)[backgroundEventNumber];
-		}
-	}
-	return {nullptr};
 }
 
 
@@ -142,7 +107,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
 	if(ProcessHitRoutine == NULL)
 	{
-		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name), name);
+		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name));
 	}
 	
 	// if not existing, exit
@@ -309,6 +274,32 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 {
 	int nhitC = hitCollection->GetSize();
 	if(!nhitC) return;
+
+	// adding electronic noise to hits
+	// only if requested by user
+	// notice: there should be routine to decide if hit is in the same TW
+	// (in that case it is not a new hit)
+	if(ELECTRONICNOISE.find(HCname) != string::npos)
+	{
+		vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
+		for(unsigned int h=0; h<noiseHits.size(); h++)
+			hitCollection->insert(noiseHits[h]);
+	}
+
+//	cout << HCname << " Before: HITC " << hitCollection << " size: " << nhitC << endl;
+
+//	// adding background noise to hits
+//	for(auto bgh: currentBackground) {
+//		if(bgh != nullptr) {
+//			hitCollection->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
+//		}
+//	}
+//
+//	nhitC = hitCollection->GetSize();
+//	cout << HCname << " After: HITC " << hitCollection << " size: " << nhitC << endl;
+
+
+
 	MHit *aHit;
 	double Etot;
 	if(verbosity > 2 && nhitC)
@@ -331,23 +322,7 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 		}
 	}
 
-	// adding electronic noise to hits
-	// only if requested by user
-	// notice: there should be routine to decide if hit is in the same TW
-	// (in that case it is not a new hit)
-	if(ELECTRONICNOISE.find(HCname) != string::npos)
-	{
-		vector<MHit*> noiseHits = ProcessHitRoutine->electronicNoise();
-		for(unsigned int h=0; h<noiseHits.size(); h++)
-			hitCollection->insert(noiseHits[h]);
-	}
 
-	// adding background noise to hits
-	for(auto bgh: currentBackground) {
-		if(bgh != nullptr) {
-			hitCollection->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
-		}
-	}
 
 
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore

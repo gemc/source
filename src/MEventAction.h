@@ -149,6 +149,18 @@ public:
 	ofstream *lundOutput;
 	map<int, BGParts> bgMap;
 
+
+private:
+	// background hits, key is event number
+	// background hits
+	string BGFILE;           ///< filename containing background hits
+	GBackgroundHits *backgroundHits;
+
+	// bookkeeping of background events
+	int backgroundEventNumber;
+	vector<BackgroundHit*> getNextBackgroundEvent(string forSystem);
+
+
 public:
 	void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
 	void EndOfEventAction(const G4Event*);              ///< Routine at the end of each event

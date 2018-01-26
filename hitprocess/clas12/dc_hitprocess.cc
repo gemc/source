@@ -161,7 +161,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(aHit->isBackgroundHit == 1) {
 
 		vector<double>        stepTime    = aHit->GetTime();
-		cout << " This is a background hit with time " << stepTime[0] << endl;
+	//	cout << " This is a background hit with time " << stepTime[0] << endl;
 	// recording smeared and un-smeared quantities
 		dgtz["hitn"]       = hitn;
 		dgtz["sector"]     = identity[0].id;

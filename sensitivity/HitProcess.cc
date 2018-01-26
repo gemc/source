@@ -5,14 +5,14 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string HCname, string vname)
+HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string HCname)
 {
 	if(HCname == "no")
 		return NULL;
 
 	if(hitProcessMap->find(HCname) == hitProcessMap->end())
 	{
-		cout << endl << "  !!! Error: >" << HCname << "< NOT FOUND IN  ProcessHit Map for volume " << vname << " - exiting." << endl;
+		cout << endl << "  !!! Error: >" << HCname << "< NOT FOUND IN  ProcessHit Map - exiting." << endl;
 		exit(0);
 		return NULL;
 	}

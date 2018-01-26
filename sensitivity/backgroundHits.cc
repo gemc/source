@@ -34,7 +34,6 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 		cout << "  time: " << timeFromEventStart;
 		cout << "[ns]  energy: " << energy;
 		cout << "[MeV]  number of photons: " << nphe << endl;
-
 	}
 }
 

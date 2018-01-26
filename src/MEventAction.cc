@@ -113,6 +113,17 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	}
 	
 	evtN = gemcOpt.optMap["EVTN"].arg;
+
+	// background hits
+	backgroundHits = nullptr;
+	BGFILE = gemcOpt.optMap["MERGE_BGHITS"].args;
+
+	// there's no check that the map is built correctly
+	if(BGFILE != "no") {
+		backgroundHits = new GBackgroundHits(BGFILE, VERB);
+	}
+	backgroundEventNumber = 0;
+
 }
 
 MEventAction::~MEventAction()
@@ -133,17 +144,31 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 	rw.getRunNumber(evtN);
 	bgMap.clear();
 
-	if(evtN%Modulo == 0 )
-	{
+	if(evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
 		if(rw.isNewRun) cout << " (new) ";
 		cout << endl;
 		cout << hd_msg << " Random Number: " << G4UniformRand() << endl;
 		// CLHEP::HepRandom::showEngineStatus();
-
-		
 	}
 
+	// background hits:
+	// checking the whole hit map
+	if(VERB > 4) {
+		if(backgroundHits != nullptr) {
+			for(auto sDet: SeDe_Map) {
+				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
+				if(backgroundHitsEventMap != nullptr) {
+					for(auto bgHits: (*backgroundHitsEventMap)) {
+						cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first << endl;
+						for(auto bgh: bgHits.second) {
+							cout << *bgh << endl;
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
@@ -403,7 +428,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHC = it->second->GetMHitCollection();
-		
+
+		// adding background if existing
+		// adding background noise to hits
+		vector<BackgroundHit*> currentBackground = getNextBackgroundEvent(it->first);
+		for(auto bgh: currentBackground) {
+			if(bgh != nullptr) {
+				if(MHC)
+					MHC->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
+			}
+		}
+
 		if (MHC) nhits = MHC->GetSize();
 		else nhits = 0;
 		
@@ -414,10 +449,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		{
 			//  the bank idtag is the one that corresponds to the hitType
 			//MHit* aHit = (*MHC)[0];
-			string vname = (*MHC)[0]->GetDetector().name;
-			string hitType = it->second->GetDetectorHitType(vname);
 
-			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType, vname);
+
+
+
+		//	string vname = (*MHC)[0]->GetDetector().name;
+		//	string hitType = it->second->GetDetectorHitType(vname);
+
+			string hitType = it->first;
+
+
+			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType);
 			if(!hitProcessRoutine)
 				return;
 
@@ -734,6 +776,28 @@ void MEventAction::saveBGPartsToLund()
 
 
 
+
+vector<BackgroundHit*> MEventAction::getNextBackgroundEvent(string forSystem)
+{
+	if(backgroundHits != nullptr) {
+
+		backgroundEventNumber++;
+
+		map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(forSystem);
+
+		if(backgroundHitsEventMap != nullptr) {
+
+			if(backgroundEventNumber == (int) backgroundHitsEventMap->size()) {
+				backgroundEventNumber = 1;
+			}
+
+			if(backgroundHitsEventMap->find(backgroundEventNumber) != backgroundHitsEventMap->end()) {
+				return (*backgroundHitsEventMap)[backgroundEventNumber];
+			}
+		}
+	}
+	return {nullptr};
+}
 
 
 

@@ -65,9 +65,6 @@ private:
 	vector<string> regions;  // all volumes for which mom is "root"
 
 
-	// background hits
-	string BGFILE;           ///< filename containing background hits
-	GBackgroundHits *backgroundHits;
 
 	
 public:
