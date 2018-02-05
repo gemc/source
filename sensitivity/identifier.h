@@ -24,33 +24,38 @@ using namespace std;
 /// - id: manually assigned id.
 class identifier
 {
-	public:
-		identifier()
-		{
-			time       = 0;
-			TimeWindow = 0;
-			id_sharing = 1;
-		}
-		
-		~identifier(){;}
-		
-		string       name;   ///< Name of the detector
-		string       rule;   ///< "manual" or "ncopy"
-		int            id;   ///< manually assing ID. 0 if "ncopy" (will be set at hit processing time)
-		double       time;   ///< Time of the first step
-		double TimeWindow;   ///< Time Window. If abs(steptime - time) is smaller than TimeWindow, it's the same hit
-		int       TrackId;   ///< If Time Window is 0, it's a "flux" detector: if it's the same track, it's the same hit. Different track, different hit.
-		double id_sharing;   ///< A single step can generate multiple identifiers. This variable represent the percentage sharing of the current identifier.
-        // there is no check on the total energy shared, so one could have energy created this way
-		
-	public:
-		friend ostream &operator<<(ostream &stream, vector<identifier>);       ///< Overloaded "<<" for the class 'identifier'
-		bool operator== (const identifier& I) const;                           ///< Overloaded "==" operator for the class 'identifier'
-		bool operator<  (const identifier& I) const;                           ///< Overloaded "<"  operator for the class 'identifier'
-		bool operator>  (const identifier& I) const;                           ///< Overloaded ">"  operator for the class 'identifier'
-		bool operator<= (const identifier& I) const {return !(*this >  I);}    ///< Overloaded "<=" operator for the class 'identifier'
-		bool operator>= (const identifier& I) const {return !(*this <  I);}    ///< Overloaded ">=" operator for the class 'identifier'
-		bool operator!= (const identifier& I) const {return !(*this == I);}    ///< Overloaded "!=" operator for the class 'identifier'
+public:
+	identifier()
+	{
+		time       = 0;
+		TimeWindow = 0;
+		id_sharing = 1;
+		userInfos = {0};
+	}
+
+	~identifier(){;}
+
+	string       name;   ///< Name of the detector
+	string       rule;   ///< "manual" or "ncopy"
+	int            id;   ///< manually assing ID. 0 if "ncopy" (will be set at hit processing time)
+	double       time;   ///< Time of the first step
+	double TimeWindow;   ///< Time Window. If abs(steptime - time) is smaller than TimeWindow, it's the same hit
+	int       TrackId;   ///< If Time Window is 0, it's a "flux" detector: if it's the same track, it's the same hit. Different track, different hit.
+	double id_sharing;   ///< A single step can generate multiple identifiers. This variable represent the percentage sharing of the current identifier.
+	// there is no check on the total energy shared, so one could have energy created this way
+
+	// user information so they can pass variables from processID to the digitization routines
+	vector<double> userInfos;
+
+
+public:
+	friend ostream &operator<<(ostream &stream, vector<identifier>);       ///< Overloaded "<<" for the class 'identifier'
+	bool operator== (const identifier& I) const;                           ///< Overloaded "==" operator for the class 'identifier'
+	bool operator<  (const identifier& I) const;                           ///< Overloaded "<"  operator for the class 'identifier'
+	bool operator>  (const identifier& I) const;                           ///< Overloaded ">"  operator for the class 'identifier'
+	bool operator<= (const identifier& I) const {return !(*this >  I);}    ///< Overloaded "<=" operator for the class 'identifier'
+	bool operator>= (const identifier& I) const {return !(*this <  I);}    ///< Overloaded ">=" operator for the class 'identifier'
+	bool operator!= (const identifier& I) const {return !(*this == I);}    ///< Overloaded "!=" operator for the class 'identifier'
 };
 
 

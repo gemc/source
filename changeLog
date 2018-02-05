@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/5/18
+ - added member userInfos vector<double> in the identifier class so users can pass variables from processID to digitization
+
 1/26/18
  - removed volume name in getHitProcess function, was not necessary
  - moved background merging algorithms to MEventAction: fix bug where BG events were not written unless a sensitive detector was already hit.
