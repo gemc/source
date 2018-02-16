@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/16/18
+ - added background hit for BST
+
 2/5/18
  - added member userInfos vector<double> in the identifier class so users can pass variables from processID to digitization
 
