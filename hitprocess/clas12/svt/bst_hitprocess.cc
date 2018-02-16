@@ -40,6 +40,31 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 
+	double minHit = 0.0261*MeV;
+	double maxHit = 0.11747*MeV;
+	double deltaADC = maxHit - minHit;
+
+
+	if(aHit->isBackgroundHit == 1) {
+
+		vector<double> eDep = aHit->GetEdep();
+		vector<double> stepTime    = aHit->GetTime();
+
+		int adc     = floor(   7*(eDep[0] - minHit)/deltaADC);
+		int adchd   = floor(8196*(eDep[0] - minHit)/deltaADC);
+
+		dgtz["hitn"]   = hitn;
+		dgtz["sector"] = identity[0].id;
+		dgtz["layer"]  = identity[1].id;
+		dgtz["strip"]  = identity[2].id;
+		dgtz["ADC"]    = adc;
+		dgtz["ADCHD"]  = adchd;
+		dgtz["time"]   = stepTime[0];
+		dgtz["bco"]    = (int) 255*G4UniformRand();
+
+		return dgtz;
+	}
+
 	class bst_strip bsts;
 	bsts.fill_infos();
 
@@ -70,9 +95,6 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// (from 117.47 keV to infinity), which means overflow.
 	// I.e. there are 7 bins plus an overflow bin.
 
-	double minHit = 0.0261*MeV;
-	double maxHit = 0.11747*MeV;
-	double deltaADC = maxHit - minHit;
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
 	int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
 
