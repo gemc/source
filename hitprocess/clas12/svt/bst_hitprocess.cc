@@ -48,7 +48,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(aHit->isBackgroundHit == 1) {
 
 		vector<double> eDep = aHit->GetEdep();
-		vector<double> stepTime    = aHit->GetTime();
+		vector<double> stepTime = aHit->GetTime();
 
 		int adc     = floor(   7*(eDep[0] - minHit)/deltaADC);
 		int adchd   = floor(8196*(eDep[0] - minHit)/deltaADC);

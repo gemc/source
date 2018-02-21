@@ -114,9 +114,30 @@ static bmtConstants initializeBMTConstants(int runno)
 map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double>  dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-
 	vector<identifier> identity = aHit->GetId();
+
+	if(aHit->isBackgroundHit == 1) {
+
+		vector<double> eDep = aHit->GetEdep();
+
+		double totEdep = 0;
+		for(int e=0; e<eDep.size(); e++) {
+			totEdep += eDep[e];
+		}
+
+		int sector = identity[0].id;
+		int layer  = identity[1].id;
+		int strip  = identity[2].id;
+
+		dgtz["hitn"]   = hitn;
+		dgtz["sector"] = sector;
+		dgtz["layer"]  = layer;
+		dgtz["strip"]  = strip;
+		dgtz["Edep"]   = totEdep;
+		dgtz["ADC"]   = int(1e6*totEdep/bmtc.w_i);
+
+		return dgtz;
+	}
 
 	// BMT ID:
 	// layer, type, sector, strip

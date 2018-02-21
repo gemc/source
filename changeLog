@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/21/18
+ - added background hit merging for MM (barrel and forward)
+
 2/16/18
  - added background hit for BST. Correction first commit: It was for BMT
 
