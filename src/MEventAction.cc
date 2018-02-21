@@ -127,26 +127,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	}
 	backgroundEventNumber = 0;
 
-	// background hits:
-	// checking the whole hit map
-	if(VERB > 4) {
-		if(backgroundHits != nullptr) {
-			for(auto sDet: SeDe_Map) {
-				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
-				if(backgroundHitsEventMap != nullptr) {
-					for(auto bgHits: (*backgroundHitsEventMap)) {
-						if(bgHits.first <= requestedNevents) {
-							cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first << " " << requestedNevents <<  endl;
-							for(auto bgh: bgHits.second) {
-								cout << *bgh << endl;
-							}
 
-						}
-					}
-				}
-			}
-		}
-	}
 }
 
 MEventAction::~MEventAction()
@@ -175,7 +156,26 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 		// CLHEP::HepRandom::showEngineStatus();
 	}
 
+	// background hits:
+	// checking the whole hit map
+	if(VERB > 4) {
+		if(backgroundHits != nullptr) {
+			for(auto sDet: SeDe_Map) {
+				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
+				if(backgroundHitsEventMap != nullptr) {
+					for(auto bgHits: (*backgroundHitsEventMap)) {
+						if(bgHits.first <= requestedNevents) {
+							cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first <<  endl;
+							for(auto bgh: bgHits.second) {
+								cout << *bgh << endl;
+							}
 
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
