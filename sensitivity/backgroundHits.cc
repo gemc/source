@@ -10,7 +10,7 @@ using namespace gstring;
 
 // initialize from string
 // notice hardcoded order
-BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
+BackgroundHit::BackgroundHit(vector<string> hitsData, int hitN, int verbosity)
 {
 	int identifierSize = stoi(hitsData[2]);
 
@@ -27,7 +27,7 @@ BackgroundHit::BackgroundHit(vector<string> hitsData, int verbosity)
 	}
 
 	if(verbosity > 4) {
-		cout << " New background hit added for " << hitsData[0] << " event number " << hitsData[1] << ":  identifier: " ;
+		cout << " New background hit n. " << hitN << " added for " << hitsData[0] << " event number " << hitsData[1] << ":  identifier: " ;
 		for(auto iden: identity) {
 			cout << " " << iden.id << " " ;
 		}
@@ -62,7 +62,7 @@ ostream &operator<<(ostream &stream, BackgroundHit bgh)
 
 
 // initialize map from filename
-GBackgroundHits::GBackgroundHits(string filename, int verbosity)
+GBackgroundHits::GBackgroundHits(string filename, int nevents, int verbosity)
 {
 	backgroundHitMap = new map<string, vector<BackgroundHit*> >;
 
@@ -78,6 +78,8 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 	if(verbosity > 0) cout << " Loading background hits from " << filename << endl;
 
 	// file is good, loading hits
+	int hitNumber = 0;
+	string oldEventNumber = "";
 	while(!bgif.eof()) {
 		string bgline;
 		getline(bgif, bgline);
@@ -89,8 +91,19 @@ GBackgroundHits::GBackgroundHits(string filename, int verbosity)
 
 		string systemEventNumber = hitsData[0] + "____" + hitsData[1];
 
+		// keeping track of hit number for thie event:
+		if(systemEventNumber != oldEventNumber) {
+			hitNumber = 1;
+			oldEventNumber = systemEventNumber;
+		} else {
+			hitNumber++;
+		}
+
+
 		// load hit from string
-		(*backgroundHitMap)[systemEventNumber].push_back(new BackgroundHit(hitsData, verbosity));
+		if(backgroundHitMap->size() <= nevents) {
+			(*backgroundHitMap)[systemEventNumber].push_back(new BackgroundHit(hitsData, hitNumber, verbosity));
+		}
 	}
 }
 

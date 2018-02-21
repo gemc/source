@@ -98,6 +98,9 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	RFSETUP          = replaceCharInStringWithChars(gemcOpt.optMap["RFSETUP"].args, ",", "  ");
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
+	requestedNevents = (int) gemcOpt.optMap["N"].arg ;
+
+
 	// fastMC mode will set SAVE_ALL_MOTHERS to 1
 	// a bit cluncky for now
 	if(fastMCMode>0)
@@ -120,10 +123,30 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 
 	// there's no check that the map is built correctly
 	if(BGFILE != "no") {
-		backgroundHits = new GBackgroundHits(BGFILE, VERB);
+		backgroundHits = new GBackgroundHits(BGFILE, requestedNevents, VERB);
 	}
 	backgroundEventNumber = 0;
 
+	// background hits:
+	// checking the whole hit map
+	if(VERB > 4) {
+		if(backgroundHits != nullptr) {
+			for(auto sDet: SeDe_Map) {
+				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
+				if(backgroundHitsEventMap != nullptr) {
+					for(auto bgHits: (*backgroundHitsEventMap)) {
+						if(bgHits.first <= requestedNevents) {
+							cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first << " " << requestedNevents <<  endl;
+							for(auto bgh: bgHits.second) {
+								cout << *bgh << endl;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 MEventAction::~MEventAction()
@@ -152,23 +175,7 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 		// CLHEP::HepRandom::showEngineStatus();
 	}
 
-	// background hits:
-	// checking the whole hit map
-	if(VERB > 4) {
-		if(backgroundHits != nullptr) {
-			for(auto sDet: SeDe_Map) {
-				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
-				if(backgroundHitsEventMap != nullptr) {
-					for(auto bgHits: (*backgroundHitsEventMap)) {
-						cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first << endl;
-						for(auto bgh: bgHits.second) {
-							cout << *bgh << endl;
-						}
-					}
-				}
-			}
-		}
-	}
+
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
