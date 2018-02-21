@@ -50,8 +50,11 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		vector<double> eDep = aHit->GetEdep();
 		vector<double> stepTime = aHit->GetTime();
 
-		int adc     = floor(   7*(eDep[0] - minHit)/deltaADC);
-		int adchd   = floor(8196*(eDep[0] - minHit)/deltaADC);
+		// background hit has all the energy in the first step
+		double totEdep = eDep[0];
+
+		int adc     = floor(   7*(totEdep - minHit)/deltaADC);
+		int adchd   = floor(8196*(totEdep - minHit)/deltaADC);
 
 		dgtz["hitn"]   = hitn;
 		dgtz["sector"] = identity[0].id;

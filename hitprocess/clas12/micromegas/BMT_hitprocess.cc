@@ -120,10 +120,8 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		vector<double> eDep = aHit->GetEdep();
 
-		double totEdep = 0;
-		for(int e=0; e<eDep.size(); e++) {
-			totEdep += eDep[e];
-		}
+		// background hit has all the energy in the first step
+		double totEdep = eDep[0];
 
 		int sector = identity[0].id;
 		int layer  = identity[1].id;
