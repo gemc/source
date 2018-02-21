@@ -3,6 +3,7 @@ Changelog for GEMC
 
 2/21/18
  - added background hit merging for MM (barrel and forward)
+ - fixed bug in getNextBackgroundEvent that increased event number incorrectly
 
 2/16/18
  - added background hit for BST. Correction first commit: It was for BMT

@@ -156,8 +156,9 @@ private:
 	string BGFILE;           ///< filename containing background hits
 	GBackgroundHits *backgroundHits;
 
-	// bookkeeping of background events
-	int backgroundEventNumber;
+	// bookkeeping of background events for each system
+	map<string, int> backgroundEventNumber;
+
 	vector<BackgroundHit*> getNextBackgroundEvent(string forSystem);
 
 

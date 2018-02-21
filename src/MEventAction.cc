@@ -125,9 +125,8 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	if(BGFILE != "no") {
 		backgroundHits = new GBackgroundHits(BGFILE, requestedNevents, VERB);
 	}
-	backgroundEventNumber = 0;
-
-
+	
+	backgroundEventNumber.clear();
 }
 
 MEventAction::~MEventAction()
@@ -164,7 +163,7 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 				map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(sDet.first);
 				if(backgroundHitsEventMap != nullptr) {
 					for(auto bgHits: (*backgroundHitsEventMap)) {
-						if(bgHits.first <= requestedNevents) {
+						if(bgHits.first == evtN) {
 							cout << " >>> Background hits for detector " << sDet.first << ", event number: " << bgHits.first <<  endl;
 							for(auto bgh: bgHits.second) {
 								cout << *bgh << endl;
@@ -788,18 +787,23 @@ vector<BackgroundHit*> MEventAction::getNextBackgroundEvent(string forSystem)
 {
 	if(backgroundHits != nullptr) {
 
-		backgroundEventNumber++;
+		if(backgroundEventNumber.find(forSystem) == backgroundEventNumber.end()) {
+			backgroundEventNumber[forSystem] = 1;
+		} else {
+			backgroundEventNumber[forSystem]++;
+		}
 
 		map<int, vector<BackgroundHit*> > *backgroundHitsEventMap = backgroundHits->getBackgroundForSystem(forSystem);
 
 		if(backgroundHitsEventMap != nullptr) {
 
-			if(backgroundEventNumber == (int) backgroundHitsEventMap->size()) {
-				backgroundEventNumber = 1;
+			// resetting numbering to first one if we reach end of map
+			if(backgroundEventNumber[forSystem] == (int) backgroundHitsEventMap->size()) {
+				backgroundEventNumber[forSystem] = 1;
 			}
 
-			if(backgroundHitsEventMap->find(backgroundEventNumber) != backgroundHitsEventMap->end()) {
-				return (*backgroundHitsEventMap)[backgroundEventNumber];
+			if(backgroundHitsEventMap->find(backgroundEventNumber[forSystem]) != backgroundHitsEventMap->end()) {
+				return (*backgroundHitsEventMap)[backgroundEventNumber[forSystem]];
 			}
 		}
 	}
