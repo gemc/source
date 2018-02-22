@@ -35,39 +35,69 @@ set<string> getListOfHitProcessHit(map<string, HitProcess_Factory> hitProcessMap
 map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBANK)
 {
 	map<string, double> raws;
-	if(aHit->isBackgroundHit == 1) return raws;
+
+	if(WRITEBANK) {
+
+		if(aHit->isBackgroundHit == 1) {
+			raws["hitn"]    = hitn;
+			raws["pid"]     = -1;
+			raws["mpid"]    = -1;
+			raws["tid"]     = -1;
+			raws["mtid"]    = -1;
+			raws["otid"]    = -1;
+			raws["trackE"]  = 0;
+			raws["totEdep"] = aHit->GetEdep().front();
+			raws["avg_x"]   = 0;
+			raws["avg_y"]   = 0;
+			raws["avg_z"]   = 0;
+			raws["avg_lx"]  = 0;
+			raws["avg_ly"]  = 0;
+			raws["avg_lz"]  = 0;
+			raws["px"]      = 0;
+			raws["py"]      = 0;
+			raws["pz"]      = 0;
+			raws["vx"]      = 0;
+			raws["vy"]      = 0;
+			raws["vz"]      = 0;
+			raws["mvx"]     = 0;
+			raws["mvy"]     = 0;
+			raws["mvz"]     = 0;
+			raws["avg_t"]   = aHit->GetTime().front();
+			raws["procID"]  = -1;
+			raws["nsteps"]  = 1;
+
+		} else {
+
+			trueInfos tInfos(aHit);
 
 
-	trueInfos tInfos(aHit);
-	
-	if(WRITEBANK)
-	{
-		raws["hitn"]    = hitn;
-		raws["pid"]     = (double) aHit->GetPID();
-		raws["mpid"]    = (double) aHit->GetmPID();
-		raws["tid"]     = (double) aHit->GetTId();
-		raws["mtid"]    = (double) aHit->GetmTrackId();
-		raws["otid"]    = (double) aHit->GetoTrackId();
-		raws["trackE"]  = aHit->GetE();
-		raws["totEdep"] = tInfos.eTot;
-		raws["avg_x"]   = tInfos.x;
-		raws["avg_y"]   = tInfos.y;
-		raws["avg_z"]   = tInfos.z;
-		raws["avg_lx"]  = tInfos.lx;
-		raws["avg_ly"]  = tInfos.ly;
-		raws["avg_lz"]  = tInfos.lz;
-		raws["px"]      = aHit->GetMom().getX();
-		raws["py"]      = aHit->GetMom().getY();
-		raws["pz"]      = aHit->GetMom().getZ();
-		raws["vx"]      = aHit->GetVert().getX();
-		raws["vy"]      = aHit->GetVert().getY();
-		raws["vz"]      = aHit->GetVert().getZ();
-		raws["mvx"]     = aHit->GetmVert().getX();
-		raws["mvy"]     = aHit->GetmVert().getY();
-		raws["mvz"]     = aHit->GetmVert().getZ();
-		raws["avg_t"]   = tInfos.time;
-		raws["procID"]  = aHit->GetProcID();
-		raws["nsteps"]  = aHit->GetPIDs().size();
+			raws["hitn"]    = hitn;
+			raws["pid"]     = (double) aHit->GetPID();
+			raws["mpid"]    = (double) aHit->GetmPID();
+			raws["tid"]     = (double) aHit->GetTId();
+			raws["mtid"]    = (double) aHit->GetmTrackId();
+			raws["otid"]    = (double) aHit->GetoTrackId();
+			raws["trackE"]  = aHit->GetE();
+			raws["totEdep"] = tInfos.eTot;
+			raws["avg_x"]   = tInfos.x;
+			raws["avg_y"]   = tInfos.y;
+			raws["avg_z"]   = tInfos.z;
+			raws["avg_lx"]  = tInfos.lx;
+			raws["avg_ly"]  = tInfos.ly;
+			raws["avg_lz"]  = tInfos.lz;
+			raws["px"]      = aHit->GetMom().getX();
+			raws["py"]      = aHit->GetMom().getY();
+			raws["pz"]      = aHit->GetMom().getZ();
+			raws["vx"]      = aHit->GetVert().getX();
+			raws["vy"]      = aHit->GetVert().getY();
+			raws["vz"]      = aHit->GetVert().getZ();
+			raws["mvx"]     = aHit->GetmVert().getX();
+			raws["mvy"]     = aHit->GetmVert().getY();
+			raws["mvz"]     = aHit->GetmVert().getZ();
+			raws["avg_t"]   = tInfos.time;
+			raws["procID"]  = aHit->GetProcID();
+			raws["nsteps"]  = aHit->GetPIDs().size();
+		}
 	}
 	return raws;
 }

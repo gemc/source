@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+2/22/18
+ - adding true infos for background hits
+
 2/21/18
  - added background hit merging for MM (barrel and forward)
  - fixed bug in getNextBackgroundEvent that increased event number incorrectly
