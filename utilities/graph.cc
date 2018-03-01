@@ -41,15 +41,21 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 {
 	// this is needed to set the scene size
 	scene->setSceneRect(0, 0, xaxil*1.1, yaxil*1.1);
-
-	
 	scene->clear();
+	
 	if(x.size()<1) return;
 	
 	// title centered up top
 	QGraphicsSimpleTextItem *Title = new QGraphicsSimpleTextItem(QString(title.c_str()));
 	scene->addItem(Title);
+	
+	
 	Title->setFont(QFont("Times-Roman", 18));
+	// in linux looks like we need smaller fonts
+#ifdef __linux__
+	Title->setFont(QFont("Times-Roman", 12));
+#endif
+	
 	Title->moveBy(-xorig/2 + xaxil / 2 - (double) title.length()*3, -yaxil*0.05); // this should more or less center it
 	
 	
