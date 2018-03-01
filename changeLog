@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/1/18
+ - removing unnecessary true info from background hits. ProcID is -1 for background hits.
+
 2/28/18
  - graph font smaller for linux so title can fit in 
 
