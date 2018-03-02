@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/2/18
+ - added side to ctof digitization output
+
 3/1/18
  - removing unnecessary true info from background hits. ProcID is -1 for background hits.
 

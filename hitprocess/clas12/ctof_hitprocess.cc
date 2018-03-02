@@ -214,7 +214,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     int sector = 1;
     int panel = 1;
     int paddle = identity[0].id;
-    int pmt = identity[1].id;
+    int side = identity[1].id;
 
     // odd numbered paddles are short
     // even numbered are long
@@ -250,14 +250,14 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     // Distances from upstream, downstream
     // ctof paddle center is offsetby ctc.offsetFromCenter from the CLAS12 target position,
     // so need to  z is also the local coordinate
-    //pmt = 0 or 1, 
-    double d = length + (1. - 2. * pmt)*(tInfos.z + ctc.offsetFromCenter); // The distance between the hit and PMT?
+    //side = 0 or 1,
+    double d = length + (1. - 2. * side)*(tInfos.z + ctc.offsetFromCenter); // The distance between the hit and PMT?
 
     // attenuation length
-    double attlen = ctc.attlen[sector - 1][panel - 1][pmt][paddle - 1];
+    double attlen = ctc.attlen[sector - 1][panel - 1][side][paddle - 1];
 
 
-    double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - pmt].at(paddle - 1);
+    double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - side].at(paddle - 1);
 
 
     // attenuation factor
@@ -282,7 +282,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     double ene = tInfos.eTot*att;
 
     // TDC conversion factors
-    double tdcconv = ctc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
+    double tdcconv = ctc.tdcconv[sector - 1][panel - 1][side][paddle - 1];
 
     double adc = 0.;
     double tdc = 0.;
@@ -294,7 +294,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     // Treat Up and Dn separately, in case nphe=0
 
     if (ene > 0)
-        adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ctc.dEMIP / gain;
+        adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
 
     double nphe = G4Poisson(ene * ctc.pmtPEYld);
     ene = nphe / ctc.pmtPEYld;
@@ -307,7 +307,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
         //double   timeWalkUp = A/(B+C*sqrt(adcu));
         double timeWalk = 0.;
         
-        double tU = tInfos.time + d/ctc.veff[sector-1][panel-1][pmt][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2. 
+        double tU = tInfos.time + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
                                                                                                      - ctc.toff_RFpad[sector-1][panel-1][paddle-1] 
                                                                                                      - ctc.toff_P2P[sector-1][panel-1][paddle-1] 
                                                                                                      + timeWalk;
@@ -316,7 +316,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
         tdc = t / tdcconv;
     }
     // Status flags
-    switch (ctc.status[sector - 1][panel - 1][pmt][paddle - 1]) {
+    switch (ctc.status[sector - 1][panel - 1][side][paddle - 1]) {
         case 0:
             break;
         case 1:
@@ -333,12 +333,13 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
             break;
 
         default:
-            cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][pmt][paddle - 1] << " for sector " << sector <<
-                    ",  panel " << panel << ", paddle " << paddle << " PMY " << pmt << endl;
+            cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
+                    ",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
     }
     
     dgtz["hitn"] = hitn;
-    dgtz["paddle"] = paddle;
+	dgtz["paddle"] = paddle;
+	dgtz["side"] = side;
     dgtz["ADC"] = (int) adc;
     dgtz["TDC"] = (int) tdc;
     dgtz["ADCu"] = (int) adcu;
@@ -432,15 +433,15 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
     int sector = 1;
     int panel = 1;
     int paddle = identity[0].id;
-    int pmt = identity[1].id;
+    int side = identity[1].id;
 
     identifiers.push_back(sector);
     identifiers.push_back(panel);
     identifiers.push_back(paddle);
-    identifiers.push_back(pmt);
+    identifiers.push_back(side);
 
     // getting hardware
-    Hardware thisHardware = ctc.TT.getHardware({sector, panel, paddle, pmt});
+    Hardware thisHardware = ctc.TT.getHardware({sector, panel, paddle, side});
     hardware.push_back(thisHardware.getCrate());
     hardware.push_back(thisHardware.getSlot());
     hardware.push_back(thisHardware.getChannel());
@@ -448,8 +449,8 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 
     // Adding pedestal mean and sigma into the hardware as well
     // All of these variables start from 1, therefore -1 is subtracted, e.g. sector-1
-    hardware.push_back(ctc.pedestal[paddle - 1][pmt]);
-    hardware.push_back(ctc.pedestal_sigm[paddle - 1][pmt]);
+    hardware.push_back(ctc.pedestal[paddle - 1][side]);
+    hardware.push_back(ctc.pedestal_sigm[paddle - 1][side]);
 
     //==== Testing Rafo ====
     //        cout<<"identity[0].id = "<<identity[0].id<<endl;
@@ -463,9 +464,9 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
     trueInfos tInfos(aHit);
 
     // attenuation length
-    double attlen = ctc.attlen[sector - 1][panel - 1][pmt].at(paddle - 1);
+    double attlen = ctc.attlen[sector - 1][panel - 1][side].at(paddle - 1);
 
-    double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - pmt].at(paddle - 1);
+    double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - side].at(paddle - 1);
 
 
     vector<G4ThreeVector> Pos = aHit->GetPos();
@@ -478,7 +479,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
     for (unsigned int s = 0; s < tInfos.nsteps; s++) {
         //pmt = 0 or 1, 
 
-        double d = length + (1. - 2. * pmt)*(Pos[s].z() + ctc.offsetFromCenter); // The distance between the hit and PMT?
+        double d = length + (1. - 2. * side)*(Pos[s].z() + ctc.offsetFromCenter); // The distance between the hit and PMT?
         // attenuation factor
         double att = exp(-d / cm / attlen);
 
@@ -506,14 +507,14 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
         ene = nphe / ctc.pmtPEYld;
 
         if (ene > 0) {
-            double adc = ene * ctc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ctc.dEMIP / gain;
+            double adc = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
             //double            A = ctc.twlk[sector-1][panel-1][0][paddle-1];
             //double            B = ctc.twlk[sector-1][panel-1][1][paddle-1];
             //double            C = ctc.twlk[sector-1][panel-1][2][paddle-1];
             //double   timeWalkUp = A/(B+C*sqrt(adcu));
             double timeWalk = 0.;
             
-            double tU = time[s] + d/ctc.veff[sector-1][panel-1][pmt][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2. 
+            double tU = time[s] + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
                                                                                                      - ctc.toff_RFpad[sector-1][panel-1][paddle-1] 
                                                                                                      - ctc.toff_P2P[sector-1][panel-1][paddle-1] 
                                                                                                      + timeWalk;
