@@ -332,11 +332,11 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
     dgtz["sector"] = sector;
     dgtz["layer"] = panel;
     dgtz["paddle"] = paddle;
-    dgtz["side"] = pmt;
-    dgtz["ADC"] = adc;
-    dgtz["TDC"] = tdc;
-    dgtz["ADCu"] = adcu;
-    dgtz["TDCu"] = tdcu;
+    dgtz["side"] = (int) pmt;
+    dgtz["ADC"] = (int) adc;
+    dgtz["TDC"] = (int) tdc;
+    dgtz["ADCu"] = (int) adcu;
+    dgtz["TDCu"] = (int) tdcu;
 
     // decide if write an hit or not
     writeHit = true;
