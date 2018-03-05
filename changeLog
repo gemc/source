@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/5/18
+ - Rafo: fixed bug in ctof and ftof hit process routines
+
 3/2/18
  - added side to ctof digitization output
 
