@@ -242,7 +242,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
     //	double gainLeft  = sqrt(attLeft*attRight);
     //	double gainRight = gainLeft;
 
-    double gain = sqrt(exp(-d / cm / att) * exp(-(2 * length - d) / cm / attlen_otherside));
+    double gain = sqrt(exp(-d / cm / attlen) * exp(-(2 * length - d) / cm / attlen_otherside));
 
     // Attenuated light at PMT
     //	double eneL = tInfos.eTot*attLeft;

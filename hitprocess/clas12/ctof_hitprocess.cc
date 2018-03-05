@@ -1,3 +1,4 @@
+
 // G4 headers
 #include "G4Poisson.hh"
 #include "Randomize.hh"
@@ -276,7 +277,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 
     //double gain = sqrt(exp(-2*length/cm/attlen));
 
-    double gain = sqrt(exp(-d / cm / att) * exp(-(2 * length - d) / cm / attlen_otherside));
+    double gain = sqrt(exp(-d / cm / attlen) * exp(-(2 * length - d) / cm / attlen_otherside));
 
     // Attenuated light at PMT
     double ene = tInfos.eTot*att;
@@ -295,12 +296,14 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 
     if (ene > 0)
         adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
+    
 
     double nphe = G4Poisson(ene * ctc.pmtPEYld);
     ene = nphe / ctc.pmtPEYld;
 
     if (ene > 0) {
         adc = ene * ctc.countsForMIP[sector - 1][panel - 1][0][paddle - 1] / ctc.dEMIP / gain;
+
         //double            A = ctc.twlk[sector-1][panel-1][0][paddle-1];
         //double            B = ctc.twlk[sector-1][panel-1][1][paddle-1];
         //double            C = ctc.twlk[sector-1][panel-1][2][paddle-1];
