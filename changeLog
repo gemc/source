@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+.. Note::
+	3/8/18 gemc 2.6 released.
+
+|
+
 3/5/18
  - Rafo: fixed bug in ctof and ftof hit process routines
 
@@ -93,7 +98,6 @@ Changelog for GEMC
  - added detector threshold variable detectorThreshold that can be set and used in the digitization routine in conjuction with writeHit
  - added bool detector variable writeHit to decide if a hit is written or not in the output
  - fixed bug that crashed output routine in case no hits were presented to it
-
 
 8/30/17
  - do not initialize ltcc before digitization starts (not needed)
@@ -285,7 +289,6 @@ Changelog for GEMC
    - Notice: BEAM_P still sets the particle momentum, and its type must be GenericIon. For example:
 
      -BEAM_P="GenericIon, 4*GeV, 90*deg, 0*deg"
-
 
 2/21/17
  - added ionInelastic process
