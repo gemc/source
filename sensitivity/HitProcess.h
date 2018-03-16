@@ -74,7 +74,10 @@ public:
         HCname = name;
         detectorThreshold = 0;
         writeHit = true;
-		filterDummyBanks = gemcOpt.optMap["FILTER_NULL_VARIABLES"].arg;
+		filterDummyBanks = false;
+		if(gemcOpt.optMap["FILTER_NULL_VARIABLES"].arg == 1) {
+			filterDummyBanks = true;
+		}
 	}
     bool writeHit;
 	bool filterDummyBanks;   ///< do not write out variables that has no valuable information
