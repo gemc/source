@@ -45,6 +45,30 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 			raws["procID"]  = -1;
 			raws["nsteps"]  = 1;
 
+			if(filterDummyBanks) {
+				raws["pid"]     = -1;
+				raws["mpid"]    = -1;
+				raws["tid"]     = -1;
+				raws["mtid"]    = -1;
+				raws["otid"]    = -1;
+				raws["trackE"]  = -1;
+				raws["avg_x"]   = 0;
+				raws["avg_y"]   = 0;
+				raws["avg_z"]   = 0;
+				raws["avg_lx"]  = 0;
+				raws["avg_ly"]  = 0;
+				raws["avg_lz"]  = 0;
+				raws["px"]      = 0;
+				raws["py"]      = 0;
+				raws["pz"]      = 0;
+				raws["vx"]      = 0;
+				raws["vy"]      = 0;
+				raws["vz"]      = 0;
+				raws["mvx"]     = 0;
+				raws["mvy"]     = 0;
+				raws["mvz"]     = 0;
+			}
+
 		} else {
 
 			trueInfos tInfos(aHit);

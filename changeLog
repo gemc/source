@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+3/16/18:
+ - added option FILTER_NULL_VARIABLES. If set to one, do not write variables with no valuable information.
+
 .. Note::
 	3/8/18 gemc 2.6 released.
 

@@ -573,6 +573,13 @@ void goptions::setGoptions()
 	optMap["VTRESOLUTION"].type = 0;
 	optMap["VTRESOLUTION"].ctgr = "output";
 	
+	// voltage versus time resolution, in ns
+	optMap["FILTER_NULL_VARIABLES"].arg = 0;
+	optMap["FILTER_NULL_VARIABLES"].help = "If set to 1, filters out variables with no valuable info in the output.";
+	optMap["FILTER_NULL_VARIABLES"].name = "If set to 1, filters out variables with no valuable info in the output.";
+	optMap["FILTER_NULL_VARIABLES"].type = 0;
+	optMap["FILTER_NULL_VARIABLES"].ctgr = "output";
+
 	// sampling time of electronics (typically FADC), and number of sampling / event
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
 	// the default number of samples is 500 ADC points, at 4ns intervals (total electronic event time = 2 microseconds)

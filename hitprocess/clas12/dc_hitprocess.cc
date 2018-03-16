@@ -162,12 +162,19 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		vector<double>        stepTime    = aHit->GetTime();
 	//	cout << " This is a background hit with time " << stepTime[0] << endl;
-	// recording smeared and un-smeared quantities
+
 		dgtz["hitn"]       = hitn;
 		dgtz["sector"]     = identity[0].id;
 		dgtz["layer"]      = identity[1].id;
 		dgtz["wire"]       = identity[2].id;;
 		dgtz["tdc"]        = stepTime[0];
+
+		if(filterDummyBanks) {
+			dgtz["LR"]         = 0;
+			dgtz["doca"]       = -1;
+			dgtz["time"]       = -1;
+			dgtz["stime"]      = -1;
+		}
 		return dgtz;
 	}
 
