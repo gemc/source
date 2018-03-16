@@ -45,7 +45,7 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 			raws["procID"]  = -1;
 			raws["nsteps"]  = 1;
 
-			if(filterDummyBanks) {
+			if(filterDummyBanks == false) {
 				raws["pid"]     = -1;
 				raws["mpid"]    = -1;
 				raws["tid"]     = -1;

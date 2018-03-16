@@ -169,7 +169,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["wire"]       = identity[2].id;;
 		dgtz["tdc"]        = stepTime[0];
 
-		if(filterDummyBanks) {
+		if(filterDummyBanks == false) {
 			dgtz["LR"]         = 0;
 			dgtz["doca"]       = -1;
 			dgtz["time"]       = -1;
