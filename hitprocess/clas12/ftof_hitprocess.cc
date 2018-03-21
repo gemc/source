@@ -54,7 +54,7 @@ static ftofConstants initializeFTOFConstants(int runno) {
     ftc.dEMIP[1] = ftc.thick[1] * ftc.dEdxMIP;
     ftc.dEMIP[2] = ftc.thick[2] * ftc.dEdxMIP;
 
-    int isec, ilay, istr;
+    int isec, ilay;
 
     vector<vector<double> > data;
 
@@ -68,7 +68,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.attlen[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.attlen[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -80,7 +79,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.veff[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.veff[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -92,7 +90,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -104,7 +101,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.countsForMIP[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.countsForMIP[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -116,7 +112,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.twlk[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.twlk[isec - 1][ilay - 1][1].push_back(data[row][4]);
         ftc.twlk[isec - 1][ilay - 1][2].push_back(data[row][5]);
@@ -133,7 +128,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.toff_LR[isec - 1][ilay - 1].push_back(data[row][3]);
         ftc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
         ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
@@ -147,7 +141,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
     for (unsigned row = 0; row < data.size(); row++) {
         isec = data[row][0];
         ilay = data[row][1];
-        istr = data[row][2];
         ftc.tdcconv[isec - 1][ilay - 1][0].push_back(data[row][3]);
         ftc.tdcconv[isec - 1][ilay - 1][1].push_back(data[row][4]);
     }
@@ -492,15 +485,10 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
         }
 
         double adc = 0;
-        double adcu = 0;
 
 		// Fluctuate the light measured by the PMT with
         // Poisson distribution for emitted photoelectrons
         // Treat L and R separately, in case nphe=0
-
-        if (ene > 0) {
-            adcu = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
-        }
 
         double nphe = G4Poisson(ene * ftc.pmtPEYld);
         ene = nphe / ftc.pmtPEYld;

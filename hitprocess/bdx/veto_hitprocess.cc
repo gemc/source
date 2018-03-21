@@ -57,7 +57,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     double sensor_surface = 0;   // area of photo sensor
     double sensor_effective_area = 0; // considering only a fraction of the photocathod
     double sensor_qe = 0;                     // photo sensor quantum efficiency
-    double sensor_gain = 0;         // pmt gain x electron charge in pC (2.2x10^6)x(1.6x10^-7) -> ~0.36pC or 1 to have pe
+   // double sensor_gain = 0;         // pmt gain x electron charge in pC (2.2x10^6)x(1.6x10^-7) -> ~0.36pC or 1 to have pe
     double light_coll = 0; // ratio of photo_sensor area over paddle section ~ light collection efficiency
     double light_guide_att = 0;
     double tL = 0;
@@ -79,7 +79,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
             veff=13*cm/ns    ;
             sensor_effective_area=0.9;
             sensor_qe=0.25;
-            sensor_gain=1.;
+         //   sensor_gain=1.;
             
             // Upper/lower
             if(channel==1 || channel==2)
@@ -375,7 +375,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         veff=13*cm/ns    ;
         sensor_effective_area=0.9;
         sensor_qe=0.25;
-        sensor_gain=1.;
+     //   sensor_gain=1.;
 
     // Upper/lower
         if(channel==1 || channel==2 || channel==3 || channel ==4)
@@ -678,7 +678,7 @@ map<string, double> veto_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         sensor_effective_area=0.9;
         
         sensor_qe=0.25;
-        sensor_gain=1.;
+     //   sensor_gain=1.;
 
 
          // Get the paddle length: in veto paddles are along z

@@ -31,7 +31,7 @@ class GBackgroundHits {
 	// initialize map from file
 public:
 	GBackgroundHits() = default;
-	GBackgroundHits(string filename, int nevents, int verbosity = 0);
+	GBackgroundHits(string filename, unsigned nevents, int verbosity = 0);
 
 	// returns all events for a system, key is bg event number
 	map<int, vector<BackgroundHit*> > *getBackgroundForSystem(string system);

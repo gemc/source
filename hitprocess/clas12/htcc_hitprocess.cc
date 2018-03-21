@@ -35,7 +35,7 @@ static htccConstants initializeHTCCConstants(int runno)
 		htccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
 	htccc.variation  = "main";
-	int isec,ilay,istr;
+	int isec,ilay;
 
 	vector<vector<double> > data;
 
@@ -45,7 +45,7 @@ static htccConstants initializeHTCCConstants(int runno)
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
-		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.status[isec-1][ilay-1].push_back(data[row][3]);
 	}
 
@@ -54,7 +54,7 @@ static htccConstants initializeHTCCConstants(int runno)
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
-		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.tshift[isec-1][ilay-1].push_back(data[row][3]);
 	}
 

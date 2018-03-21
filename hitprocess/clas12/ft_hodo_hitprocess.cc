@@ -38,7 +38,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fthc.connection));
 
     
-    int isector,ilayer,icomponent;
+    int isector,ilayer;
 
     vector<vector<double> > data;
     
@@ -49,7 +49,6 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
     {
         isector    = data[row][0];
         ilayer     = data[row][1];
-        icomponent = data[row][2];
         fthc.status[isector-1][ilayer-1].push_back(data[row][3]);
     }
     
@@ -60,8 +59,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
     {
         isector    = data[row][0];
         ilayer     = data[row][1];
-        icomponent = data[row][2];
-        
+		
         double pdstl = data[row][3];             pdstl = 101.;                      // When DB will be filled, I should remove this
         double pdstl_RMS = data[row][4];         pdstl_RMS  =2.;                    // When DB will be filled, I should remove this
         
@@ -79,7 +77,6 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
     {
         isector    = data[row][0];
         ilayer     = data[row][1];
-        icomponent = data[row][2];
         fthc.mips_charge[isector-1][ilayer-1].push_back(data[row][3]);
         fthc.mips_energy[isector-1][ilayer-1].push_back(data[row][4]);
     }
@@ -91,7 +88,6 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
     {
         isector    = data[row][0];
         ilayer     = data[row][1];
-        icomponent = data[row][2];
         fthc.time_offset[isector-1][ilayer-1].push_back(data[row][3]);
         fthc.time_rms[isector-1][ilayer-1].push_back(data[row][4]);
     }
@@ -148,7 +144,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// use Crystal ID to define IDX and IDY
 	int isector    = identity[0].id;
 	int ilayer     = identity[1].id;
-        int icomponent = identity[2].id;
+	int icomponent = identity[2].id;
     
 	// initialize ADC and TDC
 	int ADC = 0;

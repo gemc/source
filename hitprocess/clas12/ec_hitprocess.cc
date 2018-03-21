@@ -18,7 +18,7 @@ static ecConstants initializeECConstants(int runno)
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ecc;
 
-	int isec,ilay,istr;
+	int isec,ilay;
 
 	// database
 	ecc.runNo      = runno;
@@ -60,7 +60,7 @@ static ecConstants initializeECConstants(int runno)
     
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
 	    ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	  }
 	
@@ -71,7 +71,7 @@ static ecConstants initializeECConstants(int runno)
 
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
 	    ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
 	    ecc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
 	    ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
@@ -83,7 +83,7 @@ static ecConstants initializeECConstants(int runno)
 
 	for(unsigned row = 0; row < data.size(); row++)
 	  {
-	    isec = data[row][0]; ilay = data[row][1]; istr = data[row][2];
+	    isec = data[row][0]; ilay = data[row][1];
 	    ecc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
 	    ecc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
 	    ecc.timing[isec-1][ilay-1][2].push_back(data[row][5]);

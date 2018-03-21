@@ -90,7 +90,7 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		vector<double> eDep = aHit->GetEdep();
 
 		double totEdep = 0;
-		for(int e=0; e<eDep.size(); e++) {
+		for(unsigned e=0; e<eDep.size(); e++) {
 			totEdep += eDep[e];
 		}
 

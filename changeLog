@@ -7,6 +7,7 @@ Changelog for GEMC
     - "eventVertex, 0, 0, 0" (default): the RF time is the event start time + the light time-distance of the first particle from the point (0,0,0)
     - "eventTime".....................: the RF time is identical to the event start time
 
+ - removed some warning on gcc 4.8.5
 
 3/16/18:
  - added option FILTER_NULL_VARIABLES. If set to one, do not write variables with no valuable information.

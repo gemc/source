@@ -95,7 +95,7 @@ void evio_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 		banknum++;
 	}
 
-	int minNumberOfVarsToWrite = 10;
+	unsigned minNumberOfVarsToWrite = 10;
 	for(unsigned i=data.size(); i<minNumberOfVarsToWrite; i++) {
 		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0.0);
 		banknum++;
@@ -502,7 +502,7 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 	unsigned long long *b64;
 
 	// This variable will store the buffer address when crate changes
-	unsigned int *buf_crate_begin; //
+	unsigned int *buf_crate_begin = nullptr; //
 
 	// The map of hardware data, The Key is the crate/slot/channel combination,
 	// and the value is a map of FADC counts as a function of sample number.
@@ -570,10 +570,10 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 
 	b08out = (uint8_t*) buf;
 
-	uint32_t *nchannels;
+	uint32_t *nchannels = nullptr;
 	uint32_t *nsamples;
 
-	evioDOMNodeP newCrate;
+	evioDOMNodeP newCrate = nullptr;
 
 	int nchannelThisCrate = 0;
 	int ncrates = 0;
@@ -667,8 +667,7 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 			PUT32(0);   // now reserve space for channel counter
 		}
 
-
-		*nchannels = *nchannels + 1;
+		if(nchannels != nullptr) *nchannels = *nchannels + 1;
 
 		PUT8(chann); // channel number
 
@@ -690,7 +689,7 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 
 		// Check if all the data under this crate is processed, if yes, the
 		// data should be dumped into evio
-		if( nchannelThisCrate == numberOfChannelsPerCrate[sCrateKey] ){
+		if( nchannelThisCrate == numberOfChannelsPerCrate[sCrateKey] && newCrate != nullptr ){
 
 			//int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
 			//int finalNumberOfWords = (b08out - (uint8_t*)buf_crate_begin + 3) / 4;
@@ -774,7 +773,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 
 
 	// This variable will store the buffer address when crate changes
-	unsigned int *buf_crate_begin; //
+	unsigned int *buf_crate_begin = nullptr; //
 	//char *buf_crate_begin; //
 
 	// The FADC Mode1 Bank tag
@@ -842,10 +841,10 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 
 	b08out = (uint8_t*) buf;
 
-	uint32_t *nchannels;
+	uint32_t *nchannels = nullptr;
 	uint32_t *nsamples;
 
-	evioDOMNodeP newCrate;
+	evioDOMNodeP newCrate = nullptr;
 
 	int nchannelThisCrate = 0;
 	int ncrates = 0;
@@ -916,9 +915,10 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 				}
 
 				*confbank<<conf_parms;
-				*newCrate << confbank;
-				*event << newCrate;
-
+				if(newCrate != nullptr) {
+					*newCrate << confbank;
+					*event << newCrate;
+				}
 				detector_crates.erase(it_crate);
 			}
 
@@ -938,8 +938,7 @@ void evio_output :: writeFADCMode1(outputContainer* output, vector<hitOutput> HO
 			PUT32(0);   // now reserve space for channel counter
 		}
 
-
-		*nchannels = *nchannels + 1;
+		if(nchannels != nullptr)		*nchannels = *nchannels + 1;
 
 		PUT8(chann); // channel number
 
@@ -1084,10 +1083,10 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 
 	b08out = (uint8_t*) buf;
 
-	uint32_t *nchannels;
+	uint32_t *nchannels = nullptr;
 	uint32_t *nhits;
 
-	evioDOMNodeP newCrate;
+	evioDOMNodeP newCrate = nullptr;
 
 	int nchannelThisSlot = 0;
 
@@ -1132,7 +1131,7 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 		// every entry is a new channel
 		nchannelThisSlot++;
 
-		*nchannels = *nchannels + 1;
+		if(nchannels != nullptr) *nchannels = *nchannels + 1;
 
 		PUT8(chann); // channel number
 		nhits = (uint32_t*) b08out; // put multi-hit dinamically: first, save current position
@@ -1147,7 +1146,7 @@ void evio_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 		// cout << " >  crate " << crate << "  slot " << slot << "  channel " << chann << " totChannels " << numberOfChannelsPerSlot[hardwareKey] << " count so far " << nchannelThisSlot << " " << hardwareKey  << endl;
 
 		// channel is new, writing
-		if(nchannelThisSlot == numberOfChannelsPerSlot[hardwareKey]) {
+		if(nchannelThisSlot == numberOfChannelsPerSlot[hardwareKey] && newCrate != nullptr) {
 
 			int finalNumberOfWords = (b08out - (uint8_t*)buf + 3) / 4;
 

@@ -213,7 +213,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	   	    
 	    if(bmtc.runNo == 0){
 	      cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
-	      bmtc.ThetaL=bmtc.ThetaL=bmtc.Lor_Angle.GetAngle(bmtc.HV_DRIFT[layer-1][sector-1]/bmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+	      bmtc.ThetaL=bmtc.Lor_Angle.GetAngle(bmtc.HV_DRIFT[layer-1][sector-1]/bmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
 	      bmtc.Theta_Ls_Z=Fdir.angle(dm_Z);
 	      bmtc.Theta_Ls_C=dm_C.angle(Fdir);
 	    }
