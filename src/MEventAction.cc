@@ -96,6 +96,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	WRITE_INTDGT     = replaceCharInStringWithChars(gemcOpt.optMap["INTEGRATEDDGT"].args, ",", "  ");
 	SIGNALVT         = replaceCharInStringWithChars(gemcOpt.optMap["SIGNALVT"].args, ",", "  ");
 	RFSETUP          = replaceCharInStringWithChars(gemcOpt.optMap["RFSETUP"].args, ",", "  ");
+	RFSTART          = replaceCharInStringWithChars(gemcOpt.optMap["RFSTART"].args, ",", "  ");
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
 	requestedNevents = (int) gemcOpt.optMap["N"].arg ;
@@ -383,13 +384,30 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// write RF bank if present
 	// do not write in FASTMC mode
 	if(RFSETUP!= "no" && fastMCMode == 0) {
-		vector<string> rfvalues = getStringVectorFromString(RFSETUP);
+		
+		double additionalTime = 0;
+		
+		vector<string> rfstartoption = getStringVectorFromString(RFSTART);
+		// 4 options means we're in eventVertex case
+		if(rfstartoption.size() == 4) {
+			// verifying that we're in the eventVertex case
+			if(rfstartoption[0] == "eventVertex") {
+				G4ThreeVector referenceRFPosition(get_number(rfstartoption[1]), get_number(rfstartoption[2]), get_number(rfstartoption[3]));
+				G4ThreeVector firstParticleVertex = evt->GetPrimaryVertex(0)->GetPosition();
+				additionalTime = (firstParticleVertex - referenceRFPosition).mag()/mm / 299.792; // speed of light in mm / ns
+				if(firstParticleVertex.z() > referenceRFPosition.z()) additionalTime = -additionalTime;
+			}
+		}
 
 		// getting time window
 		string rfsetup = to_string(gen_action->getTimeWindow()) + " " ;
-
+		
 		// getting start time of the event
-		rfsetup +=  to_string(gen_action->getStartTime()) + " " ;
+		rfsetup +=  to_string(gen_action->getStartTime() + additionalTime) + " " ;
+
+		
+		vector<string> rfvalues = getStringVectorFromString(RFSETUP);
+
 
 		for(unsigned i=0; i<rfvalues.size(); i++)
 			rfsetup += rfvalues[i] + " " ;

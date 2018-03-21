@@ -136,6 +136,7 @@ public:
 	string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
 	string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
 	string RFSETUP;         ///< Parameters for RF setup
+	string RFSTART;         ///< Parameters of RF model
 	int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
 	int requestedNevents;
 

@@ -1,6 +1,13 @@
 Changelog for GEMC
 ==================
 
+3/21/18
+ - added option RFSTART: Radio-frequency time model. Available options are:
+
+    - "eventVertex, 0, 0, 0" (default): the RF time is the event start time + the light time-distance of the first particle from the point (0,0,0)
+    - "eventTime".....................: the RF time is identical to the event start time
+
+
 3/16/18:
  - added option FILTER_NULL_VARIABLES. If set to one, do not write variables with no valuable information.
 

@@ -515,14 +515,21 @@ void goptions::setGoptions()
 	optMap["RFSETUP"].name = "Radio-frequency signal";
 	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
 	optMap["RFSETUP"].help += "      1. radioFrequency (GHz)\n";
-	optMap["RFSETUP"].help += "      2. radioInterval (ns)\n";
+	optMap["RFSETUP"].help += "      2. radioInterval (number of bunches)\n";
 	optMap["RFSETUP"].help += "     Any additional parameter (in ns) will add an RF signal with that time distance from the original.\n";
-	optMap["RFSETUP"].help += "     Example of option with 2 500MHz (o.5 GHz) RF signals, separated by 30 ns and each sampled in 80ns bunches: \n";
+	optMap["RFSETUP"].help += "     Example1:  250MHz (0.25 GHz) RF signal, 1 output, output frequency is 50 bunches: \n";
+	optMap["RFSETUP"].help += "      -RFSETUP=\"0.25, 50\" \n";
+	optMap["RFSETUP"].help += "     Example2: two 500MHz (0.5 GHz) RF signals, they are separated by 30 ns and both output frequency is 80 bunches: \n";
 	optMap["RFSETUP"].help += "      -RFSETUP=\"0.5, 80, 30\" \n";
 	optMap["RFSETUP"].type = 1;
 	optMap["RFSETUP"].ctgr = "control";
 
-	
+	optMap["RFSTART"].args = "eventVertex, 0, 0, 0";
+	optMap["RFSTART"].name = "Radio-frequency time model";
+	optMap["RFSTART"].help = "Radio-frequency time model. Available options are:\n";
+	optMap["RFSTART"].help += "      \"eventVertex, 0, 0, 0\" (default): the RF time is the event start time + the light time-distance of the first particle from the point (0,0,0)\n";
+	optMap["RFSTART"].help += "      \"eventTime\".....................: the RF time is identical to the event start time\n";
+	optMap["RFSTART"].ctgr = "control";
 	
 	// Output
 	optMap["OUTPUT"].args = "no, output";
