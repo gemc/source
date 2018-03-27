@@ -106,7 +106,7 @@ Changelog for GEMC
  - user info bank defaulted to size 25, indexed by particle like the rest of the bank
 
 10/3/17
- - added detector threshold variable detectorThreshold that can be set and used in the digitization routine in conjuction with writeHit
+ - added hit process variable rejectHitConditions that can be set and used in the digitization routine in conjuction with writeHit to skip writing a digitized hit to disk
  - added bool detector variable writeHit to decide if a hit is written or not in the output
  - fixed bug that crashed output routine in case no hits were presented to it
 

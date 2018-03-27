@@ -72,7 +72,7 @@ public:
 		verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 		log_msg   = "  > " + HCname + "  Hit Process ";
         HCname = name;
-        detectorThreshold = 0;
+		rejectHitConditions = false;
         writeHit = true;
 		filterDummyBanks = false;
 		if(gemcOpt.optMap["FILTER_NULL_VARIABLES"].arg == 1) {
@@ -141,7 +141,7 @@ protected:
 	map<string, double> gpars;
 	double verbosity;
 	string log_msg;
-    double detectorThreshold;
+	bool rejectHitConditions;
 
 	inline double DGauss(double x, double *par, double Edep, double stepTime)
 	{

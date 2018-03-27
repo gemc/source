@@ -69,7 +69,6 @@ map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // decide if write an hit or not
     writeHit = true;
     // define conditions to reject hit
-    bool rejectHitConditions = false;
     if(rejectHitConditions) {
         writeHit = false;
     }
