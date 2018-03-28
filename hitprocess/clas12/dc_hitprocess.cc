@@ -172,8 +172,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if(filterDummyBanks == false) {
 			dgtz["LR"]         = 0;
 			dgtz["doca"]       = 0;
-			dgtz["time"]       = -1;
-			dgtz["stime"]      = -1;
+			dgtz["time"]       = 0;
+			dgtz["stime"]      = 0;
 		}
 		return dgtz;
 	}
