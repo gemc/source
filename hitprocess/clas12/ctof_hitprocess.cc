@@ -145,9 +145,9 @@ static ctofConstants initializeCTOFConstants(int runno) {
     }
 
 
-    ctc.lengthHighPitch = 35.013 * 25.4 / 2; // length of long bar
-    ctc.lengthLowPitch = 34.664 * 25.4 / 2; // length of short bar
-    ctc.offsetFromCenter = 100.0; // the CTOF center is upstream so this quantity will be added to z
+    ctc.lengthHighPitch = 904.3 / 2; // length of long bar, mm
+    ctc.lengthLowPitch = 892.3 / 2;  // length of short bar, mm
+	ctc.offsetFromCenter = 100.0; // the CTOF center is upstream so this quantity will be added to z
 
     // setting voltage signal parameters
     ctc.vpar[0] = 50; // delay, ns
