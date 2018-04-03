@@ -217,10 +217,10 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     int paddle = identity[0].id;
     int side = identity[1].id;
 
-    // odd numbered paddles are short
-    // even numbered are long
-    double length = ctc.lengthLowPitch;
-    if (paddle % 2 == 0) length = ctc.lengthHighPitch;
+    // even numbered paddles are short
+    // odd numbered are long
+    double length = ctc.lengthHighPitch;
+    if (paddle % 2 == 0) length = ctc.lengthLowPitch;
 
     //
     //	if(aHit->isElectronicNoise)
