@@ -145,9 +145,19 @@ static ctofConstants initializeCTOFConstants(int runno) {
     }
 
 
-    ctc.lengthHighPitch = 904.3 / 2; // length of long bar, mm
-    ctc.lengthLowPitch = 892.3 / 2;  // length of short bar, mm
-	ctc.offsetFromCenter = 100.0; // the CTOF center is upstream so this quantity will be added to z
+    cout << "CTOF:Getting geometry" << endl;
+    sprintf(ctc.database, "/geometry/ctof/ctof:%d", ctc.runNo);
+    data.clear();
+    calib->GetCalib(data, ctc.database);
+    for (unsigned row = 0; row < data.size(); row++) {
+        isec = data[row][0];
+        ilay = data[row][1];
+	double length = data[row][7]/2*cm;
+	double offset = data[row][8]*cm;
+	ctc.length[isec - 1][ilay - 1].push_back(length);
+	ctc.zoffset[isec - 1][ilay - 1].push_back(offset);
+	//	cout << data[row][2] << " " << length << " " << offset << endl;
+    }	
 
     // setting voltage signal parameters
     ctc.vpar[0] = 50; // delay, ns
@@ -217,10 +227,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     int paddle = identity[0].id;
     int side = identity[1].id;
 
-    // even numbered paddles are short
-    // odd numbered are long
-    double length = ctc.lengthHighPitch;
-    if (paddle % 2 == 0) length = ctc.lengthLowPitch;
+    double length = ctc.length[sector - 1][panel - 1].at(paddle - 1);
+    double offset = ctc.zoffset[sector - 1][panel - 1].at(paddle - 1);
 
     //
     //	if(aHit->isElectronicNoise)
@@ -249,10 +257,10 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
     trueInfos tInfos(aHit);
 
     // Distances from upstream, downstream
-    // ctof paddle center is offsetby ctc.offsetFromCenter from the CLAS12 target position,
+    // ctof paddle center is offsetby ctc.zoffset from the CLAS12 target position,
     // so need to  z is also the local coordinate
     //side = 0 or 1,
-    double d = length + (1. - 2. * side)*(tInfos.z + ctc.offsetFromCenter); // The distance between the hit and PMT?
+    double d = length + (1. - 2. * side)*(tInfos.z - offset); // The distance between the hit and PMT?
 
     // attenuation length
     double attlen = ctc.attlen[sector - 1][panel - 1][side][paddle - 1];
@@ -459,11 +467,9 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
     //        cout<<"identity[0].id = "<<identity[0].id<<endl;
     //        cout<<"identity[1].id = "<<identity[1].id<<endl;
 
-    // odd numbered paddles are short
-    // even numbered are long
-    double length = ctc.lengthLowPitch;
-    if (paddle % 2 == 0) length = ctc.lengthHighPitch;
-
+    double length = ctc.length[sector - 1][panel - 1].at(paddle - 1);
+    double offset = ctc.zoffset[sector - 1][panel - 1].at(paddle - 1);
+      
     trueInfos tInfos(aHit);
 
     // attenuation length
@@ -482,7 +488,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
     for (unsigned int s = 0; s < tInfos.nsteps; s++) {
         //pmt = 0 or 1, 
 
-        double d = length + (1. - 2. * side)*(Pos[s].z() + ctc.offsetFromCenter); // The distance between the hit and PMT?
+         double d = length + (1. - 2. * side)*(Pos[s].z() - offset); // The distance between the hit and PMT?
         // attenuation factor
         double att = exp(-d / cm / attlen);
 

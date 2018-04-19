@@ -49,7 +49,11 @@ public:
         vector<double> toff_RFpad[1][1];
         vector<double> toff_P2P[1][1];
    
-            // ======== FADC Pedestals and sigmas ===========
+	// geometry: length and z offset
+	vector<double> length[1][1];
+	vector<double> zoffset[1][1];
+
+	// ======== FADC Pedestals and sigmas ===========
         double pedestal[48][2] = {};
 	double pedestal_sigm[48][2] = {};
 
@@ -70,10 +74,6 @@ public:
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
 	double tdcLSB;        // Conversion from ns to TDC channel.
 
-	double lengthHighPitch;  // length of long bar
-	double lengthLowPitch;   // length of short bar
-	double offsetFromCenter; // offset of the center of the straight scintillator to CLAS12 center
-	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 
