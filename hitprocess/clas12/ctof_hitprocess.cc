@@ -523,7 +523,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
             //double   timeWalkUp = A/(B+C*sqrt(adcu));
             double timeWalk = 0.;
             
-            double tU = time[s] + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm - ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
+            double tU = time[s] + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm +  (1. - 2. * side)*ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
                                                                                                      - ctc.toff_RFpad[sector-1][panel-1][paddle-1] 
                                                                                                      - ctc.toff_P2P[sector-1][panel-1][paddle-1] 
                                                                                                      + timeWalk;
