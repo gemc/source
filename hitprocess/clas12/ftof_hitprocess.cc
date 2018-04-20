@@ -283,7 +283,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 //        double tU = tInfos.time + d / ftc.veff[sector - 1][panel - 1][pmt][paddle - 1] / cm +
 //                ftc.toff_LR[sector - 1][panel - 1][paddle - 1] / 2. - ftc.toff_P2P[sector - 1][panel - 1][paddle - 1] + timeWalk;
         
-        double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + ftc.toff_LR[sector-1][panel-1][paddle-1]/2. 
+        double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
                                                                                                 - ftc.toff_RFpad[sector-1][panel-1][paddle-1] 
                                                                                                 - ftc.toff_P2P[sector-1][panel-1][paddle-1] 
                                                                                                 + timeWalk; 
@@ -499,7 +499,7 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
             //double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
             double timeWalk = A / pow(adc, B);
             
-            double stepTimeU = time[s] + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + ftc.toff_LR[sector-1][panel-1][paddle-1]/2. 
+            double stepTimeU = time[s] + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2. 
                                                                                                 - ftc.toff_RFpad[sector-1][panel-1][paddle-1] 
                                                                                                 - ftc.toff_P2P[sector-1][panel-1][paddle-1] 
                                                                                                 + timeWalk;
