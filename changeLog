@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+5/29/18
+ - added 10 and 20 cases for FASTMCMODE in physics list
+
 3/21/18
  - added option RFSTART: Radio-frequency time model. Available options are:
 
