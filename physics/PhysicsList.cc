@@ -367,7 +367,7 @@ void PhysicsList::ConstructProcess()
 	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
 	int synrad = gemcOpt.optMap["SYNRAD"].arg;
 
-	if(fastmcMode < 2) {
+	if(fastmcMode%10 < 2) {
 		G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
 		G4VProcess* decay;
 

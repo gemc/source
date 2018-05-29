@@ -132,7 +132,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 {
 	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
 	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
-	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  
 
 	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
 
