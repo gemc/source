@@ -16,6 +16,11 @@ static bmtConstants initializeBMTConstants(int runno)
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
+	
+	// do not initialize at the beginning, only after the end of the first event,
+    	// with the proper run number coming from options or run table
+	if(runno == -1) return bmtc;
+	
 	bmtc.runNo = runno;
 	
 	if(getenv ("CCDB_CONNECTION") != NULL) {
@@ -101,12 +106,6 @@ static bmtConstants initializeBMTConstants(int runno)
 	//bmtc.changeFieldScale(-1);  // this needs to be read from DB
 
 	bmtc.Lor_Angle.Initialize(runno);
-	
-	if(runno == -1)
-	{
-		cout << " > bmt pre-initizialization. " << endl;
-		return bmtc;
-	}
 
 	return bmtc;
 }
