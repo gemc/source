@@ -52,7 +52,7 @@ static fmtConstants initializeFMTConstants(int runno)
 
 	
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_layer");
+	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim");
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());

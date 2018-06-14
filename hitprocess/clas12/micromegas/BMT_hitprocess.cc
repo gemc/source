@@ -29,7 +29,7 @@ static bmtConstants initializeBMTConstants(int runno)
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
 
 	//Load the geometrical constant for each layer
-	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer");
+	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim");
 	data.clear(); calib->GetCalib(data,bmtc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
