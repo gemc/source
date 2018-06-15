@@ -214,10 +214,11 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	buildMirrors();
 
 
-	// assign regions
-	// includes root
+	// assigns production cuts for root
+	// assigns production cuts coming from sensitive detector assignment
+	// assigns production cuts coming from PRODUCTIONCUTFORVOLUMES option
 	regions.push_back("root");
-	assignRegions(regions);
+	assignProductionCuts(regions);
 	
 
 	// now output det information if verbosity or catch is given
@@ -635,11 +636,11 @@ void MDetectorConstruction::buildMirrors()
 	}
 }
 
-void MDetectorConstruction::assignRegions(vector<string> volumes)
+void MDetectorConstruction::assignProductionCuts(vector<string> volumes)
 {
 	double VERB    = gemcOpt.optMap["HIT_VERBOSITY"].arg ;
 	int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;
-
+	
 	for(unsigned int i=0; i<volumes.size(); i++)
 	{
 		// looking in the sensitive detector map for the SD with matching system
@@ -689,6 +690,43 @@ void MDetectorConstruction::assignRegions(vector<string> volumes)
 			}
 		}		
 	}
+	
+	// scanning PRODUCTIONCUTFORVOLUMES
+	vector<aopt> volumesWithProdCuts = gemcOpt.getArgs("PRODUCTIONCUTFORVOLUMES");
+	
+	for (unsigned int f = 0; f < volumesWithProdCuts.size(); f++) {
+		vector < string > volsProdCuts = getStringVectorFromStringWithDelimiter(volumesWithProdCuts[f].args, ",");
+	
+		// skipping default option "no"
+		if(volsProdCuts.size() == 1) continue;
+
+		string regionName = "volumeProdCut" + stringify((int) f+1);
+		string volumesForThisRegion;
+		
+		SeRe_Map[regionName] = new G4Region(regionName);
+		SePC_Map[regionName] = new G4ProductionCuts;
+
+		// the last element is the actual volume cut
+		for(unsigned v=0; v<volsProdCuts.size() - 1; v++) {
+			detector volumeWithCut = findDetector(volsProdCuts[v]);
+			if(volumeWithCut.name != "notfound") {
+				volumesForThisRegion += volumeWithCut.name + " ";
+				SeRe_Map[regionName]->AddRootLogicalVolume(volumeWithCut.GetLogical());
+			} else {
+				cout << " !! Warning for option PRODUCTIONCUTFORVOLUMES: Detector " << volsProdCuts[v] << " not found." << endl;
+			}
+		}
+		// production cut is the last element
+		double prodCut = getG4Number(volsProdCuts.back());
+		SePC_Map[regionName]->SetProductionCut(prodCut);
+		SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
+
+		
+		cout << " Production cut set to " << prodCut << "mm for volumes: " << volumesForThisRegion << endl;
+		//cout << " Production cut set to " << volsProdCuts.back() << " for volumes: " << volumesForThisRegion << endl;
+
+	}
+	
 }
 
 

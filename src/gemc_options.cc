@@ -749,6 +749,14 @@ void goptions::setGoptions()
 	optMap["PRODUCTIONCUT"].type  = 0;
 	optMap["PRODUCTIONCUT"].ctgr  = "physics";
 	
+	optMap["PRODUCTIONCUTFORVOLUMES"].args   = "no";
+	optMap["PRODUCTIONCUTFORVOLUMES"].help  = "Production cut for volumes (separated by commas), in mm\n";
+	optMap["PRODUCTIONCUTFORVOLUMES"].help += "      Example: \"outerMount, taggerInnerShield, 50\" will set the production cut for the volumes outerMount and taggerInnerShield to 5cm\n";
+	optMap["PRODUCTIONCUTFORVOLUMES"].name  = "Production cut for volumes, in mm";
+	optMap["PRODUCTIONCUTFORVOLUMES"].type  = 1;
+	optMap["PRODUCTIONCUTFORVOLUMES"].ctgr  = "physics";
+	optMap["PRODUCTIONCUTFORVOLUMES"].repe  = 1;
+
 	optMap["FIELD_PROPERTIES"].args  = "no";
 	optMap["FIELD_PROPERTIES"].help  = "Mapped field minimum step, integration method, interpolation\n\n";
 	optMap["FIELD_PROPERTIES"].help += "      Usage:\n";

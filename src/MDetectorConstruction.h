@@ -69,7 +69,7 @@ private:
 	
 public:
 	void isSensitive(detector);
-	void assignRegions(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector
+	void assignProductionCuts(vector<string>);         // define a region with name "system_volumename" and assign thresholds based on sensitive detector
 	void hasMagfield(detector);
 	void buildMirrors();
 	void assignRegions();
