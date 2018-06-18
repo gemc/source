@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+6/18/18
+ - fixed unsmeared ftof tdc
+
 6/14/18
  - Micromegas digitization reading from correct CCDB table
  - Indentation that makes sense on BMT_hitprocess. Removed unnecessary comment for runno = -1
