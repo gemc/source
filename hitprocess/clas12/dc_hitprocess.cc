@@ -80,7 +80,7 @@ static dcConstants initializeDCConstants(int runno)
     
     //********************************************
     //calculating distance to time:
-    database  = "/calibration/dc/time_to_distance/tvsx_devel_v2";
+    database  = "/calibration/dc/time_to_distance/time2dist";
     data.clear();
     calib->GetCalib(data, database);
     

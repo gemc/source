@@ -32,26 +32,44 @@ map<string, detector> cad_det_factory::loadDetectors()
 
 		vector<string> cadFiles;
 
-		// checking wildcards
+		// checking if "/" is the end of the cad name
 		if(strcmp(&dname.back(), "/") == 0) {
 			string dir(dname.begin(), dname.end()-1);
 			DIR *thisDir = opendir(dir.c_str());
 
+			if(thisDir == NULL) {
+				if(getenv("GEMC_DATA_DIR")  != NULL) {
+					string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + dir;
+					thisDir = opendir(maybeHere.c_str());
+				}
+			}
+			
 			if(thisDir != NULL) {
 				possibleGXML.push_back(dname + "cad.gxml");
 				struct dirent *thisDirent = readdir(thisDir);
 				while (thisDirent != NULL){
 
+					
 					// removing 4 char from filename. Extension must be 3 letters long + period
 					string thisName = thisDirent->d_name;
 
+
+					// removing extension including .
 					if(thisName.size()>4) {
 						string thisRootFileName(thisName.begin(), thisName.end()-4);
 
 						string thisFileName = checkFormat(dname + thisRootFileName);
 
-						if(thisFileName != "na")
+						if(thisFileName != "na") {
 							cadFiles.push_back(thisFileName);
+						} else {
+							// trying GEMC_DATA_DIR
+							string envLoc = (string) getenv("GEMC_DATA_DIR") + "/";
+							thisFileName = checkFormat(envLoc + dname + thisRootFileName);
+							if(thisFileName != "na") {
+								cadFiles.push_back(thisFileName);
+							}
+						}
 					}
 
 					thisDirent = readdir(thisDir);
@@ -63,7 +81,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 			}
 			closedir(thisDir);
 
-		// no wildcard, use name directly
+		// this is a directory, use name directly
 		} else {
 			string thisFileName = checkFormat(dname);
 			if(thisFileName != "na")
@@ -122,6 +140,13 @@ map<string, detector> cad_det_factory::loadDetectors()
 
 		QFile *gxml = new QFile(possibleGXML[g].c_str());
 
+		if( !gxml->exists() ) {
+			// trying GEMC_DATA_DIR
+			string envLoc = (string) getenv("GEMC_DATA_DIR") + "/" + possibleGXML[g];
+			gxml = new QFile(envLoc.c_str());
+			
+		}
+		
 		// checking that file exists
 		if( !gxml->exists() ) {
 			cout << hd_msg << " " << possibleGXML[g] << " not found. Cad volumes will be imported as original." << endl;
