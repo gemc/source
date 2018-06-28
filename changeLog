@@ -5,8 +5,6 @@ Changelog for GEMC
  - detectors and cad factory can read the env variable "GEMC_DATA_DIR" as a base path in the gcard
  - fixed time to distance table in gemc
 
-
-
 6/18/18
  - fixed unsmeared ftof tdc
 
