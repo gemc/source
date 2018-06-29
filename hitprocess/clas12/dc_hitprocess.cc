@@ -80,25 +80,24 @@ static dcConstants initializeDCConstants(int runno)
     
     //********************************************
     //calculating distance to time:
-    database  = "/calibration/dc/time_to_distance/time2dist";
-    data.clear();
-    calib->GetCalib(data, database);
-    
-    for(unsigned row = 0; row < data.size(); row++)
-    {
-        int sec = data[row][0] - 1;
-        int sl  = data[row][1] - 1;
-        dcc.v0[sec][sl] = data[row][2];
-        dcc.deltanm[sec][sl] = data[row][3];
-        dcc.tmaxsuperlayer[sec][sl] = data[row][4];
-        //Row 5 is left out, corresponds to distbfield
-        dcc.delta_bfield_coefficient[sec][sl] = data[row][6];
-        dcc.deltatime_bfield_par1[sec][sl] = data[row][7];
-        dcc.deltatime_bfield_par2[sec][sl] = data[row][8];
-        dcc.deltatime_bfield_par3[sec][sl] = data[row][9];
-        dcc.deltatime_bfield_par4[sec][sl] = data[row][10];
-    }
-    
+	database  = "/calibration/dc/time_to_distance/time2dist";
+	data.clear();
+	calib->GetCalib(data, database);
+	
+	for(unsigned row = 0; row < data.size(); row++) {
+		int sec = data[row][0] - 1;
+		int sl  = data[row][1] - 1;
+		dcc.v0[sec][sl] = data[row][3];
+		dcc.deltanm[sec][sl] = data[row][4];
+		dcc.tmaxsuperlayer[sec][sl] = data[row][5];
+		// Row left out, corresponds to distbfield
+		dcc.delta_bfield_coefficient[sec][sl] = data[row][7];
+		dcc.deltatime_bfield_par1[sec][sl] = data[row][8];
+		dcc.deltatime_bfield_par2[sec][sl] = data[row][9];
+		dcc.deltatime_bfield_par3[sec][sl] = data[row][10];
+		dcc.deltatime_bfield_par4[sec][sl] = data[row][11];
+	}
+	
     
     //Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
     dcc.smear_time_walk[0] = 0.001; //Corresponds to smearing at low distances from the wire (given in mm)
