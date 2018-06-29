@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+6/29/18
+ - dc routine fix - using new ccdb table
+
 6/28/18
  - detectors and cad factory can read the env variable "GEMC_DATA_DIR" as a base path in the gcard
  - fixed time to distance table in gemc
