@@ -11,7 +11,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 	string hd_msg     = " >> CAD Factory: >> ";
 	double verbosity  = gemcOpt.optMap["GEO_VERBOSITY"].arg;
 	string catch_v    = gemcOpt.optMap["CATCH"].args;
-
+	
 	map<string, detector> dets;
 	
   	// first check if there's at least one detector with CAD factory
@@ -64,10 +64,12 @@ map<string, detector> cad_det_factory::loadDetectors()
 							cadFiles.push_back(thisFileName);
 						} else {
 							// trying GEMC_DATA_DIR
-							string envLoc = (string) getenv("GEMC_DATA_DIR") + "/";
-							thisFileName = checkFormat(envLoc + dname + thisRootFileName);
-							if(thisFileName != "na") {
-								cadFiles.push_back(thisFileName);
+							if(getenv("GEMC_DATA_DIR")  != NULL) {
+								string envLoc = (string) getenv("GEMC_DATA_DIR") + "/";
+								thisFileName = checkFormat(envLoc + dname + thisRootFileName);
+								if(thisFileName != "na") {
+									cadFiles.push_back(thisFileName);
+								}
 							}
 						}
 					}
