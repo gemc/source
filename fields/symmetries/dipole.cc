@@ -188,10 +188,10 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	// so we can output units as well
 	if(verbosity>3 && FIRST_ONLY != 99)
 	{
-		cout << "  > Track position in magnetic field: "
-		<< "("  << (x[0] + mapOrigin[0])/cm << ", "
-		<< (x[1] + mapOrigin[1])/cm << ", "
-		<< (x[2] + mapOrigin[2])/cm << ") cm,  " << endl;
+		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm: "
+		<< "("  << x[0]/cm << ", "
+		<< x[1]/cm << ", "
+		<< x[2]/cm << ") cm,  " << endl;
 		cout << "    Dipole: ";
 		cout << "loc. pos. = ("    << x[0]/cm << ", " << x[1]/cm << ", " << x[2]/cm << ") cm,  ";
 		cout << "IT="   << IT << "   ";

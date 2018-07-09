@@ -3,34 +3,52 @@
 
 
 
-void gMappedField::GetFieldValue( const double point[3], double *Bfield) const
+void gMappedField::GetFieldValue(const double point[3], double *bField) const
 {
 	static int FIRST_ONLY;
 	
-	double Point[3];
-	Point[0] = point[0] - mapOrigin[0];
-	Point[1] = point[1] - mapOrigin[1];
-	Point[2] = point[2] - mapOrigin[2];
+	// displacement point
+	double dpoint[3] = {point[0] - mapOrigin[0], point[1] - mapOrigin[1], point[2] - mapOrigin[2]};
 	
-	Bfield[0] = Bfield[1] = Bfield[2] = 0;
+	double rpoint[3] = {dpoint[0], dpoint[1], dpoint[2]};
+	
+	if(mapRotation[0] != 0) {
+		double yPrime = yRotX(rpoint);
+		double zPrime = zRotX(rpoint);
+		rpoint[1] = yPrime;
+		rpoint[2] = zPrime;
+	}
+	
+	if(mapRotation[1] != 0) {
+		double xPrime = xRotY(rpoint);
+		double zPrime = zRotY(rpoint);
+		rpoint[0] = xPrime;
+		rpoint[2] = zPrime;
+	}
+	
+	if(mapRotation[2] != 0) {
+		double xPrime = xRotZ(rpoint);
+		double yPrime = yRotZ(rpoint);
+		rpoint[0] = xPrime;
+		rpoint[1] = yPrime;
+	}
+
+
+	bField[0] = bField[1] = bField[2] = 0;
 
 	// dipole field
 	if(symmetry == "dipole-z" || symmetry == "dipole-y" || symmetry == "dipole-x") {
-		GetFieldValue_Dipole(Point, Bfield, FIRST_ONLY);
+		GetFieldValue_Dipole(rpoint, bField, FIRST_ONLY);
 	}
-	else if(symmetry == "cylindrical-z" || symmetry == "cylindrical-y" || symmetry == "cylindrical-x") {
 	// phi-symmetric cylindrical field
-		GetFieldValue_Cylindrical(Point, Bfield, FIRST_ONLY);
-	} else 	if(symmetry == "phi-segmented") {
+	else if(symmetry == "cylindrical-z" || symmetry == "cylindrical-y" || symmetry == "cylindrical-x") {
+		GetFieldValue_Cylindrical(rpoint, bField, FIRST_ONLY);
 	// phi-segmented
-		GetFieldValue_phiSegmented(Point, Bfield, FIRST_ONLY);
+	} else 	if(symmetry == "phi-segmented") {
+		GetFieldValue_phiSegmented(rpoint, bField, FIRST_ONLY);
 	}
 
-	if(verbosity == 99)
-		FIRST_ONLY = 99;
-
-
-	// cout << " CHECK FIELD " << " (" << Bfield[0]/gauss << ",  " << Bfield[1]/gauss << ",  " << Bfield[2]/gauss << ") gauss " << endl;
+	if(verbosity == 99) FIRST_ONLY = 99;
 	
 }
 
@@ -116,6 +134,14 @@ void gMappedField::initializeMap()
 		cellSize[1] = (getCoordinateWithName("transverse").max   - startMap[1]) / (np[1] - 1);
 		cellSize[2] = (getCoordinateWithName("longitudinal").max - startMap[2]) / (np[2] - 1);
 	}
+	
+	// setting rotation sin and cosines
+	sinAlpha = sin(mapRotation[0]);
+	cosAlhpa = cos(mapRotation[0]);
+	sinBeta = sin(mapRotation[1]);
+	cosBeta = cos(mapRotation[1]);
+	sinGamma = sin(mapRotation[2]);
+	cosGamma = cos(mapRotation[2]);
 	
 }
 

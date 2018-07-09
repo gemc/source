@@ -258,8 +258,7 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 
 
 	// no interpolation
-	if(interpolation == "none")
-	{
+	if(interpolation == "none") {
 		// checking if the point is closer to the top of the cell
 		if( fabs( startMap[0] + aI*cellSize[0] - aaLC) > fabs( startMap[0] + (aI+1)*cellSize[0] - aaLC)  ) aI++;
 		if( fabs( startMap[1] + tI*cellSize[1] - tC)   > fabs( startMap[1] + (tI+1)*cellSize[1] - tC)    ) tI++;
@@ -271,8 +270,7 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		mfield[2] = B3_3D[aI][tI][lI];
 	}
 
-	else if (interpolation == "linear")
-	{
+	else if (interpolation == "linear") {
 		// relative positions within cell
 		double xaz = (aaLC - (startMap[0] + aI*cellSize[0])) / cellSize[0];
 		double xtr = (tC   - (startMap[1] + tI*cellSize[1])) / cellSize[1];
@@ -323,9 +321,7 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 
 		// finally interpolate along longitudinal
 		mfield[2] = b30 * (1 - xlr) + b31 * xlr;
-	}
-	else
-	{
+	} else {
 		cout << "  !! Unkown field interpolation method >" << interpolation << "<" << endl;
 		return;
 	}
@@ -335,15 +331,14 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 	Bfield[1] =  sign*mfield[0] * sin(dphi/rad) + mfield[1] * cos(dphi/rad);
 	Bfield[2] =  sign*mfield[2];
 
-	if(verbosity>3 && FIRST_ONLY != 99)
-	{
+	if(verbosity>3 && FIRST_ONLY != 99) {
 
-		cout << "  > Track position in magnetic field: "
-		<< "("  << (x[0] + mapOrigin[0])/cm << ", "
-		<< (x[1] + mapOrigin[1])/cm << ", "
-		<< (x[2] + mapOrigin[2])/cm << ") cm,  " << endl;
+		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm: "
+		<< "("  << x[0]/cm << ", "
+		<< x[1]/cm << ", "
+		<< x[2]/cm << ") cm,  " << endl;
 
-		cout << "  > Track position in magnetic field (phi, r, z): "
+		cout << "  > Track position in magnetic field, with displacement and rotations (phi/deg, r/cm, z/cm): "
 		<< "("  << aC/deg << " deg, "
 		<< tC/cm  << " cm, "
 		<< lC/cm << " cm)  " << endl;
@@ -358,12 +353,12 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		<< tI << ", "
 		<< lI << ")  " << endl;
 
-		cout << "  > Field Values (local) (Bx, By, Bz) "
+		cout << "  > Field Values (local coordinates) (Bx, By, Bz)/tesla "
 		<< "("  << mfield[0]/tesla << ", "
 		<< mfield[1]/tesla << ", "
 		<< mfield[2]/tesla << ") tesla " << endl;
 
-		cout << "  > Field Values (absolute) (Bx, By, Bz) "
+		cout << "  > Field Values (lab coordinates) (Bx, By, Bz)/tesla "
 		<< "("  << Bfield[0]/tesla << ", "
 		<< Bfield[1]/tesla << ", "
 		<< Bfield[2]/tesla << ") tesla " << endl;

@@ -133,22 +133,50 @@ void gfield::initialize(goptions Opt)
 {
 	string hd_msg = "  >> fields Init: ";
 
+	// scale
 	vector<aopt> FIELD_SCALES_OPTION = Opt.getArgs("SCALE_FIELD");
-	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++)
-	{
+	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
 		vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
-		if(scales.size() == 2)
-		{
-			if (scales[0].find(name) != string::npos)
+		if(scales.size() == 2) {
+			if (scales[0].find(name) != string::npos) {
 				scaleFactor = get_number(scales[1]);
+			}
 		}
 	}
 
+	// map displacement
+	vector<aopt> FIELD_DISPLACEMENT_OPTION = Opt.getArgs("DISPLACE_FIELDMAP");
+	for (unsigned int f = 0; f < FIELD_DISPLACEMENT_OPTION.size(); f++) {
+		vector < string > displacement = getStringVectorFromStringWithDelimiter(FIELD_DISPLACEMENT_OPTION[f].args, ",");
+		if(displacement.size() == 4) {
+			if (displacement[0].find(name) != string::npos) {
+				map->mapOrigin[0] = get_number(displacement[1]);
+				map->mapOrigin[1] = get_number(displacement[2]);
+				map->mapOrigin[2] = get_number(displacement[3]);
+			}
+		}
+	}
+	
+	// map rotation
+	vector<aopt> FIELD_ROTATION_OPTION = Opt.getArgs("ROTATE_FIELDMAP");
+	for (unsigned int f = 0; f < FIELD_ROTATION_OPTION.size(); f++) {
+		vector < string > rotations = getStringVectorFromStringWithDelimiter(FIELD_ROTATION_OPTION[f].args, ",");
+		if(rotations.size() == 4) {
+			if (rotations[0].find(name) != string::npos) {
+				map->mapRotation[0] = get_number(rotations[1]);
+				map->mapRotation[1] = get_number(rotations[2]);
+				map->mapRotation[2] = get_number(rotations[3]);
+				
+				cout << " ASD " << map->mapRotation[0]/deg << " " << map->mapRotation[1]/deg << " " << map->mapRotation[2]/deg << endl;
+			}
+		}
+	}
+
+	// integration method, interpolation
 	vector<aopt> FIELD_PROPERTIES = Opt.getArgs("FIELD_PROPERTIES");
 	int fastMCMode                = Opt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
-	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++)
-	{
+	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++) {
 		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
 		if(attributes.size() > 2)
 		{
@@ -171,10 +199,8 @@ void gfield::initialize(goptions Opt)
 			}
 		}
 	}
-
-
-	if(map)
-	{
+	
+	if(map) {
 		map->scaleFactor = scaleFactor;
 		map->initializeMap();
 		map->verbosity = verbosity;

@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/9/18
+ - added DISPLACE_FIELDMAP and ROTATE_FIELDMAP options to displace and rotate a field map
+
 7/3/18
  - fixed case where GEMC_DATA_DIR environment does not exist
 

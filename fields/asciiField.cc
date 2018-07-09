@@ -135,14 +135,7 @@ gfield asciiField::loadField(string file, goptions opts)
 								nnn=nnn.nextSibling();
 							}
 						}				
-						/// selecting "shift" nodes
-						if(ee.tagName().toStdString() == "shift")   
-						{
-							string unit = assignAttribute(ee, "units", "mm");
-							gf.map->mapOrigin[0] = assignAttribute(ee, "x", 0.0)*get_number("1*" + unit);
-							gf.map->mapOrigin[1] = assignAttribute(ee, "y", 0.0)*get_number("1*" + unit);
-							gf.map->mapOrigin[2] = assignAttribute(ee, "z", 0.0)*get_number("1*" + unit);
-						}
+						
 						/// selecting "field" nodes. Default unit is gauss
 						if(ee.tagName().toStdString() == "field")   
 						{

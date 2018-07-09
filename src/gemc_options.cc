@@ -736,6 +736,26 @@ void goptions::setGoptions()
 	optMap["SCALE_FIELD"].ctgr  = "physics";
 	optMap["SCALE_FIELD"].repe  = 1;
 	
+	optMap["DISPLACE_FIELDMAP"].args  = "no";
+	optMap["DISPLACE_FIELDMAP"].help  = "Displace Magnetic Field map from the lab origin.\n";
+	optMap["DISPLACE_FIELDMAP"].help += "      Usage:\n";
+	optMap["DISPLACE_FIELDMAP"].help += "      -DISPLACE_FIELDMAP=\"fieldname, dx*unit, dy*unit, dz*unit\"\n";
+	optMap["DISPLACE_FIELDMAP"].help += "      Example: -DISPLACE_FIELDMAP=\"srr-solenoid, 3.5*mm, 0*mm, 0*mm\"\n";
+	optMap["DISPLACE_FIELDMAP"].name  = "Displace Magnetic Field map from the lab origin.";
+	optMap["DISPLACE_FIELDMAP"].type  = 1;
+	optMap["DISPLACE_FIELDMAP"].ctgr  = "physics";
+	optMap["DISPLACE_FIELDMAP"].repe  = 1;
+	
+	optMap["ROTATE_FIELDMAP"].args  = "no";
+	optMap["ROTATE_FIELDMAP"].help  = "Rotate Magnetic Field map.\n";
+	optMap["ROTATE_FIELDMAP"].help += "      Usage:\n";
+	optMap["ROTATE_FIELDMAP"].help += "      -ROTATE_FIELDMAP=\"fieldname, alpha*unit, beta*unit, gamma*unit\"\n";
+	optMap["ROTATE_FIELDMAP"].help += "      Example: -DISPLACE_FIELDMAP=\"srr-solenoid, 0*deg, 0*deg, 2*deg\"\n";
+	optMap["ROTATE_FIELDMAP"].name  = "Rotate Magnetic Field map.";
+	optMap["ROTATE_FIELDMAP"].type  = 1;
+	optMap["ROTATE_FIELDMAP"].ctgr  = "physics";
+	optMap["ROTATE_FIELDMAP"].repe  = 1;
+	
 	optMap["ACTIVEFIELDS"].args  = "none";
 	optMap["ACTIVEFIELDS"].help  = "List of activated fields\n";
 	optMap["ACTIVEFIELDS"].name  = "List of activated fields";
