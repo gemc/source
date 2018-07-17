@@ -95,7 +95,7 @@ void descriptionTab::update_detector(detector *Det)
 		
 		string what;
 		// material, area, volume, mass
-//		what = "Material: " + det->material;
+		what = "Material: " + det->material;
 //		if(det->GetSolid()) {
 //			what += "\nVolume:" + bestValueUnits(det->GetSolid()->GetCubicVolume(), "Volume");
 //			what += "\nSurface Area:" + bestValueUnits(det->GetSolid()->GetSurfaceArea(), "Surface");
@@ -103,7 +103,7 @@ void descriptionTab::update_detector(detector *Det)
 //		if(det->GetLogical()) {
 //			what += "\nMass:" + bestValueUnits(det->GetLogical()->GetMass(), "Mass");
 //		}
-//		matLabel->setText(what.c_str());
+		matLabel->setText(what.c_str());
 
 				
 		if(det->magfield == "no")
