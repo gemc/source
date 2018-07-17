@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/17/18
+ - reintroduced material name in the gui
+
 7/9/18
  - added DISPLACE_FIELDMAP and ROTATE_FIELDMAP options to displace and rotate a field map
 
