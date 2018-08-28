@@ -165,9 +165,7 @@ void gfield::initialize(goptions Opt)
 			if (rotations[0].find(name) != string::npos) {
 				map->mapRotation[0] = get_number(rotations[1]);
 				map->mapRotation[1] = get_number(rotations[2]);
-				map->mapRotation[2] = get_number(rotations[3]);
-				
-				cout << " ASD " << map->mapRotation[0]/deg << " " << map->mapRotation[1]/deg << " " << map->mapRotation[2]/deg << endl;
+				map->mapRotation[2] = get_number(rotations[3]);				
 			}
 		}
 	}
