@@ -19,7 +19,8 @@ class asciiField : public fieldFactory
 	
 	void loadFieldMap_Dipole(gMappedField*, double);       // load dipole field map
 	void loadFieldMap_Cylindrical(gMappedField*, double);  // load cylindrical field map
-	void loadFieldMap_phiSegmented(gMappedField*, double); // load cylindrical field map
+	void loadFieldMap_phiSegmented(gMappedField*, double); // load phiSegmented field map
+	void loadFieldMap_general3d(gMappedField*, double); // load general3d field map	
 	
 	static fieldFactory *createFieldFactory()
 	{

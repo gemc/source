@@ -201,6 +201,8 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 
 	if(map->symmetry == "phi-segmented")
 		loadFieldMap_phiSegmented(map, v);
+	
+	if(map->symmetry == "general_3D-XYZ" || map->symmetry == "general_3D-XZY" || map->symmetry == "general_3D-YXZ" || map->symmetry == "general_3D-YZX" || map->symmetry == "general_3D-ZXY" || map->symmetry == "general_3D-ZYX")	  						loadFieldMap_general3d(map, v);	
 }
 
 
