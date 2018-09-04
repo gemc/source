@@ -132,6 +132,7 @@ public:
 	void GetFieldValue_Dipole( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_Cylindrical( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_phiSegmented( const double x[3], double *Bfield, int FIRST_ONLY) const;
+	void GetFieldValue_general3d( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	
 	
 	// we want to rotate the field (axes), not the point

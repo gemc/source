@@ -46,7 +46,12 @@ void gMappedField::GetFieldValue(const double point[3], double *bField) const
 	// phi-segmented
 	} else 	if(symmetry == "phi-segmented") {
 		GetFieldValue_phiSegmented(rpoint, bField, FIRST_ONLY);
+	// general_3D
+	} else 	if(symmetry == "general_3D-XYZ" || symmetry == "general_3D-XZY" || symmetry == "general_3D-YXZ" || symmetry == "general_3D-YZX" || symmetry == "general_3D-ZXY" || symmetry == "general_3D-ZYX"){
+		GetFieldValue_general3d(rpoint, bField, FIRST_ONLY);
 	}
+	
+	
 
 	if(verbosity == 99) FIRST_ONLY = 99;
 	
@@ -134,6 +139,24 @@ void gMappedField::initializeMap()
 		cellSize[1] = (getCoordinateWithName("transverse").max   - startMap[1]) / (np[1] - 1);
 		cellSize[2] = (getCoordinateWithName("longitudinal").max - startMap[2]) / (np[2] - 1);
 	}
+	
+	//general_3D
+	if(symmetry == "general_3D-XYZ" || symmetry == "general_3D-XZY" || symmetry == "general_3D-YXZ" || symmetry == "general_3D-YZX" || symmetry == "general_3D-ZXY" || symmetry == "general_3D-ZYX")
+	{
+		startMap = new double[3];
+		cellSize = new double[3];
+		np       = new unsigned int[3];
+		
+		np[0]       = getCoordinateWithName("X").np;
+		np[1]       = getCoordinateWithName("Y").np;
+		np[2]       = getCoordinateWithName("Z").np;
+		startMap[0] = getCoordinateWithName("X").min;
+		startMap[1] = getCoordinateWithName("Y").min;
+		startMap[2] = getCoordinateWithName("Z").min;
+		cellSize[0] = (getCoordinateWithName("X").max    - startMap[0]) / (np[0] - 1);
+		cellSize[1] = (getCoordinateWithName("Y").max   - startMap[1]) / (np[1] - 1);
+		cellSize[2] = (getCoordinateWithName("Z").max - startMap[2]) / (np[2] - 1);
+	}	
 	
 	// setting rotation sin and cosines
 	sinAlpha = sin(mapRotation[0]);
