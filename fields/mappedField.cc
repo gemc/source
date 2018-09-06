@@ -46,7 +46,12 @@ void gMappedField::GetFieldValue(const double point[3], double *bField) const
 	// phi-segmented
 	} else 	if(symmetry == "phi-segmented") {
 		GetFieldValue_phiSegmented(rpoint, bField, FIRST_ONLY);
+	// cartesian_3D
+	} else 	if(symmetry == "cartesian_3D" || symmetry == "cartesian_3D_quadrant"){
+		GetFieldValue_cartesian3d(rpoint, bField, FIRST_ONLY);
 	}
+	
+	
 
 	if(verbosity == 99) FIRST_ONLY = 99;
 	
@@ -89,6 +94,7 @@ void gMappedField::initializeMap()
 	if(symmetry == "dipole-x" || symmetry == "dipole-y" || symmetry == "dipole-z")
 	{
 		startMap = new double[2];
+		endMap = new double[2];		
 		cellSize = new double[2];
 		np       = new unsigned int[2];
 
@@ -96,6 +102,8 @@ void gMappedField::initializeMap()
 		np[1]       = getCoordinateWithName("transverse").np;
 		startMap[0] = getCoordinateWithName("longitudinal").min;
 		startMap[1] = getCoordinateWithName("transverse").min;
+		endMap[0] = getCoordinateWithName("longitudinal").max;
+		endMap[1] = getCoordinateWithName("transverse").max;		
 		cellSize[0] = (getCoordinateWithName("longitudinal").max - startMap[0]) / (np[0] - 1);
 		cellSize[1] = (getCoordinateWithName("transverse").max   - startMap[1]) / (np[1] - 1);
 	}
@@ -105,6 +113,7 @@ void gMappedField::initializeMap()
 	if(symmetry == "cylindrical-x" || symmetry == "cylindrical-y" || symmetry == "cylindrical-z")
 	{
 		startMap = new double[2];
+		endMap = new double[2];				
 		cellSize = new double[2];
 		np       = new unsigned int[2];
 		
@@ -112,6 +121,8 @@ void gMappedField::initializeMap()
 		np[1]       = getCoordinateWithName("longitudinal").np;
 		startMap[0] = getCoordinateWithName("transverse").min;
 		startMap[1] = getCoordinateWithName("longitudinal").min;
+		endMap[0] = getCoordinateWithName("longitudinal").max;
+		endMap[1] = getCoordinateWithName("transverse").max;				
 		cellSize[0] = (getCoordinateWithName("transverse").max   - startMap[0]) / (np[0] - 1);
 		cellSize[1] = (getCoordinateWithName("longitudinal").max - startMap[1]) / (np[1] - 1);
 	}
@@ -121,6 +132,7 @@ void gMappedField::initializeMap()
 	if(symmetry == "phi-segmented")
 	{
 		startMap = new double[3];
+		endMap = new double[3];				
 		cellSize = new double[3];
 		np       = new unsigned int[3];
 		
@@ -130,10 +142,35 @@ void gMappedField::initializeMap()
 		startMap[0] = getCoordinateWithName("azimuthal").min;
 		startMap[1] = getCoordinateWithName("transverse").min;
 		startMap[2] = getCoordinateWithName("longitudinal").min;
+		endMap[0] = getCoordinateWithName("azimuthal").max;
+		endMap[1] = getCoordinateWithName("transverse").max;				
+		endMap[2] = getCoordinateWithName("longitudinal").max;		
 		cellSize[0] = (getCoordinateWithName("azimuthal").max    - startMap[0]) / (np[0] - 1);
 		cellSize[1] = (getCoordinateWithName("transverse").max   - startMap[1]) / (np[1] - 1);
 		cellSize[2] = (getCoordinateWithName("longitudinal").max - startMap[2]) / (np[2] - 1);
 	}
+	
+	//cartesian_3D
+	if(symmetry == "cartesian_3D" || symmetry == "cartesian_3D_quadrant")
+	{
+		startMap = new double[3];
+		endMap = new double[3];				
+		cellSize = new double[3];
+		np       = new unsigned int[3];
+		
+		np[0]       = getCoordinateWithName("X").np;
+		np[1]       = getCoordinateWithName("Y").np;
+		np[2]       = getCoordinateWithName("Z").np;
+		startMap[0] = getCoordinateWithName("X").min;
+		startMap[1] = getCoordinateWithName("Y").min;
+		startMap[2] = getCoordinateWithName("Z").min;
+		endMap[0] = getCoordinateWithName("X").max;
+		endMap[1] = getCoordinateWithName("Y").max;				
+		endMap[2] = getCoordinateWithName("Z").max;				
+		cellSize[0] = (getCoordinateWithName("X").max    - startMap[0]) / (np[0] - 1);
+		cellSize[1] = (getCoordinateWithName("Y").max   - startMap[1]) / (np[1] - 1);
+		cellSize[2] = (getCoordinateWithName("Z").max - startMap[2]) / (np[2] - 1);
+	}	
 	
 	// setting rotation sin and cosines
 	sinAlpha = sin(mapRotation[0]);
