@@ -83,20 +83,10 @@ produce radiation, hits, secondaries. The geant4 results are then collected and 
 </p>
 
 
-========
 
-
-### Platform Supported:
-
-* Linux (32, 64)
-* Mac OS
-
-
-========
 
 ### Documentation:
 * <a href="http://gemc.jlab.org"> gemc home page </a>
 
-========
 
 
