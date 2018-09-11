@@ -1,3 +1,10 @@
+
+ ![Platform](https://img.shields.io/badge/platform-macos%20|%20linux-green.svg)
+ ![Language](https://img.shields.io/badge/language-c++-red.svg)
+ ![Libraries](https://img.shields.io/badge/libraries-cad | geant4-blue.svg)
+
+
+
 <b>GE</b>ant4 <b>M</b>onte-<b>C</b>arlo
 
 
