@@ -192,15 +192,20 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 	// dipole field
 	if(map->symmetry == "dipole-x" || map->symmetry == "dipole-y" || map->symmetry == "dipole-z")
 		loadFieldMap_Dipole(map, v);
-
+	
 	// cylindrical field
-	if(map->symmetry == "cylindrical-x" || map->symmetry == "cylindrical-y" || map->symmetry == "cylindrical-z")
+	else if(map->symmetry == "cylindrical-x" || map->symmetry == "cylindrical-y" || map->symmetry == "cylindrical-z")
 		loadFieldMap_Cylindrical(map, v);
 
 	// phi-segmented field
 
-	if(map->symmetry == "phi-segmented")
+	else if(map->symmetry == "phi-segmented")
 		loadFieldMap_phiSegmented(map, v);
+	
+	else if(map->symmetry == "cartesian_3D" || map->symmetry == "cartesian_3D_quadrant")
+		loadFieldMap_cartesian3d(map, v);	
+	
+	else {cout << "can't recognize the field symmetry "<< map->symmetry << endl; exit(0);}
 }
 
 

@@ -119,6 +119,7 @@ public:
 	// it will avoid the time spend in retrieving
 	// the infos in GetFieldValue
 	double *startMap;
+	double *endMap;	
 	double *cellSize;
 	unsigned int *np;
 	void initializeMap();
@@ -132,6 +133,7 @@ public:
 	void GetFieldValue_Dipole( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_Cylindrical( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_phiSegmented( const double x[3], double *Bfield, int FIRST_ONLY) const;
+	void GetFieldValue_cartesian3d( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	
 	
 	// we want to rotate the field (axes), not the point
