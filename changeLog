@@ -1,6 +1,18 @@
 Changelog for GEMC
 ==================
 
+10/9/18
+ - removed JLAB_ROOT from field map search.
+
+
+.. Note::
+	9/25/18 gemc 2.7 released.
+
+|
+
+9/13/18
+ - merged Zhiwen addition of 3D field map in cartesian coordinates
+
 7/17/18
  - reintroduced material name in the gui
 
@@ -24,8 +36,7 @@ Changelog for GEMC
  - Micromegas digitization reading from correct CCDB table
  - Indentation that makes sense on BMT_hitprocess. Removed unnecessary comment for runno = -1
  - added PRODUCTIONCUTFORVOLUMES option. It is a list of volumes that will be assigned a production cut (in mm, last element of the list). Example:
-
-   - PRODUCTIONCUTFORVOLUMES="outerMount, taggerInnerShield, outerFlange, outerMount, nut1, main-cone, DSShieldFrontLead, 100" will set the production cut for those volumes to 10 cm.
+ - PRODUCTIONCUTFORVOLUMES="outerMount, taggerInnerShield, outerFlange, outerMount, nut1, main-cone, DSShieldFrontLead, 100" will set the production cut for those volumes to 10 cm.
 
 5/29/18
  - added 10 and 20 cases for FASTMCMODE in physics list

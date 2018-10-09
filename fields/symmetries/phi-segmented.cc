@@ -2,6 +2,7 @@
 #include "asciiField.h"
 #include "utils.h"
 
+// PRAGMA TODO: can store the various cases in local variables to make routine faster? General interpolation?
 
 // phi-segmented 3D field in cylindrical coordinates. Field itself is in cartesian coordinates.
 // Dependent on 3 cartesian coordinates (transverse, azimuthal, longitudinal) expressed in cylindrical coordinate

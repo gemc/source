@@ -144,6 +144,9 @@ map<string, detector> gdml_det_factory::loadDetectors()
 						if(sensitivity != "") {
 							cout << " sensitivity: " << sensitivity ;
 
+							// setting system as sensitivity, so the hit definitions can be loaded
+							// this should be modified later
+							dets[volumeName].system = sensitivity;
 							dets[volumeName].sensitivity = sensitivity;
 
 							// identifier must be defined

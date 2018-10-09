@@ -32,12 +32,10 @@ map<string, gfield> loadAllFields(map<string, fieldFactoryInMap> fieldFactoryMap
 	double verbosity = opts.optMap["FIELD_VERBOSITY"].arg ;
 	// get list of files in directories in:
 	// 
-	// - JLAB_ROOT/noarch/data
 	// - GEMC_DATA_DIR if exists
 	// - FIELD_DIR gemc option if set
 	map<string, string> filesMap;
 
-	if(getenv("JLAB_ROOT")     != NULL)        mergeMaps(filesMap, getFilesInDirectory((string) getenv("JLAB_ROOT") + "/noarch/data/" ));
 	if(getenv("GEMC_DATA_DIR") != NULL)        mergeMaps(filesMap, getFilesInDirectory((string) getenv("GEMC_DATA_DIR") ));
 	if(opts.optMap["FIELD_DIR"].args != "env") mergeMaps(filesMap, getFilesInDirectory(opts.optMap["FIELD_DIR"].args));
 
