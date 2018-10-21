@@ -750,7 +750,7 @@ void goptions::setGoptions()
 	optMap["ROTATE_FIELDMAP"].help  = "Rotate Magnetic Field map.\n";
 	optMap["ROTATE_FIELDMAP"].help += "      Usage:\n";
 	optMap["ROTATE_FIELDMAP"].help += "      -ROTATE_FIELDMAP=\"fieldname, alpha*unit, beta*unit, gamma*unit\"\n";
-	optMap["ROTATE_FIELDMAP"].help += "      Example: -DISPLACE_FIELDMAP=\"srr-solenoid, 0*deg, 0*deg, 2*deg\"\n";
+	optMap["ROTATE_FIELDMAP"].help += "      Example: -ROTATE_FIELDMAP=\"srr-solenoid, 0*deg, 0*deg, 2*deg\"\n";
 	optMap["ROTATE_FIELDMAP"].name  = "Rotate Magnetic Field map.";
 	optMap["ROTATE_FIELDMAP"].type  = 1;
 	optMap["ROTATE_FIELDMAP"].ctgr  = "physics";
