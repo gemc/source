@@ -1,9 +1,11 @@
 Changelog for GEMC
 ==================
 
+10/25/18
+ - checking FIELD_DIR enviromnment variable if not set in the option
+
 10/9/18
  - removed JLAB_ROOT from field map search.
-
 
 .. Note::
 	9/25/18 gemc 2.7 released.
