@@ -231,6 +231,7 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 	if (XX < startMap[0] || YY < startMap[1] || ZZ < startMap[2]) return;
 	if (XX >= endMap[0] || YY >= endMap[1] || ZZ >= endMap[2]) return;
 	
+	double B1,B2,B3;
 	// no interpolation
 	if(interpolation == "none")
 	{
@@ -239,31 +240,60 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 		if( fabs( startMap[0] + IYY*cellSize[0] - YY) > fabs( startMap[0] + (IYY+1)*cellSize[0] - YY)  ) IYY++;
 		if( fabs( startMap[0] + IZZ*cellSize[0] - ZZ) > fabs( startMap[0] + (IZZ+1)*cellSize[0] - ZZ)  ) IZZ++;
 		
-		Bfield[0] = B1_3D[IXX][IYY][IZZ];
-		Bfield[1] = B2_3D[IXX][IYY][IZZ];
-		Bfield[2] = B3_3D[IXX][IYY][IZZ];
+		B1 = B1_3D[IXX][IYY][IZZ];
+		B2 = B2_3D[IXX][IYY][IZZ];
+		B3 = B3_3D[IXX][IYY][IZZ];
 	}
 	else if (interpolation == "linear")
 	{
 		// relative positions within cell
-		double XXR = (XX - (startMap[0] + IXX*cellSize[0])) / cellSize[0];
-		double YYR = (YY - (startMap[1] + IYY*cellSize[1])) / cellSize[1];
-		double ZZR = (ZZ - (startMap[2] + IZZ*cellSize[2])) / cellSize[2];		
+		double Xd = (XX - (startMap[0] + IXX*cellSize[0])) / cellSize[0];
+		double Yd = (YY - (startMap[1] + IYY*cellSize[1])) / cellSize[1];
+		double Zd = (ZZ - (startMap[2] + IZZ*cellSize[2])) / cellSize[2];
 
-		// field component interpolation
-		double B1 = B1_3D[IXX][IYY][IZZ] * (1.0 - XXR) + B1_3D[IXX][IYY][IZZ] * XXR;
-		double B2 = B2_3D[IXX][IYY][IZZ] * (1.0 - YYR) + B2_3D[IXX][IYY][IZZ] * YYR;
-		double B3 = B3_3D[IXX][IYY][IZZ] * (1.0 - ZZR) + B3_3D[IXX][IYY][IZZ] * ZZR;
+		// field component interpolation 
+		// The result of trilinear interpolation is independent of the order of the interpolation steps along the three axe, refer to https://en.wikipedia.org/wiki/Trilinear_interpolation		
+		double c00,c01,c10,c11,c0,c1;
+		c00 = B1_3D[IXX][IYY][IZZ]*(1-Xd) + B1_3D[IXX+1][IYY][IZZ]*Xd;
+		c01 = B1_3D[IXX][IYY][IZZ+1]*(1-Xd) + B1_3D[IXX+1][IYY][IZZ+1]*Xd;
+		c10 = B1_3D[IXX][IYY+1][IZZ]*(1-Xd) + B1_3D[IXX+1][IYY+1][IZZ]*Xd;
+		c11 = B1_3D[IXX][IYY+1][IZZ+1]*(1-Xd) + B1_3D[IXX+1][IYY+1][IZZ+1]*Xd;
+		c0  = c00*(1-Yd) + c10*Yd;
+		c1  = c01*(1-Yd) + c11*Yd;		
+		B1  = c0*(1-Zd) + c1*Zd;
+		
+		c00 = B2_3D[IXX][IYY][IZZ]*(1-Xd) + B2_3D[IXX+1][IYY][IZZ]*Xd;
+		c01 = B2_3D[IXX][IYY][IZZ+1]*(1-Xd) + B2_3D[IXX+1][IYY][IZZ+1]*Xd;
+		c10 = B2_3D[IXX][IYY+1][IZZ]*(1-Xd) + B2_3D[IXX+1][IYY+1][IZZ]*Xd;
+		c11 = B2_3D[IXX][IYY+1][IZZ+1]*(1-Xd) + B2_3D[IXX+1][IYY+1][IZZ+1]*Xd;
+		c0  = c00*(1-Yd) + c10*Yd;
+		c1  = c01*(1-Yd) + c11*Yd;		
+		B2  = c0*(1-Zd) + c1*Zd;
 
-		Bfield[0] = B1;
-		Bfield[1] = B2;
-		Bfield[2] = B3;
+		c00 = B3_3D[IXX][IYY][IZZ]*(1-Xd) + B3_3D[IXX+1][IYY][IZZ]*Xd;
+		c01 = B3_3D[IXX][IYY][IZZ+1]*(1-Xd) + B3_3D[IXX+1][IYY][IZZ+1]*Xd;
+		c10 = B3_3D[IXX][IYY+1][IZZ]*(1-Xd) + B3_3D[IXX+1][IYY+1][IZZ]*Xd;
+		c11 = B3_3D[IXX][IYY+1][IZZ+1]*(1-Xd) + B3_3D[IXX+1][IYY+1][IZZ+1]*Xd;
+		c0  = c00*(1-Yd) + c10*Yd;
+		c1  = c01*(1-Yd) + c11*Yd;		
+		B3  = c0*(1-Zd) + c1*Zd;		
 	}
 	else
 	{
 		cout << "  !! Unkown field interpolation method >" << interpolation << "<" << endl;
 		return;
-	}
+	}	
+	
+	if(symmetry == "cartesian_3D"){
+		Bfield[0] = B1;
+		Bfield[1] = B2;
+		Bfield[2] = B3;
+	}else if (symmetry == "cartesian_3D_quadrant"){
+	  if (xx>=0 && yy>=0)	{ Bfield[0] = B1; Bfield[1] = B2; Bfield[2] = B3;}
+	  if (xx>=0 && yy<0)	{ Bfield[0] = B2; Bfield[1] =-B1; Bfield[2] = B3;}
+	  if (xx<0 && yy<0)	{ Bfield[0] =-B1; Bfield[1] =-B2; Bfield[2] = B3;}
+	  if (xx<0 && yy>=0)	{ Bfield[0] =-B2; Bfield[1] = B1; Bfield[2] = B3;}
+	}	
 
 	// we don't worry about computer speed
 	// if verbosity is set this high
