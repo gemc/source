@@ -36,7 +36,6 @@ static ecConstants initializeECConstants(int runno)
 	
 	ecc.TDC_time_to_evio    = 1.      ;
 	ecc.ADC_GeV_to_evio     = 1/10000.; // MIP based calibration is nominally 10 channels/MeV
-	ecc.veff                = 160.    ; // Effective velocity of scintillator light (mm/ns)
 	ecc.pmtPEYld            = 3.5     ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	ecc.pmtQE               = 0.27    ;
 	ecc.pmtDynodeGain       = 4.0     ;
@@ -91,6 +90,16 @@ static ecConstants initializeECConstants(int runno)
 	    ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	  }
 
+	// ======== Initialization of EC effective velocities ===========
+	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d",ecc.runNo);
+	data.clear(); calib->GetCalib(data,ecc.database);
+    
+	for(unsigned row = 0; row < data.size(); row++)
+	  {
+	    isec = data[row][0]; ilay = data[row][1];
+	    ecc.veff[isec-1][ilay-1].push_back(data[row][3]);
+	  }
+	
 
 	// =========== Initialization of FADC250 related informations, pedestals, nsa, nsb ======================
 
@@ -197,6 +206,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double a2 = ecc.timing[sector-1][layer-1][2][strip-1];
 	double a3 = ecc.timing[sector-1][layer-1][3][strip-1]/100;
 	double a4 = ecc.timing[sector-1][layer-1][4][strip-1]/1000;
+	double veff = ecc.veff[sector-1][layer-1][strip-1]*10;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
@@ -212,7 +222,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==3) latt = pDx2-xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/ecc.veff + a3*latt*latt + a4*latt*latt*latt;
+			Ttota = Ttota + latt/veff + a3*latt*latt + a4*latt*latt*latt;
 
 		}
 		else
@@ -343,6 +353,7 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	double B  = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C  = ecc.attlen[sector-1][layer-1][2][strip-1];
 	double G  = ecc.gain[sector-1][layer-1][strip-1];	
+	double veff  = ecc.veff[sector-1][layer-1][strip-1]*10;	
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
@@ -359,10 +370,11 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			double att   = A*exp(-latt/B)+C;
 
 			double stepE = Edep[s]*att;
-			double stepTime = time[s] + latt/ecc.veff;
+			double stepTime = time[s] + latt/veff;
 
 			// cout<<"time[s] = "<<time[s]<<endl;
 			// cout<<"att time  = "<<latt/ecc.veff<<endl;
+			 cout<<"att time  = "<<veff<<endl;
 
 			if (stepE > 0) {
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
