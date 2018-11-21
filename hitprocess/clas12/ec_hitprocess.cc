@@ -374,7 +374,6 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 
 			// cout<<"time[s] = "<<time[s]<<endl;
 			// cout<<"att time  = "<<latt/ecc.veff<<endl;
-			 cout<<"att time  = "<<veff<<endl;
 
 			if (stepE > 0) {
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
