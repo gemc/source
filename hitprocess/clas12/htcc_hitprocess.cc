@@ -50,7 +50,7 @@ static htccConstants initializeHTCCConstants(int runno)
 	}
 
 	cout<<"HTCC:Getting time_offset"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/time_offset:%d",htccc.runNo);
+	sprintf(htccc.database,"/calibration/htcc/time:%d",htccc.runNo);
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

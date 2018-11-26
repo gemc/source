@@ -36,7 +36,6 @@ static pcConstants initializePCConstants(int runno)
 
 	pcc.TDC_time_to_evio    = 1.      ;  	                                   
 	pcc.ADC_GeV_to_evio     = 1./10000; // MIP based calibration is nominally 10 channels/MeV
-	pcc.veff                = 160.    ; // Effective velocity of scintillator light (mm/ns)
 	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.pmtQE               = 0.27    ;
 	pcc.pmtDynodeGain       = 4.0     ;
@@ -87,6 +86,16 @@ static pcConstants initializePCConstants(int runno)
 	    pcc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	  }
 	
+	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d",pcc.runNo);
+	data.clear(); calib->GetCalib(data,pcc.database);
+    
+	for(unsigned row = 0; row < data.size(); row++)
+	  {
+	    isec = data[row][0]; ilay = data[row][1];
+		  //istr = data[row][2];
+	    pcc.veff[isec-1][ilay-1].push_back(data[row][3]);
+	  }
+
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
 	// they will be initialized from CCDB, when the DB will be ready
 	const double const_ped_value = 101;
@@ -188,6 +197,8 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double a2 = pcc.timing[sector-1][view-1][2][strip-1];
 	double a3 = pcc.timing[sector-1][view-1][3][strip-1]/100;
 	double a4 = pcc.timing[sector-1][view-1][4][strip-1]/1000;
+
+	double veff = pcc.veff[sector-1][view-1][strip-1]*10;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
@@ -199,7 +210,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==3) latt=pDx2+xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/pcc.veff + a3*latt*latt + a4*latt*latt*latt;
+			Ttota = Ttota + latt/veff + a3*latt*latt + a4*latt*latt*latt;
 		}
 		else
 		{
@@ -345,6 +356,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	double B  = pcc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C  = pcc.attlen[sector-1][layer-1][2][strip-1];
 	double G  = pcc.gain[sector-1][layer-1][strip-1];
+	double veff  = pcc.veff[sector-1][layer-1][strip-1]*10;
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
@@ -361,7 +373,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			double att   = A*exp(-latt/B)+C;
 
 			double stepE = Edep[s]*att;
-			double stepTime = time[s] + latt/pcc.veff;
+			double stepTime = time[s] + latt/veff;
 
 			// cout<<"time[s] = "<<time[s]<<endl;
 			// cout<<"att time  = "<<latt/pcc.veff<<endl;

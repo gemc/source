@@ -33,6 +33,9 @@ public:
 	//timing: TDC calibration constants
 	vector<double> timing[nsect][nlayer][5];
 
+	//veff: effective velocity (cm/ns)
+	vector<double> veff[nsect][nlayer];
+	
 	
         // ======== FADC Pedestals and sigmas ===========
         double pedestal[nsect][nlayer][nview] = {};
@@ -40,7 +43,6 @@ public:
 	
 	double TDC_time_to_evio;     // Conversion from time (ns) to EVIO TDC format
 	double ADC_GeV_to_evio;      // Conversion from energy (MeV) to EVIO FADC250 format
-	double veff;                 // Effective velocity of scintillator light (mm/ns)
 	double pmtPEYld;             // Number of p.e. divided by the energy deposited in MeV.
 	double pmtQE;
 	double pmtDynodeGain;
