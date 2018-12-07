@@ -92,6 +92,26 @@ vector<G4ThreeVector> vector_mvert(  map<int, TInfos> tinfos, vector<int> tids);
 vector<int>           vector_zint(  int size);  ///< provides a vector of 0
 vector<G4ThreeVector> vector_zthre( int size);  ///< provides a vector of (0,0,0)
 
+/// \class saveSelectedParams
+/// <b> saveSelectedParams </b>\n\n
+/// Holds parameters from the SAVE_SELECTED option
+class saveSelectedParams
+{
+ public:
+  saveSelectedParams () {;}
+  ~saveSelectedParams() {;}
+
+  bool enabled;
+  string targetId;
+  unsigned tIdsize;
+  int targetPid;
+  double lowLim;
+  double hiLim;
+  string variable;
+  string dir;
+  bool decision;
+};
+
 
 /// \class MEventAction
 /// <b> MEventAction </b>\n\n
@@ -149,6 +169,9 @@ public:
 	void saveBGPartsToLund();
 	ofstream *lundOutput;
 	map<int, BGParts> bgMap;
+
+	// SAVE_SELECTED parameters
+	saveSelectedParams ssp;
 
 
 private:

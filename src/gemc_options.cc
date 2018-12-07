@@ -595,6 +595,16 @@ void goptions::setGoptions()
 	optMap["TSAMPLING"].name = "Sampling time of electronics (typically FADC)";
 	optMap["TSAMPLING"].type = 1;
 	optMap["TSAMPLING"].ctgr = "output";
+
+	// Activates RNG saving for selected events
+	optMap["SAVE_SELECTED"].args  = "";
+	optMap["SAVE_SELECTED"].help  = "Save events with selected hit types\n";
+	optMap["SAVE_SELECTED"].help  = "  arg is list of id, pid, low limit, high limit, variable[, directory]\n";
+	optMap["SAVE_SELECTED"].help  = "  e.g. 7xx10000, 11, 0.0*MeV, 2000*MeV, trackE, /.\n";
+	optMap["SAVE_SELECTED"].name  = "Save events with selected hit types";
+	optMap["SAVE_SELECTED"].type  = 1;
+	optMap["SAVE_SELECTED"].ctgr  = "output";
+	
 	
 
 	// Physics
