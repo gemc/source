@@ -178,6 +178,56 @@ void txt_simple_output :: writeGenerated(outputContainer* output, vector<generat
 	*txtout << indent(1) << "}" << endl;
 }
 
+void txt_simple_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
+{
+  ofstream *txtout = output->txtoutput ;
+
+  *txtout << indent(1) << "Ancestors Bank {" << endl;
+
+  *txtout << indent(2) << " pid:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].pid << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " tid:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].tid << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " mtid:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].mtid << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " E:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].trackE/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " px:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].p.x()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " py:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].p.y()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " pz:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].p.z()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " vx:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].vtx.x()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " vy:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].vtx.y()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(2) << " vz:\t";
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    *txtout << ainfo[i].vtx.z()/MeV << "\t";
+  *txtout<< endl;
+  *txtout << indent(1) << "}" << endl;
+
+}
+
 void txt_simple_output ::  initBank(outputContainer* output, gBank thisHitBank)
 {
 }
