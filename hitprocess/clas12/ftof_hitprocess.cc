@@ -40,13 +40,14 @@ static ftofConstants initializeFTOFConstants(int runno) {
 	ftc.dEdxMIP = 1.956; // muons in polyvinyltoluene
 	ftc.pmtPEYld = 500;
 	//	ftc.tdcLSB        = 42.5532;// counts per ns (23.5 ps LSB)
-	
+
+	// updated on 1/15/19 - Dan Carman: resolutions from data 
 	cout << "FTOF:Setting time resolution" << endl;
 	for (int p = 0; p < 3; p++) {
 		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
-			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 5.45 + 74.55)); //ps to ns
-			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.90 + 29.10)); //ps to ns
-			if (p == 2) ftc.tres[p].push_back(1e-3 * (c * 5.00 + 145.0)); //ps to ns
+			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 4.545 + 95.465)); //ps to ns
+			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.820 + 59.16)); //ps to ns
+			if (p == 2) ftc.tres[p].push_back(1e-3 * (200.0)); //ps to ns fixed number
 		}
 	}
 	
