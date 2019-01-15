@@ -212,6 +212,9 @@ class ancestorInfo
   double trackE;
   G4ThreeVector p;
   G4ThreeVector vtx;
+
+  int    getVariableFromStringI(string);
+  double getVariableFromStringD(string);
 };
 
 

@@ -94,3 +94,25 @@ double generatedParticle::getVariableFromStringD(string what)
 
 	return 0;
 }
+
+int ancestorInfo::getVariableFromStringI(string what)
+{
+  if (what == "pid")          return pid;
+  else if (what == "tid")     return tid;
+  else if (what == "mtid")    return mtid;
+
+  return 0;
+}
+
+double ancestorInfo::getVariableFromStringD(string what)
+{
+  if (what == "trackE")   return trackE;
+  else if (what == "px")   return p.x();
+  else if (what == "py")   return p.y();
+  else if (what == "pz")   return p.z();
+  else if (what == "vx")   return vtx.x();
+  else if (what == "vy")   return vtx.y();
+  else if (what == "vz")   return vtx.z();
+  
+  return 0;
+}
