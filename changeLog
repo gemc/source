@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+1/15/19
+- Dan Carman: time resolutions from data 
+
 11/26/18
 - (R. DeVita) change htcc time offset table to use the same used in reconstruction
 - (C. Smith, DeVita)reading ecal effective velocity from CCDB
