@@ -1,8 +1,29 @@
 Changelog for GEMC
 ==================
 
+1/16/19
+- Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
+
+   Provides and implements a new command line option::
+
+    -SAVE_SELECTED=“<id>, <pid>, <low limit>, <high limit>, <variable>, <directory>”
+
+   This tells GEMC to save the RNG state in a file in directory for events in which there is a hit satisfying:
+
+   Detector ID matches <id> in all digit positions where <id> does not contain ‘x’ AND
+
+   Particle ID is <pid> AND <variable> is in the range from <low limit> to <high limit> <directory> is optional and defaults to the current directory
+
+   For example::
+
+    SAVE_SELECTED="7xx10000, 11, 0.0MeV, 2000MeV, trackE, ./”
+
+   saves RNG state in files in the current directory for events in which there was a hit in detectors 70010000, 70110000, 70210000, etc. by an electron with energy from 0 to 2 GeV.
+
+|
+
 1/15/19
-- Dan Carman: time resolutions from data 
+- Dan Carman: time resolutions from data
 
 11/26/18
 - (R. DeVita) change htcc time offset table to use the same used in reconstruction
