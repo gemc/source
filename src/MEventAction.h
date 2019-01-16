@@ -92,14 +92,14 @@ vector<G4ThreeVector> vector_mvert(  map<int, TInfos> tinfos, vector<int> tids);
 vector<int>           vector_zint(  int size);  ///< provides a vector of 0
 vector<G4ThreeVector> vector_zthre( int size);  ///< provides a vector of (0,0,0)
 
-/// \class saveSelectedParams
-/// <b> saveSelectedParams </b>\n\n
+/// \class saveEventParams
+/// <b> saveEventParams </b>\n\n
 /// Holds parameters from the SAVE_SELECTED option
-class saveSelectedParams
+class saveEventParams
 {
  public:
-  saveSelectedParams () {;}
-  ~saveSelectedParams() {;}
+  saveEventParams () {;}
+  ~saveEventParams() {;}
 
   bool enabled;
   string targetId;
@@ -171,7 +171,7 @@ public:
 	map<int, BGParts> bgMap;
 
 	// SAVE_SELECTED parameters
-	saveSelectedParams ssp;
+	saveEventParams ssp;
 
 
 private:
