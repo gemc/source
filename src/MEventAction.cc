@@ -2,6 +2,7 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4Trajectory.hh"
+#include "G4UImanager.hh"
 
 // gemc headers
 #include "MEventAction.h"
@@ -128,6 +129,41 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	}
 	
 	backgroundEventNumber.clear();
+
+	// SAVE_SELECTED parameters
+
+  string arg = gemcOpt.optMap["SAVE_SELECTED"].args;
+  if (arg == "" || arg == "no")
+    ssp.enabled = false;
+  else
+    {
+      vector<string> values;
+      string units;
+      values       = get_info(gemcOpt.optMap["SAVE_SELECTED"].args, string(",\""));
+      if (values.size() == 5 || values.size() == 6)
+	{
+	  ssp.enabled = true;
+	  ssp.targetId  = values[0];
+	  ssp.tIdsize   = ssp.targetId.size();
+	  ssp.targetPid = get_number(values[1]);
+	  ssp.lowLim    = get_number(values[2]);
+	  ssp.hiLim     = get_number(values[3]);
+	  ssp.variable  = values[4];
+	  if (values.size() == 5)
+	    ssp.dir = "./";
+	  else
+	    {
+	      ssp.dir = values[5];
+	      if (ssp.dir[ssp.dir.size()-1] != '/' ) ssp.dir += "/";
+	    }
+#ifdef WIN32
+	  std::replace(ssp.dir.begin(), ssp.dir.end(),'/','\\');
+#endif
+	  G4RunManager::GetRunManager()->SetRandomNumberStore(true);
+	  G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
+	}
+    }
+  
 }
 
 MEventAction::~MEventAction()
@@ -176,6 +212,7 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 			}
 		}
 	}
+	ssp.decision = false; // default is don't save RNG
 }
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
@@ -496,6 +533,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(WRITE_ALLRAW.find(hitType) != string::npos) WRITE_TRUE_ALL = 1;
 			
 			vector<hitOutput> allRawOutput;
+			vector<hitOutput> allDgtOutput;
 			
 			// creating summary information for each generated particle
 			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
@@ -634,7 +672,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			{
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
 				
-				vector<hitOutput> allDgtOutput;
 				for(int h=0; h<nhits; h++)
 				{
 					
@@ -754,6 +791,47 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
                                 
 			}
 
+
+			// Check whether to save RNG
+			if (ssp.enabled && ssp.decision == false)
+			  for (int h = 0; h < nhits; ++h)
+			    {
+			      // Check if masked ID matches targetId
+			      int id = allDgtOutput[h].getIntDgtVar ("id");
+			      int id2 = id;
+			      int j = ssp.tIdsize-1;
+
+			      for (; j >= 0; --j)
+				{
+				  if (ssp.targetId[j] != 'x' && id2 % 10 != atoi (ssp.targetId.substr(j,1).c_str()))
+				    break;
+				  id2 /= 10;
+				}
+			      if (j >= 0)
+				continue;
+
+			      // Check pid
+			      int pid = allRawOutput[h].getIntRawVar ("pid");
+			      if (pid != ssp.targetPid)
+				continue;
+
+			      // Check given variable
+			      double varval = allRawOutput[h].getIntRawVar (ssp.variable);
+			      if (varval == -99)
+				varval = allDgtOutput[h].getIntDgtVar (ssp.variable);
+			      if (varval == -99)
+				{
+				  cout << "Unknown variable " << ssp.variable << " for SAVE_SELECTED, exiting" << endl;
+				  exit (0);
+				}
+			      
+			      if (varval >= ssp.lowLim && varval <= ssp.hiLim)
+				{
+				  ssp.decision = true;
+				  break;
+				}
+			    }
+
 			delete hitProcessRoutine;
 		}
 	}
@@ -765,7 +843,21 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	processOutputFactory->writeEvent(outContainer);
 	delete processOutputFactory;
-	
+
+	// Save RNG; can't use G4RunManager::GetRunManager()->rndmSaveThisEvent()
+	// because GEANT doesn't know about GEMC run/event numbers
+	if (ssp.decision)
+	  {
+	    G4String fileIn  = ssp.dir + "currentEvent.rndm";
+
+	    std::ostringstream os;
+	    os << "run" << rw.runNo << "evt" << evtN
+	       << ".rndm" << '\0';
+	    G4String fileOut = ssp.dir + os.str();       
+
+	    G4String copCmd = "/control/shell cp "+fileIn+" "+fileOut;
+	    G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
+	  }
 	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;
