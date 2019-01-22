@@ -11,6 +11,8 @@
 // mlibrary
 #include "frequencySyncSignal.h"
 
+#include <sys/types.h>
+#include <dirent.h>
 #include <iostream>
 using namespace std;
 
@@ -163,6 +165,48 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	  G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
 	}
     }
+
+  // Set up to read saved RNGs
+
+  arg = gemcOpt.optMap["RERUN_SELECTED"].args;
+  cout << ">>>>>> setup RERUN_SELECTED: [" << arg << "]" << endl;
+  if (arg == "" || arg == "no")
+    rsp.enabled = false;
+  else
+    {
+      vector<string> values;
+      string units;
+      values       = get_info(gemcOpt.optMap["RERUN_SELECTED"].args, string(",\""));
+      if (values.size() == 1)
+	{
+	  rsp.enabled = true;
+	  rsp.dir = values[0];
+	  if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
+// #ifdef WIN32
+// 	  std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
+// #else
+	  vector<string> v; // vector of paths
+	  vector<unsigned> e; // vector of event numbers
+	  DIR* dirp = opendir(rsp.dir.c_str());
+	  struct dirent * dp;
+	  while ((dp = readdir(dirp)) != NULL)
+	    {
+	      string dname (dp->d_name);
+	      size_t epos = dname.find ("evt");
+	      if ((dname.substr (0, 3) == "run")
+		  && (epos != string::npos)
+		  && (dname.substr (dname.size()-5, 5) == ".rndm"))
+		{
+		  string estring = dname.substr (epos+3, dname.size()-(epos+3)-5);
+		  e.push_back (atoi (estring.c_str()));
+		  v.push_back(dname);
+		  cout << dname << " " << epos << " " << string::npos << " " << estring << endl;
+	      }
+	    }
+	  closedir(dirp);
+// #endif
+	}
+    }
   
 }
 
@@ -183,6 +227,18 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 	rw.getRunNumber(evtN);
 	bgMap.clear();
+
+	// Seed RNG if required
+
+	std::ostringstream os;
+	os << "run" << rw.runNo << "evt" << evtN
+	   << ".rndm" << '\0';
+	G4String fileIn = ssp.dir + os.str();       
+	
+	G4String copCmd = "/control/shell cp "+fileIn+" "+fileIn;
+	G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
+
+
 
 	if(evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
