@@ -123,6 +123,9 @@ class rerunEventParams
 
   bool enabled;
   string dir;
+  unsigned run;
+  vector<unsigned> events;
+  int currentevent;
 };
 
 

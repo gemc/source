@@ -608,7 +608,7 @@ void goptions::setGoptions()
 	// Reruns saved events
 	optMap["RERUN_SELECTED"].args  = "";
 	optMap["RERUN_SELECTED"].help  = "Rerun saved events";
-	optMap["RERUN_SELECTED"].help  = "  arg is directory\n";
+	optMap["RERUN_SELECTED"].help  = "  arg is list of run #, [,directory]\n";
 	optMap["RERUN_SELECTED"].name  = "Rerun saved events";
 	optMap["RERUN_SELECTED"].type  = 1;
 	optMap["RERUN_SELECTED"].ctgr  = "control";

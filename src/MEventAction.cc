@@ -177,34 +177,47 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
       vector<string> values;
       string units;
       values       = get_info(gemcOpt.optMap["RERUN_SELECTED"].args, string(",\""));
-      if (values.size() == 1)
+      if (values.size() <= 2)
 	{
 	  rsp.enabled = true;
-	  rsp.dir = values[0];
-	  if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
-// #ifdef WIN32
-// 	  std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
-// #else
-	  vector<string> v; // vector of paths
-	  vector<unsigned> e; // vector of event numbers
+	  rsp.run = get_number (values[0]);
+	  if (values.size() == 1)
+	    rsp.dir = "./";
+	  else
+	    {
+	      rsp.dir = values[1];
+	      if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
+#ifdef WIN32
+	      std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
+#endif
+	    }
+
 	  DIR* dirp = opendir(rsp.dir.c_str());
 	  struct dirent * dp;
 	  while ((dp = readdir(dirp)) != NULL)
 	    {
 	      string dname (dp->d_name);
+	      size_t rpos = dname.find ("run");
 	      size_t epos = dname.find ("evt");
-	      if ((dname.substr (0, 3) == "run")
-		  && (epos != string::npos)
-		  && (dname.substr (dname.size()-5, 5) == ".rndm"))
+	      size_t rnpos = dname.find (".rndm");
+	      if (rpos == string::npos || epos == string::npos
+		  || rnpos != dname.size()-5)
+		continue;
+
+	      unsigned rstring = get_number (dname.substr (rpos+3, epos-rpos-3));
+	      if (rstring == rsp.run)
 		{
-		  string estring = dname.substr (epos+3, dname.size()-(epos+3)-5);
-		  e.push_back (atoi (estring.c_str()));
-		  v.push_back(dname);
+		  string estring = dname.substr (epos+3, rnpos-epos-3);
+		  rsp.events.push_back (atoi (estring.c_str()));
 		  cout << dname << " " << epos << " " << string::npos << " " << estring << endl;
-	      }
+		}
 	    }
 	  closedir(dirp);
-// #endif
+	  std::sort (rsp.events.begin(), rsp.events.end());
+	  cout << "sorted:" << endl;
+	  for (vector<unsigned>::const_iterator i = rsp.events.begin(); i != rsp.events.end(); ++i)
+	    cout << (*i) << endl;
+	  rsp.currentevent = -1;
 	}
     }
   
@@ -230,15 +243,19 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 	// Seed RNG if required
 
-	std::ostringstream os;
-	os << "run" << rw.runNo << "evt" << evtN
-	   << ".rndm" << '\0';
-	G4String fileIn = ssp.dir + os.str();       
-	
-	G4String copCmd = "/control/shell cp "+fileIn+" "+fileIn;
-	G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
-
-
+	if (rsp.enabled)
+	  {
+	    ++rsp.currentevent;
+	    if (rsp.currentevent < int(rsp.events.size()))
+	      cout << "Here I would set up event " << rsp.events[rsp.currentevent] << endl;
+	    else
+	      {
+		G4RunManager *runManager = G4RunManager::GetRunManager();;
+		runManager->AbortRun();
+		cout << " No more events to rerun." << endl;
+		return;
+	      }
+	  }
 
 	if(evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
@@ -902,8 +919,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 	// Save RNG; can't use G4RunManager::GetRunManager()->rndmSaveThisEvent()
 	// because GEANT doesn't know about GEMC run/event numbers
+	cout << ">>>>> ssp.decision" << endl;
 	if (ssp.decision)
 	  {
+	    cout << ">>>>> ssp.decision true" << endl;
 	    G4String fileIn  = ssp.dir + "currentEvent.rndm";
 
 	    std::ostringstream os;
@@ -914,6 +933,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	    G4String copCmd = "/control/shell cp "+fileIn+" "+fileOut;
 	    G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
 	  }
+	cout << ">>>>> ssp.decision done" << endl;
 	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;
