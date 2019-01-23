@@ -417,6 +417,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			string theWholeLine;
 			// reading header
 			getline(gif, theWholeLine);
+			if (gif.eof())
+			  return;
 			vector<string> headerStrings = getStringVectorFromString(theWholeLine);
 			headerUserDefined.clear();
 			for(auto &s : headerStrings) {
