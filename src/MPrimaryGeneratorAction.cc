@@ -17,6 +17,8 @@
 using namespace gstring;
 
 // C++ headers
+#include <sys/types.h>
+#include <dirent.h>
 #include <iostream>
 using namespace std;
 
@@ -122,11 +124,88 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 
     eventIndex = 1;
 
+  // Set up to read saved RNGs
+
+    string arg = gemcOpt->optMap["RERUN_SELECTED"].args;
+    cout << ">>>>>> setup RERUN_SELECTED: [" << arg << "]" << endl;
+    if (arg == "" || arg == "no")
+      rsp.enabled = false;
+    else
+      {
+	vector<string> values;
+	string units;
+	values       = get_info(gemcOpt->optMap["RERUN_SELECTED"].args, string(",\""));
+	if (values.size() <= 2)
+	  {
+	    rsp.enabled = true;
+	    rsp.run = get_number (values[0]);
+	    if (values.size() == 1)
+	      rsp.dir = "./";
+	    else
+	      {
+		rsp.dir = values[1];
+		if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
+#ifdef WIN32
+		std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
+#endif
+	      }
+	    
+	    DIR* dirp = opendir(rsp.dir.c_str());
+	    struct dirent * dp;
+	    while ((dp = readdir(dirp)) != NULL)
+	      {
+		string dname (dp->d_name);
+		size_t rpos = dname.find ("run");
+		size_t epos = dname.find ("evt");
+		size_t rnpos = dname.find (".rndm");
+		if (rpos == string::npos || epos == string::npos
+		    || rnpos != dname.size()-5)
+		  continue;
+		
+		unsigned rstring = get_number (dname.substr (rpos+3, epos-rpos-3));
+		if (rstring == rsp.run)
+		  {
+		    string estring = dname.substr (epos+3, rnpos-epos-3);
+		    rsp.events.push_back (atoi (estring.c_str()));
+		    cout << dname << " " << epos << " " << string::npos << " " << estring << endl;
+		  }
+	      }
+	    closedir(dirp);
+	    std::sort (rsp.events.begin(), rsp.events.end());
+	    cout << "sorted:" << endl;
+	    for (vector<unsigned>::const_iterator i = rsp.events.begin(); i != rsp.events.end(); ++i)
+	      cout << (*i) << endl;
+	    rsp.currentevent = -1;
+	  }
+      }
 }
 
 
 void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+  // Check first if event should be seeded
+
+  if (rsp.enabled)
+    {
+      G4RunManager *runManager = G4RunManager::GetRunManager();;
+      ++rsp.currentevent;
+      if (rsp.currentevent < int(rsp.events.size()))
+	{
+	  cout << "Here I would set up event " << rsp.events[rsp.currentevent] << endl;
+	  std::ostringstream os;
+	  os << "run" << rsp.run << "evt" << rsp.events[rsp.currentevent]
+	     << ".rndm" << '\0';
+	  G4String fileOut = rsp.dir + os.str();
+	  //	  runManager->RestoreRandomNumberStatus (fileOut);
+	  HepRandom::restoreEngineStatus(fileOut);
+	}
+      else
+	{
+	  runManager->AbortRun();
+	  cout << " No more events to rerun." << endl;
+	  return;
+	}
+    }
 
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal")
@@ -417,6 +496,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			string theWholeLine;
 			// reading header
 			getline(gif, theWholeLine);
+			if (gif.eof())
+			  return;
 			vector<string> headerStrings = getStringVectorFromString(theWholeLine);
 			headerUserDefined.clear();
 			for(auto &s : headerStrings) {

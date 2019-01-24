@@ -24,6 +24,23 @@ public:
 	vector<double> infos;
 };
 
+/// \class rerunEventParams
+/// <b> rerunEventParams </b>\n\n
+/// Holds parameters from the SAVE_SELECTED option
+class rerunEventParams
+{
+ public:
+  rerunEventParams () {;}
+  ~rerunEventParams() {;}
+
+  bool enabled;
+  string dir;
+  unsigned run;
+  vector<unsigned> events;
+  int currentevent;
+};
+
+
 // Class definition
 class MPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -46,6 +63,7 @@ public:
 	// user defined info for each particle
 	vector<userInforForParticle> userInfo;
 
+	rerunEventParams rsp;
 
 	// these two should belong to a general generator class
 	// start time can be modeled
@@ -54,6 +72,8 @@ public:
 
 
 	bool isFileOpen() {return !gif.eof();}
+
+	bool doneRerun() { return (rsp.enabled && rsp.currentevent >= int(rsp.events.size())); }
 
 private:
 	string input_gen;                 ///< Input Option: internal or external

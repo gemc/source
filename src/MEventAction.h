@@ -112,22 +112,6 @@ class saveEventParams
   bool decision;
 };
 
-/// \class rerunEventParams
-/// <b> rerunEventParams </b>\n\n
-/// Holds parameters from the SAVE_SELECTED option
-class rerunEventParams
-{
- public:
-  rerunEventParams () {;}
-  ~rerunEventParams() {;}
-
-  bool enabled;
-  string dir;
-  unsigned run;
-  vector<unsigned> events;
-  int currentevent;
-};
-
 
 /// \class MEventAction
 /// <b> MEventAction </b>\n\n
@@ -188,7 +172,6 @@ public:
 
 	// SAVE_SELECTED parameters
 	saveEventParams ssp;
-	rerunEventParams rsp;
 
 private:
 	// background hits, key is event number
