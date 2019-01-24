@@ -25,6 +25,8 @@ vector<string> init_dmesg(goptions gemcOpt)
 	int   OVERL            = (int) gemcOpt.optMap["CHECK_OVERLAPS"].arg ;
 	int   DAWN_N           = (int) gemcOpt.optMap["DAWN_N"].arg ;
 	int   SAVE_ALL_MOTHERS = (int) gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
+	if (gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
+	  SAVE_ALL_MOTHERS = 1;
 	
 	char phi_verb[2];
 	sprintf(phi_verb, "%d", (int) PHI_VERB);

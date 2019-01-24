@@ -474,6 +474,12 @@ void goptions::setGoptions()
 	optMap["SAVE_ALL_MOTHERS"].type = 0;
 	optMap["SAVE_ALL_MOTHERS"].ctgr = "control";
 	
+	optMap["SAVE_ALL_ANCESTORS"].arg = 0;
+	optMap["SAVE_ALL_ANCESTORS"].name = "Set to 1 to save all ancestors of hits in output. High Memory Usage";
+	optMap["SAVE_ALL_ANCESTORS"].help  = "Set to 1 to save all ancestors of hits. High Memory Usage. Default is 0.\n";
+	optMap["SAVE_ALL_ANCESTORS"].type = 0;
+	optMap["SAVE_ALL_ANCESTORS"].ctgr = "control";
+	
 	optMap["HIGH_RES"].arg = 1;
 	optMap["HIGH_RES"].name = "Use High Resolution Graphics";
 	optMap["HIGH_RES"].help = "Use High Resolution Graphics\n";
