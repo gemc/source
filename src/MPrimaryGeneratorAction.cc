@@ -127,7 +127,6 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
   // Set up to read saved RNGs
 
     string arg = gemcOpt->optMap["RERUN_SELECTED"].args;
-    cout << ">>>>>> setup RERUN_SELECTED: [" << arg << "]" << endl;
     if (arg == "" || arg == "no")
       rsp.enabled = false;
     else
@@ -167,14 +166,10 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		  {
 		    string estring = dname.substr (epos+3, rnpos-epos-3);
 		    rsp.events.push_back (atoi (estring.c_str()));
-		    cout << dname << " " << epos << " " << string::npos << " " << estring << endl;
 		  }
 	      }
 	    closedir(dirp);
 	    std::sort (rsp.events.begin(), rsp.events.end());
-	    cout << "sorted:" << endl;
-	    for (vector<unsigned>::const_iterator i = rsp.events.begin(); i != rsp.events.end(); ++i)
-	      cout << (*i) << endl;
 	    rsp.currentevent = -1;
 	  }
       }
@@ -191,11 +186,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       ++rsp.currentevent;
       if (rsp.currentevent < int(rsp.events.size()))
 	{
-	  cout << "Here I would set up event " << rsp.events[rsp.currentevent] << endl;
 	  std::ostringstream os;
 	  os << "run" << rsp.run << "evt" << rsp.events[rsp.currentevent]
 	     << ".rndm" << '\0';
 	  G4String fileOut = rsp.dir + os.str();
+	  // Use restoreEngineStatus since RestoreRandomNumberStatus is
+	  // too verbose
 	  //	  runManager->RestoreRandomNumberStatus (fileOut);
 	  HepRandom::restoreEngineStatus(fileOut);
 	}

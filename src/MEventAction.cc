@@ -222,13 +222,9 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
 {
-  cout << "eea " << evtN << endl;
-
   if ((gen_action->isFileOpen() == false) ||
       (gen_action->doneRerun() == true))
       return;
-
-  cout << "proceeding" << endl;
 
 	MHitCollection* MHC;
 	int nhits;
@@ -905,10 +901,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 	// Save RNG; can't use G4RunManager::GetRunManager()->rndmSaveThisEvent()
 	// because GEANT doesn't know about GEMC run/event numbers
-	cout << ">>>>> ssp.decision" << endl;
 	if (ssp.decision)
 	  {
-	    cout << ">>>>> ssp.decision true" << endl;
 	    G4String fileIn  = ssp.dir + "currentEvent.rndm";
 
 	    std::ostringstream os;
@@ -919,7 +913,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	    G4String copCmd = "/control/shell cp "+fileIn+" "+fileOut;
 	    G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
 	  }
-	cout << ">>>>> ssp.decision done" << endl;
 	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;
