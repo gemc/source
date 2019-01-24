@@ -196,6 +196,23 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.orderNames();
 	banks["counter"]   = abank;
 
+
+	// ancestors bank 
+	// Information about ancestral trajectories
+	abank =  gBank (ANCESTORS_BANK_TAG, "ancestors", "Geant4 ancestors information");
+	abank.load_variable ("pid",     1,   "Ri", "ID of the ancestor");
+	abank.load_variable ("tid",     2,   "Ri", "Track ID of the ancestor");
+	abank.load_variable ("mtid",    3,   "Ri", "Track ID of the mother of the ancestor");
+	abank.load_variable ("trackE",  4,   "Rd", "Energy of the ancestor");
+	abank.load_variable ("px",      5,   "Rd", "x component of momentum of the ancestor");
+	abank.load_variable ("py",      6,   "Rd", "y component of momentum of the ancestor");
+	abank.load_variable ("pz",      7,   "Rd", "z component of momentum of the ancestor");
+	abank.load_variable ("vx",      5,   "Rd", "x component of vertex of the ancestor");
+	abank.load_variable ("vy",      6,   "Rd", "y component of vertex of the ancestor");
+	abank.load_variable ("vz",      7,   "Rd", "z component of vertex of the ancestor");
+	abank.orderNames();
+	banks["ancestors"]   = abank;
+
 	
 	// Loading all banks related to a system
 	// then checking that all sensitive detectors have a bank

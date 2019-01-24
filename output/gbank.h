@@ -48,6 +48,9 @@ using namespace std;
 // COUNTER Bank
 #define COUNTER_BANK_TAG 70
 
+// Ancestors Bank
+#define ANCESTORS_BANK_TAG 80
+
 // These Bank Types ID can be left hardcoded here
 #define DETECTOR_BANK_ID 0
 

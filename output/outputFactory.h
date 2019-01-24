@@ -201,6 +201,21 @@ public:
 };
 
 
+class ancestorInfo
+{
+ public:
+  ancestorInfo() {};
+  ~ancestorInfo() {};
+  int pid;
+  int tid;
+  int mtid;
+  double trackE;
+  G4ThreeVector p;
+  G4ThreeVector vtx;
+
+  int    getVariableFromStringI(string);
+  double getVariableFromStringD(string);
+};
 
 
 /// \class outputContainer
@@ -243,6 +258,9 @@ public:
 
 	// write generated particles
 	virtual void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo) = 0;
+
+	// write ancestors
+	virtual void writeAncestors (outputContainer*, vector<ancestorInfo>, gBank) = 0;
 
 	// write geant4 true integrated info
 	virtual void writeG4RawIntegrated(outputContainer*, vector<hitOutput>, string, map<string, gBank>*) = 0;

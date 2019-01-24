@@ -150,6 +150,7 @@ public:
 	double VERB;            ///< Event Verbosity
 	string catch_v;         ///< Print Log for volume
 	int   SAVE_ALL_MOTHERS; ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
+	int SAVE_ALL_ANCESTORS; ///< Outputs info on all ancestors of tracks with hits
 	int   MAXP;             ///< Max number of generated particles to save on output stream
 	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
 	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved

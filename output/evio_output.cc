@@ -135,6 +135,8 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  
 
 	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
+ 	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
+	  SAVE_ALL_MOTHERS = 1;
 
 	gBank bank  = getBankFromMap("generated", banksMap);
 	gBank sbank = getBankFromMap("psummary", banksMap);
@@ -267,6 +269,59 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	}
 	*event << userInfoBank;
 
+}
+
+void evio_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
+{
+  vector<int> pid;
+  vector<int> tid;
+  vector<int> mtid;
+  vector<double> trackE;
+  vector<double> px;
+  vector<double> py;
+  vector<double> pz;
+  vector<double> vx;
+  vector<double> vy;
+  vector<double> vz;
+  
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    {
+      pid.push_back (ainfo[i].pid);
+      tid.push_back (ainfo[i].tid);
+      mtid.push_back (ainfo[i].mtid);
+      trackE.push_back (ainfo[i].trackE);
+      px.push_back (ainfo[i].p.getX()/MeV);
+      py.push_back (ainfo[i].p.getY()/MeV);
+      pz.push_back (ainfo[i].p.getZ()/MeV);
+      vx.push_back (ainfo[i].vtx.getX()/MeV);
+      vy.push_back (ainfo[i].vtx.getY()/MeV);
+      vz.push_back (ainfo[i].vtx.getZ()/MeV);
+    }
+
+  // creating and inserting ancestors bank  
+  evioDOMNodeP ancestorsp = evioDOMNode::createEvioDOMNode(ANCESTORS_BANK_TAG, 0);
+  
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pid"),
+			   bank.getVarType("pid"), pid);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("tid"),
+			   bank.getVarType("tid"), tid);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("mtid"),
+			   bank.getVarType("mtid"), mtid);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("trackE"),
+			   bank.getVarType("trackE"), trackE);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("px"),
+			   bank.getVarType("px"),  px);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("py"),
+			   bank.getVarType("py"),  py);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pz"),
+			   bank.getVarType("pz"),  pz);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vx"),
+			   bank.getVarType("vx"),  vx);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vy"),
+			   bank.getVarType("vy"),  vy);
+  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vz"),
+			   bank.getVarType("vz"),  vz);
+  *event << ancestorsp;
 }
 
 void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int what)

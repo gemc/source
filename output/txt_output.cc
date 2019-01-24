@@ -157,6 +157,28 @@ void txt_output :: writeGenerated(outputContainer* output, vector<generatedParti
 	*txtout << " --- End of Generated Particles Bank -- " << endl;
 }
 
+void txt_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
+{
+  ofstream *txtout = output->txtoutput ;
+
+  *txtout << " --- Ancestors Bank -- " << endl;
+
+  for (unsigned i = 0; i < ainfo.size(); i++)
+    {
+      *txtout << "   - Trajectory " << i+1 << " pid: " << ainfo[i].pid
+	      << "  - tid: " << ainfo[i].tid
+	      << "  - mtid: " << ainfo[i].mtid
+	      << "  - E: " << ainfo[i].trackE/MeV
+	      << " MeV  - mom: " << ainfo[i].p.getX()/MeV
+	      << " " << ainfo[i].p.getY()/MeV
+	      << " " << ainfo[i].p.getZ()/MeV
+	      << " MeV  - vtx: " << ainfo[i].vtx.getX()/MeV
+	      << " " << ainfo[i].vtx.getY()/MeV
+	      << " " << ainfo[i].vtx.getZ()/MeV
+	      << " mm" << endl;
+    }
+}
+
 void txt_output ::  initBank(outputContainer* output, gBank thisHitBank)
 {
 	if(!insideBank[thisHitBank.bankName])

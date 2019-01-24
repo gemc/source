@@ -34,6 +34,9 @@ class txt_output : public outputFactory
 	// write generated particles
 	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo);
 	
+	// write ancestors
+	virtual void writeAncestors (outputContainer*, vector<ancestorInfo>, gBank);
+
 	// format output and set insideBank
 	void initBank(outputContainer*, gBank);
 	

@@ -88,6 +88,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	VERB             = gemcOpt.optMap["BANK_VERBOSITY"].arg ;
 	catch_v          = gemcOpt.optMap["CATCH"].args;
 	SAVE_ALL_MOTHERS = (int) gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
+	SAVE_ALL_ANCESTORS = (int) gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg ;
 	gPars            = gpars;
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
 	rw               = runWeights(opts);
@@ -107,6 +108,10 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	// a bit cluncky for now
 	if(fastMCMode>0)
 		SAVE_ALL_MOTHERS = 1;
+
+	// SAVE_ALL_ANCESTORS will set SAVE_ALL_MOTHERS to nonzero
+	if (SAVE_ALL_ANCESTORS && (SAVE_ALL_MOTHERS == 0))
+	  SAVE_ALL_MOTHERS = 1;
 
 	tsampling  = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
 	nsamplings = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
@@ -237,7 +242,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			MHC = it->second->GetMHitCollection();
 			if (MHC) nhits = MHC->GetSize();
 			else nhits = 0;
-			
+
 			for(int h=0; h<nhits; h++)
 			{
 				vector<int> tids = (*MHC)[h]->GetTIds();
@@ -272,6 +277,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// the container is full only if /tracking/storeTrajectory 2
 	G4TrajectoryContainer *trajectoryContainer;
 	
+	set<int> track_db2 = track_db;
 	if(SAVE_ALL_MOTHERS)
 	{
 		trajectoryContainer = evt->GetTrajectoryContainer();
@@ -332,7 +338,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			{
 				G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
 				int tid = trj->GetTrackID();
-				if(tid == mtid)
+    				if(tid == mtid)
 				{
 					tinfos[(*itm).first].mpid   = trj->GetPDGEncoding();
 					tinfos[(*itm).first].mv     = trj->GetPoint(0)->GetPosition();
@@ -534,7 +540,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			
 			vector<hitOutput> allRawOutput;
 			vector<hitOutput> allDgtOutput;
-			
+
 			// creating summary information for each generated particle
 			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
 				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
@@ -551,7 +557,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					continue;
 
 				hitOutput thisHitOutput;
-				
+
 				// mother particle infos
 				if(SAVE_ALL_MOTHERS)
 				{
@@ -841,6 +847,55 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// writing out generated particle infos
 	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap, gen_action->userInfo);
 	
+	// For hits, store all ancestors
+
+	if (SAVE_ALL_ANCESTORS)
+	  {
+	    vector<ancestorInfo> ainfo;
+	    set<int> storedTraj;
+	    for (unsigned int i = 0; i < trajectoryContainer->size(); i++)
+	      {
+		G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
+		int tid = trj->GetTrackID();
+		it = track_db2.find (tid);
+		if (it != track_db2.end())
+		  {
+		    // This trajectory tid is involved in a hit, store it and its ancestors
+		    while (tid > 0 && storedTraj.find (tid) == storedTraj.end())
+		      {
+			int mtid = trj->GetParentID();
+			ancestorInfo ai;
+			ai.pid = trj->GetPDGEncoding();
+			ai.tid = tid;
+			ai.mtid = mtid;
+			ai.trackE = trj->GetInitialKineticEnergy();
+			ai.p = trj->GetInitialMomentum();
+			ai.vtx = trj->GetPoint(0)->GetPosition();
+			ainfo.push_back (ai);
+			storedTraj.insert (tid);
+			
+			// Find trajectory of the mother
+			tid = 0;
+			if (mtid > 0)
+			  {
+			    for (unsigned int ii = 0; ii < trajectoryContainer->size(); ii++)
+			      {
+				trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[ii];
+				if (trj->GetTrackID() == mtid)
+				  {
+				    tid = mtid;
+				    break;
+				  }
+			      }
+			  }
+		      }
+		  }
+	      }
+	    // write out ancestral trajectories
+	    processOutputFactory->writeAncestors (outContainer, ainfo, getBankFromMap("ancestors", banksMap));
+	  }
+
+
 	processOutputFactory->writeEvent(outContainer);
 	delete processOutputFactory;
 
