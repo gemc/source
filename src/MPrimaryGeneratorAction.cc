@@ -490,6 +490,33 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			headerUserDefined.clear();
 
 			string theWholeLine;
+
+			if (rsp.enabled && eventIndex < int (rsp.events[rsp.currentevent]))
+			  {
+			    // Skip input file lines to find rerun event
+			    for (; eventIndex < int (rsp.events[rsp.currentevent]); ++eventIndex)
+			      {
+				// reading header
+				getline(gif, theWholeLine);
+				if (gif.eof())
+				  return;
+				vector<string> headerStrings = getStringVectorFromString(theWholeLine);
+				headerUserDefined.clear();
+				for(auto &s : headerStrings) {
+				  headerUserDefined.push_back(get_number(s));
+				}
+				
+				int nparticles = headerUserDefined[0];
+				for(int p=0; p<nparticles; p++) {
+				  string theWholeLine;
+				  getline(gif, theWholeLine);
+				  if(gif.eof() && p != nparticles -1) {
+				    cout << " Input file " << gfilename << " appear to be truncated." << endl;
+				    return;
+				  }
+				}
+			      }
+			  }
 			// reading header
 			getline(gif, theWholeLine);
 			if (gif.eof())
@@ -546,8 +573,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
                 if(GEN_VERBOSITY > 3) {
                     cout << " This event will be skipped." << endl;
                 }
-                eventIndex++;
             }
+	    eventIndex++;
 		}
 		else if((gformat == "BEAGLE" || gformat == "beagle") && !gif.eof())
 		{

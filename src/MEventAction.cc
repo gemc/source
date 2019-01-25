@@ -179,12 +179,18 @@ MEventAction::~MEventAction()
 
 void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
+        G4RunManager *runManager = G4RunManager::GetRunManager();;
 	if(gen_action->isFileOpen() == false) {
-		G4RunManager *runManager = G4RunManager::GetRunManager();;
 		runManager->AbortRun();
 		cout << " No more events in the input file." << endl;
 		return;
 	}
+	
+	MPrimaryGeneratorAction* pga = (MPrimaryGeneratorAction*)(runManager->GetUserPrimaryGeneratorAction());
+	if (pga->doneRerun())
+	  return;
+	if (pga->isRerun())
+	  evtN = pga->rerunEvent();
 
 	rw.getRunNumber(evtN);
 	bgMap.clear();

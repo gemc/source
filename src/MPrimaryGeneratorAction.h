@@ -73,6 +73,8 @@ public:
 
 	bool isFileOpen() {return !gif.eof();}
 
+	bool isRerun() { return rsp.enabled; }
+	int rerunEvent() { return rsp.currentevent >=0 ? rsp.events[rsp.currentevent] : 0; }
 	bool doneRerun() { return (rsp.enabled && rsp.currentevent >= int(rsp.events.size())); }
 
 private:
