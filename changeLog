@@ -1,8 +1,19 @@
 Changelog for GEMC
 ==================
 
+1/24/19
+
+ - Richard Holmes: SAVE_ALL_ANCESTORS option to save ancestral trajectory to output.
+
+   Implement ancestral trajectory saving to output. This is enabled with the option SAVE_ALL_ANCESTORS=1.
+   Then information about any trajectories which are ancestral to hits in the detectors is written to a new bank named ancestors with bank tag 80.
+
+   This can be useful particularly in combination with the RNG saving, especially once we work up a convenient way to rerun multiple events
+   with saved RNG: run with SAVE_SELECTED= and the default SAVE_ALL_ANCESTORS=0 to get the RNG for the few events of interest, then
+   rerun them with SAVE_ALL_ANCESTORS=1, then do post-analysis of their trajectory history.
+
 1/16/19
-- Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
+ - Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
 
    Provides and implements a new command line option::
 
@@ -20,17 +31,15 @@ Changelog for GEMC
 
    saves RNG state in files in the current directory for events in which there was a hit in detectors 70010000, 70110000, 70210000, etc. by an electron with energy from 0 to 2 GeV.
 
-|
-
 1/15/19
-- Dan Carman: time resolutions from data
+ - Dan Carman: time resolutions from data
 
 11/26/18
-- (R. DeVita) change htcc time offset table to use the same used in reconstruction
-- (C. Smith, DeVita)reading ecal effective velocity from CCDB
+ - (R. DeVita) change htcc time offset table to use the same used in reconstruction
+ - (C. Smith, DeVita)reading ecal effective velocity from CCDB
 
 11/9/18
-- fix bugs in linear interpolation in cartesian_3d (Z. Zhao)
+ - fix bugs in linear interpolation in cartesian_3d (Z. Zhao)
 
 10/25/18
  - checking FIELD_DIR enviromnment variable if not set in the option
