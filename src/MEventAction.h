@@ -174,7 +174,6 @@ public:
 	// SAVE_SELECTED parameters
 	saveEventParams ssp;
 
-
 private:
 	// background hits, key is event number
 	// background hits

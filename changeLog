@@ -1,8 +1,47 @@
 Changelog for GEMC
 ==================
 
+1/31/19
+
+ - Richard Holmes: The RERUN_SELECTED option allows one to rerun multiple events whose RNG state was saved in a previous pass.
+
+    For example, suppose there is a rare background signature of an electron between 100 MeV and 1 GeV in detector ID 1000
+    and you want to visualize a few dozen such events to investigate where the background is coming from. You can do a batch
+    run using
+
+     -SAVE_SELECTED=“1000,11,100*MeV,1*GeV,trackE,./savedirectory”
+
+	 to save the RNG states for such events into the directory ./savedirectory.
+    They are saved in files with names like run2event1322.rndm where 2 is the run number and 1322 is the event number.
+	 Then you can do an interactive run with the same gcard and option
+
+     -RERUN_SELECTED=“2,./savedirectory”.
+
+    Here 2 is the run number from the batch run. With this option, instead of generating new primaries as usual or reading
+    them from the start of a generator input file, the same primaries as were used in the saved events are generated or read
+    and they undergo the same processes as before, so these events can be visualized.
+
+    Similarly one could rerun these saved events in a batch run with both
+
+     -RERUN_SELECTED=“2,./savedirectory”  -SAVE_ALL_ANCESTORS=1
+
+    to get an output file with the ancestors bank showing information on all trajectories leading to hits in those events.
+    This avoids having to use SAVE_ALL_ANCESTORS=1 on the full run when ancestors for only a few events are of interest.
+
+
+1/24/19
+
+ - Richard Holmes: SAVE_ALL_ANCESTORS option to save ancestral trajectory to output.
+
+   Implement ancestral trajectory saving to output. This is enabled with the option SAVE_ALL_ANCESTORS=1.
+   Then information about any trajectories which are ancestral to hits in the detectors is written to a new bank named ancestors with bank tag 80.
+
+   This can be useful particularly in combination with the RNG saving, especially once we work up a convenient way to rerun multiple events
+   with saved RNG: run with SAVE_SELECTED= and the default SAVE_ALL_ANCESTORS=0 to get the RNG for the few events of interest, then
+   rerun them with SAVE_ALL_ANCESTORS=1, then do post-analysis of their trajectory history.
+
 1/16/19
-- Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
+ - Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
 
    Provides and implements a new command line option::
 
@@ -20,17 +59,15 @@ Changelog for GEMC
 
    saves RNG state in files in the current directory for events in which there was a hit in detectors 70010000, 70110000, 70210000, etc. by an electron with energy from 0 to 2 GeV.
 
-|
-
 1/15/19
-- Dan Carman: time resolutions from data
+ - Dan Carman: time resolutions from data
 
 11/26/18
-- (R. DeVita) change htcc time offset table to use the same used in reconstruction
-- (C. Smith, DeVita)reading ecal effective velocity from CCDB
+ - (R. DeVita) change htcc time offset table to use the same used in reconstruction
+ - (C. Smith, DeVita)reading ecal effective velocity from CCDB
 
 11/9/18
-- fix bugs in linear interpolation in cartesian_3d (Z. Zhao)
+ - fix bugs in linear interpolation in cartesian_3d (Z. Zhao)
 
 10/25/18
  - checking FIELD_DIR enviromnment variable if not set in the option

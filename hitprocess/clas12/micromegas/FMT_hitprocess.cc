@@ -87,12 +87,8 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	if(aHit->isBackgroundHit == 1) {
 
-		vector<double> eDep = aHit->GetEdep();
-
-		double totEdep = 0;
-		for(unsigned e=0; e<eDep.size(); e++) {
-			totEdep += eDep[e];
-		}
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep = aHit->GetEdep()[0];
 
 		int sector = identity[0].id;
 		int layer  = identity[1].id;
@@ -103,7 +99,7 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["layer"]  = layer;
 		dgtz["strip"]  = strip;
 		dgtz["Edep"]   = totEdep;
-		dgtz["ADC"]   = int(1e6*totEdep/fmtc.w_i);
+		dgtz["ADC"]    = int(1e6*totEdep/fmtc.w_i);
 
 		return dgtz;
 	}

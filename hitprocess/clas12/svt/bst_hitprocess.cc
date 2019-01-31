@@ -47,11 +47,9 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	if(aHit->isBackgroundHit == 1) {
 
-		vector<double> eDep = aHit->GetEdep();
-		vector<double> stepTime = aHit->GetTime();
-
-		// background hit has all the energy in the first step
-		double totEdep = eDep[0];
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
 
 		int adc     = floor(   7*(totEdep - minHit)/deltaADC);
 		int adchd   = floor(8196*(totEdep - minHit)/deltaADC);
@@ -62,7 +60,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["strip"]  = identity[2].id;
 		dgtz["ADC"]    = adc;
 		dgtz["ADCHD"]  = adchd;
-		dgtz["time"]   = stepTime[0];
+		dgtz["time"]   = stepTime;
 		dgtz["bco"]    = (int) 255*G4UniformRand();
 
 		return dgtz;
