@@ -11,8 +11,7 @@ Changelog for GEMC
 
      -SAVE_SELECTED=“1000,11,100*MeV,1*GeV,trackE,./savedirectory”
 
-	 to save the RNG states for such events into the directory ./savedirectory.
-    They are saved in files with names like run2event1322.rndm where 2 is the run number and 1322 is the event number.
+	 to save the RNG states for such events into the directory ./savedirectory. They are saved in files with names like run2event1322.rndm where 2 is the run number and 1322 is the event number.
 	 Then you can do an interactive run with the same gcard and option
 
      -RERUN_SELECTED=“2,./savedirectory”.
