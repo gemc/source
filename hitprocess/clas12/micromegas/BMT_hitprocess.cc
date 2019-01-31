@@ -115,12 +115,10 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<identifier> identity = aHit->GetId();
 	
 	if(aHit->isBackgroundHit == 1) {
-		
-		vector<double> eDep = aHit->GetEdep();
-		
-		// background hit has all the energy in the first step
-		double totEdep = eDep[0];
-		
+
+		// background hit has all the energy in the first step.
+		double totEdep = aHit->GetEdep()[0];
+
 		int sector = identity[0].id;
 		int layer  = identity[1].id;
 		int strip  = identity[2].id;
@@ -130,7 +128,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["layer"]  = layer;
 		dgtz["strip"]  = strip;
 		dgtz["Edep"]   = totEdep;
-		dgtz["ADC"]   = int(1e6*totEdep/bmtc.w_i);
+		dgtz["ADC"]    = int(1e6*totEdep/bmtc.w_i);
 		
 		return dgtz;
 	}
