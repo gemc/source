@@ -168,7 +168,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	  G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
 	}
     }
-  
+
 }
 
 MEventAction::~MEventAction()
@@ -179,12 +179,18 @@ MEventAction::~MEventAction()
 
 void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
+        G4RunManager *runManager = G4RunManager::GetRunManager();;
 	if(gen_action->isFileOpen() == false) {
-		G4RunManager *runManager = G4RunManager::GetRunManager();;
 		runManager->AbortRun();
 		cout << " No more events in the input file." << endl;
 		return;
 	}
+	
+	MPrimaryGeneratorAction* pga = (MPrimaryGeneratorAction*)(runManager->GetUserPrimaryGeneratorAction());
+	if (pga->doneRerun())
+	  return;
+	if (pga->isRerun())
+	  evtN = pga->rerunEvent();
 
 	rw.getRunNumber(evtN);
 	bgMap.clear();
@@ -222,9 +228,9 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
 {
-	if(gen_action->isFileOpen() == false) {
-		return;
-	}
+  if ((gen_action->isFileOpen() == false) ||
+      (gen_action->doneRerun() == true))
+      return;
 
 	MHitCollection* MHC;
 	int nhits;
