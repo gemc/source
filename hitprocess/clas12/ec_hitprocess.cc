@@ -204,8 +204,6 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double a0 = ecc.timing[sector-1][layer-1][0][strip-1];
 	double a1 = ecc.timing[sector-1][layer-1][1][strip-1];
 	double a2 = ecc.timing[sector-1][layer-1][2][strip-1];
-	double a3 = ecc.timing[sector-1][layer-1][3][strip-1]/100;
-	double a4 = ecc.timing[sector-1][layer-1][4][strip-1]/1000;
 	double veff = ecc.veff[sector-1][layer-1][strip-1]*10;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
@@ -222,7 +220,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==3) latt = pDx2-xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/veff + a3*latt*latt + a4*latt*latt*latt;
+			Ttota = Ttota + latt/veff;
 
 		}
 		else

@@ -195,9 +195,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double a0 = pcc.timing[sector-1][view-1][0][strip-1];
 	double a1 = pcc.timing[sector-1][view-1][1][strip-1];
 	double a2 = pcc.timing[sector-1][view-1][2][strip-1];
-	double a3 = pcc.timing[sector-1][view-1][3][strip-1]/100;
-	double a4 = pcc.timing[sector-1][view-1][4][strip-1]/1000;
-
+	
 	double veff = pcc.veff[sector-1][view-1][strip-1]*10;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
@@ -210,7 +208,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==3) latt=pDx2+xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/veff + a3*latt*latt + a4*latt*latt*latt;
+			Ttota = Ttota + latt/veff;
 		}
 		else
 		{
