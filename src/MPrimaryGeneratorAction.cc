@@ -7,6 +7,7 @@
 #include "G4UnitsTable.hh"
 #include "Randomize.hh"
 #include "G4RunManager.hh"
+#include "G4Poisson.hh"
 
 // gemc headers
 #include "MPrimaryGeneratorAction.h"
@@ -831,15 +832,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
-	int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
+	double PBUNCHMEAN = (double)NP/NBUNCHES;
 
-
-	// there will be some remaining particles, these will be added at the last bunch
-	int NREMAINING = NP - NBUNCHES*PBUNCH;
-
-	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << " " << NREMAINING << endl;
-
-	if(PBUNCH > 0)
+	if(PBUNCHMEAN > 0)
 	{
 		particleGun->SetParticleDefinition(L_Particle);
 
@@ -850,6 +845,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		double L_Phi   = L_phi;
 
 		// all particles in a bunch are identical
+		int pbsum = 0;
 		for(int b=0; b<NBUNCHES; b++)
 		{
 			// spread momentum if requested
@@ -888,13 +884,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
 
+			G4long PBUNCH = G4Poisson(PBUNCHMEAN);
+
 			particleGun->SetNumberOfParticles(PBUNCH);
-
-			if(b == NBUNCHES-1)
-				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
-
-
-			// cout << " bunch " << b << " " << PBUNCH << endl;
+			pbsum += PBUNCH;
+			cout << " bunch " << b << " " << PBUNCH << " window sum  " << pbsum << endl;
 
 			particleGun->SetParticleTime(TBUNCH*b);
 			particleGun->SetParticlePosition(G4ThreeVector(lvx, lvy, lvz));
@@ -904,12 +898,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles2
 	int NBUNCHES2   = (int) floor(TWINDOW/TBUNCH2);
-	int PBUNCH2     = (int) floor((double)NP2/NBUNCHES2);
+	double PBUNCHMEAN2 = (double)NP2/NBUNCHES2;
 
-
-	if(PBUNCH2 > 0)
+	if(PBUNCHMEAN2 > 0)
 	{
 		particleGun->SetParticleDefinition(L2_Particle);
+		G4long PBUNCH = G4Poisson(PBUNCHMEAN2);
 		particleGun->SetNumberOfParticles(PBUNCH);
 
 		// getting kinematics
