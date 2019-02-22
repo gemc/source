@@ -845,7 +845,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		double L_Phi   = L_phi;
 
 		// all particles in a bunch are identical
-		int pbsum = 0;
 		for(int b=0; b<NBUNCHES; b++)
 		{
 			// spread momentum if requested
@@ -884,11 +883,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
 
-			G4long PBUNCH = G4Poisson(PBUNCHMEAN);
+			G4long pbunch = G4Poisson(PBUNCHMEAN);
 
-			particleGun->SetNumberOfParticles(PBUNCH);
-			pbsum += PBUNCH;
-			cout << " bunch " << b << " " << PBUNCH << " window sum  " << pbsum << endl;
+			particleGun->SetNumberOfParticles(pbunch);
+
+			// cout << " bunch " << b << " " << pbunch << endl;
 
 			particleGun->SetParticleTime(TBUNCH*b);
 			particleGun->SetParticlePosition(G4ThreeVector(lvx, lvy, lvz));
@@ -903,8 +902,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	if(PBUNCHMEAN2 > 0)
 	{
 		particleGun->SetParticleDefinition(L2_Particle);
-		G4long PBUNCH = G4Poisson(PBUNCHMEAN2);
-		particleGun->SetNumberOfParticles(PBUNCH);
+		G4long pbunch = G4Poisson(PBUNCHMEAN2);
+		particleGun->SetNumberOfParticles(pbunch);
 
 		// getting kinematics
 		double L2_mass  = L2_Particle->GetPDGMass();
