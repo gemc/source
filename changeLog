@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+2/25/19
+
+ - Updated LUND documentation on Info tab
+
 1/31/19
 
  - Richard Holmes: The RERUN_SELECTED option allows one to rerun multiple events whose RNG state was saved in a previous pass.
