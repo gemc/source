@@ -40,11 +40,11 @@ static ecConstants initializeECConstants(int runno)
 	ecc.pmtQE               = 0.27    ;
 	ecc.pmtDynodeGain       = 4.0     ;
 	ecc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)
-	//  Fluctuations in PMT gain distributed using Gaussian with
-	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
-	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
-	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
-	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
+										//  Fluctuations in PMT gain distributed using Gaussian with
+										//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
+										//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
+										//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
+										//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
 	ecc.pmtFactor           = sqrt(1-ecc.pmtQE+(ecc.pmtDynodeK*ecc.pmtDynodeGain+1)/(ecc.pmtDynodeGain-1));
 	
 
@@ -56,12 +56,12 @@ static ecConstants initializeECConstants(int runno)
 	// ======== Initialization of EC gains ===========
 	sprintf(ecc.database,"/calibration/ec/gain:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
-    
+
 	for(unsigned row = 0; row < data.size(); row++)
-	  {
-	    isec = data[row][0]; ilay = data[row][1];
-	    ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
-	  }
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
+	}
 	
 
 	// ========= Initializations of attenuation lengths ========
@@ -69,48 +69,48 @@ static ecConstants initializeECConstants(int runno)
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
-	  {
-	    isec = data[row][0]; ilay = data[row][1];
-	    ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
-	    ecc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
-	    ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
-	  }
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
+		ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
+	}
 	
 	// ========== Initialization of timings ===========
 	sprintf(ecc.database,"/calibration/ec/timing:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
-	  {
-	    isec = data[row][0]; ilay = data[row][1];
-	    ecc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
-	    ecc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
-	    ecc.timing[isec-1][ilay-1][2].push_back(data[row][5]);
-	    ecc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
-	    ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
-	  }
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.timing[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
+		ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
+	}
 
 	// ======== Initialization of EC effective velocities ===========
 	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
-    
+
 	for(unsigned row = 0; row < data.size(); row++)
-	  {
-	    isec = data[row][0]; ilay = data[row][1];
-	    ecc.veff[isec-1][ilay-1].push_back(data[row][3]);
-	  }
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.veff[isec-1][ilay-1].push_back(data[row][3]);
+	}
 	
 
 	// =========== Initialization of FADC250 related informations, pedestals, nsa, nsb ======================
 
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
-	// they will be initialized from DB 
+	// they will be initialized from DB
 	const double const_ped_value = 101;
 	const double const_ped_sigm_value = 2;
 	// commands below fill all the elements of ecc.pedestal and ecc.pedestal_sigm with their values (const_ped_value, and const_ped_sigm_value respectively)
 	std::fill(&ecc.pedestal[0][0][0], &ecc.pedestal[0][0][0] + sizeof(ecc.pedestal)/sizeof(ecc.pedestal[0][0][0]), const_ped_value);
 	std::fill(&ecc.pedestal_sigm[0][0][0], &ecc.pedestal_sigm[0][0][0] + sizeof(ecc.pedestal_sigm)/sizeof(ecc.pedestal_sigm[0][0][0]), const_ped_sigm_value);
-           
+
 	// setting voltage signal parameters
 	ecc.vpar[0] = 0.;  // delay, ns
 	ecc.vpar[1] = 2.8; // rise time, ns
@@ -184,7 +184,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Get scintillator mother volume dimensions (mm)
 	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+													  //double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 
@@ -215,8 +215,8 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
 			//if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
 			//if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
-		      	if(view==1) latt = pDx2+xlocal;
-	       		if(view==2) latt = pDx2+xlocal;
+			if(view==1) latt = pDx2+xlocal;
+			if(view==2) latt = pDx2+xlocal;
 			if(view==3) latt = pDx2-xlocal;
 			att   = A*exp(-latt/B)+C;
 			Etota = Etota + Edep[s]*att;
@@ -239,6 +239,9 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (Etota > 0) {
 		double EC_npe = G4Poisson(Etota*ecc.pmtPEYld); //number of photoelectrons
 		if (EC_npe>0) {
+			//  Fluctuations in PMT gain distributed using Gaussian with
+			//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
+			//  algorithm, values, and comment above taken from gsim.
 			double sigma  = ecc.pmtFactor/sqrt(EC_npe);
 			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
 			if (EC_GeV>0) {
@@ -251,7 +254,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
-	// simulated at present.     
+	// simulated at present.
 
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
@@ -338,7 +341,7 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	// Get scintillator mother volume dimensions (mm)
 	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+													  //double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 
 	vector<G4ThreeVector> pos  = aHit->GetPos();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
@@ -350,8 +353,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	double A  = ecc.attlen[sector-1][layer-1][0][strip-1];
 	double B  = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C  = ecc.attlen[sector-1][layer-1][2][strip-1];
-	double G  = ecc.gain[sector-1][layer-1][strip-1];	
-	double veff  = ecc.veff[sector-1][layer-1][strip-1]*10;	
+	double G  = ecc.gain[sector-1][layer-1][strip-1];
+	double veff  = ecc.veff[sector-1][layer-1][strip-1]*10;
 
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
@@ -362,8 +365,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			//if(view==1) latt = xlocal+(pDx2/(2.*pDy1))*(ylocal+pDy1);
 			//if(view==2) latt = BA*(pDy1-ylocal)/2./pDy1;
 			//if(view==3) latt = BA*(ylocal+pDy1-xlocal*2*pDy1/pDx2)/4/pDy1;
-		      	if(view==1) latt = pDx2+xlocal;
-	       		if(view==2) latt = pDx2+xlocal;
+			if(view==1) latt = pDx2+xlocal;
+			if(view==2) latt = pDx2+xlocal;
 			if(view==3) latt = pDx2-xlocal;
 			double att   = A*exp(-latt/B)+C;
 
@@ -376,6 +379,9 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			if (stepE > 0) {
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
 				if (EC_npe>0) {
+					//  Fluctuations in PMT gain distributed using Gaussian with
+					//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
+					//  algorithm, values, and comment above taken from gsim.
 					double sigma  = ecc.pmtFactor/sqrt(EC_npe);
 					double EC_GeV = G4RandGauss::shoot(EC_npe, sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
 					if (EC_GeV>0) {
@@ -407,8 +413,8 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 double ec_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	//	return 0.0;
-  //return DGauss(forTime, ecc.vpar, charge, time);
-  return PulseShape(forTime, ecc.vpar, charge, time);
+	//return DGauss(forTime, ecc.vpar, charge, time);
+	return PulseShape(forTime, ecc.vpar, charge, time);
 }
 
 
