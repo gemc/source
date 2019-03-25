@@ -19,9 +19,10 @@ static cndConstants initializeCNDConstants(int runno)
 {
 	// all these constants should be read from CCDB
 	cndConstants cndc;
+	if(runno == -1) return cndc;
 	
 	cout<<"Entering initializeCNDConstants"<<endl;
-	if(runno == -1) return cndc;
+	
 	// database
 	cndc.runNo = runno;
 	cndc.date       = "2017-07-13";
@@ -124,34 +125,34 @@ static cndConstants initializeCNDConstants(int runno)
 map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	string hd_msg = " > cnd hit process";
-
+	
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material
 	double thickness = 3;           // thickness of each CND paddle
 	double sigmaTD = 0.24;                          // direct signal
-
+	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-
+	
 	int sector = identity[0].id;
 	int layer  = identity[1].id;
 	int paddle = identity[2].id;
-
+	
 	if(aHit->isBackgroundHit == 1) {
-
+		
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-
+		
 		dgtz["hitn"]   = hitn;
 		dgtz["sector"] = sector;
 		dgtz["layer"]  = layer;
 		dgtz["component"] = 1;
-
+		
 		int paddle = identity[2].id;
 		double adc_mip = 0.;
 		int ADC = 0;
 		int TDC = 0;
 		double slope = 0;
-
+		
 		if(paddle == 1) {
 			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
 			ADC = (int) (totEdep*adc_mip*2./(dEdxMIP*thickness));
@@ -163,18 +164,18 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			slope = cndc.slope_R[sector-1][layer-1][0];
 			TDC = (int) ((G4RandGauss::shoot(stepTime,sigmaTD/sqrt(totEdep)))/slope);
 		}
-
+		
 		dgtz["ADCL"]   = (int) ADC;
 		dgtz["ADCR"]   = (int) ADC;
 		dgtz["TDCL"]   = (int) TDC;
 		dgtz["TDCR"]   = (int) TDC;
-
+		
 		return dgtz;
 	}
 	
 	trueInfos tInfos(aHit);
 	
-
+	
 	// Get the paddle length: in CND paddles are along z
 	double length = aHit->GetDetector().dimensions[0];     // this is actually the half-length! Units: mm
 	
@@ -193,7 +194,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// To calculate ADC values:
 	
-
+	
 	// estimated yield of photoelectrons at the photocathode of PMT:
 	// assumes 10,000 photons/MeV, LG length 1.4m with attenuation length 9.5m, 30% losses at junctions and PMT QE = 0.2
 	
@@ -249,7 +250,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Variables from the database:
 	
 	double attlength_D = 0.;
-//	double attlength_N = 0.;
+	//	double attlength_N = 0.;
 	double v_eff_D = 0.;
 	double v_eff_N = 0.;
 	double slope_D = 0.;
@@ -266,7 +267,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (paddle == 1){   // hit is in paddle L
 		
 		attlength_D = cndc.attlen_L[sector-1][layer-1][0];
-//		attlength_N = cndc.attlen_R[sector-1][layer-1][0];
+		//		attlength_N = cndc.attlen_R[sector-1][layer-1][0];
 		
 		v_eff_D = cndc.veff_L[sector-1][layer-1][0];
 		v_eff_N = cndc.veff_R[sector-1][layer-1][0];
@@ -284,7 +285,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	else if (paddle == 2) {   // hit is in paddle R
 		
 		attlength_D = cndc.attlen_R[sector-1][layer-1][0];
-//		attlength_N = cndc.attlen_L[sector-1][layer-1][0];
+		//		attlength_N = cndc.attlen_L[sector-1][layer-1][0];
 		
 		v_eff_D = cndc.veff_R[sector-1][layer-1][0];
 		v_eff_N = cndc.veff_L[sector-1][layer-1][0];

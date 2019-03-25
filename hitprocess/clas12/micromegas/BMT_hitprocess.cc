@@ -16,7 +16,8 @@ static bmtConstants initializeBMTConstants(int runno)
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
-	
+	if(runno == -1) return bmtc;
+
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	
@@ -82,9 +83,7 @@ static bmtConstants initializeBMTConstants(int runno)
 						bmtc.EDGE2[layer][j] = middle+bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
 						bmtc.EDGE2[layer][j] -=2*pi;
 					}
-					
 				}
-				
 			}
 		}
 		
@@ -94,9 +93,7 @@ static bmtConstants initializeBMTConstants(int runno)
 			if (bmtc.AXIS[layer]==0) bmtc.HV_DRIFT[layer][j]=1500;
 			bmtc.HV_STRIPS[layer][j]=520;
 		}
-		
 	}
-	
 	
 	// all dimensions are in mm
 	bmtc.SigmaDrift = 0.036; //mm-1
@@ -156,7 +153,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC"]   = int(1e6*tInfos.eTot/bmtc.w_i);
 	
 	if (strip==-1) {
-		dgtz["Edep"]   = 0;
+		dgtz["Edep"]  = 0;
 		dgtz["ADC"]   = 0;
 	}
 	
@@ -188,8 +185,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
 	double fieldValue[3] = {0, 0, 0};
 	double phi_p=atan2(xyz.y(),xyz.x());
-	
-	
+
 	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
 	
 	G4ThreeVector dm_Z(-sin(phi_p),cos(phi_p),0); //Unit vector indicating the direction of the measurement
@@ -273,17 +269,6 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 }
 
 
-void BMT_HitProcess::initWithRunNumber(int runno)
-{	
-	if(bmtc.runNo != runno)
-	{
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bmtc = initializeBMTConstants(runno);
-		bmtc.runNo = runno;
-	}
-}
-
-
 map< string, vector <int> >  BMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
@@ -321,6 +306,16 @@ map< int, vector <double> > BMT_HitProcess :: chargeTime(MHit* aHit, int hitn)
 double BMT_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
+}
+
+
+void BMT_HitProcess::initWithRunNumber(int runno)
+{
+	if(bmtc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		bmtc = initializeBMTConstants(runno);
+		bmtc.runNo = runno;
+	}
 }
 
 

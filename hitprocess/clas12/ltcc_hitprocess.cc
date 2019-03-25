@@ -18,11 +18,11 @@ static ltccConstants initializeLTCCConstants(int runno)
 {
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
-
+	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ltccc;
-
+	
 	// database
 	ltccc.runNo = runno;
 	ltccc.date       = "2016-03-15";
@@ -30,7 +30,7 @@ static ltccConstants initializeLTCCConstants(int runno)
 		ltccc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ltccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-
+	
 	ltccc.variation  = "main";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
 	
@@ -38,7 +38,7 @@ static ltccConstants initializeLTCCConstants(int runno)
 	// layer = left or right side
 	// component = segment number
 	int sector, layer, component;
-
+	
 	sprintf(ltccc.database,"/calibration/ltcc/spe:%d",ltccc.runNo);
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -50,10 +50,10 @@ static ltccConstants initializeLTCCConstants(int runno)
 		ltccc.speMean[sector][layer][component]  = data[row][3];
 		ltccc.speSigma[sector][layer][component] = data[row][4];
 		
-//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
-//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
+		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
+		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
-
+	
 	return ltccc;
 }
 
@@ -61,8 +61,8 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
-
-
+	
+	
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector  = identity[0].id;
@@ -89,12 +89,12 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// if the particle is not an opticalphoton return bank filled with negative identifiers
 	if(thisPid != 0)
 		return dgtz;
-
-
+	
+	
 	vector<int> tids = aHit->GetTIds();      // track ID at EACH STEP
 	vector<int> pids = aHit->GetPIDs();      // particle ID at EACH STEP
 	vector<double> Energies = aHit->GetEs(); // energy of the photon as it reach the pmt
-
+	
 	
 	map<int, double> penergy;  // key is track id
 	
@@ -105,7 +105,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if(penergy.find(tids[s]) == penergy.end())
 			penergy[tids[s]] = Energies[s];
 	}
-
+	
 	int narrived  = 0;
 	int ndetected = 0;
 	
@@ -150,7 +150,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
-		
+	
 	dgtz["sector"]  = idsector;
 	dgtz["side"]    = idside;
 	dgtz["segment"] = idsegment;
@@ -159,14 +159,14 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["nphe"]    = narrived;
 	dgtz["npheD"]   = ndetected;
 	dgtz["hitn"]    = hitn;
-
+	
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
 	}
-
+	
 	return dgtz;
 }
 
@@ -177,29 +177,21 @@ vector<identifier>  ltcc_HitProcess :: processID(vector<identifier> id, G4Step *
 	return id;
 }
 
-void ltcc_HitProcess::initWithRunNumber(int runno)
-{
-	if(ltccc.runNo != runno) {
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ltccc = initializeLTCCConstants(runno);
-		ltccc.runNo = runno;
-	}
-}
 
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> ltcc_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
-
+	
 	// first, identify the cells that would have electronic noise
 	// then instantiate hit with energy E, time T, identifier IDF:
 	//
 	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
-
+	
 	// push to noiseHits collection:
 	// noiseHits.push_back(thisNoiseHit)
-
+	
 	return noiseHits;
 }
 
@@ -215,7 +207,7 @@ map< string, vector <int> >  ltcc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 map< int, vector <double> > ltcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
-
+	
 	return CT;
 }
 
@@ -225,6 +217,15 @@ map< int, vector <double> > ltcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
 {
 	return 0.0;
+}
+
+void ltcc_HitProcess::initWithRunNumber(int runno)
+{
+	if(ltccc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ltccc = initializeLTCCConstants(runno);
+		ltccc.runNo = runno;
+	}
 }
 
 // this static function will be loaded first thing by the executable

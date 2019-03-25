@@ -71,7 +71,7 @@ map<string, double> IC_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double crg=nel*AMP_gain*1.6e-7;
 		// converting to ADC channels
 		ADC= (int) (crg*adc_charge_tochannel);
-   	
+
 	}
 	
 	dgtz["hitn"] = hitn;
@@ -118,8 +118,6 @@ map< string, vector <int> >  IC_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	
 	return MH;
 }
-
-
 
 
 // - charge: returns charge/time digitized information / step

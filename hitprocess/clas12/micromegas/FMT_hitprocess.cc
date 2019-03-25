@@ -23,6 +23,7 @@ static fmtConstants initializeFMTConstants(int runno)
 {
 	// all these constants should be read from CCDB
 	fmtConstants fmtc;
+	if(runno == -1) return fmtc;
 
 
 	// database
@@ -57,11 +58,11 @@ static fmtConstants initializeFMTConstants(int runno)
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());
 	for(unsigned row = 0; row < data.size(); row++)
-	    {
-	      fmtc.Z0[row]=data[row][1];
-	      fmtc.alpha[row]=data[row][2]*degree;
-	      
-	    }
+	{
+		fmtc.Z0[row]=data[row][1];
+		fmtc.alpha[row]=data[row][2]*degree;
+
+	}
 	// Number of strips and pixels
 	fmtc.N_sidestr = (fmtc.N_str-2*fmtc.N_halfstr)/2; //number of strips one side
 	fmtc.y_central = fmtc.N_halfstr*fmtc.pitch/2.; // Y-limit of the central part
@@ -70,9 +71,9 @@ static fmtConstants initializeFMTConstants(int runno)
 	fmtc.R_max = fmtc.pitch*(fmtc.N_halfstr+2*fmtc.N_sidestr)/2.;
 
 	for (int i=0;i<fmtc.NLAYERS;i++){
-	  fmtc.HV_DRIFT[i]=600;
-	  fmtc.HV_STRIPS_IN[i]=520;
-	  fmtc.HV_STRIPS_OUT[i]=520;
+		fmtc.HV_DRIFT[i]=600;
+		fmtc.HV_STRIPS_IN[i]=520;
+		fmtc.HV_STRIPS_OUT[i]=520;
 	}
 
 	fmtc.Lor_Angle.Initialize(runno);
@@ -114,8 +115,8 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	trueInfos tInfos(aHit);
 	if(verbosity>4)
 	{
-	  cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
-			 << " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
+		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
+		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	
 	dgtz["hitn"]   = hitn;
@@ -126,15 +127,15 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC"]   = (int) (tInfos.eTot*1e6/fmtc.w_i);
 	
 	if (strip==-1) {
-	  dgtz["Edep"]   = 0;
-	  dgtz["ADC"]   = 0;
+		dgtz["Edep"]   = 0;
+		dgtz["ADC"]   = 0;
 	}
 	
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
-	  writeHit = false;
+		writeHit = false;
 	}
 
 	return dgtz;
@@ -154,36 +155,36 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 
 	vector<identifier> yid = id;
 	class fmt_strip fmts;
-		
+
 	int layer  = 1*yid[0].id + yid[1].id - 1 ; // modified on 7/27/2015 to match new geometry (Frederic Georges)
 	int sector = yid[2].id;
 	
 	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
 
-		// if no field manager, the field is zero
+	// if no field manager, the field is zero
 	if(fmanager)
-	  {
-	    fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
-	   
-	    G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
-	    G4ThreeVector qEField(0,0,1); //Product q*v
-	    G4ThreeVector Fdir=qEField.cross(BField); //Direction of lorentz drift
-	    fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
-	    fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
-	    fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
-	    	    	   	    
-	    if(fmtc.runNo == 0){
-	      cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
-	      fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
-	      fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
-	    }
-	  }
+	{
+		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+
+		G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
+		G4ThreeVector qEField(0,0,1); //Product q*v
+		G4ThreeVector Fdir=qEField.cross(BField); //Direction of lorentz drift
+		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+		fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+		fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
+
+		if(fmtc.runNo == 0){
+			cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
+			fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
+			fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
+		}
+	}
 	else
-	  {
-	    fmtc.ThetaL=0;
-	    fmtc.Theta_Ls=0;
-	    if(fmtc.runNo == 0) cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
-	  }
+	{
+		fmtc.ThetaL=0;
+		fmtc.Theta_Ls=0;
+		if(fmtc.runNo == 0) cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
+	}
 	
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
@@ -233,14 +234,6 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	return yid;
 }
 
-void FMT_HitProcess::initWithRunNumber(int runno)
-{
-	if(fmtc.runNo != runno) {
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fmtc = initializeFMTConstants(runno);
-		fmtc.runNo = runno;
-	}
-}
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> FMT_HitProcess :: electronicNoise()
@@ -279,6 +272,15 @@ map< string, vector <int> >  FMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	map< string, vector <int> > MH;
 	
 	return MH;
+}
+
+void FMT_HitProcess::initWithRunNumber(int runno)
+{
+	if(fmtc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		fmtc = initializeFMTConstants(runno);
+		fmtc.runNo = runno;
+	}
 }
 
 

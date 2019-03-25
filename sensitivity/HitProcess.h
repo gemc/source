@@ -66,20 +66,20 @@ class HitProcess
 {
 public:
 	virtual ~HitProcess(){;}
-    void init(string name, goptions go, map<string, double> gp) {
+	void init(string name, goptions go, map<string, double> gp) {
 		gemcOpt   = go;
 		gpars     = gp;
 		verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 		log_msg   = "  > " + HCname + "  Hit Process ";
-        HCname = name;
+		HCname = name;
 		rejectHitConditions = false;
-        writeHit = true;
+		writeHit = true;
 		filterDummyBanks = false;
 		if(gemcOpt.optMap["FILTER_NULL_VARIABLES"].arg == 1) {
 			filterDummyBanks = true;
 		}
 	}
-    bool writeHit;
+	bool writeHit;
 	bool filterDummyBanks;   ///< do not write out variables that has no valuable information
 
 
@@ -91,7 +91,7 @@ public:
 	// should be initialized in the CONSTRUCTOR of the class
 
 	// notice, this is executed for each class instantiation (each event basically)
-	// we don't want to connect to DB here!
+	// we don't want to connect to DB for each event but it can be skipped using runno
 	// use static members insted as in FTOF template
 
 	virtual void initWithRunNumber(int runno) {;}
@@ -156,32 +156,32 @@ protected:
 		//			 peds - ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) << endl;
 
 		
-			// output, I should study this a bit more to see how closer this can be approximated to 
-			// real data
-			return  -( ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) );
+		// output, I should study this a bit more to see how closer this can be approximated to
+		// real data
+		return  -( ampl*exp(-0.5*pow((x-peak)/rise, 2)) - ampl*exp(-0.5*pow((x-peak)/fall, 2)) );
 		
 	}
 
 	inline double PulseShape(double x, double *par, double Edep, double stepTime)
 	{
 
-	  // The HPS uses this function, to fil Mode1 ECal pulses
-	  // The integral of this function is 2b^3, therefore it is scaled by (1/2b^3), in order
-	  // the integral to be Edep
-	  // The peak value of this function is at "Peak_x = a + 2b"
-	  // Edep is in ADC units
+		// The HPS uses this function, to fil Mode1 ECal pulses
+		// The integral of this function is 2b^3, therefore it is scaled by (1/2b^3), in order
+		// the integral to be Edep
+		// The peak value of this function is at "Peak_x = a + 2b"
+		// Edep is in ADC units
 
-	  double a = par[0] + stepTime;        // delay + start time of signal so that peak is t0 + rise.
-	  double b = par[1];                   // rise time = 2*b, 
-	  double ampl = par[3];                // Overall Correction to the signal gain, should be an empirical factor
+		double a = par[0] + stepTime;        // delay + start time of signal so that peak is t0 + rise.
+		double b = par[1];                   // rise time = 2*b,
+		double ampl = par[3];                // Overall Correction to the signal gain, should be an empirical factor
 
-	  double ret_val;
+		double ret_val;
 
-	  if( x < a ){ret_val = 0.; return ret_val;}
-	  else {
-	    ret_val = ampl*(1./(2*b*b*b))*Edep*(x-a)*(x-a)*exp( -(x-a)/b ); 
-	    return ret_val;
-	  }
+		if( x < a ){ret_val = 0.; return ret_val;}
+		else {
+			ret_val = ampl*(1./(2*b*b*b))*Edep*(x-a)*(x-a)*exp( -(x-a)/b );
+			return ret_val;
+		}
 		
 	}
 

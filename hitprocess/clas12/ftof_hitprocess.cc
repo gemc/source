@@ -40,7 +40,7 @@ static ftofConstants initializeFTOFConstants(int runno) {
 	ftc.dEdxMIP = 1.956; // muons in polyvinyltoluene
 	ftc.pmtPEYld = 500;
 	//	ftc.tdcLSB        = 42.5532;// counts per ns (23.5 ps LSB)
-
+	
 	// updated on 1/15/19 - Dan Carman: resolutions from data 
 	cout << "FTOF:Setting time resolution" << endl;
 	for (int p = 0; p < 3; p++) {
@@ -187,13 +187,7 @@ static ftofConstants initializeFTOFConstants(int runno) {
 	return ftc;
 }
 
-void ftof_HitProcess::initWithRunNumber(int runno) {
-	if (ftc.runNo != runno) {
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftc = initializeFTOFConstants(runno);
-		ftc.runNo = runno;
-	}
-}
+
 
 map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	map<string, double> dgtz;
@@ -290,7 +284,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		
 		tdcu = (tU + timeWalkU) / tdcconv;
 		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[panel - 1][paddle - 1]) / tdcconv;
-
+		
 	}
 	
 	
@@ -552,6 +546,15 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 double ftof_HitProcess::voltage(double charge, double time, double forTime) {
 	//	return 0.0;
 	return PulseShape(forTime, ftc.vpar, charge, time);
+}
+
+void ftof_HitProcess::initWithRunNumber(int runno)
+{
+	if (ftc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ftc = initializeFTOFConstants(runno);
+		ftc.runNo = runno;
+	}
 }
 
 // this static function will be loaded first thing by the executable

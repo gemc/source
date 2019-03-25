@@ -8,6 +8,9 @@
 static ecsConstants initializeECSConstants(int runno)
 {
 	ecsConstants ecc;
+	if(runno == -1) return ecc;
+	
+	
 	ecc.runNo = 0;
 	
 	ecc.attlen              = 3760.; // Attenuation Length (mm)
@@ -19,22 +22,13 @@ static ecsConstants initializeECSConstants(int runno)
 	return ecc;
 }
 
-void ecs_HitProcess::initWithRunNumber(int runno)
-{
-	if(ecc.runNo != runno)
-	{
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ecc = initializeECSConstants(runno);
-		ecc.runNo = runno;
-	}
-}
 
 // Process the ID and hit for the EC using individual EC scintillator strips.
 map<string, double> ecs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
-
+	
 	vector<identifier> identity = aHit->GetId();
 	
 	// get sector, stack (inner or outer), view (U, V, W), and strip.
@@ -43,7 +37,7 @@ map<string, double> ecs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
-
+	
 	// initialize ADC and TDC
 	int ADC = 0;
 	int TDC = ecc.TDC_MAX;
@@ -80,7 +74,7 @@ map<string, double> ecs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(rejectHitConditions) {
 		writeHit = false;
 	}
-
+	
 	return dgtz;
 }
 
@@ -103,7 +97,7 @@ map< string, vector <int> >  ecs_HitProcess :: multiDgt(MHit* aHit, int hitn)
 map< int, vector <double> > ecs_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
-
+	
 	return CT;
 }
 
@@ -120,21 +114,30 @@ double ecs_HitProcess :: voltage(double charge, double time, double forTime)
 vector<MHit*> ecs_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
-
+	
 	// first, identify the cells that would have electronic noise
 	// then instantiate hit with energy E, time T, identifier IDF:
 	//
 	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
-
+	
 	// push to noiseHits collection:
 	// noiseHits.push_back(thisNoiseHit)
-
+	
 	return noiseHits;
 }
 
+void ecs_HitProcess::initWithRunNumber(int runno)
+{
+	if(ecc.runNo != runno)
+	{
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ecc = initializeECSConstants(runno);
+		ecc.runNo = runno;
+	}
+}
 
 // this static function will be loaded first thing by the executable
-ecsConstants ecs_HitProcess::ecc = initializeECSConstants(1);
+ecsConstants ecs_HitProcess::ecc = initializeECSConstants(-1);
 
 
 

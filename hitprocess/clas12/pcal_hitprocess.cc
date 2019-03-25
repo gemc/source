@@ -40,11 +40,11 @@ static pcConstants initializePCConstants(int runno)
 	pcc.pmtQE               = 0.27    ;
 	pcc.pmtDynodeGain       = 4.0     ;
 	pcc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)	vector<vector<double> > data;
-										//  Fluctuations in PMT gain distributed using Gaussian with
-										//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
-										//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
-										//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
-										//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
+	//  Fluctuations in PMT gain distributed using Gaussian with
+	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
+	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
+	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
+	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
 	pcc.pmtFactor           = sqrt(1-pcc.pmtQE+(pcc.pmtDynodeK*pcc.pmtDynodeGain+1)/(pcc.pmtDynodeGain-1));
 	
 	vector<vector<double> > data;
@@ -147,15 +147,8 @@ static pcConstants initializePCConstants(int runno)
 }
 
 
-void pcal_HitProcess::initWithRunNumber(int runno)
-{
-	if(pcc.runNo != runno)
-	{
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		pcc = initializePCConstants(runno);
-		pcc.runNo = runno;
-	}
-}
+
+
 map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
@@ -344,7 +337,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	// Get scintillator mother volume dimensions (mm)
 	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-													  //double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 	
 	vector<G4ThreeVector> pos  = aHit->GetPos();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
@@ -418,6 +411,14 @@ double pcal_HitProcess :: voltage(double charge, double time, double forTime)
 	return PulseShape(forTime, pcc.vpar, charge, time);
 }
 
+void pcal_HitProcess::initWithRunNumber(int runno)
+{
+	if(pcc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		pcc = initializePCConstants(runno);
+		pcc.runNo = runno;
+	}
+}
 
 // this static function will be loaded first thing by the executable
 pcConstants pcal_HitProcess::pcc = initializePCConstants(-1);

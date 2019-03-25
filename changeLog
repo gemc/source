@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/25/19
+
+- making sure initWithRunNumber is not loading calibration constants before activating event for all hit processes
+
 2/25/19
 
  - Updated LUND documentation on Info tab
