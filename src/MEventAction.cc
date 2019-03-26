@@ -91,6 +91,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	SAVE_ALL_ANCESTORS = (int) gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg ;
 	gPars            = gpars;
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
+	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
 	rw               = runWeights(opts);
 	
 	WRITE_ALLRAW     = replaceCharInStringWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
@@ -111,7 +112,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 
 	// SAVE_ALL_ANCESTORS will set SAVE_ALL_MOTHERS to nonzero
 	if (SAVE_ALL_ANCESTORS && (SAVE_ALL_MOTHERS == 0))
-	  SAVE_ALL_MOTHERS = 1;
+		SAVE_ALL_MOTHERS = 1;
 
 	tsampling  = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
 	nsamplings = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
@@ -136,38 +137,37 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	backgroundEventNumber.clear();
 
 	// SAVE_SELECTED parameters
-
-  string arg = gemcOpt.optMap["SAVE_SELECTED"].args;
-  if (arg == "" || arg == "no")
-    ssp.enabled = false;
-  else
-    {
-      vector<string> values;
-      string units;
-      values       = get_info(gemcOpt.optMap["SAVE_SELECTED"].args, string(",\""));
-      if (values.size() == 5 || values.size() == 6)
+	string arg = gemcOpt.optMap["SAVE_SELECTED"].args;
+	if (arg == "" || arg == "no")
+		ssp.enabled = false;
+	else
 	{
-	  ssp.enabled = true;
-	  ssp.targetId  = values[0];
-	  ssp.tIdsize   = ssp.targetId.size();
-	  ssp.targetPid = get_number(values[1]);
-	  ssp.lowLim    = get_number(values[2]);
-	  ssp.hiLim     = get_number(values[3]);
-	  ssp.variable  = values[4];
-	  if (values.size() == 5)
-	    ssp.dir = "./";
-	  else
-	    {
-	      ssp.dir = values[5];
-	      if (ssp.dir[ssp.dir.size()-1] != '/' ) ssp.dir += "/";
-	    }
+		vector<string> values;
+		string units;
+		values       = get_info(gemcOpt.optMap["SAVE_SELECTED"].args, string(",\""));
+		if (values.size() == 5 || values.size() == 6)
+		{
+			ssp.enabled = true;
+			ssp.targetId  = values[0];
+			ssp.tIdsize   = ssp.targetId.size();
+			ssp.targetPid = get_number(values[1]);
+			ssp.lowLim    = get_number(values[2]);
+			ssp.hiLim     = get_number(values[3]);
+			ssp.variable  = values[4];
+			if (values.size() == 5)
+				ssp.dir = "./";
+			else
+			{
+				ssp.dir = values[5];
+				if (ssp.dir[ssp.dir.size()-1] != '/' ) ssp.dir += "/";
+			}
 #ifdef WIN32
-	  std::replace(ssp.dir.begin(), ssp.dir.end(),'/','\\');
+			std::replace(ssp.dir.begin(), ssp.dir.end(),'/','\\');
 #endif
-	  G4RunManager::GetRunManager()->SetRandomNumberStore(true);
-	  G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
+			G4RunManager::GetRunManager()->SetRandomNumberStore(true);
+			G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
+		}
 	}
-    }
 
 }
 
@@ -179,7 +179,7 @@ MEventAction::~MEventAction()
 
 void MEventAction::BeginOfEventAction(const G4Event* evt)
 {
-        G4RunManager *runManager = G4RunManager::GetRunManager();;
+	G4RunManager *runManager = G4RunManager::GetRunManager();;
 	if(gen_action->isFileOpen() == false) {
 		runManager->AbortRun();
 		cout << " No more events in the input file." << endl;
@@ -188,9 +188,9 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 	
 	MPrimaryGeneratorAction* pga = (MPrimaryGeneratorAction*)(runManager->GetUserPrimaryGeneratorAction());
 	if (pga->doneRerun())
-	  return;
+		return;
 	if (pga->isRerun())
-	  evtN = pga->rerunEvent();
+		evtN = pga->rerunEvent();
 
 	rw.getRunNumber(evtN);
 	bgMap.clear();
@@ -228,13 +228,28 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
 {
-  if ((gen_action->isFileOpen() == false) ||
-      (gen_action->doneRerun() == true))
-      return;
+	if ((gen_action->isFileOpen() == false) ||
+		 (gen_action->doneRerun() == true))
+		return;
+
+
 
 	MHitCollection* MHC;
 	int nhits;
-	
+
+	// if FILTER_HITS is set, checking if there are any hits
+	if(FILTER_HITS) {
+		int anyHit = 0;
+		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
+			MHC = it->second->GetMHitCollection();
+			if (MHC) anyHit += MHC->GetSize();
+		}
+
+		// stop here if there are no hits and FILTER_HITS is set
+		if(anyHit==0) return;
+	}
+
+
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
 	
@@ -255,7 +270,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				
 				for(unsigned int t=0; t<tids.size(); t++) {
 					if((*MHC)[h]->isBackgroundHit == 0)
-					track_db.insert(tids[t]);
+						track_db.insert(tids[t]);
 				}
 				
 				if(SAVE_ALL_MOTHERS>1)
@@ -344,7 +359,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			{
 				G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
 				int tid = trj->GetTrackID();
-    				if(tid == mtid)
+				if(tid == mtid)
 				{
 					tinfos[(*itm).first].mpid   = trj->GetPDGEncoding();
 					tinfos[(*itm).first].mv     = trj->GetPoint(0)->GetPosition();
@@ -352,13 +367,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			}
 		}
 
-	// removing daughter tracks if mother also gave hits
+		// removing daughter tracks if mother also gave hits
 		if(SAVE_ALL_MOTHERS>2)
 		{
 			vector<int> bgtIDs;
 			for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
 				bgtIDs.push_back(it->first);
-		
+
 			for(unsigned i=0; i<bgtIDs.size(); i++)
 			{
 				int daughter = bgtIDs[i];
@@ -493,11 +508,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	if(SAVE_ALL_MOTHERS>1)
 		saveBGPartsToLund();
 	
-        
-        
-        map<int, vector<hitOutput> > hit_outputs_from_AllSD;
-       
-        
+
+
+	map<int, vector<hitOutput> > hit_outputs_from_AllSD;
+
+
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
 	{
 		MHC = it->second->GetMHitCollection();
@@ -526,8 +541,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 
 
-		//	string vname = (*MHC)[0]->GetDetector().name;
-		//	string hitType = it->second->GetDetectorHitType(vname);
+			//	string vname = (*MHC)[0]->GetDetector().name;
+			//	string hitType = it->second->GetDetectorHitType(vname);
 
 			string hitType = it->first;
 
@@ -692,13 +707,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					
 					// calling integrateDgt will also set writeHit
 					thisHitOutput.setDgtz(hitProcessRoutine->integrateDgt(aHit, h+1));
-                    
-                    // include this hit. Users can set writeHit to false to avoid writing the hit
-                    // the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
-                    if(hitProcessRoutine->writeHit) {
-                        allDgtOutput.push_back(thisHitOutput);
-                    }
-                    
+
+					// include this hit. Users can set writeHit to false to avoid writing the hit
+					// the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
+					if(hitProcessRoutine->writeHit) {
+						allDgtOutput.push_back(thisHitOutput);
+					}
+
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
 					if(VERB > 4 || vname.find(catch_v) != string::npos)
 					{
@@ -769,7 +784,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						}
 
 
-						// Now pedestal should be calculated, Assume it is a Gaussian 
+						// Now pedestal should be calculated, Assume it is a Gaussian
 						double pedestal = G4RandGauss::shoot(pedestal_mean, pedestal_sigm);
 						
 						// need conversion factor from double to int
@@ -780,7 +795,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 					thisHitOutput.createQuantumS(vSignal);
 					
-                                        hit_outputs_from_AllSD[vSignal[0]].push_back(thisHitOutput);
+					hit_outputs_from_AllSD[vSignal[0]].push_back(thisHitOutput);
 					allVTOutput.push_back(thisHitOutput);
 					
 					// this is not written out yet
@@ -793,113 +808,113 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						cout << aHit->GetId();
 						double Etot = 0;
 						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
-							cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
+						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
 					}
 				}
 				processOutputFactory->writeChargeTime(outContainer, allVTOutput, hitType, banksMap);
 				
 				// Event number (evtN) is needed in FADCMode1, therefore this is also passed as an argument
 				//processOutputFactory->writeFADCMode1(outContainer, allVTOutput, evtN);
-                                
+
 			}
 
 
 			// Check whether to save RNG
 			if (ssp.enabled && ssp.decision == false)
-			  for (int h = 0; h < nhits; ++h)
-			    {
-			      // Check if masked ID matches targetId
-			      int id = allDgtOutput[h].getIntDgtVar ("id");
-			      int id2 = id;
-			      int j = ssp.tIdsize-1;
-
-			      for (; j >= 0; --j)
+				for (int h = 0; h < nhits; ++h)
 				{
-				  if (ssp.targetId[j] != 'x' && id2 % 10 != atoi (ssp.targetId.substr(j,1).c_str()))
-				    break;
-				  id2 /= 10;
-				}
-			      if (j >= 0)
-				continue;
+					// Check if masked ID matches targetId
+					int id = allDgtOutput[h].getIntDgtVar ("id");
+					int id2 = id;
+					int j = ssp.tIdsize-1;
 
-			      // Check pid
-			      int pid = allRawOutput[h].getIntRawVar ("pid");
-			      if (pid != ssp.targetPid)
-				continue;
+					for (; j >= 0; --j)
+					{
+						if (ssp.targetId[j] != 'x' && id2 % 10 != atoi (ssp.targetId.substr(j,1).c_str()))
+							break;
+						id2 /= 10;
+					}
+					if (j >= 0)
+						continue;
 
-			      // Check given variable
-			      double varval = allRawOutput[h].getIntRawVar (ssp.variable);
-			      if (varval == -99)
-				varval = allDgtOutput[h].getIntDgtVar (ssp.variable);
-			      if (varval == -99)
-				{
-				  cout << "Unknown variable " << ssp.variable << " for SAVE_SELECTED, exiting" << endl;
-				  exit (0);
+					// Check pid
+					int pid = allRawOutput[h].getIntRawVar ("pid");
+					if (pid != ssp.targetPid)
+						continue;
+
+					// Check given variable
+					double varval = allRawOutput[h].getIntRawVar (ssp.variable);
+					if (varval == -99)
+						varval = allDgtOutput[h].getIntDgtVar (ssp.variable);
+					if (varval == -99)
+					{
+						cout << "Unknown variable " << ssp.variable << " for SAVE_SELECTED, exiting" << endl;
+						exit (0);
+					}
+
+					if (varval >= ssp.lowLim && varval <= ssp.hiLim)
+					{
+						ssp.decision = true;
+						break;
+					}
 				}
-			      
-			      if (varval >= ssp.lowLim && varval <= ssp.hiLim)
-				{
-				  ssp.decision = true;
-				  break;
-				}
-			    }
 
 			delete hitProcessRoutine;
 		}
 	}
-        
-        processOutputFactory->writeFADCMode1( hit_outputs_from_AllSD, evtN);
-        
+
+	processOutputFactory->writeFADCMode1( hit_outputs_from_AllSD, evtN);
+
 	// writing out generated particle infos
 	processOutputFactory->writeGenerated(outContainer, MPrimaries, banksMap, gen_action->userInfo);
 	
 	// For hits, store all ancestors
 
 	if (SAVE_ALL_ANCESTORS)
-	  {
-	    vector<ancestorInfo> ainfo;
-	    set<int> storedTraj;
-	    for (unsigned int i = 0; i < trajectoryContainer->size(); i++)
-	      {
-		G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
-		int tid = trj->GetTrackID();
-		it = track_db2.find (tid);
-		if (it != track_db2.end())
-		  {
-		    // This trajectory tid is involved in a hit, store it and its ancestors
-		    while (tid > 0 && storedTraj.find (tid) == storedTraj.end())
-		      {
-			int mtid = trj->GetParentID();
-			ancestorInfo ai;
-			ai.pid = trj->GetPDGEncoding();
-			ai.tid = tid;
-			ai.mtid = mtid;
-			ai.trackE = trj->GetInitialKineticEnergy();
-			ai.p = trj->GetInitialMomentum();
-			ai.vtx = trj->GetPoint(0)->GetPosition();
-			ainfo.push_back (ai);
-			storedTraj.insert (tid);
-			
-			// Find trajectory of the mother
-			tid = 0;
-			if (mtid > 0)
-			  {
-			    for (unsigned int ii = 0; ii < trajectoryContainer->size(); ii++)
-			      {
-				trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[ii];
-				if (trj->GetTrackID() == mtid)
-				  {
-				    tid = mtid;
-				    break;
-				  }
-			      }
-			  }
-		      }
-		  }
-	      }
-	    // write out ancestral trajectories
-	    processOutputFactory->writeAncestors (outContainer, ainfo, getBankFromMap("ancestors", banksMap));
-	  }
+	{
+		vector<ancestorInfo> ainfo;
+		set<int> storedTraj;
+		for (unsigned int i = 0; i < trajectoryContainer->size(); i++)
+		{
+			G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
+			int tid = trj->GetTrackID();
+			it = track_db2.find (tid);
+			if (it != track_db2.end())
+			{
+				// This trajectory tid is involved in a hit, store it and its ancestors
+				while (tid > 0 && storedTraj.find (tid) == storedTraj.end())
+				{
+					int mtid = trj->GetParentID();
+					ancestorInfo ai;
+					ai.pid = trj->GetPDGEncoding();
+					ai.tid = tid;
+					ai.mtid = mtid;
+					ai.trackE = trj->GetInitialKineticEnergy();
+					ai.p = trj->GetInitialMomentum();
+					ai.vtx = trj->GetPoint(0)->GetPosition();
+					ainfo.push_back (ai);
+					storedTraj.insert (tid);
+
+					// Find trajectory of the mother
+					tid = 0;
+					if (mtid > 0)
+					{
+						for (unsigned int ii = 0; ii < trajectoryContainer->size(); ii++)
+						{
+							trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[ii];
+							if (trj->GetTrackID() == mtid)
+							{
+								tid = mtid;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		// write out ancestral trajectories
+		processOutputFactory->writeAncestors (outContainer, ainfo, getBankFromMap("ancestors", banksMap));
+	}
 
 
 	processOutputFactory->writeEvent(outContainer);
@@ -908,17 +923,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// Save RNG; can't use G4RunManager::GetRunManager()->rndmSaveThisEvent()
 	// because GEANT doesn't know about GEMC run/event numbers
 	if (ssp.decision)
-	  {
-	    G4String fileIn  = ssp.dir + "currentEvent.rndm";
+	{
+		G4String fileIn  = ssp.dir + "currentEvent.rndm";
 
-	    std::ostringstream os;
-	    os << "run" << rw.runNo << "evt" << evtN
-	       << ".rndm" << '\0';
-	    G4String fileOut = ssp.dir + os.str();       
+		std::ostringstream os;
+		os << "run" << rw.runNo << "evt" << evtN
+		<< ".rndm" << '\0';
+		G4String fileOut = ssp.dir + os.str();
 
-	    G4String copCmd = "/control/shell cp "+fileIn+" "+fileOut;
-	    G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
-	  }
+		G4String copCmd = "/control/shell cp "+fileIn+" "+fileOut;
+		G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
+	}
 	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;

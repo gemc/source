@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/26/19
+
+ - added FILTER_HITS options: when set to 1, do not write events if there are not hits.
+
 3/25/19
 
 - making sure initWithRunNumber is not loading calibration constants before activating event for all hit processes
