@@ -78,7 +78,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 				}
 
 			} else {
-				cout << " !! Error: directory " << dir << " cannot be read. Exiting." << endl;
+				cout << " !! Error: directory " << dir << " cannot be read. Did you set GEMC_DATA_DIR to point to the location containing the experiments folder? Exiting." << endl;
 				exit(0);
 			}
 			closedir(thisDir);

@@ -29,7 +29,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 	if (bmtc.HV_DRIFT[layer-1][sector-1]==0||bmtc.HV_STRIPS[layer-1][sector-1]==0) Nel=0;
 	vector<double> strip_id;
 
-	double Delta_drift = sqrt(x*x+y*y) - bmtc.RADIUS[layer-1];
+	double Delta_drift = sqrt( x*x+y*y) - bmtc.RADIUS[layer-1];
 
 	double phi = atan2(y,x) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
 	z=z + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); //Not sure useful, but take into account LorentzAngle deviation if
