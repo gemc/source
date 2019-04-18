@@ -241,9 +241,6 @@ void MDetectorConstruction::isSensitive(detector detect)
 	
 	string sensi   = detect.sensitivity;
 
-	// mirrors are recorded as flux
-	if(sensi.find("mirror:") != string::npos) sensi = "flux";
-
 	if(sensi != "no" )
 	{
 		G4SDManager* SDman = G4SDManager::GetSDMpointer();

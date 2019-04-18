@@ -35,7 +35,7 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	availableSignals.push_back("<mvy>");
 	availableSignals.push_back("<mvz>");
 	availableSignals.push_back("Voltage");
-
+	
 	
 	//   Layout done witt splitters
 	//
@@ -59,12 +59,12 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 		qcsignal->addItem(tr(availableSignals[v].c_str()));
 	
 	connect ( qcsignal   , SIGNAL( currentIndexChanged (int) ), this, SLOT( chooseVariable(int)    ) );
-
+	
 	
 	// Middle Left: The list of hits hits tree
 	hitList = new QTreeWidget();
 	createHitListTree();
-
+	
 	// Middle Right: The data
 	hitData = new QTreeWidget();
 	createSignalsTree();
@@ -85,7 +85,7 @@ gsignal::gsignal(QWidget *parent, goptions *Opts, map<string, sensitiveDetector*
 	graphView->setAxis(40,   310,    465,    300,     5,     5);
 	// inside shift of the axis ticks, and factor that multiplies the ticks size
 	graphView->setInside(20, 2, 2);
-
+	
 	
 	// putting all together in the main splitter
 	QSplitter *vMainsplitter     = new QSplitter(this);
@@ -119,43 +119,40 @@ void gsignal::createHitListTree()
 		int nhits = 0;
 		if(MHC) nhits = MHC->GetSize();
 		
-		// Creating sensitive detectors name tree if it's different than "mirrors"
-		// if(it->first != "mirrora")
+		QTreeWidgetItem *newItem = new QTreeWidgetItem(hitList);
+		newItem->setText(0, QString(it->first.c_str()));
+		
+		if(nhits)
 		{
-			QTreeWidgetItem *newItem = new QTreeWidgetItem(hitList);
-			newItem->setText(0, QString(it->first.c_str()));
+			newItem->setBackground(0, HitBrush );
+			string snhits = it->first + "   " + stringify(nhits)  + " hit";
+			if(nhits>1) snhits += "s";
+			newItem->setText(0, QString(snhits.c_str()));
 			
-			if(nhits)
+			// if the last sensitive identifier is nphe then
+			// visualization screen is different:
+			// need to visualize number of photoelectrons only
+			for(int h=0; h<nhits; h++)
 			{
-				newItem->setBackground(0, HitBrush );
-				string snhits = it->first + "   " + stringify(nhits)  + " hit";
-				if(nhits>1) snhits += "s";
-				newItem->setText(0, QString(snhits.c_str()));
+				MHit *aHit = (*MHC)[h];
 				
-				// if the last sensitive identifier is nphe then
-				// visualization screen is different:
-				// need to visualize number of photoelectrons only
-				for(int h=0; h<nhits; h++)
-				{
-					MHit *aHit = (*MHC)[h];
-					
-					int nsteps = aHit->GetPos().size();
-					QTreeWidgetItem  *newHit = new QTreeWidgetItem(newItem);
-					
-					string hitindex = "Hit n. " + stringify(h+1) + "  nsteps: " +  stringify(nsteps) ;
+				int nsteps = aHit->GetPos().size();
+				QTreeWidgetItem  *newHit = new QTreeWidgetItem(newItem);
 				
-					if(!it->second->SDID.identifiers.size())
-						cout << "   !!! Error: no identifiers found for SD >" << it->second->SDID.name  << "<" << endl;
-					
-					// if last sensitive element is nphe_pmt then writing number of photo-electrons
-					if(it->second->SDID.identifiers.back().find("nphe") != string::npos)
-						hitindex = "Hit n. " + stringify(h+1) + "  nphe: " +  stringify(nsteps) ;
-					
-					newHit->setText(0, QString(hitindex.c_str()));
-				}
+				string hitindex = "Hit n. " + stringify(h+1) + "  nsteps: " +  stringify(nsteps) ;
+				
+				if(!it->second->SDID.identifiers.size())
+					cout << "   !!! Error: no identifiers found for SD >" << it->second->SDID.name  << "<" << endl;
+				
+				// if last sensitive element is nphe_pmt then writing number of photo-electrons
+				if(it->second->SDID.identifiers.back().find("nphe") != string::npos)
+					hitindex = "Hit n. " + stringify(h+1) + "  nphe: " +  stringify(nsteps) ;
+				
+				newHit->setText(0, QString(hitindex.c_str()));
 			}
 		}
 	}
+	
 	connect(hitList, SIGNAL(itemSelectionChanged() ),  this, SLOT(createSignalsTree() ) );
 }
 
@@ -172,7 +169,7 @@ void gsignal::chooseVariable(int index)
 void gsignal::createSignalsTree()
 {
 	hitData->clear();
-
+	
 	hitData->setSelectionMode(QAbstractItemView::SingleSelection);
 	hitData->setHeaderLabels(QStringList("Data"));
 	

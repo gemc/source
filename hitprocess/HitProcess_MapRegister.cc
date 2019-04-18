@@ -2,6 +2,7 @@
 #include "HitProcess.h"
 #include "HitProcess_MapRegister.h"
 #include "flux_hitprocess.h"         ///< flux hit process common to all
+#include "mirror_hitprocess.h"       ///< mirror hit process common to all
 #include "counter_hitprocess.h"      ///< counter hit process common to all
 
 // CLAS12
@@ -56,12 +57,10 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		exps >> EXP;
 		cout << "  >> Registering experiment \"" << EXP << "\" hit processes " << endl;
 		
-		// flux is independent of experiment
-		hitMap["flux"]           = &flux_HitProcess::createHitClass;
-		// mirror is also a flux detector
-		hitMap["mirror"]         = &flux_HitProcess::createHitClass;
-		// counter is also a flux detector
-		hitMap["counter"]         = &counter_HitProcess::createHitClass;
+		// flux, mirror, counter are independent of experiment
+		hitMap["flux"]    = &flux_HitProcess::createHitClass;
+		hitMap["mirror"]  = &mirror_HitProcess::createHitClass;
+		hitMap["counter"] = &counter_HitProcess::createHitClass;
 
 		// CLAS12
 		if(EXP == "clas12")
@@ -76,7 +75,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ftof"]     = &ftof_HitProcess::createHitClass;
 			hitMap["ft_cal"]   = &ft_cal_HitProcess::createHitClass;
 			hitMap["ft_hodo"]  = &ft_hodo_HitProcess::createHitClass;
-            hitMap["ft_trk"]   = &ftm_HitProcess::createHitClass;
+			hitMap["ft_trk"]   = &ftm_HitProcess::createHitClass;
 			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
 			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
@@ -101,9 +100,9 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		{
 			hitMap["eic_dirc"]  = &eic_dirc_HitProcess::createHitClass;
 			hitMap["eic_ec"]  = &eic_ec_HitProcess::createHitClass;
-			hitMap["eic_preshower"]  = &eic_preshower_HitProcess::createHitClass;    
+			hitMap["eic_preshower"]  = &eic_preshower_HitProcess::createHitClass;
 			hitMap["eic_rich"]  = &eic_rich_HitProcess::createHitClass;
-			hitMap["eic_compton"]  = &eic_compton_HitProcess::createHitClass;  
+			hitMap["eic_compton"]  = &eic_compton_HitProcess::createHitClass;
 		}
 		// SoLID
 		else if( EXP == "solid" )

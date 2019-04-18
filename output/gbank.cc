@@ -174,6 +174,13 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["flux"]   = abank;
+
+	// mirror bank digitized infos
+	// mirror digitized provide just one "digitized" variable, the detector id
+	abank =  gBank(MIRROR_BANK_TAG, "mirror", "Geant4 mirror digitized information");
+	abank.load_variable("hitn",   99,  "Di", "Hit Number");
+	abank.load_variable("id",     1,  "Di", "ID of flux element");
+	abank.orderNames();
 	banks["mirror"] = abank;
 
 	// counter bank integrated digitized infos

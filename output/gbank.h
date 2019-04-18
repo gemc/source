@@ -42,6 +42,9 @@ using namespace std;
 // FLUX Bank
 #define FLUX_BANK_TAG 50
 
+// MIRROR Bank
+#define MIRROR_BANK_TAG 55
+
 // Mirrors Bank
 #define MIRRORS_BANK_TAG 60
 
