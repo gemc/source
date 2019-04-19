@@ -241,6 +241,8 @@ void MDetectorConstruction::isSensitive(detector detect)
 	
 	string sensi   = detect.sensitivity;
 
+	if(sensi.find("mirror:") != string::npos) sensi = "mirror";
+
 	if(sensi != "no" )
 	{
 		G4SDManager* SDman = G4SDManager::GetSDMpointer();

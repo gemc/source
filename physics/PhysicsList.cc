@@ -241,11 +241,9 @@ void PhysicsList::SetCutForProton(double cut)
 #include "QBBC.hh"
 #include "QGSP_BERT.hh"
 #include "QGSP_BERT_HP.hh"
-#include "QGSP_BIC.hh"
-#include "QGSP_BIC_HP.hh"
+#include "QGS_BIC.hh"
 #include "QGSP_BIC_AllHP.hh"
 #include "QGSP_FTFP_BERT.hh"
-#include "QGS_BIC.hh"
 #include "QGSP_INCLXX.hh"
 #include "QGSP_INCLXX_HP.hh"
 #include "Shielding.hh"
@@ -316,17 +314,16 @@ void PhysicsList::cookPhysics()
 	else if(hadronicPhys == "FTFP_BERT_HP")   {g4HadronicPhysics.push_back( new G4HadronPhysicsFTFP_BERT_HP());}
 	else if(hadronicPhys == "FTFP_BERT_TRV")  {g4HadronicPhysics.push_back( new G4HadronPhysicsFTFP_BERT_TRV());}
 	else if(hadronicPhys == "FTF_BIC")        {g4HadronicPhysics.push_back( new G4HadronPhysicsFTF_BIC());}
+	else if(hadronicPhys == "QGSP_FTFP_BERT") {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_FTFP_BERT());}
 	// QGSP
 	else if(hadronicPhys == "QGSP_BERT")      {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_BERT());}
 	else if(hadronicPhys == "QGSP_BERT_HP")   {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_BERT_HP());}
-	else if(hadronicPhys == "QGSP_BIC")       {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_BIC());}
-	else if(hadronicPhys == "QGSP_BIC_HP")    {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_BIC_HP());}
-	else if(hadronicPhys == "QGSP_FTFP_BERT") {g4HadronicPhysics.push_back( new G4HadronPhysicsQGSP_FTFP_BERT());}
-	// Shielding
-	else if(hadronicPhys == "Shielding")      {g4HadronicPhysics.push_back( new G4HadronPhysicsShielding());}
+	else if(hadronicPhys == "QGSP_BIC")       {g4HadronicPhysics.push_back( new G4HadronPhysicsQGS_BIC());}
+	// Shielding: removed in 10.5?
+	// else if(hadronicPhys == "Shielding")      {g4HadronicPhysics.push_back( new G4HadronPhysicsShielding());}
 	// Others
 	else if(hadronicPhys == "none")            {;}
-	else {cout << "Wrong hadronicPhys " << hadronicPhys << endl << "Exiting." << endl; exit(0);}
+	else {cout << "Hadronic Physics " << hadronicPhys << "is not registered." << endl << "Exiting." << endl; exit(0);}
 
 	// optical physics
 	// taken from example: optical/LXe
