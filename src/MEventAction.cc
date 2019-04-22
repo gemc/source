@@ -296,7 +296,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	set<int>::iterator it;
 
 	// the container is full only if /tracking/storeTrajectory 2
-	G4TrajectoryContainer *trajectoryContainer;
+	G4TrajectoryContainer *trajectoryContainer = nullptr; 
 	
 	set<int> track_db2 = track_db;
 	if(SAVE_ALL_MOTHERS)
