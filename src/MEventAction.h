@@ -153,6 +153,7 @@ public:
 	int SAVE_ALL_ANCESTORS; ///< Outputs info on all ancestors of tracks with hits
 	int   MAXP;             ///< Max number of generated particles to save on output stream
 	int   FILTER_HITS;      ///< If set to 1, do not write any output unless there is a hit somewhere
+	int   FILTER_HADRONS;   ///< If set to 1, do not write any output unless there is a hadron somewhere
 	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
 	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
 	string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved

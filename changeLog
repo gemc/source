@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+3/26/19
+
+ - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are not hadrons.
+
 4/18/19
 
  - added mirror hit process routine as standalone routine and bank

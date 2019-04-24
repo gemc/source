@@ -600,6 +600,13 @@ void goptions::setGoptions()
 	optMap["FILTER_HITS"].type = 0;
 	optMap["FILTER_HITS"].ctgr = "output";
 
+	// No output if there are no hadrons
+	optMap["FILTER_HADRONS"].arg = 0;
+	optMap["FILTER_HADRONS"].help = "If set to 1, do not write output if there are no hadrons in the detectors";
+	optMap["FILTER_HADRONS"].name = "If set to 1, do not write output if there are no hadrons in the detectors";
+	optMap["FILTER_HADRONS"].type = 0;
+	optMap["FILTER_HADRONS"].ctgr = "output";
+
 	// sampling time of electronics (typically FADC), and number of sampling / event
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
 	// the default number of samples is 500 ADC points, at 4ns intervals (total electronic event time = 2 microseconds)
