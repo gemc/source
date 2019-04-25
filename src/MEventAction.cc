@@ -253,8 +253,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	}
 
 
-	// if FILTER_HADRONS is set, checking if there are any hadrons
-	if (FILTER_HADRONS) 
+	// if FILTER_HADRONS is set, checking if there are any (matching) hadrons
+	if (FILTER_HADRONS == 1 || abs(FILTER_HADRONS) > 99) 
 	  {
 	    int foundHad = 0;
 	    for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) 
@@ -267,7 +267,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		    vector<int>           pids = (*MHC)[h]->GetPIDs();
 		    for (vector<int>::const_iterator pit = pids.begin(); pit != pids.end(); pit++)
 		      {
-			if (abs(*pit) > 99)
+			if (abs(*pit) != 11)
+			  cout << FILTER_HADRONS << " " << (*pit) << endl;
+			if ((FILTER_HADRONS == 1 && abs(*pit) > 99) || *pit == FILTER_HADRONS)
 			  {
 			    foundHad = 1;
 			    break;

@@ -602,8 +602,10 @@ void goptions::setGoptions()
 
 	// No output if there are no hadrons
 	optMap["FILTER_HADRONS"].arg = 0;
-	optMap["FILTER_HADRONS"].help = "If set to 1, do not write output if there are no hadrons in the detectors";
-	optMap["FILTER_HADRONS"].name = "If set to 1, do not write output if there are no hadrons in the detectors";
+	optMap["FILTER_HADRONS"].help = "If set to 1, do not write events if there are no hadrons. Otherwise if \n";
+	optMap["FILTER_HADRONS"].help += "nonzero write only events having a hadron with matching ID. For example\n";
+	optMap["FILTER_HADRONS"].help += " -FILTER_HADRONS=2212 for protons";
+	optMap["FILTER_HADRONS"].name = "If set to 1 (or >1), do not write output if there are no (matching) hadrons in the detectors";
 	optMap["FILTER_HADRONS"].type = 0;
 	optMap["FILTER_HADRONS"].ctgr = "output";
 
