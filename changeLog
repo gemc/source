@@ -3,7 +3,7 @@ Changelog for GEMC
 
 3/26/19
 
- - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are not hadrons.
+ - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are not hadrons. Do not print progress if evtN hasn't changed.
 
 4/18/19
 

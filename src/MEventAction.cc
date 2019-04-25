@@ -267,7 +267,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		    vector<int>           pids = (*MHC)[h]->GetPIDs();
 		    for (vector<int>::const_iterator pit = pids.begin(); pit != pids.end(); pit++)
 		      {
-			//			cout << evtN << " " << MHC->GetSize() << " " << h << " " << *pit << endl;
 			if (abs(*pit) > 99)
 			  {
 			    foundHad = 1;
