@@ -92,6 +92,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	gPars            = gpars;
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
 	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
+	FILTER_HADRONS   = (int) gemcOpt.optMap["FILTER_HADRONS"].arg;
 	rw               = runWeights(opts);
 	
 	WRITE_ALLRAW     = replaceCharInStringWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
@@ -195,12 +196,14 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 	rw.getRunNumber(evtN);
 	bgMap.clear();
 
-	if(evtN%Modulo == 0 ) {
+	static int lastEvtN = -1;
+	if(evtN > lastEvtN && evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
 		if(rw.isNewRun) cout << " (new) ";
 		cout << endl;
 		cout << hd_msg << " Random Number: " << G4UniformRand() << endl;
 		// CLHEP::HepRandom::showEngineStatus();
+		lastEvtN = evtN;
 	}
 
 	// background hits:
@@ -249,6 +252,34 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if(anyHit==0) return;
 	}
 
+
+	// if FILTER_HADRONS is set, checking if there are any (matching) hadrons
+	if (FILTER_HADRONS == 1 || abs(FILTER_HADRONS) > 99) 
+	  {
+	    int foundHad = 0;
+	    for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) 
+	      {
+		MHC = it->second->GetMHitCollection();
+		if (MHC) nhits = MHC->GetSize();
+		else nhits = 0;
+		for (int h=0; h<nhits; h++)
+		  {
+		    vector<int>           pids = (*MHC)[h]->GetPIDs();
+		    for (vector<int>::const_iterator pit = pids.begin(); pit != pids.end(); pit++)
+		      {
+			if ((FILTER_HADRONS == 1 && abs(*pit) > 99) || *pit == FILTER_HADRONS)
+			  {
+			    foundHad = 1;
+			    break;
+			  }
+		      }
+		  }
+	      }
+
+	    // stop here if there are no hadrons and FILTER_HADRONS is set
+	    if (not foundHad) return;
+	}
+	
 
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
