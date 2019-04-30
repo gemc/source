@@ -3,7 +3,9 @@ Changelog for GEMC
 
 4/25/19
 
- - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are no hadrons. Otherwise if nonzero write only events having a hadron with matching ID. For example -FILTER_HADRONS=2212 for protons. Also, do not print progress if evtN hasn't changed.
+ - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are no hadrons.
+   Otherwise if nonzero write only events having a hadron with matching ID. For example -FILTER_HADRONS=2212 for protons.
+   Also, do not print progress if evtN hasn't changed.
 
 4/18/19
 

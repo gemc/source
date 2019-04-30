@@ -11,7 +11,7 @@ void goptions::setGoptions()
 	// help = Long explanation.
 	// name = Short description.
 	// type = 1 for argumenst that are strings, 0 for numbers.
-    
+	
 	// Generator
 	optMap["BEAM_P"].args  = "e-, 11*GeV, 0*deg, 0*deg, [optional KE]";
 	optMap["BEAM_P"].help  = "Beam particle, momentum, angles (in respect of z-axis). \n";
@@ -70,7 +70,7 @@ void goptions::setGoptions()
 	optMap["EVTN"].name = "Starting Event Number";
 	optMap["EVTN"].type = 0;
 	optMap["EVTN"].ctgr = "generator";
-
+	
 	optMap["ION_P"].args  = "no";
 	optMap["ION_P"].help  = "Primary particle is an ion. Sets Z, A and Charge of the primary particle. Setting the charge is optional. \n";
 	optMap["ION_P"].help += "      Example 1: -ION_P=\"6 12\" sets the Z to 6, A to 12. Charge will be Z. \n";
@@ -79,7 +79,7 @@ void goptions::setGoptions()
 	optMap["ION_P"].name  = "Primary particle is an ion. Sets A, Z and Charge of the primary particle. ";
 	optMap["ION_P"].type  = 1;
 	optMap["ION_P"].ctgr  = "generator";
-
+	
 	
 	optMap["INPUT_GEN_FILE"].args = "gemc_internal";
 	optMap["INPUT_GEN_FILE"].help = "Generator Input. Current availables file formats:\n";
@@ -103,7 +103,7 @@ void goptions::setGoptions()
 	optMap["MERGE_BGHITS"].type = 1;
 	optMap["MERGE_BGHITS"].ctgr = "generator";
 	
-
+	
 	
 	optMap["NGENP"].arg  = 10;
 	optMap["NGENP"].help = "Max Number of Generated Particles to save in the Output.";
@@ -131,7 +131,7 @@ void goptions::setGoptions()
 	optMap["COSMICRAYS"].name = "Cosmic Generator";
 	optMap["COSMICRAYS"].type = 1;
 	optMap["COSMICRAYS"].ctgr = "generator";
-
+	
 	optMap["COSMICAREA"].args = "0*cm, 0*cm, 0*cm, 50*cm";
 	optMap["COSMICAREA"].help = "Target (x,y,z) location and radius of area of interest";
 	optMap["COSMICAREA"].name = "Target (x,y,z) location and radius of area of interest";
@@ -215,21 +215,21 @@ void goptions::setGoptions()
 	optMap["LUMI2_EVENT"].type = 1;
 	optMap["LUMI2_EVENT"].ctgr = "luminosity";
 	
-    optMap["SKIPNGEN"].arg  = 0;
-    optMap["SKIPNGEN"].help = "Skip N events";
-    optMap["SKIPNGEN"].name = "Skip N events";
-    optMap["SKIPNGEN"].type = 0;
-    optMap["SKIPNGEN"].ctgr = "generator";
+	optMap["SKIPNGEN"].arg  = 0;
+	optMap["SKIPNGEN"].help = "Skip N events";
+	optMap["SKIPNGEN"].name = "Skip N events";
+	optMap["SKIPNGEN"].type = 0;
+	optMap["SKIPNGEN"].ctgr = "generator";
 	
 	// disabled by default
-    optMap["PROPAGATE_DVERTEXTIME"].arg  = 0;
-    optMap["PROPAGATE_DVERTEXTIME"].help = "Calculate propogation time of detached vertex events and fire them at this later time. \n";
+	optMap["PROPAGATE_DVERTEXTIME"].arg  = 0;
+	optMap["PROPAGATE_DVERTEXTIME"].help = "Calculate propogation time of detached vertex events and fire them at this later time. \n";
 	optMap["PROPAGATE_DVERTEXTIME"].help += "         0: Off (default)\n";
 	optMap["PROPAGATE_DVERTEXTIME"].help += "         1: On\n";								  
-    optMap["PROPAGATE_DVERTEXTIME"].name = "Calculate Propogation Time";
-    optMap["PROPAGATE_DVERTEXTIME"].type = 0;
-    optMap["PROPAGATE_DVERTEXTIME"].ctgr = "generator";
-
+	optMap["PROPAGATE_DVERTEXTIME"].name = "Calculate Propogation Time";
+	optMap["PROPAGATE_DVERTEXTIME"].type = 0;
+	optMap["PROPAGATE_DVERTEXTIME"].ctgr = "generator";
+	
 	
 	// MySQL Database
 	optMap["DBHOST"].args = "no";
@@ -367,7 +367,7 @@ void goptions::setGoptions()
 	optMap["EXEC_MACRO"].type = 1;
 	optMap["EXEC_MACRO"].ctgr = "control";
 	optMap["EXEC_MACRO"].repe  = 1;
-
+	
 	optMap["CHECK_OVERLAPS"].arg  = 0;
 	optMap["CHECK_OVERLAPS"].help  = "Checks Overlapping Volumes:\n";
 	optMap["CHECK_OVERLAPS"].help += "      1.  Check Overlaps at Construction Time\n";
@@ -426,7 +426,7 @@ void goptions::setGoptions()
 	optMap["EVN"].name = "Initial Event Number";
 	optMap["EVN"].type = 0;
 	optMap["EVN"].ctgr = "control";
-		
+	
 	optMap["ENERGY_CUT"].arg  = -1.;
 	optMap["ENERGY_CUT"].help = "Set an energy cut in MeV below which no particle will be tracked further. -1. turns this off.";
 	optMap["ENERGY_CUT"].name = "Tracking Energy cut (in MeV)";
@@ -515,8 +515,8 @@ void goptions::setGoptions()
 	optMap["RUN_WEIGHTS"].help += "      Will simulate 10% of events with run number 11 conditions, 70% run 12 and 20% run 13.\n";
 	optMap["RUN_WEIGHTS"].type  = 1;
 	optMap["RUN_WEIGHTS"].ctgr  = "control";
-
-
+	
+	
 	optMap["RFSETUP"].args = "no";
 	optMap["RFSETUP"].name = "Radio-frequency signal";
 	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
@@ -529,7 +529,7 @@ void goptions::setGoptions()
 	optMap["RFSETUP"].help += "      -RFSETUP=\"0.5, 80, 30\" \n";
 	optMap["RFSETUP"].type = 1;
 	optMap["RFSETUP"].ctgr = "control";
-
+	
 	optMap["RFSTART"].args = "eventVertex, 0, 0, 0";
 	optMap["RFSTART"].name = "Radio-frequency time model";
 	optMap["RFSTART"].help = "Radio-frequency time model. Available options are:\n";
@@ -571,14 +571,14 @@ void goptions::setGoptions()
 	optMap["SIGNALVT"].name = "Activates voltage (t) output for system(s). ";
 	optMap["SIGNALVT"].type = 1;
 	optMap["SIGNALVT"].ctgr = "output";
-
+	
 	// disabled by default
 	optMap["ELECTRONICNOISE"].args = "no";
 	optMap["ELECTRONICNOISE"].help = "Activates electronic noise routines for system(s). Example: -ELECTRONICNOISE=\"dc, ftof\"";
 	optMap["ELECTRONICNOISE"].name = "Activates electronic noise routines for system(s). ";
 	optMap["ELECTRONICNOISE"].type = 1;
 	optMap["ELECTRONICNOISE"].ctgr = "output";
-
+	
 	// voltage versus time resolution, in ns
 	optMap["VTRESOLUTION"].arg = 0.1;
 	optMap["VTRESOLUTION"].help = "Voltage versus time resolution, in ns";
@@ -592,14 +592,14 @@ void goptions::setGoptions()
 	optMap["FILTER_NULL_VARIABLES"].name = "If set to 1, filters out variables with no valuable info in the output.";
 	optMap["FILTER_NULL_VARIABLES"].type = 0;
 	optMap["FILTER_NULL_VARIABLES"].ctgr = "output";
-
+	
 	// voltage versus time resolution, in ns
 	optMap["FILTER_HITS"].arg = 0;
 	optMap["FILTER_HITS"].help = "If set to 1, do not write output if there are no hits in the detectors";
 	optMap["FILTER_HITS"].name = "If set to 1, do not write output if there are no hits in the detectors";
 	optMap["FILTER_HITS"].type = 0;
 	optMap["FILTER_HITS"].ctgr = "output";
-
+	
 	// No output if there are no hadrons
 	optMap["FILTER_HADRONS"].arg = 0;
 	optMap["FILTER_HADRONS"].help = "If set to 1, do not write events if there are no hadrons. Otherwise if \n";
@@ -608,7 +608,7 @@ void goptions::setGoptions()
 	optMap["FILTER_HADRONS"].name = "If set to 1 (or >1), do not write output if there are no (matching) hadrons in the detectors";
 	optMap["FILTER_HADRONS"].type = 0;
 	optMap["FILTER_HADRONS"].ctgr = "output";
-
+	
 	// sampling time of electronics (typically FADC), and number of sampling / event
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
 	// the default number of samples is 500 ADC points, at 4ns intervals (total electronic event time = 2 microseconds)
@@ -617,7 +617,7 @@ void goptions::setGoptions()
 	optMap["TSAMPLING"].name = "Sampling time of electronics (typically FADC)";
 	optMap["TSAMPLING"].type = 1;
 	optMap["TSAMPLING"].ctgr = "output";
-
+	
 	// Activates RNG saving for selected events
 	optMap["SAVE_SELECTED"].args  = "";
 	optMap["SAVE_SELECTED"].help  = "Save events with selected hit types\n";
@@ -634,9 +634,9 @@ void goptions::setGoptions()
 	optMap["RERUN_SELECTED"].name  = "Rerun saved events";
 	optMap["RERUN_SELECTED"].type  = 1;
 	optMap["RERUN_SELECTED"].ctgr  = "control";
-
 	
-
+	
+	
 	// Physics
 	optMap["PHYSICS"].args = "STD + FTFP_BERT";
 	optMap["PHYSICS"].help =  "  Physics List. The list is modular. \n\n";
@@ -668,7 +668,7 @@ void goptions::setGoptions()
 	optMap["PHYSICS"].name = "Choice of Physics List";
 	optMap["PHYSICS"].type = 1;
 	optMap["PHYSICS"].ctgr = "physics";
-
+	
 	optMap["SYNRAD"].arg  = 0;
 	optMap["SYNRAD"].help = " Adds Synchrotron Radiation";
 	optMap["SYNRAD"].help +=  "     Possible values:\n";
@@ -678,7 +678,7 @@ void goptions::setGoptions()
 	optMap["SYNRAD"].name = " Adds Synchrotron radiation";
 	optMap["SYNRAD"].type = 0;
 	optMap["SYNRAD"].ctgr = "physics";
-
+	
 	// voltage versus time resolution, in ns
 	optMap["FASTMCMODE"].arg   = 0;   // 1: production cut set to 5m. 2: turn off all physics but transportation
 	optMap["FASTMCMODE"].help  = "Activate FASTMC Mode. Possible values: \n\n";
@@ -690,7 +690,7 @@ void goptions::setGoptions()
 	optMap["FASTMCMODE"].name  = "Activate FASTMC Mode if non zero.";
 	optMap["FASTMCMODE"].type  = 0;
 	optMap["FASTMCMODE"].ctgr  = "output";
-
+	
 	optMap["HALL_MATERIAL"].args = "G4_AIR";
 	optMap["HALL_MATERIAL"].help = "Composition of the Experimental Hall. \n";
 	optMap["HALL_MATERIAL"].help += "            Air normal simulation\n";
@@ -705,22 +705,22 @@ void goptions::setGoptions()
 	optMap["DEFAULT_MATERIAL"].name = "Default material for missing material field";
 	optMap["DEFAULT_MATERIAL"].type = 1;
 	optMap["DEFAULT_MATERIAL"].ctgr = "physics";
-
+	
 	optMap["SWITCH_MATERIALTO"].args = "none";
 	optMap["SWITCH_MATERIALTO"].help = "Switches a material for another. Usage: -SWITCH_MATERIALTO=\"old, new\" \n";
 	optMap["SWITCH_MATERIALTO"].name = "Switches a material for another. ";
 	optMap["SWITCH_MATERIALTO"].type = 1;
 	optMap["SWITCH_MATERIALTO"].ctgr = "physics";
 	optMap["SWITCH_MATERIALTO"].repe  = 1;
-
+	
 	optMap["CHANGEVOLUMEMATERIALTO"].args = "none";
 	optMap["CHANGEVOLUMEMATERIALTO"].help = "Changes a volume material. Usage: -CHANGEVOLUMEMATERIALTO=\"volume, new material\" \n";
 	optMap["CHANGEVOLUMEMATERIALTO"].name = "Changes a volume material. ";
 	optMap["CHANGEVOLUMEMATERIALTO"].type = 1;
 	optMap["CHANGEVOLUMEMATERIALTO"].ctgr = "physics";
 	optMap["CHANGEVOLUMEMATERIALTO"].repe  = 1;
-
-
+	
+	
 	optMap["HALL_FIELD"].args = "no";
 	optMap["HALL_FIELD"].help = "Magnetic Field of the Hall. \n";
 	optMap["HALL_FIELD"].name = "Magnetic Field of the Hall";
@@ -745,14 +745,14 @@ void goptions::setGoptions()
 	optMap["NO_FIELD"].type = 1;
 	optMap["NO_FIELD"].ctgr = "physics";
 	optMap["NO_FIELD"].repe  = 0;
-
+	
 	optMap["G4FIELDCACHESIZE"].args = 3;
 	optMap["G4FIELDCACHESIZE"].help = "Sets Geant4 Magnetic Field Cache Size (in mm) \n";
 	optMap["G4FIELDCACHESIZE"].name = "Sets Geant4 Magnetic Field Cache Size (in mm). ";
 	optMap["G4FIELDCACHESIZE"].type = 1;
 	optMap["G4FIELDCACHESIZE"].ctgr = "physics";
 	optMap["G4FIELDCACHESIZE"].repe  = 0;
-
+	
 	optMap["PHYS_VERBOSITY"].arg = 0;
 	optMap["PHYS_VERBOSITY"].help = "Physics List Verbosity";
 	optMap["PHYS_VERBOSITY"].name = "Physics List Verbosity";
@@ -802,7 +802,7 @@ void goptions::setGoptions()
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "physics";
 	optMap["ACTIVEFIELDS"].repe  = 1;
-
+	
 	optMap["PRODUCTIONCUT"].arg   = 10;
 	optMap["PRODUCTIONCUT"].help  = "Production cut for root, in mm\n";
 	optMap["PRODUCTIONCUT"].name  = "Production cut for root, in mm";
@@ -816,7 +816,7 @@ void goptions::setGoptions()
 	optMap["PRODUCTIONCUTFORVOLUMES"].type  = 1;
 	optMap["PRODUCTIONCUTFORVOLUMES"].ctgr  = "physics";
 	optMap["PRODUCTIONCUTFORVOLUMES"].repe  = 1;
-
+	
 	optMap["FIELD_PROPERTIES"].args  = "no";
 	optMap["FIELD_PROPERTIES"].help  = "Mapped field minimum step, integration method, interpolation\n\n";
 	optMap["FIELD_PROPERTIES"].help += "      Usage:\n";
@@ -841,15 +841,15 @@ void goptions::setGoptions()
 	optMap["FIELD_PROPERTIES"].type  = 1;
 	optMap["FIELD_PROPERTIES"].ctgr  = "physics";
 	optMap["FIELD_PROPERTIES"].repe  = 1;
-
-
+	
+	
 	optMap["REMOVESENSITIVITY"].args = "none";
 	optMap["REMOVESENSITIVITY"].help = "Removes a volumes sensitivity. Usage: -REMOVESENSITIVITY=volumename1, volumename2, ... \n";
 	optMap["REMOVESENSITIVITY"].name = "Changes a volumes sensitivity. ";
 	optMap["REMOVESENSITIVITY"].type = 1;
 	optMap["REMOVESENSITIVITY"].ctgr = "physics";
-
-
+	
+	
 	// General
 	optMap["DF"].args  = "no";
 	optMap["DF"].help  = "Selects Detector System and Factory type. \n";
@@ -859,7 +859,7 @@ void goptions::setGoptions()
 	optMap["DF"].type  = 1;
 	optMap["DF"].ctgr  = "general";
 	optMap["DF"].repe  = 1;
-
+	
 }
 
 
