@@ -21,15 +21,18 @@ static dcConstants initializeDCConstants(int runno)
 	// all these constants should be read from CCDB
 	dcConstants dcc;
 
+	// used in process ID so defined here
+	dcc.NWIRES = 113;
+
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return dcc;
 
-	dcc.NWIRES = 113;
+
+	dcc.runNo = runno;
 	dcc.dcThreshold  = 50;  // eV
 
 	// database
-	dcc.runNo = runno;
 	//	dcc.date       = "2016-03-15";
 	dcc.date       = "2017-08-01";
 	if(getenv ("CCDB_CONNECTION") != NULL)
@@ -206,19 +209,25 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int trackIdw = -1;
 	double minTime  = 10000;
 	double signal_t = 0;
+	double hit_signal_t = 0;
 
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
 		signal_t = stepTime[s]/ns + DOCA.mag()/dcc.driftVelocity[SLI];
 
-		// threshold hardcoded, please get from parameters
+		// cout << "signal_t: " << signal_t << " stepTime: " << stepTime[s] << " DOCA: " << DOCA.mag() << " driftVelocity: " << dcc.driftVelocity[SLI] << " Lposy: " << Lpos[s].y() << " ylength: " << ylength << " WIRE_Y: " << WIRE_Y << " Lposz: " << Lpos[s].z() << " dcc.NWIRES: " << dcc.NWIRES << endl;
+
 		if(signal_t < minTime)
 		{
 			trackIdw = stepTrackId[s];
 			minTime = signal_t;
 
 			if(Edep[s] >= dcc.dcThreshold*eV) {
+				// new hit time
+				// (w/o the drift time)
+				hit_signal_t = stepTime[s]/ns;
+
 				trackIds = stepTrackId[s];
 			}
 		}
@@ -229,6 +238,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// If no step pass the threshold, getting the fastest signal of the weak tracks
 	if(trackIds == -1)
 		trackIds = trackIdw;
+
+	// If no step pass the threshold, getting the fastest signal of the weak tracks
+	if(trackIds == -1)
+	trackIds = trackIdw;
 
 	// Left / Right ambiguity
 	// Finding DOCA
@@ -258,7 +271,6 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z());
-
 		if(DOCA.mag() <= doca && stepTrackId[s] == trackIds )
 		{
 			//Get the momentum vector, which shall be rotated:
@@ -293,7 +305,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
-			thisMgnf = mgnf[s]; //Given in Tesla
+			thisMgnf = mgnf[s]; // Given in Tesla
 
 			//Get beta-value of the particle:
 			beta_particle = mom[s].mag()/E[s];
@@ -309,7 +321,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
-	//unsmeared time, based on the dist-time-function and alpha;
+	// unsmeared time, based on the dist-time-function and alpha;
 	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf/tesla,SECI,SLI);
 
 	// Now include (random) time walk contributions:
@@ -324,8 +336,11 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//And translate it to a proper detector response/reported value (gaussian):
 	double dt_random = CLHEP::RandGauss::shoot(0,dt_random_in);
 
-	//Now calculate the smeared time:
-	double smeared_time = unsmeared_time + dt_walk + dt_random;
+	// Now calculate the smeared time:
+	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
+	double smeared_time = unsmeared_time + dt_walk + dt_random + hit_signal_t;
+
+	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf/tesla << " SECI: " << SECI << " SLI: " << SLI << endl;
 
 	int ineff = 1;
 	if(random < ddEff || X > 1) ineff = -1;

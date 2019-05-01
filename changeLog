@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+5/1/19
+
+ - fixed dc setting of NWIRES.
+ - added flight time to tdc in dc
+
+
 4/25/19
 
  - Richard Holmes: added FILTER_HADRONS options: when set to 1, do not write events if there are no hadrons.
