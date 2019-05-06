@@ -51,7 +51,7 @@ public:
 
 	// for the JSON format: 
 	string argsJSONDescription;
-	string argsJSONTypes; // S = string, F = float
+	string argsJSONTypes; // S = string, F = float, VS = vector of strings
 
 	aopt() {
 		repe = 0;

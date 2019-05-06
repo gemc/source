@@ -285,8 +285,7 @@ int main( int argc, char **argv )
 	UImanager->SetCoutDestination(NULL);
 
 	// saving simulation condition in the output file
-	if(outContainer.outType != "no")
-	{
+	if(outContainer.outType != "no") {
 		// Creating the sim_condition map to save to the output
 		gemc_splash.message(" Writing simulation parameters in the output...");
 

@@ -85,13 +85,17 @@ void goptions::scanGcard(string file)
 						itm->second.printSetting();
 					} else {
 						string new_opt = itm->first + "__REPETITION__" + stringify(count[itm->first] - 1);
-						optMap[new_opt].args = e.attributeNode("value").value().toStdString();
-						optMap[new_opt].arg  = stringToDouble(e.attributeNode("value").value().toStdString());
-						optMap[new_opt].name = itm->second.name;
-						optMap[new_opt].help = itm->second.help;
-						optMap[new_opt].type = itm->second.type;
-						optMap[new_opt].ctgr = itm->second.ctgr;
+						optMap[new_opt].args    = e.attributeNode("value").value().toStdString();
+						optMap[new_opt].arg     = stringToDouble(e.attributeNode("value").value().toStdString());
+						optMap[new_opt].keyName = itm->second.keyName;
+						optMap[new_opt].name    = itm->second.name;
+						optMap[new_opt].help    = itm->second.help;
+						optMap[new_opt].type    = itm->second.type;
+						optMap[new_opt].ctgr    = itm->second.ctgr;
+						optMap[new_opt].argsJSONDescription = itm->second.argsJSONDescription;
+						optMap[new_opt].argsJSONTypes       = itm->second.argsJSONTypes;
 						optMap[new_opt].repe = count[itm->first];
+
 						optMap[new_opt].printSetting();
 					}
 					break;
@@ -388,12 +392,15 @@ int goptions::setOptMap(int argc, char **argv)
 					itm->second.printSetting();
 				} else if(count[itm->first]>1) {
 					string new_opt = itm->first + "__REPETITION__" + stringify(count[itm->first]-1);
-					optMap[new_opt].args  = opts;
-					optMap[new_opt].arg   = stringToDouble(opts);
-					optMap[new_opt].name  = itm->second.name;
-					optMap[new_opt].help  = itm->second.help;
-					optMap[new_opt].type  = itm->second.type;
-					optMap[new_opt].ctgr  = itm->second.ctgr;
+					optMap[new_opt].args    = opts;
+					optMap[new_opt].arg     = stringToDouble(opts);
+					optMap[new_opt].name    = itm->second.name;
+					optMap[new_opt].keyName = itm->second.keyName;
+					optMap[new_opt].help    = itm->second.help;
+					optMap[new_opt].type    = itm->second.type;
+					optMap[new_opt].ctgr    = itm->second.ctgr;
+					optMap[new_opt].argsJSONDescription = itm->second.argsJSONDescription;
+					optMap[new_opt].argsJSONTypes       = itm->second.argsJSONTypes;
 					optMap[new_opt].repe  = count[itm->first];
 					optMap[new_opt].printSetting();
 				}
@@ -404,8 +411,7 @@ int goptions::setOptMap(int argc, char **argv)
 		
 		// For MAC OS X, we want to ignore the -psn_# type argument. This argument is added by
 		// the system when launching an application as an "app", and # contains the process id.
-		if( found == 0 && strncmp(argv[i],"-psn_", 4) !=0 && ignoreNotFound == 0)
-		{
+		if( found == 0 && strncmp(argv[i],"-psn_", 4) !=0 && ignoreNotFound == 0) {
 			cout << " The argument " << argv[i] << " is not known to this system / or file not found. Continuing anyway.\n\n";
 			// exit(2);
 		}
@@ -493,7 +499,7 @@ string goptions::jSonOptions()
 	for (auto c: catCheck) {
 
 		for (auto ov : getOptionsFromCategory(c)) {
-
+			cout << " Getting " <<  ov.keyName << " with " << ov.args << " " << ov.argsJSONDescription << endl;
 			// string types
 			if(ov.type == 1) {
 				vector<string> optionValues    = get_info(ov.args);
@@ -501,14 +507,16 @@ string goptions::jSonOptions()
 				vector<string> jsonTypes       = get_info(ov.argsJSONTypes);
 
 				if (optionValues.size() == jsonDescritpion.size() && jsonDescritpion.size() == jsonTypes.size()) {
-					cout << " AS MATCH" << endl;
+					
 					for (unsigned i=0; i<optionValues.size(); i++) {
 						if(jsonTypes[i] == "S") {
-							j[c][jsonDescritpion[i]] = optionValues[i];
+							j[c][ov.keyName][jsonDescritpion[i]] = optionValues[i];
 						} else if(jsonTypes[i] == "F") {
-							j[c][jsonDescritpion[i]] = stringToDouble(optionValues[i]);
+							j[c][ov.keyName][jsonDescritpion[i]] = stringToDouble(optionValues[i]);
 						}
 					}
+				} else if(jsonTypes.back() == "VS") {
+					j[c][jsonDescritpion.back()] = optionValues;
 				}
 
 			} else {
@@ -529,7 +537,7 @@ vector<aopt> goptions::getOptionsFromCategory(string c) {
 
 	for (auto &om: optMap) {
 		if(om.second.ctgr == c) {
-			if (om.second.argsJSONDescription.find("na") == string::npos && om.second.keyName != "") {
+			if (om.second.argsJSONDescription != "na" && om.second.keyName != "") {
 				coptions.push_back(om.second);
 			}
 		}

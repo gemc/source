@@ -779,8 +779,8 @@ void goptions::setGoptions()
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "fields";
 	optMap["ACTIVEFIELDS"].repe  = 1;
-	optMap["ACTIVEFIELDS"].argsJSONDescription  = "ActiveField";
-	optMap["ACTIVEFIELDS"].argsJSONTypes        = "S";
+	optMap["ACTIVEFIELDS"].argsJSONDescription  = "ActiveFields";
+	optMap["ACTIVEFIELDS"].argsJSONTypes        = "VS";
 
 	optMap["FIELD_PROPERTIES"].args  = "no";
 	optMap["FIELD_PROPERTIES"].help  = "Mapped field minimum step, integration method, interpolation\n\n";

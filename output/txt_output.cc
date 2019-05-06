@@ -28,6 +28,7 @@ void txt_output :: recordSimConditions(outputContainer* output, map<string, stri
 		*txtout << endl;
 		*txtout << "   Simulation JSON Conditions:  " << SIMULATION_JCONDITIONS_BANK_TAG << ":" << endl;
 		*txtout << simcons["JSON"] << endl;
+		*txtout << endl;
 	}
 
 }
