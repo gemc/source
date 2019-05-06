@@ -19,7 +19,17 @@ void txt_output :: recordSimConditions(outputContainer* output, map<string, stri
 	*txtout << "   Simulation Conditions, TAG " << SIMULATION_CONDITIONS_BANK_TAG << ":" << endl;
 	
 	for(map<string, string>::iterator it = simcons.begin(); it != simcons.end(); it++)
+	if(it->first != "JSON") {
 		*txtout << "   > " << it->first << " " << it->second << endl;
+	}
+
+
+	if(simcons.find("JSON") != simcons.end()) {
+		*txtout << endl;
+		*txtout << "   Simulation JSON Conditions:  " << SIMULATION_JCONDITIONS_BANK_TAG << ":" << endl;
+		*txtout << simcons["JSON"] << endl;
+	}
+
 }
 
 

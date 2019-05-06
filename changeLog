@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+5/6/19
+ - reorg of gemc_option categories
+ - only write option map out if output is specified
+ - adding json format output for option map (in process)
+
 5/1/19
 
  - fixed dc setting of NWIRES.

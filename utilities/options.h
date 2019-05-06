@@ -23,6 +23,11 @@
 #include <fstream>
 using namespace std;
 
+// json: from https://github.com/nlohmann/json
+// only need this file from the single_include dir
+#include <json.hpp>
+using json = nlohmann::json;
+
 /// \class aopt
 /// <b> aopt </b>\n\n
 /// Option class.\n
@@ -34,19 +39,35 @@ using namespace std;
 class aopt
 {
 public:
-	double  arg;  ///< double assigned to argument.
-	string args;  ///< string assigned to argument.
-	string name;  ///< name to be displayed for the argument variable.
-	string help;  ///< help for the argument variable.
-	int    type;  ///< 0 = number, 1 = string
-	string ctgr;  ///< help category
-	int    repe;  ///< if this is set to 1: then this option can be repeated
-					  ///< if this is set to 0: command line will always overwrite the gcard
-	
-	aopt() {repe = 0;}
+	double  arg;    ///< double assigned to argument.
+	string keyName; ///< keyname of the option
+	string args;    ///< string assigned to argument.
+	string name;    ///< name to be displayed for the argument variable.
+	string help;    ///< help for the argument variable.
+	int    type;    ///< 0 = number, 1 = string
+	string ctgr;    ///< help category
+	int    repe;    ///< if this is set to 1: then this option can be repeated
+					    ///< if this is set to 0: command line will always overwrite the gcard
+
+	// for the JSON format: 
+	string argsJSONDescription;
+	string argsJSONTypes; // S = string, F = float
+
+	aopt() {
+		repe = 0;
+		argsJSONDescription = "na";
+		argsJSONTypes = "na";
+	}
 	
 public:
 	void printSetting();
+
+	bool isJsonOption() {
+		if (argsJSONDescription != "na") {
+			return true;
+		}
+		return false;
+	}
 };
 
 
@@ -75,11 +96,13 @@ public:
 	map<string, aopt> optMap;              ///< Options map
 	map<string, string> getOptMap();       ///< Returns a map<string, string> with all options and values
 	
-	vector<aopt> getArgs(string);          ///< get a vector of arguments matching a string
+	vector<aopt> getArgs(string);          ///< get a vector of aopt whose key in the map matching a string
 	
 	int ignoreNotFound;                    ///< if this is not 0, it means the options
 														///  could be shared with another application. So ignore
 														///  the case that options are not found in the current application
+	string jSonOptions();                  ///< returns a string describing the enabled json options
+	vector<aopt> getOptionsFromCategory(string c); ///< returns all options within a category
 };
 
 

@@ -22,20 +22,18 @@ void goptions::scanGcard(string file)
 {
 	// If found, parse the <options> section of the file.
 	QDomDocument domDocument;
-    
+
 	cout << " >> Parsing " << file << " for options: \n";
-    
+
 	QFile gcard(file.c_str());
-    
-	if( !gcard.exists() )
-	{
+
+	if( !gcard.exists() ) {
 		cout << " >>  gcard: " << file <<" not found. Exiting." << endl;
 		exit(0);
 	}
 	
 	// opening gcard and filling domDocument
-	if(!domDocument.setContent(&gcard))
-	{
+	if(!domDocument.setContent(&gcard)) {
 		gcard.close();
 		cout << " >>  gcard format for file <" << file << "> is wrong - check XML syntax. Exiting." << endl;
 		exit(0);
@@ -51,10 +49,15 @@ void goptions::scanGcard(string file)
 	/// reading gcard file
 	QDomElement docElem = domDocument.documentElement();
 	QDomNode n;
-	
+
+	// resetting count of options
 	map<string, int> count;
-	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-			count[itm->first] = 0;
+	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++) {
+		count[itm->first] = 0;
+
+		// assigning keyName
+		itm->second.keyName = itm->first;
+	}
 
 	///< looping over options
 	n = docElem.firstChild();
@@ -62,51 +65,45 @@ void goptions::scanGcard(string file)
 	{
 		QDomElement e = n.toElement();                ///< converts the node to an element.
 		if(!e.isNull())                               ///< the node really is an element.
-			if(e.tagName().toStdString() == "option")     ///< selecting "option" nodes
+		if(e.tagName().toStdString() == "option")     ///< selecting "option" nodes
+		{
+			int found = 0;
+			for(map<string, aopt>::iterator itm = optMap.begin();itm != optMap.end(); itm++)
 			{
-				int found = 0;
-				for(map<string, aopt>::iterator itm = optMap.begin();itm != optMap.end(); itm++)
+				// looking for a valid option. If a two instances of the same option exist
+				// the string __REPETITION__ will be appended
+				if(e.attributeNode("name").value().toStdString() == itm->first )
 				{
-					// looking for a valid option. If a two instances of the same option exist
-					// the string __REPETITION__ will be appended
-					if(e.attributeNode("name").value().toStdString() == itm->first )
-					{
 
-						found = 1;
-						count[itm->first] += 1;
+					found = 1;
+					count[itm->first] += 1;
 
-						// first time it finds it
-						if(count[itm->first] == 1)
-						{
-							itm->second.args =                e.attributeNode("value").value().toStdString();
-							itm->second.arg  = stringToDouble(e.attributeNode("value").value().toStdString());
-
-							itm->second.printSetting();
-						}
-
-						else
-						{
-							string new_opt = itm->first + "__REPETITION__" + stringify(count[itm->first] - 1);
-							optMap[new_opt].args = e.attributeNode("value").value().toStdString();
-							optMap[new_opt].arg  = stringToDouble(e.attributeNode("value").value().toStdString());
-							optMap[new_opt].name = itm->second.name;
-							optMap[new_opt].help = itm->second.help;
-							optMap[new_opt].type = itm->second.type;
-							optMap[new_opt].ctgr = itm->second.ctgr;
-							optMap[new_opt].repe = count[itm->first];
-							optMap[new_opt].printSetting();
-						}
-						break;
+					// first time it finds it
+					if(count[itm->first] == 1) {
+						itm->second.args =                e.attributeNode("value").value().toStdString();
+						itm->second.arg  = stringToDouble(e.attributeNode("value").value().toStdString());
+						itm->second.printSetting();
+					} else {
+						string new_opt = itm->first + "__REPETITION__" + stringify(count[itm->first] - 1);
+						optMap[new_opt].args = e.attributeNode("value").value().toStdString();
+						optMap[new_opt].arg  = stringToDouble(e.attributeNode("value").value().toStdString());
+						optMap[new_opt].name = itm->second.name;
+						optMap[new_opt].help = itm->second.help;
+						optMap[new_opt].type = itm->second.type;
+						optMap[new_opt].ctgr = itm->second.ctgr;
+						optMap[new_opt].repe = count[itm->first];
+						optMap[new_opt].printSetting();
 					}
-				}
-				if( found == 0 )
-				{
-					cout << "  !! Error: The option in the gcard file "
-					<< e.attributeNode("name").value().toStdString()
-					<< " is not known to this system. Please check your spelling." << endl;
-					exit(3);
+					break;
 				}
 			}
+			if( found == 0 ) {
+				cout << "  !! Error: The option in the gcard file "
+				<< e.attributeNode("name").value().toStdString()
+				<< " is not known to this system. Please check your spelling." << endl;
+				exit(3);
+			}
+		}
 		
 		// now looking for child arguments
 		QDomNode nn= e.firstChild();
@@ -149,12 +146,10 @@ int goptions::setOptMap(int argc, char **argv)
 	
 	// Look for -gcard special option:
 	size_t pos;
-	for(int i=1;i<argc;i++)
-	{
+	for(int i=1;i<argc;i++) {
 		string arg = argv[i];
 		pos = arg.find("gcard=");
-		if(pos != string::npos)
-		{
+		if(pos != string::npos) {
 			scanGcard(arg.substr(pos+6));
 		}
 	}
@@ -164,22 +159,22 @@ int goptions::setOptMap(int argc, char **argv)
 	{
 		string arg = argv[i];
 		pos = arg.find(".gcard");
-		if(pos != string::npos)
-		{
+		if(pos != string::npos) {
 			ifstream my_file(argv[i]);
-			if(my_file)
-			{
+			if(my_file) {
 				scanGcard(argv[i]);
 			}
 		}
 	}
 	
-    
+
+	// Fidning / Filling Categories
 	set<string> category;
-	// Filling Categories
-	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-		if(category.find(itm->second.ctgr) == category.end()) category.insert(itm->second.ctgr);
-	
+	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++) {
+		if(category.find(itm->second.ctgr) == category.end()) {
+			category.insert(itm->second.ctgr);
+		}
+	}
 	
 	// -help-all
 	cout << endl;
@@ -192,9 +187,9 @@ int goptions::setOptMap(int argc, char **argv)
 			cout <<  "    Usage: -Option=<option>" << endl << endl;
 			cout <<  "    Options:" <<  endl << endl ;
 			
-			for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
+			for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++) {
 				cout <<  "   > Option " <<  itm->first << ": " << itm->second.help << endl;
-			
+			}
 			cout << endl << endl;
 			exit(0);
 		}
@@ -212,8 +207,7 @@ int goptions::setOptMap(int argc, char **argv)
 			cout <<  endl << endl;
 			cout <<  "    Help Options:" <<  endl << endl ;
 			cout <<  "   >  -help-all:  all available options. " <<  endl << endl;
-			for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++)
-			{
+			for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++) {
 				cout <<  "   >  -help-" << *itcat << "     ";
 				cout.width(15);
 				cout << *itcat << " options." << endl;
@@ -231,13 +225,14 @@ int goptions::setOptMap(int argc, char **argv)
 		for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++)
 		{
 			string com = "-help-" + *itcat;
-			if(arg == com)
-			{
+			if(arg == com) {
 				cout << endl << endl <<  "   ## " << *itcat << " ## " << endl << endl;
 				cout << "    Usage: -Option=<option>" << endl << endl;
-				for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-					if(itm->second.ctgr == *itcat)
+				for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++) {
+					if(itm->second.ctgr == *itcat) {
 						cout <<  "   > " <<  itm->first << ": " << itm->second.help << endl;
+					}
+				}
 				cout << endl << endl;
 				exit(0);
 			}
@@ -325,18 +320,18 @@ int goptions::setOptMap(int argc, char **argv)
 				hf << "    <th scope=\"col\" >Option</th>" << endl;
 				hf << "    <th scope=\"col\" >Help</th></tr>" << endl;
 				for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++)
-					for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
-						if(itm->second.ctgr == *itcat)
-						{
-							hf << "<tr><th scope=\"row\">";
-							hf << *itcat ;
-							
-							hf << "</th> <td>";
-							hf << itm->first;
-							hf << "</td><td><pre>" << endl;
-							hf << itm->second.help;
-							hf << "</pre></td></tr>" << endl;
-						}
+				for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
+				if(itm->second.ctgr == *itcat)
+				{
+					hf << "<tr><th scope=\"row\">";
+					hf << *itcat ;
+
+					hf << "</th> <td>";
+					hf << itm->first;
+					hf << "</td><td><pre>" << endl;
+					hf << itm->second.help;
+					hf << "</pre></td></tr>" << endl;
+				}
 				
 				hf << "</table>" << endl;
 				hf << "</td>" << endl;
@@ -355,10 +350,11 @@ int goptions::setOptMap(int argc, char **argv)
 	map<string, int> count;
 	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++)
 	{
-		if(itm->second.repe == 0)
+		if(itm->second.repe == 0) {
 			count[itm->first] = 0;
-		else
+		} else {
 			count[itm->first] = itm->second.repe;
+		}
 	}
 	
 	for(int i=1; i<argc; i++)
@@ -375,7 +371,7 @@ int goptions::setOptMap(int argc, char **argv)
 			// skip if argument is a file
 			ifstream my_file(argv[i]);
 			if(my_file)
-				found = 1;
+			found = 1;
 			
 			if(comp == com)
 			{
@@ -385,17 +381,12 @@ int goptions::setOptMap(int argc, char **argv)
 				string opts;
 				opts.assign(arg, com.size(), arg.size()-com.size());
 				
-				// first time 
-				if(count[itm->first] == 1)
-				{
+				// first time
+				if(count[itm->first] == 1) {
 					itm->second.args = opts;
 					itm->second.arg  = stringToDouble(opts);
 					itm->second.printSetting();
-				}
-				
-				
-				if(count[itm->first]>1)
-				{
+				} else if(count[itm->first]>1) {
 					string new_opt = itm->first + "__REPETITION__" + stringify(count[itm->first]-1);
 					optMap[new_opt].args  = opts;
 					optMap[new_opt].arg   = stringToDouble(opts);
@@ -425,14 +416,12 @@ int goptions::setOptMap(int argc, char **argv)
 	return 1;
 }
 
-vector<aopt> goptions::getArgs(string opt)
-{
+// get a vector of aopt whose key in the map matching a string
+vector<aopt> goptions::getArgs(string opt) {
 	vector<aopt> options;
 	map<string, int> count;
-	for(map<string, aopt>::iterator itm = optMap.begin();itm != optMap.end(); itm++)
-	{
-		if(itm->first.find(opt) != string::npos)
-		{
+	for(map<string, aopt>::iterator itm = optMap.begin();itm != optMap.end(); itm++) {
+		if(itm->first.find(opt) != string::npos) {
 			options.push_back(itm->second);
 		}
 	}
@@ -446,8 +435,7 @@ map<string, string> goptions::getOptMap()
 {
 	map<string, string> optmap;
 	
-	for(map<string, aopt>::iterator it = optMap.begin(); it != optMap.end(); it++)
-	{
+	for(map<string, aopt>::iterator it = optMap.begin(); it != optMap.end(); it++) {
 		string key = "option " + it->first;
 		if(it->second.type == 0) optmap[key] = stringify(it->second.arg);
 		else                     optmap[key] = it->second.args;
@@ -460,11 +448,9 @@ map<string, string> goptions::getOptMap()
 
 
 // print the option setting
-void aopt::printSetting()
-{
+void aopt::printSetting() {
 	if(name.find("gemc card file") != string::npos) return;
-	
-	
+
 	cout << "  > " << name << " set to: ";
 	if(type) cout << args;
 	else     cout << arg;
@@ -472,11 +458,83 @@ void aopt::printSetting()
 	
 }
 
+// returns a json string describing the JSON enabled options
+string goptions::jSonOptions()
+{
+
+	json j;
 
 
 
 
+	// Finding / Filling Categories
+	set<string> category;
+	for(map<string, aopt>::iterator itm = optMap.begin(); itm != optMap.end(); itm++) {
+		if(category.find(itm->second.ctgr) == category.end()) category.insert(itm->second.ctgr);
+	}
+
+	// map to check if a category has JSON option
+	set<string> catCheck;
+
+	for (auto c: category) {
+		if(c != "") {
+			for (auto &om : getOptionsFromCategory(c)) {
+				if (om.argsJSONDescription.find("na") == string::npos) {
+					catCheck.insert(c);
+				}
+			}
+		}
+	}
 
 
 
+
+	// only looping through categories having at least one JSON option
+	for (auto c: catCheck) {
+
+		for (auto ov : getOptionsFromCategory(c)) {
+
+			// string types
+			if(ov.type == 1) {
+				vector<string> optionValues    = get_info(ov.args);
+				vector<string> jsonDescritpion = get_info(ov.argsJSONDescription);
+				vector<string> jsonTypes       = get_info(ov.argsJSONTypes);
+
+				if (optionValues.size() == jsonDescritpion.size() && jsonDescritpion.size() == jsonTypes.size()) {
+					cout << " AS MATCH" << endl;
+					for (unsigned i=0; i<optionValues.size(); i++) {
+						if(jsonTypes[i] == "S") {
+							j[c][jsonDescritpion[i]] = optionValues[i];
+						} else if(jsonTypes[i] == "F") {
+							j[c][jsonDescritpion[i]] = stringToDouble(optionValues[i]);
+						}
+					}
+				}
+
+			} else {
+				// double or types are single numbers
+
+			}
+
+
+		}
+	}
+	return j.dump();
+}
+
+
+vector<aopt> goptions::getOptionsFromCategory(string c) {
+
+	vector<aopt> coptions;
+
+	for (auto &om: optMap) {
+		if(om.second.ctgr == c) {
+			if (om.second.argsJSONDescription.find("na") == string::npos && om.second.keyName != "") {
+				coptions.push_back(om.second);
+			}
+		}
+	}
+
+	return coptions;
+}
 

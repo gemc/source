@@ -17,8 +17,11 @@ using namespace std;
 
 // Banks. Let's put these in DB?
 
-// simulation conditions NUM is 0 for the mother bank, 1 for the data bank
+// simulation conditions NUM is 0 for the mother bank, 1 for the daugther data bank
 #define SIMULATION_CONDITIONS_BANK_TAG 5
+
+// json format simulation conditions NUM is 0 
+#define SIMULATION_JCONDITIONS_BANK_TAG 6
 
 // header bank
 #define HEADER_BANK_TAG 10
