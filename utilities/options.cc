@@ -499,7 +499,8 @@ string goptions::jSonOptions()
 	for (auto c: catCheck) {
 
 		for (auto ov : getOptionsFromCategory(c)) {
-			cout << " Getting " <<  ov.keyName << " with " << ov.args << " " << ov.argsJSONDescription << endl;
+
+			json joption;
 			// string types
 			if(ov.type == 1) {
 				vector<string> optionValues    = get_info(ov.args);
@@ -507,24 +508,24 @@ string goptions::jSonOptions()
 				vector<string> jsonTypes       = get_info(ov.argsJSONTypes);
 
 				if (optionValues.size() == jsonDescritpion.size() && jsonDescritpion.size() == jsonTypes.size()) {
-					
 					for (unsigned i=0; i<optionValues.size(); i++) {
 						if(jsonTypes[i] == "S") {
-							j[c][ov.keyName][jsonDescritpion[i]] = optionValues[i];
+							joption[jsonDescritpion[i]] = optionValues[i];
 						} else if(jsonTypes[i] == "F") {
-							j[c][ov.keyName][jsonDescritpion[i]] = stringToDouble(optionValues[i]);
+							joption[jsonDescritpion[i]] = stringToDouble(optionValues[i]);
 						}
 					}
 				} else if(jsonTypes.back() == "VS") {
-					j[c][jsonDescritpion.back()] = optionValues;
+					joption[jsonDescritpion.back()] = optionValues;
 				}
 
 			} else {
 				// double or types are single numbers
 
 			}
-
-
+			if(joption.size()) {
+				j[c][ov.keyName].push_back(joption);
+			}
 		}
 	}
 	return j.dump();

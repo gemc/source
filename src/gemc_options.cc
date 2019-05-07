@@ -778,7 +778,7 @@ void goptions::setGoptions()
 	optMap["ACTIVEFIELDS"].name  = "List of activated fields";
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "fields";
-	optMap["ACTIVEFIELDS"].repe  = 1;
+	optMap["ACTIVEFIELDS"].repe  = 0;
 	optMap["ACTIVEFIELDS"].argsJSONDescription  = "ActiveFields";
 	optMap["ACTIVEFIELDS"].argsJSONTypes        = "VS";
 

@@ -1,7 +1,12 @@
 Changelog for GEMC
 ==================
 
+5/7/19
+
+ - first implementation of JSON output for the options
+
 5/6/19
+
  - reorg of gemc_option categories
  - only write option map out if output is specified
  - adding json format output for option map (in process)
