@@ -4,6 +4,7 @@ Changelog for GEMC
 5/7/19
 
  - first implementation of JSON output for the options
+ - output implemention of JSON options for txt and evio
 
 5/6/19
 

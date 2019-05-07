@@ -40,18 +40,29 @@ vector<int> evio_output::detector_crates = {1, 7, 13, 19, 25, 31,     // EC
 void evio_output :: recordSimConditions(outputContainer* output, map<string, string> sims)
 {
 	vector<string> data;
+	vector<string> jdata;
 
 	// writing both key and argument as one string
-	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++)
-	{
-		data.push_back(it->first + ":  " + it->second + "  ");
+	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
+		if(it->first != "JSON") {
+			data.push_back(it->first + ":  " + it->second + "  ");
+		}
 	}
+
 
 	evioDOMTree *conditionsBank = new evioDOMTree(SIMULATION_CONDITIONS_BANK_TAG, 0);
 	*conditionsBank << evioDOMNode::createEvioDOMNode(SIMULATION_CONDITIONS_BANK_TAG, 1, data);
-
 	output->pchan->write(*conditionsBank);
 	delete conditionsBank;
+
+	jdata.push_back(sims["JSON"]);
+	evioDOMTree *jconditionsBank = new evioDOMTree(SIMULATION_JCONDITIONS_BANK_TAG, 0);
+	*jconditionsBank << evioDOMNode::createEvioDOMNode(SIMULATION_JCONDITIONS_BANK_TAG, 1, jdata);
+
+	output->pchan->write(jconditionsBank);
+	delete conditionsBank;
+
+
 }
 
 // instantiates the DOM tree

@@ -528,7 +528,7 @@ string goptions::jSonOptions()
 			}
 		}
 	}
-	return j.dump();
+	return j.dump(2);
 }
 
 
