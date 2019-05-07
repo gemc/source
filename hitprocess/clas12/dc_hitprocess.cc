@@ -226,7 +226,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(Edep[s] >= dcc.dcThreshold*eV) {
 				// new hit time
 				// (w/o the drift time)
-				hit_signal_t = stepTime[s]/ns;
+				// not activated yet
+				// hit_signal_t = stepTime[s]/ns;
 
 				trackIds = stepTrackId[s];
 			}
