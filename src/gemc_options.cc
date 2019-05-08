@@ -11,9 +11,21 @@ void goptions::setGoptions()
 	// help = Long explanation.
 	// name = Short description.
 	// type = 1 for argumenst that are strings, 0 for numbers.
+	// argsJSONTypes: S = string, F = float, VS = vector of strings
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 
 	// Generator
-	optMap["BEAM_P"].args  = "e-, 11*GeV, 0*deg, 0*deg, [optional KE]";
+	// ---------
+
+	optMap["BEAM_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
 	optMap["BEAM_P"].help  = "Beam particle, momentum, angles (in respect of z-axis). \n";
 	optMap["BEAM_P"].help += "      Example: -BEAM_P=\"e-, 6*GeV, 15*deg, 20*deg\" sets 6 GeV electrons 15 degrees in theta, 20 degrees in phi. \n";
 	optMap["BEAM_P"].help += "      Use -BEAM_P=\"show_all\" to print the list of G4 supported particles.\n";
@@ -21,8 +33,10 @@ void goptions::setGoptions()
 	optMap["BEAM_P"].name  = "Primary particle, Energy, Theta, Phi";
 	optMap["BEAM_P"].type  = 1;
 	optMap["BEAM_P"].ctgr  = "generator";
-	
-	optMap["SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg, [optional KE]";
+	optMap["BEAM_P"].argsJSONDescription  = "particleID, momentum, theta, phi";
+	optMap["BEAM_P"].argsJSONTypes        = "S, F, F, F";
+
+	optMap["SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["SPREAD_P"].help  = "Spread Primary Particle energy and angles (in respect of z-axis). \n";
 	optMap["SPREAD_P"].help += "      Example: -SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
 	optMap["SPREAD_P"].help += "      If the word flat is added as last argument to the option, theta is flat instead of cos(theta). \n";
@@ -30,7 +44,9 @@ void goptions::setGoptions()
 	optMap["SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["SPREAD_P"].type  = 1;
 	optMap["SPREAD_P"].ctgr  = "generator";
-	
+	optMap["SPREAD_P"].argsJSONDescription  = "denergy, dtheta, dphi";
+	optMap["SPREAD_P"].argsJSONTypes        = "F, F, F";
+
 	optMap["ALIGN_ZAXIS"].args  = "no";
 	optMap["ALIGN_ZAXIS"].help  = "Align z axis to a custom direction. Options:\n";
 	optMap["ALIGN_ZAXIS"].help += "      - \"beamp\"  aligns z axis to the beam directions specified by BEAM_P.\n";
@@ -38,19 +54,25 @@ void goptions::setGoptions()
 	optMap["ALIGN_ZAXIS"].name  = "Align z axis to a custom direction.";
 	optMap["ALIGN_ZAXIS"].type  = 1;
 	optMap["ALIGN_ZAXIS"].ctgr  = "generator";
-	
+	optMap["ALIGN_ZAXIS"].argsJSONDescription  = "to:";
+	optMap["ALIGN_ZAXIS"].argsJSONTypes        = "S";
+
 	optMap["BEAM_V"].args = "(0, 0, 0)cm";
 	optMap["BEAM_V"].help = "Primary Particle Vertex. Example: -BEAM_V=\"(0, 0, -20)cm\". ";
 	optMap["BEAM_V"].name = "Primary Particle Vertex";
 	optMap["BEAM_V"].type = 1;
 	optMap["BEAM_V"].ctgr = "generator";
-	
+	optMap["BEAM_V"].argsJSONDescription  = "vx vy vz unit";
+	optMap["BEAM_V"].argsJSONTypes        = "F F F S";
+
 	optMap["SPREAD_V"].args = "(0, 0)cm";
 	optMap["SPREAD_V"].help = "Spread Primary Particle Radius, Z position. Example: -SPREAD_V=\"(0.1, 10)cm\". ";
 	optMap["SPREAD_V"].name = "Primary Particle Vertex Spread";
 	optMap["SPREAD_V"].type = 1;
 	optMap["SPREAD_V"].ctgr = "generator";
-	
+	optMap["SPREAD_V"].argsJSONDescription  = "dr dz unit";
+	optMap["SPREAD_V"].argsJSONTypes  = "F F S";
+
 	optMap["POLAR"].args  = "100, 0*deg, 0*deg";
 	optMap["POLAR"].help  = "Primary Particle polarization percentage and angles  (in respect of z-axis). \n";
 	optMap["POLAR"].help += "      Example: -POLAR=\"90, 90*deg, 270*deg\" sets 90% polarization 90 degrees in theta, 270 degrees in phi. \n";
@@ -58,18 +80,24 @@ void goptions::setGoptions()
 	optMap["POLAR"].name  = "Primary Particle polarization in %, Theta, Phi";
 	optMap["POLAR"].type  = 1;
 	optMap["POLAR"].ctgr  = "generator";
-	
+	optMap["POLAR"].argsJSONDescription  = "percentage theta phi";
+	optMap["POLAR"].argsJSONTypes  = "F F F";
+
 	optMap["N"].arg  = 0;
 	optMap["N"].help = "Number of events to be simulated.";
 	optMap["N"].name = "Number of events to be simulated";
 	optMap["N"].type = 0;
 	optMap["N"].ctgr = "generator";
-	
+	optMap["N"].argsJSONDescription  = "nevents";
+	optMap["N"].argsJSONTypes  = "F";
+
 	optMap["EVTN"].arg  = 1;
 	optMap["EVTN"].help = "Starting Event Number";
 	optMap["EVTN"].name = "Starting Event Number";
 	optMap["EVTN"].type = 0;
 	optMap["EVTN"].ctgr = "generator";
+	optMap["EVTN"].argsJSONDescription  = "startEventNumber";
+	optMap["EVTN"].argsJSONTypes  = "F";
 
 	optMap["ION_P"].args  = "no";
 	optMap["ION_P"].help  = "Primary particle is an ion. Sets Z, A and Charge of the primary particle. Setting the charge is optional. \n";
@@ -79,8 +107,9 @@ void goptions::setGoptions()
 	optMap["ION_P"].name  = "Primary particle is an ion. Sets A, Z and Charge of the primary particle. ";
 	optMap["ION_P"].type  = 1;
 	optMap["ION_P"].ctgr  = "generator";
+	optMap["ION_P"].argsJSONDescription  = "isPrimaryAPion";
+	optMap["ION_P"].argsJSONTypes  = "S";
 
-	
 	optMap["INPUT_GEN_FILE"].args = "gemc_internal";
 	optMap["INPUT_GEN_FILE"].help = "Generator Input. Current availables file formats:\n";
 	optMap["INPUT_GEN_FILE"].help += "      LUND. \n";
@@ -88,33 +117,72 @@ void goptions::setGoptions()
 	optMap["INPUT_GEN_FILE"].name = "Generator Input File";
 	optMap["INPUT_GEN_FILE"].type = 1;
 	optMap["INPUT_GEN_FILE"].ctgr = "generator";
-	
+	optMap["INPUT_GEN_FILE"].argsJSONDescription  = "type, filename";
+	optMap["INPUT_GEN_FILE"].argsJSONTypes  = "S S";
+
 	optMap["MERGE_LUND_BG"].args = "no";
 	optMap["MERGE_LUND_BG"].help = "LUND Input file to merge background events\n";
 	optMap["MERGE_LUND_BG"].help += "      example: -MERGE_LUND_BG=\"background.dat\" \n";
 	optMap["MERGE_LUND_BG"].name = "LUND Input file to merge background events";
 	optMap["MERGE_LUND_BG"].type = 1;
 	optMap["MERGE_LUND_BG"].ctgr = "generator";
-	
+	optMap["MERGE_LUND_BG"].argsJSONDescription  = "bgLundfilename";
+	optMap["MERGE_LUND_BG"].argsJSONTypes  = "S";
+
 	optMap["MERGE_BGHITS"].args = "no";
 	optMap["MERGE_BGHITS"].help = "ASCII file to merge background hits\n";
 	optMap["MERGE_BGHITS"].help += "      example: -MERGE_BGHITS=\"background.dat\" \n";
 	optMap["MERGE_BGHITS"].name = "ASCII file to merge background hits";
 	optMap["MERGE_BGHITS"].type = 1;
 	optMap["MERGE_BGHITS"].ctgr = "generator";
+	optMap["MERGE_BGHITS"].argsJSONDescription  = "bgfilename";
+	optMap["MERGE_BGHITS"].argsJSONTypes  = "S";
 
 	optMap["NGENP"].arg  = 10;
 	optMap["NGENP"].help = "Max Number of Generated Particles to save in the Output.";
 	optMap["NGENP"].name = "Max Number of Generated Particles to save in the Output";
 	optMap["NGENP"].type = 0;
 	optMap["NGENP"].ctgr = "generator";
-	
+	optMap["NGENP"].argsJSONDescription  = "maxGenToSave";
+	optMap["NGENP"].argsJSONTypes  = "F";
+
 	optMap["STEER_BEAM"].arg = 0;
 	optMap["STEER_BEAM"].type = 0;
 	optMap["STEER_BEAM"].ctgr = "generator";
 	optMap["STEER_BEAM"].name = "STEER_BEAM";
 	optMap["STEER_BEAM"].help = "Steer the beam, and translate the vertex, of an StdHep file by the amount specified in Beam_P, Beam_V, Spread_V \n";
-	
+	optMap["STEER_BEAM"].argsJSONDescription  = "steerBeam";
+	optMap["STEER_BEAM"].argsJSONTypes  = "F";
+
+	optMap["SKIPNGEN"].arg  = 0;
+	optMap["SKIPNGEN"].help = "Skip N events";
+	optMap["SKIPNGEN"].name = "Skip N events";
+	optMap["SKIPNGEN"].type = 0;
+	optMap["SKIPNGEN"].ctgr = "generator";
+	optMap["SKIPNGEN"].argsJSONDescription  = "nEventsToSkip";
+	optMap["SKIPNGEN"].argsJSONTypes  = "F";
+
+	optMap["PROPAGATE_DVERTEXTIME"].arg  = 0;
+	optMap["PROPAGATE_DVERTEXTIME"].help = "Calculate propogation time of detached vertex events and fire them at this later time. \n";
+	optMap["PROPAGATE_DVERTEXTIME"].help += "         0: Off (default)\n";
+	optMap["PROPAGATE_DVERTEXTIME"].help += "         1: On\n";
+	optMap["PROPAGATE_DVERTEXTIME"].name = "Calculate Propogation Time";
+	optMap["PROPAGATE_DVERTEXTIME"].type = 0;
+	optMap["PROPAGATE_DVERTEXTIME"].ctgr = "generator";
+	optMap["PROPAGATE_DVERTEXTIME"].argsJSONDescription  = "propagateTimeFromDetachedVertex";
+	optMap["PROPAGATE_DVERTEXTIME"].argsJSONTypes  = "F";
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	// Cosmic Ray
+	// ----------
+
 	optMap["COSMICRAYS"].args = "no";
 	optMap["COSMICRAYS"].help = "Cosmic Generator. The model has a (cos(theta), p) probability function:\n\n";
 	optMap["COSMICRAYS"].help += "              a^(b*cos(theta))/(c*p^2). \n\n";
@@ -136,28 +204,18 @@ void goptions::setGoptions()
 	optMap["COSMICAREA"].type = 1;
 	optMap["COSMICAREA"].ctgr = "generator";
 	
-	optMap["FORCE_MUON_RADIATIVE_DECAY"].arg = 0;
-	optMap["FORCE_MUON_RADIATIVE_DECAY"].help = "Force muon radiative decay";
-	optMap["FORCE_MUON_RADIATIVE_DECAY"].name = "Muon rad decay BR 100%";
-	optMap["FORCE_MUON_RADIATIVE_DECAY"].type = 0;
-	optMap["FORCE_MUON_RADIATIVE_DECAY"].ctgr = "generator";
 
-	optMap["SKIPNGEN"].arg  = 0;
-	optMap["SKIPNGEN"].help = "Skip N events";
-	optMap["SKIPNGEN"].name = "Skip N events";
-	optMap["SKIPNGEN"].type = 0;
-	optMap["SKIPNGEN"].ctgr = "generator";
 
-	// disabled by default
-	optMap["PROPAGATE_DVERTEXTIME"].arg  = 0;
-	optMap["PROPAGATE_DVERTEXTIME"].help = "Calculate propogation time of detached vertex events and fire them at this later time. \n";
-	optMap["PROPAGATE_DVERTEXTIME"].help += "         0: Off (default)\n";
-	optMap["PROPAGATE_DVERTEXTIME"].help += "         1: On\n";
-	optMap["PROPAGATE_DVERTEXTIME"].name = "Calculate Propogation Time";
-	optMap["PROPAGATE_DVERTEXTIME"].type = 0;
-	optMap["PROPAGATE_DVERTEXTIME"].ctgr = "generator";
+
+
+
+
+
+
 
 	// Luminosity Beam
+	// ---------------
+
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
 	optMap["LUMI_P"].help  = "Luminosity Particle, momentum, angles (in respect of z-axis). \n";
 	optMap["LUMI_P"].help += "            Example: -LUMI_P=\"proton, 1*GeV, 25*deg, 2*deg\" sets 1 GeV protons, 25 degrees in theta, 2 degrees in phi. \n";
@@ -229,8 +287,13 @@ void goptions::setGoptions()
 	optMap["LUMI2_EVENT"].ctgr = "luminosity";
 	
 
+
+
+
+
 	
 	// MySQL Database
+	// --------------
 
 	optMap["DBHOST"].args = "no";
 	optMap["DBHOST"].help = "Selects mysql server host name.";
@@ -262,8 +325,14 @@ void goptions::setGoptions()
 	optMap["DBPORT"].type = 0;
 	optMap["DBPORT"].ctgr = "mysql";
 
-	
+
+
+
+
+
+
 	// Verbosity
+	// ---------
 
 	optMap["G4P_VERBOSITY"].arg  = 1;
 	optMap["G4P_VERBOSITY"].help = "Controls Physical Volumes Construction Log Output.";
@@ -354,9 +423,12 @@ void goptions::setGoptions()
 	
 	
 
-	
+
+
+
 	
 	// Run Control
+	// -----------
 
 	optMap["EXEC_MACRO"].args = "no";
 	optMap["EXEC_MACRO"].help = "Executes commands in macro file.";
@@ -533,8 +605,15 @@ void goptions::setGoptions()
 	optMap["RFSTART"].help += "      \"eventVertex, 0, 0, 0\" (default): the RF time is the event start time + the light time-distance of the first particle from the point (0,0,0)\n";
 	optMap["RFSTART"].help += "      \"eventTime\".....................: the RF time is identical to the event start time\n";
 	optMap["RFSTART"].ctgr = "control";
-	
+
+
+
+
+
+
 	// Output
+	// ------
+
 	optMap["OUTPUT"].args = "no, output";
 	optMap["OUTPUT"].help = "Type of output, output filename. Supported output: evio, txt. Example: -OUTPUT=\"evio, out.ev\"";
 	optMap["OUTPUT"].name = "Type of output, output filename. ";
@@ -624,7 +703,13 @@ void goptions::setGoptions()
 	optMap["RERUN_SELECTED"].ctgr  = "control";
 	
 
+
+
+
+
+
 	// Physics
+	// -------
 	optMap["PHYSICS"].args = "STD + FTFP_BERT";
 	optMap["PHYSICS"].help =  "  Physics List. The list is modular. \n\n";
 	optMap["PHYSICS"].help +=  "     For example, 'STD' would only activate the standard electromagnetic processes, while\n";
@@ -666,6 +751,11 @@ void goptions::setGoptions()
 	optMap["SYNRAD"].type = 0;
 	optMap["SYNRAD"].ctgr = "physics";
 
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].arg = 0;
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].help = "Force muon radiative decay";
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].name = "Muon rad decay BR 100%";
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].type = 0;
+	optMap["FORCE_MUON_RADIATIVE_DECAY"].ctgr = "physics";
 
 
 
@@ -750,7 +840,7 @@ void goptions::setGoptions()
 	optMap["SCALE_FIELD"].type  = 1;
 	optMap["SCALE_FIELD"].ctgr  = "fields";
 	optMap["SCALE_FIELD"].repe  = 1;
-	optMap["SCALE_FIELD"].argsJSONDescription = "fieldname, scale";
+	optMap["SCALE_FIELD"].argsJSONDescription = "name, scale";
 	optMap["SCALE_FIELD"].argsJSONTypes  = "S, F";
 
 	optMap["DISPLACE_FIELDMAP"].args  = "no";
@@ -779,7 +869,7 @@ void goptions::setGoptions()
 	optMap["ACTIVEFIELDS"].type  = 1;
 	optMap["ACTIVEFIELDS"].ctgr  = "fields";
 	optMap["ACTIVEFIELDS"].repe  = 0;
-	optMap["ACTIVEFIELDS"].argsJSONDescription  = "ActiveFields";
+	optMap["ACTIVEFIELDS"].argsJSONDescription  = "ACTIVEFIELDS";
 	optMap["ACTIVEFIELDS"].argsJSONTypes        = "VS";
 
 	optMap["FIELD_PROPERTIES"].args  = "no";

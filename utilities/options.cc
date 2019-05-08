@@ -516,12 +516,16 @@ string goptions::jSonOptions()
 						}
 					}
 				} else if(jsonTypes.back() == "VS") {
-					joption[jsonDescritpion.back()] = optionValues;
+					// taking care of redundancy
+				if (jsonDescritpion.back() == ov.keyName) {
+						joption = optionValues;
+					} else {
+						joption[jsonDescritpion.back()] = optionValues;
+					}
 				}
 
 			} else {
 				// double or types are single numbers
-
 			}
 			if(joption.size()) {
 				j[c][ov.keyName].push_back(joption);

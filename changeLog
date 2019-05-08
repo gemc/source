@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+5/8/19
+
+ - added JSON ouput for all generator options
+
 5/7/19
 
  - first implementation of JSON output for the options
