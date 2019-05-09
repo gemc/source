@@ -197,24 +197,34 @@ void goptions::setGoptions()
 	optMap["COSMICRAYS"].name = "Cosmic Generator";
 	optMap["COSMICRAYS"].type = 1;
 	optMap["COSMICRAYS"].ctgr = "generator";
+	optMap["COSMICRAYS"].argsJSONDescription  = "parameterization, minP, maxP";
+	optMap["COSMICRAYS"].argsJSONTypes  = "S F F";
 
 	optMap["COSMICAREA"].args = "0*cm, 0*cm, 0*cm, 50*cm";
 	optMap["COSMICAREA"].help = "Target (x,y,z) location and radius of area of interest";
 	optMap["COSMICAREA"].name = "Target (x,y,z) location and radius of area of interest";
 	optMap["COSMICAREA"].type = 1;
 	optMap["COSMICAREA"].ctgr = "generator";
-	
-
-
-
-
-
-
-
-
-
+	optMap["COSMICAREA"].argsJSONDescription  = "x, y, z, radius";
+	optMap["COSMICAREA"].argsJSONTypes  = "F F F F";
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	// Luminosity Beam
 	// ---------------
+
+	optMap["LUMI_EVENT"].args = "0, 0*ns, 2*ns";
+	optMap["LUMI_EVENT"].help = "Luminosity Particle Parameters: number of Particles/Event, Time Window, Time Between Bunches\n";
+	optMap["LUMI_EVENT"].help += "            Example: -LUMI_EVENT=\"10000, 120*ns, 2*ns\" simulate 10K particles per event distributed over 120 ns, at 2ns intervals. \n";
+	optMap["LUMI_EVENT"].name = "Luminosity Particle Parameters";
+	optMap["LUMI_EVENT"].type = 1;
+	optMap["LUMI_EVENT"].ctgr = "luminosity";
 
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
 	optMap["LUMI_P"].help  = "Luminosity Particle, momentum, angles (in respect of z-axis). \n";
@@ -242,15 +252,8 @@ void goptions::setGoptions()
 	optMap["LUMI_SPREAD_V"].help = "Spread Luminosity Particle Radius, Z position. Example: -SPREAD_V=\"(0.1, 10)cm\". ";
 	optMap["LUMI_SPREAD_V"].name = "Luminosity Particle Vertex Spread";
 	optMap["LUMI_SPREAD_V"].type = 1;
-	optMap["LUMI_SPREAD_V"].ctgr = "luminosity";
-	
-	optMap["LUMI_EVENT"].args = "0, 0*ns, 2*ns";
-	optMap["LUMI_EVENT"].help = "Luminosity Particle Parameters: number of Particles/Event, Time Window, Time Between Bunches\n";
-	optMap["LUMI_EVENT"].help += "            Example: -LUMI_EVENT=\"10000, 120*ns, 2*ns\" simulate 10K particles per event distributed over 120 ns, at 2ns intervals. \n";
-	optMap["LUMI_EVENT"].name = "Luminosity Particle Parameters";
-	optMap["LUMI_EVENT"].type = 1;
-	optMap["LUMI_EVENT"].ctgr = "luminosity";
-	
+	optMap["LUMI_SPREAD_V"].ctgr = "luminosity";	
+
 	optMap["LUMI2_P"].args  = "proton, 50*GeV, 175*deg, 180*deg";
 	optMap["LUMI2_P"].help  = "Luminosity Particle 2, momentum, angles (in respect of z-axis). \n";
 	optMap["LUMI2_P"].help += "            Example: -LUMI2_P=\"proton, 1*GeV, 25*deg, 2*deg\" sets 1 GeV protons, 25 degrees in theta, 2 degrees in phi. \n";
