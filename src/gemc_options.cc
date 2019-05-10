@@ -180,7 +180,7 @@ void goptions::setGoptions()
 	//
 	//
 	//
-	// Cosmic Ray
+	// ` Ray
 	// ----------
 
 	optMap["COSMICRAYS"].args = "no";
@@ -225,6 +225,8 @@ void goptions::setGoptions()
 	optMap["LUMI_EVENT"].name = "Luminosity Particle Parameters";
 	optMap["LUMI_EVENT"].type = 1;
 	optMap["LUMI_EVENT"].ctgr = "luminosity";
+	optMap["LUMI_EVENT"].argsJSONDescription  = "nparticles, timeWindow, bunchTime";
+	optMap["LUMI_EVENT"].argsJSONTypes  = "S F F";
 
 	optMap["LUMI_P"].args  = "e-, 11*GeV, 0*deg, 0*deg";
 	optMap["LUMI_P"].help  = "Luminosity Particle, momentum, angles (in respect of z-axis). \n";
@@ -233,7 +235,9 @@ void goptions::setGoptions()
 	optMap["LUMI_P"].name  = "Luminosity Particle, Energy, Theta, Phi";
 	optMap["LUMI_P"].type  = 1;
 	optMap["LUMI_P"].ctgr = "luminosity";
-	
+	optMap["LUMI_P"].argsJSONDescription  = "particleID, momentum, theta, phi";
+	optMap["LUMI_P"].argsJSONTypes        = "S, F, F, F";
+
 	optMap["LUMI_SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["LUMI_SPREAD_P"].help  = "Spread Luminosity Particle energy and angles (in respect of z-axis). \n";
 	optMap["LUMI_SPREAD_P"].help += "      Example: -LUMI_SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
@@ -241,18 +245,33 @@ void goptions::setGoptions()
 	optMap["LUMI_SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["LUMI_SPREAD_P"].type  = 1;
 	optMap["LUMI_SPREAD_P"].ctgr  = "generator";
-	
+	optMap["LUMI_SPREAD_P"].argsJSONDescription  = "denergy, dtheta, dphi";
+	optMap["LUMI_SPREAD_P"].argsJSONTypes        = "F, F, F";
+
 	optMap["LUMI_V"].args = "(0, 0, -20)cm";
 	optMap["LUMI_V"].help = "Luminosity Particle Vertex. Example: -LUMI_V=\"(0, 0, -20)cm\". ";
 	optMap["LUMI_V"].name = "Luminosity Particle Vertex";
 	optMap["LUMI_V"].type = 1;
 	optMap["LUMI_V"].ctgr = "luminosity";
-	
+	optMap["LUMI_V"].argsJSONDescription  = "vx vy vz unit";
+	optMap["LUMI_V"].argsJSONTypes        = "F F F S";
+
 	optMap["LUMI_SPREAD_V"].args = "(0, 0)cm";
 	optMap["LUMI_SPREAD_V"].help = "Spread Luminosity Particle Radius, Z position. Example: -SPREAD_V=\"(0.1, 10)cm\". ";
 	optMap["LUMI_SPREAD_V"].name = "Luminosity Particle Vertex Spread";
 	optMap["LUMI_SPREAD_V"].type = 1;
-	optMap["LUMI_SPREAD_V"].ctgr = "luminosity";	
+	optMap["LUMI_SPREAD_V"].ctgr = "luminosity";
+	optMap["LUMI_SPREAD_V"].argsJSONDescription  = "dr dz unit";
+	optMap["LUMI_SPREAD_V"].argsJSONTypes  = "F F S";
+
+	optMap["LUMI2_EVENT"].args = "0, 2*ns";
+	optMap["LUMI2_EVENT"].help = "Luminosity Particle 2 Parameters: number of Particles/Event, Time Between Bunches. The Time Window is specified with the LUMI_EVENT flag\n";
+	optMap["LUMI2_EVENT"].help += "            Example: -LUMI2_EVENT=\"10000, 2*ns\" simulate 10K particles per event at 2ns intervals. \n";
+	optMap["LUMI2_EVENT"].name = "Luminosity Particle 2 Parameters";
+	optMap["LUMI2_EVENT"].type = 1;
+	optMap["LUMI2_EVENT"].ctgr = "luminosity";
+	optMap["LUMI2_EVENT"].argsJSONDescription  = "nparticles, timeWindow, bunchTime";
+	optMap["LUMI2_EVENT"].argsJSONTypes  = "S F F";
 
 	optMap["LUMI2_P"].args  = "proton, 50*GeV, 175*deg, 180*deg";
 	optMap["LUMI2_P"].help  = "Luminosity Particle 2, momentum, angles (in respect of z-axis). \n";
@@ -261,7 +280,9 @@ void goptions::setGoptions()
 	optMap["LUMI2_P"].name  = "Luminosity Particle 2, Energy, Theta, Phi";
 	optMap["LUMI2_P"].type  = 1;
 	optMap["LUMI2_P"].ctgr = "luminosity";
-	
+	optMap["LUMI2_P"].argsJSONDescription  = "particleID, momentum, theta, phi";
+	optMap["LUMI2_P"].argsJSONTypes        = "S, F, F, F";
+
 	optMap["LUMI2_SPREAD_P"].args  = "0*GeV, 0*deg, 0*deg";
 	optMap["LUMI2_SPREAD_P"].help  = "Spread Luminosity Particle 2 energy and angles (in respect of z-axis). \n";
 	optMap["LUMI2_SPREAD_P"].help += "      Example: -LUMI2_SPREAD_P=\"0*GeV, 10*deg, 20*deg\" spreads 10 degrees in theta, 20 degrees in phi. \n";
@@ -269,32 +290,33 @@ void goptions::setGoptions()
 	optMap["LUMI2_SPREAD_P"].name  = "delta_Energy, delta_Theta, delta_phi";
 	optMap["LUMI2_SPREAD_P"].type  = 1;
 	optMap["LUMI2_SPREAD_P"].ctgr  = "generator";
-	
+	optMap["LUMI2_SPREAD_P"].argsJSONDescription  = "denergy, dtheta, dphi";
+	optMap["LUMI2_SPREAD_P"].argsJSONTypes        = "F, F, F";
+
 	optMap["LUMI2_V"].args = "(4, 0, 50)cm";
 	optMap["LUMI2_V"].help = "Luminosity Particle 2 Vertex. Example: -LUMI2_V=\"(0, 0, -20)cm\". ";
 	optMap["LUMI2_V"].name = "Luminosity Particle 2 Vertex";
 	optMap["LUMI2_V"].type = 1;
 	optMap["LUMI2_V"].ctgr = "luminosity";
-	
+	optMap["LUMI2_V"].argsJSONDescription  = "vx vy vz unit";
+	optMap["LUMI2_V"].argsJSONTypes        = "F F F S";
+
 	optMap["LUMI2_SPREAD_V"].args = "(0, 0)cm";
 	optMap["LUMI2_SPREAD_V"].help = "Spread Luminosity Particle 2 Radius, Z position. Example: -SPREAD_V=\"(0.1, 10)cm\". ";
 	optMap["LUMI2_SPREAD_V"].name = "Luminosity Particle Vertex 2 Spread";
 	optMap["LUMI2_SPREAD_V"].type = 1;
 	optMap["LUMI2_SPREAD_V"].ctgr = "luminosity";
-	
-	optMap["LUMI2_EVENT"].args = "0, 2*ns";
-	optMap["LUMI2_EVENT"].help = "Luminosity Particle 2 Parameters: number of Particles/Event, Time Between Bunches. The Time Window is specified with the LUMI_EVENT flag\n";
-	optMap["LUMI2_EVENT"].help += "            Example: -LUMI2_EVENT=\"10000, 2*ns\" simulate 10K particles per event at 2ns intervals. \n";
-	optMap["LUMI2_EVENT"].name = "Luminosity Particle 2 Parameters";
-	optMap["LUMI2_EVENT"].type = 1;
-	optMap["LUMI2_EVENT"].ctgr = "luminosity";
-	
-
-
-
-
-
-	
+	optMap["LUMI2_SPREAD_V"].argsJSONDescription  = "denergy, dtheta, dphi";
+	optMap["LUMI2_SPREAD_V"].argsJSONTypes        = "F, F, F";
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	// MySQL Database
 	// --------------
 
