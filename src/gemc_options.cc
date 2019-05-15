@@ -325,37 +325,49 @@ void goptions::setGoptions()
 	optMap["DBHOST"].name = "mysql server host name";
 	optMap["DBHOST"].type = 1;
 	optMap["DBHOST"].ctgr = "mysql";
-	
+	optMap["DBHOST"].argsJSONDescription  = "mysqlServer";
+	optMap["DBHOST"].argsJSONTypes        = "S";
+
 	optMap["DATABASE"].args = "no";
 	optMap["DATABASE"].help = "Selects mysql Database.";
 	optMap["DATABASE"].name = "mysql Database";
 	optMap["DATABASE"].type = 1;
 	optMap["DATABASE"].ctgr = "mysql";
-	
+	optMap["DATABASE"].argsJSONDescription  = "mysqlDatabase";
+	optMap["DATABASE"].argsJSONTypes        = "S";
+
 	optMap["DBUSER"].args = "gemc";
 	optMap["DBUSER"].help = "Select mysql user name";
 	optMap["DBUSER"].name = "Select mysql user name";
 	optMap["DBUSER"].type = 1;
 	optMap["DBUSER"].ctgr = "mysql";
-	
+	optMap["DBUSER"].argsJSONDescription  = "mysqlUserName";
+	optMap["DBUSER"].argsJSONTypes        = "S";
+
 	optMap["DBPSWD"].args = "no";
 	optMap["DBPSWD"].help = "mysql password";
 	optMap["DBPSWD"].name = "Select mysql password";
 	optMap["DBPSWD"].type = 1;
 	optMap["DBPSWD"].ctgr = "mysql";
-	
+	optMap["DBPSWD"].argsJSONDescription  = "mysqlUserPwd";
+	optMap["DBPSWD"].argsJSONTypes        = "S";
+
 	optMap["DBPORT"].arg = 0;
 	optMap["DBPORT"].help = "Select mysql server port.";
 	optMap["DBPORT"].name = "Select mysql server port";
 	optMap["DBPORT"].type = 0;
 	optMap["DBPORT"].ctgr = "mysql";
-
-
-
-
-
-
-
+	optMap["DBPORT"].argsJSONDescription  = "mysqlPort";
+	optMap["DBPORT"].argsJSONTypes        = "F";
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	// Verbosity
 	// ---------
 
@@ -364,31 +376,43 @@ void goptions::setGoptions()
 	optMap["G4P_VERBOSITY"].name = "Logical Volume Verbosity";
 	optMap["G4P_VERBOSITY"].type = 0;
 	optMap["G4P_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["G4P_VERBOSITY"].type = 0;
+	optMap["G4P_VERBOSITY"].ctgr = "verbosity";
+	optMap["G4P_VERBOSITY"].argsJSONDescription  = "G4P_VERBOSITY";
+	optMap["G4P_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["GEO_VERBOSITY"].arg  = 1;
 	optMap["GEO_VERBOSITY"].help = "Controls Geometry Construction Log Output.";
 	optMap["GEO_VERBOSITY"].name = "Geometry Verbosity";
 	optMap["GEO_VERBOSITY"].type = 0;
 	optMap["GEO_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["GEO_VERBOSITY"].argsJSONDescription  = "GEO_VERBOSITY";
+	optMap["GEO_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["GUI_VERBOSITY"].arg  = 1;
 	optMap["GUI_VERBOSITY"].help = "Controls GUI Construction Log Output.";
 	optMap["GUI_VERBOSITY"].name = "GUI Verbosity";
 	optMap["GUI_VERBOSITY"].type = 0;
 	optMap["GUI_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["GUI_VERBOSITY"].argsJSONDescription  = "GUI_VERBOSITY";
+	optMap["GUI_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["HIT_VERBOSITY"].arg  = 1;
 	optMap["HIT_VERBOSITY"].help = "Controls Hits Log Output. ";
 	optMap["HIT_VERBOSITY"].name = "Hit Verbosity";
 	optMap["HIT_VERBOSITY"].type = 0;
 	optMap["HIT_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["HIT_VERBOSITY"].argsJSONDescription  = "HIT_VERBOSITY";
+	optMap["HIT_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["CATCH"].args = "Maurizio";
 	optMap["CATCH"].help = "Catch volumes matching the given string.";
 	optMap["CATCH"].name = "Volume catcher";
 	optMap["CATCH"].type = 1;
 	optMap["CATCH"].ctgr = "verbosity";
-	
+	optMap["CATCH"].argsJSONDescription  = "CATCH";
+	optMap["CATCH"].argsJSONTypes        = "S";
+
 	optMap["FIELD_VERBOSITY"].arg   = 0;
 	optMap["FIELD_VERBOSITY"].help  = "Controls Electro-Magnetic Fields Log Output:\n";
 	optMap["FIELD_VERBOSITY"].help += "  0: no log";
@@ -397,61 +421,81 @@ void goptions::setGoptions()
 	optMap["FIELD_VERBOSITY"].name  = "Electro-Magnetic Fields Verbosity";
 	optMap["FIELD_VERBOSITY"].type  = 0;
 	optMap["FIELD_VERBOSITY"].ctgr  = "verbosity";
-	
+	optMap["FIELD_VERBOSITY"].argsJSONDescription  = "FIELD_VERBOSITY";
+	optMap["FIELD_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["PRINT_EVENT"].arg  = 1000;
 	optMap["PRINT_EVENT"].help = "-PRINT_EVENT=N: Print Event Number every N events.";
 	optMap["PRINT_EVENT"].name = "Print Event Modulus";
 	optMap["PRINT_EVENT"].type = 0;
 	optMap["PRINT_EVENT"].ctgr = "verbosity";
-	
+	optMap["PRINT_EVENT"].argsJSONDescription  = "PRINT_EVENT";
+	optMap["PRINT_EVENT"].argsJSONTypes        = "F";
+
 	optMap["BANK_VERBOSITY"].arg  = 1;
 	optMap["BANK_VERBOSITY"].help = "Controls Bank Log Output.";
 	optMap["BANK_VERBOSITY"].name = "Bank Output Verbosity";
 	optMap["BANK_VERBOSITY"].type = 0;
 	optMap["BANK_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["BANK_VERBOSITY"].argsJSONDescription  = "BANK_VERBOSITY";
+	optMap["BANK_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["PHY_VERBOSITY"].arg  = 1;
 	optMap["PHY_VERBOSITY"].help = "Controls Physics List Log Output.";
 	optMap["PHY_VERBOSITY"].name = "Physics List Verbosity";
 	optMap["PHY_VERBOSITY"].type = 0;
 	optMap["PHY_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["PHY_VERBOSITY"].argsJSONDescription  = "PHY_VERBOSITY";
+	optMap["PHY_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["GEN_VERBOSITY"].arg  = 0;
 	optMap["GEN_VERBOSITY"].help = "Controls Geant4 Generator Verbosity.";
 	optMap["GEN_VERBOSITY"].name = "Geant4 Generator Verbosity";
 	optMap["GEN_VERBOSITY"].type = 0;
 	optMap["GEN_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["GEN_VERBOSITY"].argsJSONDescription  = "GEN_VERBOSITY";
+	optMap["GEN_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["G4TRACK_VERBOSITY"].arg  = 0;
 	optMap["G4TRACK_VERBOSITY"].help = "Controls Geant4 Track Verbosity.";
 	optMap["G4TRACK_VERBOSITY"].name = "Geant4 Track Verbosity";
 	optMap["G4TRACK_VERBOSITY"].type = 0;
 	optMap["G4TRACK_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["G4TRACK_VERBOSITY"].argsJSONDescription  = "G4TRACK_VERBOSITY";
+	optMap["G4TRACK_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["MATERIAL_VERBOSITY"].arg  = 0;
 	optMap["MATERIAL_VERBOSITY"].help = "Controls Geant4 Material Verbosity.";
 	optMap["MATERIAL_VERBOSITY"].name = "Geant4 Material Verbosity";
 	optMap["MATERIAL_VERBOSITY"].type = 0;
 	optMap["MATERIAL_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["MATERIAL_VERBOSITY"].argsJSONDescription  = "MATERIAL_VERBOSITY";
+	optMap["MATERIAL_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["PARAMETER_VERBOSITY"].arg  = 0;
 	optMap["PARAMETER_VERBOSITY"].help = "Controls Parameters Verbosity.";
 	optMap["PARAMETER_VERBOSITY"].name = "Parameters Verbosity";
 	optMap["PARAMETER_VERBOSITY"].type = 0;
 	optMap["PARAMETER_VERBOSITY"].ctgr = "verbosity";
-	
+	optMap["PARAMETER_VERBOSITY"].argsJSONDescription  = "PARAMETER_VERBOSITY";
+	optMap["PARAMETER_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["MIRROR_VERBOSITY"].arg  = 0;
 	optMap["MIRROR_VERBOSITY"].help = "Controls Mirrors Verbosity.";
 	optMap["MIRROR_VERBOSITY"].name = "Mirrors Verbosity";
 	optMap["MIRROR_VERBOSITY"].type = 0;
 	optMap["MIRROR_VERBOSITY"].ctgr = "verbosity";
-	
-	
-
-
-
-
-	
+	optMap["MIRROR_VERBOSITY"].argsJSONDescription  = "MIRROR_VERBOSITY";
+	optMap["MIRROR_VERBOSITY"].argsJSONTypes        = "F";
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	// Run Control
 	// -----------
 
