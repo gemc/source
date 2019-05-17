@@ -26,7 +26,7 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	catch_v = gemcOpt.optMap["CATCH"].args;
 	verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
-	RECORD_MIRROR = gemcOpt.optMap["RECORD_MIRRORS"].arg;
+	RECORD_OPTICALPHOTONS = gemcOpt.optMap["RECORD_OPTICALPHOTONS"].arg;
 	ELECTRONICNOISE  = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
@@ -72,7 +72,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		return false;
 
 	// do not record Mirrors unless specified
-	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_MIRROR == 0) return false;
+	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) return false;
 	
 	G4Track *trk = aStep->GetTrack();
 	// this is expensive should we really check?

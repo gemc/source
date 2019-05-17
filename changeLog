@@ -1,6 +1,10 @@
 Changelog for GEMC
 ==================
 
+5/17/19
+
+ - option RECORD_MIRRORS renamed RECORD_OPTICALPHOTONS
+
 5/8/19
 
  - added JSON ouput for all generator options
