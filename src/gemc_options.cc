@@ -909,7 +909,7 @@ void goptions::setGoptions()
 	optMap["SCALE_FIELD"].type  = 1;
 	optMap["SCALE_FIELD"].ctgr  = "fields";
 	optMap["SCALE_FIELD"].repe  = 1;
-	optMap["SCALE_FIELD"].argsJSONDescription = "name, scale";
+	optMap["SCALE_FIELD"].argsJSONDescription = "filename, scale";
 	optMap["SCALE_FIELD"].argsJSONTypes  = "S, F";
 
 	optMap["DISPLACE_FIELDMAP"].args  = "no";
@@ -966,7 +966,14 @@ void goptions::setGoptions()
 	optMap["FIELD_PROPERTIES"].ctgr  = "fields";
 	optMap["FIELD_PROPERTIES"].repe  = 1;
 
-
+	optMap["FIELDS_FILENAMES"].args  = "none";
+	optMap["FIELDS_FILENAMES"].help  = "List of activated fields\n";
+	optMap["FIELDS_FILENAMES"].name  = "List of activated fields";
+	optMap["FIELDS_FILENAMES"].type  = 1;
+	optMap["FIELDS_FILENAMES"].ctgr  = "fields";
+	optMap["FIELDS_FILENAMES"].repe  = 0;
+	optMap["FIELDS_FILENAMES"].argsJSONDescription  = "label filename";
+	optMap["FIELDS_FILENAMES"].argsJSONTypes        = "S S";
 
 	// transportation
 	optMap["REMOVESENSITIVITY"].args = "none";
