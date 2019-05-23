@@ -80,6 +80,7 @@ env.Library(source = sensi_sources, target = "lib/gsensitivity")
 env.Append(CPPPATH = 'physics')
 phys_sources = Split("""
 	physics/PhysicsList.cc
+	physics/GammaNuclearPhysics.cc
 	physics/PhysicsListMessenger.cc""")
 env.Library(source = phys_sources, target = "lib/gphysics")
 

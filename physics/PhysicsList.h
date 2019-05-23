@@ -30,6 +30,10 @@ public:
 	void list();
 	
 	vector<string> physIngredients;
+
+	// copy of G4String ss[23] in G4PhysListFactory.cc
+	vector<string> availableHadronicPhysic;
+
 	bool validateIngredients();
 	
 	// SetCuts is required by G4VModularPhysicsList
@@ -53,6 +57,7 @@ private:
 	double verbosity;
 	string ingredientsList;
 	string hadronicPhys;
+	string photoNuclear;
 	string EMPhys;
 	string opticalPhys;
 	string HPPhys;
@@ -60,11 +65,11 @@ private:
 	
 	vector<G4String> g4HadronicList;
 	vector<G4String> g4EMList;
-		
-	G4VPhysicsConstructor*  g4EMPhysics;
-	G4VPhysicsConstructor*  g4ParticleList;
-	vector<G4VPhysicsConstructor*>  g4HadronicPhysics;
-	G4DecayWithSpin*        theDecayProcess;
+
+	// G4VPhysicsConstructors
+	G4VPhysicsConstructor*         g4EMPhysics;
+	G4VPhysicsConstructor*         g4DecayPhys;
+	vector<G4VPhysicsConstructor*> g4HadronicPhysics;
 
 	// build the geant4 physics
 	void cookPhysics();

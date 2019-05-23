@@ -1,6 +1,11 @@
 Changelog for GEMC
 ==================
 
+
+5/23/19
+
+ - added "PhotoNuclear" entry in the physics option list as a check that this part is not included with the normal phys list constructors.
+
 5/17/19
 
  - option RECORD_MIRRORS renamed RECORD_OPTICALPHOTONS
