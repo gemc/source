@@ -34,7 +34,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 	background_gen = gemcOpt->optMap["MERGE_LUND_BG"].args;
 	cosmics        = gemcOpt->optMap["COSMICRAYS"].args;
 	GEN_VERBOSITY  = gemcOpt->optMap["GEN_VERBOSITY"].arg;
-    ntoskip        = gemcOpt->optMap["SKIPNGEN"].arg;
+	ntoskip        = gemcOpt->optMap["SKIPNGEN"].arg;
 	PROPAGATE_DVERTEXTIME = gemcOpt->optMap["PROPAGATE_DVERTEXTIME"].arg;
 
 	particleTable = G4ParticleTable::GetParticleTable();
@@ -56,10 +56,9 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		cosmicRadius = get_number(cvalues[3]);
 		if(cvalues.size() == 5){
 			cosmicGeo = cvalues[4];
-		}else{
+		} else {
 			cosmicGeo = "sph";
 		}
-
 
 		if(cosmics == "no")
 		{
@@ -122,86 +121,84 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		cout << hd_msg << " Luminosity Time Between Bunches: " << TBUNCH2/ns << " nanoseconds." << endl;
 	}
 
-    eventIndex = 1;
+	eventIndex = 1;
 
-  // Set up to read saved RNGs
+	// Set up to read saved RNGs
 
-    string arg = gemcOpt->optMap["RERUN_SELECTED"].args;
-    if (arg == "" || arg == "no")
-      rsp.enabled = false;
-    else
-      {
-	vector<string> values;
-	string units;
-	values       = get_info(gemcOpt->optMap["RERUN_SELECTED"].args, string(",\""));
-	if (values.size() <= 2)
-	  {
-	    rsp.enabled = true;
-	    rsp.run = get_number (values[0]);
-	    if (values.size() == 1)
-	      rsp.dir = "./";
-	    else
-	      {
-		rsp.dir = values[1];
-		if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
+	string arg = gemcOpt->optMap["RERUN_SELECTED"].args;
+	if (arg == "" || arg == "no")
+	rsp.enabled = false;
+	else
+	{
+		vector<string> values;
+		string units;
+		values       = get_info(gemcOpt->optMap["RERUN_SELECTED"].args, string(",\""));
+		if (values.size() <= 2)
+		{
+			rsp.enabled = true;
+			rsp.run = get_number (values[0]);
+			if (values.size() == 1)
+			rsp.dir = "./";
+			else
+			{
+				rsp.dir = values[1];
+				if (rsp.dir[rsp.dir.size()-1] != '/' ) rsp.dir += "/";
 #ifdef WIN32
-		std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
+				std::replace(rsp.dir.begin(), rsp.dir.end(),'/','\\');
 #endif
-	      }
-	    
-	    DIR* dirp = opendir(rsp.dir.c_str());
-	    struct dirent * dp;
-	    while ((dp = readdir(dirp)) != NULL)
-	      {
-		string dname (dp->d_name);
-		size_t rpos = dname.find ("run");
-		size_t epos = dname.find ("evt");
-		size_t rnpos = dname.find (".rndm");
-		if (rpos == string::npos || epos == string::npos
-		    || rnpos != dname.size()-5)
-		  continue;
-		
-		unsigned rstring = get_number (dname.substr (rpos+3, epos-rpos-3));
-		if (rstring == rsp.run)
-		  {
-		    string estring = dname.substr (epos+3, rnpos-epos-3);
-		    rsp.events.push_back (atoi (estring.c_str()));
-		  }
-	      }
-	    closedir(dirp);
-	    std::sort (rsp.events.begin(), rsp.events.end());
-	    rsp.currentevent = -1;
-	  }
-      }
+			}
+
+			DIR* dirp = opendir(rsp.dir.c_str());
+			struct dirent * dp;
+			while ((dp = readdir(dirp)) != NULL)
+			{
+				string dname (dp->d_name);
+				size_t rpos = dname.find ("run");
+				size_t epos = dname.find ("evt");
+				size_t rnpos = dname.find (".rndm");
+				if (rpos == string::npos || epos == string::npos
+					 || rnpos != dname.size()-5)
+				continue;
+
+				unsigned rstring = get_number (dname.substr (rpos+3, epos-rpos-3));
+				if (rstring == rsp.run)
+				{
+					string estring = dname.substr (epos+3, rnpos-epos-3);
+					rsp.events.push_back (atoi (estring.c_str()));
+				}
+			}
+			closedir(dirp);
+			std::sort (rsp.events.begin(), rsp.events.end());
+			rsp.currentevent = -1;
+		}
+	}
 }
 
 
 void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  // Check first if event should be seeded
+	// Check first if event should be seeded
 
-  if (rsp.enabled)
-    {
-      G4RunManager *runManager = G4RunManager::GetRunManager();;
-      ++rsp.currentevent;
-      if (rsp.currentevent < int(rsp.events.size()))
+	if (rsp.enabled)
 	{
-	  std::ostringstream os;
-	  os << "run" << rsp.run << "evt" << rsp.events[rsp.currentevent]
-	     << ".rndm" << '\0';
-	  G4String fileOut = rsp.dir + os.str();
-	  // Use restoreEngineStatus since RestoreRandomNumberStatus is
-	  // too verbose
-	  //	  runManager->RestoreRandomNumberStatus (fileOut);
-	  HepRandom::restoreEngineStatus(fileOut);
+		G4RunManager *runManager = G4RunManager::GetRunManager();;
+		++rsp.currentevent;
+		if (rsp.currentevent < int(rsp.events.size()))
+		{
+			std::ostringstream os;
+			os << "run" << rsp.run << "evt" << rsp.events[rsp.currentevent]
+			<< ".rndm" << '\0';
+			G4String fileOut = rsp.dir + os.str();
+			// Use restoreEngineStatus since RestoreRandomNumberStatus is
+			// too verbose
+			//	  runManager->RestoreRandomNumberStatus (fileOut);
+			HepRandom::restoreEngineStatus(fileOut);
+		} else {
+			runManager->AbortRun();
+			cout << " No more events to rerun." << endl;
+			return;
+		}
 	}
-      else
-	{
-	  runManager->AbortRun();
-	  cout << " No more events to rerun." << endl;
-	  return;
-	}
-    }
 
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal")
@@ -218,7 +215,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// if one uses the /gun/particle /gun/ion command then we
 			// make sure not to overwrite those values
 			if(Particle->GetParticleName() != "GenericIon")
-				particleGun->SetParticleDefinition(Particle);
+			particleGun->SetParticleDefinition(Particle);
 
 			// this has to go in GeneratePrimaries
 			// GetIonTable cannot be called in the constructor of PrimaryGeneratorAction
@@ -375,24 +372,24 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			double cosmicVZ = 100000;
 
 			while( (cosmicVX - cosmicTarget.x() )*(cosmicVX - cosmicTarget.x() ) +
-					 (cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
-					 (cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius )
+					(cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
+					(cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius )
 			{
 
 				// point generated inside spherical or cylindrical volume
 				if(cosmicGeo == "sph" || cosmicGeo == "sphere"){
-			  // point inside spherical volume
-			  cosmicVX = cosmicTarget.x() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
-			  cosmicVY = cosmicTarget.y() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
-			  cosmicVZ = cosmicTarget.z() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
+					// point inside spherical volume
+					cosmicVX = cosmicTarget.x() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
+					cosmicVY = cosmicTarget.y() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
+					cosmicVZ = cosmicTarget.z() - cosmicRadius + 2*cosmicRadius*G4UniformRand();
 				}else{
-			  // point inside a cylinder, height of the cylinder = cosmicRadius/2.
-			  double h = cosmicRadius/2.;
-			  cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
-			  double sig=1.;
-			  if((2.*G4UniformRand()-1)<0) sig =-1.;
-			  cosmicVY = h*(2.*G4UniformRand()-1)*sig;
-			  cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+					// point inside a cylinder, height of the cylinder = cosmicRadius/2.
+					double h = cosmicRadius/2.;
+					cosmicVX = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
+					double sig=1.;
+					if((2.*G4UniformRand()-1)<0) sig =-1.;
+					cosmicVY = h*(2.*G4UniformRand()-1)*sig;
+					cosmicVZ = -cosmicRadius + 2*cosmicRadius*G4UniformRand();
 				}
 			}
 
@@ -409,7 +406,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					thisMom = cminp + (cmaxp-cminp)*G4UniformRand();
 					thisthe = pi*G4UniformRand()/2.0;
 				}
-			}else{
+			} else {
 				// muons
 				// now generating random momentum, cos(theta)
 				// the maximum of the distribution is the lowest momentum and 0 theta
@@ -419,8 +416,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				thisthe = pi*G4UniformRand()/2.0;
 				while(cosmicMuBeam(thisthe, thisMom/GeV) < cosmicProb)
 				{
-			  thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
-			  thisthe = pi*G4UniformRand()/2.0;
+					thisMom = (cminp + (cmaxp-cminp)*G4UniformRand());
+					thisthe = pi*G4UniformRand()/2.0;
 				}
 			}
 
@@ -438,7 +435,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 			if(cosmicNeutrons) {
 				Particle= particleTable->FindParticle("neutron");
-			}else{
+			} else { 
 				// choosing charge of the muons
 				string muonType = "mu+";
 				if(G4UniformRand() <= 0.5)
@@ -492,35 +489,35 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			string theWholeLine;
 
 			if (rsp.enabled && eventIndex < int (rsp.events[rsp.currentevent]))
-			  {
-			    // Skip input file lines to find rerun event
-			    for (; eventIndex < int (rsp.events[rsp.currentevent]); ++eventIndex)
-			      {
-				// reading header
-				getline(gif, theWholeLine);
-				if (gif.eof())
-				  return;
-				vector<string> headerStrings = getStringVectorFromString(theWholeLine);
-				headerUserDefined.clear();
-				for(auto &s : headerStrings) {
-				  headerUserDefined.push_back(get_number(s));
+			{
+				// Skip input file lines to find rerun event
+				for (; eventIndex < int (rsp.events[rsp.currentevent]); ++eventIndex)
+				{
+					// reading header
+					getline(gif, theWholeLine);
+					if (gif.eof())
+					return;
+					vector<string> headerStrings = getStringVectorFromString(theWholeLine);
+					headerUserDefined.clear();
+					for(auto &s : headerStrings) {
+						headerUserDefined.push_back(get_number(s));
+					}
+
+					int nparticles = headerUserDefined[0];
+					for(int p=0; p<nparticles; p++) {
+						string theWholeLine;
+						getline(gif, theWholeLine);
+						if(gif.eof() && p != nparticles -1) {
+							cout << " Input file " << gfilename << " appear to be truncated." << endl;
+							return;
+						}
+					}
 				}
-				
-				int nparticles = headerUserDefined[0];
-				for(int p=0; p<nparticles; p++) {
-				  string theWholeLine;
-				  getline(gif, theWholeLine);
-				  if(gif.eof() && p != nparticles -1) {
-				    cout << " Input file " << gfilename << " appear to be truncated." << endl;
-				    return;
-				  }
-				}
-			      }
-			  }
+			}
 			// reading header
 			getline(gif, theWholeLine);
 			if (gif.eof())
-			  return;
+			return;
 			vector<string> headerStrings = getStringVectorFromString(theWholeLine);
 			headerUserDefined.clear();
 			for(auto &s : headerStrings) {
@@ -530,7 +527,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			int nparticles = headerUserDefined[0];
 			beamPol = headerUserDefined[4];
 			if(beamPol>1)
-				beamPol = 1;
+			beamPol = 1;
 
 			userInfo.clear();
 			for(int p=0; p<nparticles; p++) {
@@ -569,12 +566,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					setParticleFromParsPropagateTime(p, userInfo, anEvent);  }
 			}
 			
-            if(eventIndex <= ntoskip) {
-                if(GEN_VERBOSITY > 3) {
-                    cout << " This event will be skipped." << endl;
-                }
-            }
-	    eventIndex++;
+			if(eventIndex <= ntoskip) {
+				if(GEN_VERBOSITY > 3) {
+					cout << " This event will be skipped." << endl;
+				}
+			}
+			eventIndex++;
 		}
 		else if((gformat == "BEAGLE" || gformat == "beagle") && !gif.eof())
 		{
@@ -779,7 +776,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 		bgif >> nparticles ;
 		for(unsigned i=0; i<9; i++)
-		bgif >> tmp;
+			bgif >> tmp;
 
 		for(int p=0; p<nparticles; p++)
 		{
@@ -824,8 +821,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				<< "  Vertex=" << beam_vrt << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 			}
 			else if(pindex != p+1)
-				if(GEN_VERBOSITY > 3)
-					cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
+			if(GEN_VERBOSITY > 3)
+			cout << hd_msg << " Warning: file particle index " << tmp << " does not match read particle index " << p+1 << endl;
 		}
 	}
 
@@ -858,7 +855,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				L_Mom   = L_mom + (2.0*G4UniformRand()-1.0)*L_dmom;
 				L_Theta = acos(G4UniformRand()*(cos(L_theta/rad-L_dtheta/rad)-cos(L_theta/rad+L_dtheta/rad)) + cos(L_theta/rad+L_dtheta/rad))/rad;
 				if(lumiFlat)
-					L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
+				L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
 
 				L_Phi = L_phi + (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
@@ -891,7 +888,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetNumberOfParticles(PBUNCH);
 
 			if(b == NBUNCHES-1)
-				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
+			particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
 
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
@@ -996,9 +993,9 @@ void MPrimaryGeneratorAction::setBeam()
 				if(pname == "show_all")
 				{
 					for(int i=0; i<particleTable->entries(); i++)
-					cout << hd_msg << " g4 particle: "  << particleTable->GetParticleName(i)
-					<< " pdg encoding: " << particleTable->GetParticle(i)->GetPDGEncoding() << endl;
- 				}
+						cout << hd_msg << " g4 particle: "  << particleTable->GetParticleName(i)
+						<< " pdg encoding: " << particleTable->GetParticle(i)->GetPDGEncoding() << endl;
+				}
 				// otherwise it's not found. Need to exit here.
 				else
 				cout << hd_msg << " Particle " << pname << " not found in G4 table. Exiting" << endl << endl;
@@ -1158,7 +1155,7 @@ void MPrimaryGeneratorAction::setBeam()
 	}
 
 	else if( input_gen.compare(0,6,"stdhep")==0 || input_gen.compare(0,6,"STDHEP")==0 ||
-			 input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
+			  input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
 	{
 		// StdHep is an (old like LUND) MC generator format in binary form.
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
@@ -1243,7 +1240,7 @@ void MPrimaryGeneratorAction::setBeam()
 		if(L_pname == "show_all")
 		{
 			for(int i=0; i<particleTable->entries(); i++)
-			cout << hd_msg << " g4 particle: " << particleTable->GetParticleName(i) << endl;
+				cout << hd_msg << " g4 particle: " << particleTable->GetParticleName(i) << endl;
 		}
 		// otherwise it's not found. Need to exit here.
 		else
@@ -1303,7 +1300,7 @@ void MPrimaryGeneratorAction::setBeam()
 		if(L_pname == "show_all")
 		{
 			for(int i=0; i<particleTable->entries(); i++)
-			cout << hd_msg << " g4 particle: " << particleTable->GetParticleName(i) << endl;
+				cout << hd_msg << " g4 particle: " << particleTable->GetParticleName(i) << endl;
 		}
 		// otherwise it's not found. Need to exit here.
 		else
@@ -1399,8 +1396,8 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
 		}
 		if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
-			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+		cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+		<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 
 		// Primary particle generated int the middle of Time window
 		if(eventIndex > ntoskip) {
@@ -1410,27 +1407,27 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 		}
 	} 	else if(pindex != p+1) {
 		if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
+		cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
 	}
 }
 
 void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<userInforForParticle> Userinfo, G4Event* anEvent, int A, int Z) {
 	
-        int pindex        = Userinfo[p].infos[0];
-		int type		  = Userinfo[p].infos[2];
-		int pdef          = Userinfo[p].infos[3];
-		double px         = Userinfo[p].infos[6];
-		double py         = Userinfo[p].infos[7];
-		double pz         = Userinfo[p].infos[8];
-		double Vx         = Userinfo[p].infos[11];
-		double Vy         = Userinfo[p].infos[12];
-		double Vz         = Userinfo[p].infos[13];
-		//Make a list of particles parents 
-		vector<int> parentindex;
-		parentindex.push_back(Userinfo[p].infos[4]);
-		
-				
-if(type == 1 && pindex == p+1) {
+	int pindex        = Userinfo[p].infos[0];
+	int type		  = Userinfo[p].infos[2];
+	int pdef          = Userinfo[p].infos[3];
+	double px         = Userinfo[p].infos[6];
+	double py         = Userinfo[p].infos[7];
+	double pz         = Userinfo[p].infos[8];
+	double Vx         = Userinfo[p].infos[11];
+	double Vy         = Userinfo[p].infos[12];
+	double Vz         = Userinfo[p].infos[13];
+	//Make a list of particles parents
+	vector<int> parentindex;
+	parentindex.push_back(Userinfo[p].infos[4]);
+
+
+	if(type == 1 && pindex == p+1) {
 		if(pdef != 80000) {
 			Particle = particleTable->FindParticle(pdef);
 			if(!Particle)
@@ -1467,85 +1464,85 @@ if(type == 1 && pindex == p+1) {
 			particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
 		}
 		if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
-			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
+		cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+		<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 
 		
 		// Primary particle generated in the middle of Time window, while non primary particles have a time offset
 		if(eventIndex > ntoskip) {
-		    double timeoffset = 0;
-		    //determine if the particle has an inactive parent
-		    if(parentindex[0]!=0 && Userinfo[parentindex[0]-1].infos[2]!=1){
-		       
-		        double px_parent = Userinfo[parentindex[0]-1].infos[6];
-		        double py_parent = Userinfo[parentindex[0]-1].infos[7];
-		        double pz_parent = Userinfo[parentindex[0]-1].infos[8];
-		        double E_parent = Userinfo[parentindex[0]-1].infos[9];
-		        double Vx_parent = Userinfo[parentindex[0]-1].infos[11];
-		        double Vy_parent = Userinfo[parentindex[0]-1].infos[12];
-		        double Vz_parent = Userinfo[parentindex[0]-1].infos[13];
-				//Push back the parents parent to the list
-		        parentindex.push_back(Userinfo[parentindex[0]-1].infos[4]);
-			     
-		    	//vertex difference between particle and its parent  
-		    	double vertex_diff = sqrt(pow(Vx*cm - Vx_parent*cm, 2) + pow(Vy*cm -Vy_parent*cm, 2) + pow(Vz*cm-Vz_parent*cm, 2));
-		    	//set parent momentum
-		   	 	G4ThreeVector pmom_parent(px_parent*GeV, py_parent*GeV, pz_parent*GeV);
-		   	 	double Mom_parent = pmom_parent.mag();
-		  	  	//calculate beta of parent 
-		   	 	double beta_parent = Mom_parent/(E_parent*GeV);
-		    	double speedoflight = 29.979246*(cm/ns); 
-		 	    //calculate time between particle and its parent
-		   	 	timeoffset += vertex_diff/(beta_parent*speedoflight);
-		   	 	
-		   	 	//checking for any further parents  
-		     	for(int i=1; ; i++){
-		          if(parentindex[i]!=0 && userInfo[parentindex[i-1]-1].infos[2]!=1){
-		          
-		              double Vx_parent1 = Userinfo[parentindex[i-1]-1].infos[11];
-		              double Vy_parent1 = Userinfo[parentindex[i-1]-1].infos[12];
-		              double Vz_parent1 = Userinfo[parentindex[i-1]-1].infos[13];
-		               
-		              double px_parent2 = Userinfo[parentindex[i]-1].infos[6];
-		              double py_parent2 = Userinfo[parentindex[i]-1].infos[7];
-		              double pz_parent2 = Userinfo[parentindex[i]-1].infos[8];
-		              double E_parent2 = Userinfo[parentindex[i]-1].infos[9];
-		              double Vx_parent2 = Userinfo[parentindex[i]-1].infos[11];
-		              double Vy_parent2 = Userinfo[parentindex[i]-1].infos[12];
-		              double Vz_parent2 = Userinfo[parentindex[i]-1].infos[13];
-					  //push back further Parents to the list
-					  parentindex.push_back(Userinfo[parentindex[i]-1].infos[4]); 
-					  //vertex difference between the two parents
-		              double Parents_vertex_diff = sqrt(pow(Vx_parent1*cm-Vx_parent2*cm, 2) + pow(Vy_parent1*cm-Vy_parent2*cm, 2) + pow(Vz_parent1*cm-Vz_parent2*cm, 2));
+			double timeoffset = 0;
+			//determine if the particle has an inactive parent
+			if(parentindex[0]!=0 && Userinfo[parentindex[0]-1].infos[2]!=1){
 
-		              //set the second parents momentum
-		              G4ThreeVector pmom_parent2(px_parent2*GeV, py_parent2*GeV, pz_parent2*GeV);
-		              double Mom_parent2   = pmom_parent2.mag();
-		              //calculate beta of the second parent 
-		              double beta_parent2 = Mom_parent2/(E_parent2*GeV);
-		              //calculate additional time offset 
-		              double timeoffset2 = Parents_vertex_diff/(beta_parent2*speedoflight);
-		              timeoffset += timeoffset2;
-		               
-		          }
-				  
-		          else{ 
-				    break; }
-				   }
-		      
-			
-	          }
-			    
-		        particleGun->SetParticleTime(TWINDOW/2 + timeoffset);
-	            particleGun->SetNumberOfParticles(1);
-	            particleGun->GeneratePrimaryVertex(anEvent);
-	            
-	} 
-	
-}
+				double px_parent = Userinfo[parentindex[0]-1].infos[6];
+				double py_parent = Userinfo[parentindex[0]-1].infos[7];
+				double pz_parent = Userinfo[parentindex[0]-1].infos[8];
+				double E_parent = Userinfo[parentindex[0]-1].infos[9];
+				double Vx_parent = Userinfo[parentindex[0]-1].infos[11];
+				double Vy_parent = Userinfo[parentindex[0]-1].infos[12];
+				double Vz_parent = Userinfo[parentindex[0]-1].infos[13];
+				//Push back the parents parent to the list
+				parentindex.push_back(Userinfo[parentindex[0]-1].infos[4]);
+
+				//vertex difference between particle and its parent
+				double vertex_diff = sqrt(pow(Vx*cm - Vx_parent*cm, 2) + pow(Vy*cm -Vy_parent*cm, 2) + pow(Vz*cm-Vz_parent*cm, 2));
+				//set parent momentum
+				G4ThreeVector pmom_parent(px_parent*GeV, py_parent*GeV, pz_parent*GeV);
+				double Mom_parent = pmom_parent.mag();
+				//calculate beta of parent
+				double beta_parent = Mom_parent/(E_parent*GeV);
+				double speedoflight = 29.979246*(cm/ns);
+				//calculate time between particle and its parent
+				timeoffset += vertex_diff/(beta_parent*speedoflight);
+
+				//checking for any further parents
+				for(int i=1; ; i++){
+					if(parentindex[i]!=0 && userInfo[parentindex[i-1]-1].infos[2]!=1){
+
+						double Vx_parent1 = Userinfo[parentindex[i-1]-1].infos[11];
+						double Vy_parent1 = Userinfo[parentindex[i-1]-1].infos[12];
+						double Vz_parent1 = Userinfo[parentindex[i-1]-1].infos[13];
+
+						double px_parent2 = Userinfo[parentindex[i]-1].infos[6];
+						double py_parent2 = Userinfo[parentindex[i]-1].infos[7];
+						double pz_parent2 = Userinfo[parentindex[i]-1].infos[8];
+						double E_parent2 = Userinfo[parentindex[i]-1].infos[9];
+						double Vx_parent2 = Userinfo[parentindex[i]-1].infos[11];
+						double Vy_parent2 = Userinfo[parentindex[i]-1].infos[12];
+						double Vz_parent2 = Userinfo[parentindex[i]-1].infos[13];
+						//push back further Parents to the list
+						parentindex.push_back(Userinfo[parentindex[i]-1].infos[4]);
+						//vertex difference between the two parents
+						double Parents_vertex_diff = sqrt(pow(Vx_parent1*cm-Vx_parent2*cm, 2) + pow(Vy_parent1*cm-Vy_parent2*cm, 2) + pow(Vz_parent1*cm-Vz_parent2*cm, 2));
+
+						//set the second parents momentum
+						G4ThreeVector pmom_parent2(px_parent2*GeV, py_parent2*GeV, pz_parent2*GeV);
+						double Mom_parent2   = pmom_parent2.mag();
+						//calculate beta of the second parent
+						double beta_parent2 = Mom_parent2/(E_parent2*GeV);
+						//calculate additional time offset
+						double timeoffset2 = Parents_vertex_diff/(beta_parent2*speedoflight);
+						timeoffset += timeoffset2;
+
+					}
+
+					else{
+						break; }
+				}
+
+
+			}
+
+			particleGun->SetParticleTime(TWINDOW/2 + timeoffset);
+			particleGun->SetNumberOfParticles(1);
+			particleGun->GeneratePrimaryVertex(anEvent);
+
+		}
+
+	}
 	else if(pindex != p+1) {
 		if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
+		cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
 	}
 }
 

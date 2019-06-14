@@ -76,8 +76,10 @@ public:
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
-	
-	
+
+	// TODO: VARIATION SHOULD NOT BE HARDCODED
+	// target position from (hardcoded for now) variation rga_fall2018
+	double targetZPos;
 	
 	// translation table
 	TranslationTable TT;        

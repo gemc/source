@@ -72,6 +72,10 @@ public:
 	double averZ=16.4429;
 	Lorentz Lor_Angle;
 
+	// TODO: VARIATION SHOULD NOT BE HARDCODED
+	// target position from (hardcoded for now) variation rga_fall2018
+	double targetZPos;
+
 };
 
 

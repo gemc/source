@@ -181,8 +181,7 @@ static ctofConstants initializeCTOFConstants(int runno) {
 	// ORDER: 0=Updtream  2=Downstream.
 	
 	string database = "/daq/tt/ctof:1";
-	
-	
+
 	data.clear();
 	calib->GetCalib(data, database);
 	cout << "  > " << ctc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
@@ -202,7 +201,16 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		ctc.TT.addHardwareItem({sector, panel, pmt, order}, Hardware(crate, slot, channel));
 	}
 	cout << "  > Data loaded in translation table " << ctc.TT.getName() << endl;
-	
+
+
+	// now connecting to target geometry to get its position
+	// TODO: VARIATION and RUN NUMBERS SHOULD NOT BE HARDCODED
+	sprintf(ctc.database,"/geometry/target:11:rga_fall2018");
+	data.clear(); calib->GetCalib(data,ctc.database);
+	ctc.targetZPos = data[0][3]*cm;
+
+
+
 	return ctc;
 }
 
@@ -264,7 +272,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// ctof paddle center is offsetby ctc.zoffset from the CLAS12 target position,
 	// so need to  z is also the local coordinate
 	//side = 0 or 1,
-	double d = length + (1. - 2. * side)*(tInfos.z - offset); // The distance between the hit and PMT?
+	double d = length + (1. - 2. * side)*(tInfos.z - offset - ctc.targetZPos); // The distance between the hit and PMT?
 	
 	// attenuation length
 	double attlen = ctc.attlen[sector - 1][panel - 1][side][paddle - 1];

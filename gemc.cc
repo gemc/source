@@ -314,9 +314,9 @@ int main( int argc, char **argv )
  	
 	///< passing output process factory to sensitive detectors
 	map<string, sensitiveDetector*>::iterator it;
-	for(it = ExpHall->SeDe_Map.begin(); it != ExpHall->SeDe_Map.end(); it++)
+	for(it = ExpHall->SeDe_Map.begin(); it != ExpHall->SeDe_Map.end(); it++) {
 		it->second->hitProcessMap = &hitProcessMap;
-	
+	}
 	
 
 	

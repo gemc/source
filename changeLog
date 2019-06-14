@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+6/14/19
+
+- added target position from CCDB (fixed variation, todo: detector-dependent variation mechanism) to MM and CTOF routines.
 
 5/23/19
 

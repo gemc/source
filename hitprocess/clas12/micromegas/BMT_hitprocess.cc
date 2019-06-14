@@ -102,7 +102,14 @@ static bmtConstants initializeBMTConstants(int runno)
 	//bmtc.changeFieldScale(-1);  // this needs to be read from DB
 	
 	bmtc.Lor_Angle.Initialize(runno);
-	
+
+
+	// now connecting to target geometry to get its position
+	// TODO: VARIATION and RUN NUMBERS SHOULD NOT BE HARDCODED
+	sprintf(bmtc.database,"/geometry/target:11:rga_fall2018");
+	data.clear(); calib->GetCalib(data,bmtc.database);
+	bmtc.targetZPos = data[0][3]*cm;
+
 	return bmtc;
 }
 
@@ -182,7 +189,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	// if fieldmanager is not found, the field is zero
 	/*	if(bmtc.fieldScale == -1)
 	 {*/
-	const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
+	const double point[4] = {xyz.x(), xyz.y(), xyz.z() - bmtc.targetZPos, 10};
 	double fieldValue[3] = {0, 0, 0};
 	double phi_p=atan2(xyz.y(),xyz.x());
 
