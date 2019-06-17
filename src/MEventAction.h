@@ -161,7 +161,7 @@ public:
 	string RFSETUP;         ///< Parameters for RF setup
 	string RFSTART;         ///< Parameters of RF model
 	int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
-	int requestedNevents;
+	long int requestedNevents;
 
 	// sampling time of electronics (typically FADC)
 	// and number of samplings

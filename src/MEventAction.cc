@@ -103,7 +103,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	RFSTART          = replaceCharInStringWithChars(gemcOpt.optMap["RFSTART"].args, ",", "  ");
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 	
-	requestedNevents = (int) gemcOpt.optMap["N"].arg ;
+	requestedNevents = (long int) gemcOpt.optMap["N"].arg ;
 	
 	
 	// fastMC mode will set SAVE_ALL_MOTHERS to 1

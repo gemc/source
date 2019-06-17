@@ -62,7 +62,7 @@ ostream &operator<<(ostream &stream, BackgroundHit bgh)
 
 
 // initialize map from filename
-GBackgroundHits::GBackgroundHits(string filename, unsigned nevents, int verbosity)
+GBackgroundHits::GBackgroundHits(string filename, long int nevents, int verbosity)
 {
 	backgroundHitMap = new map<string, vector<BackgroundHit*> >;
 

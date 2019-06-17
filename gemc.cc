@@ -328,7 +328,7 @@ int main( int argc, char **argv )
 	
 	clock_t start_events;
 
-	int nEventsToProcess = gemcOpt.optMap["N"].arg;
+	long int nEventsToProcess = gemcOpt.optMap["N"].arg;
 
 	// if it is not set explicitely, and it is a file input, then run all the event in the file by default
 	// only in batch mode
@@ -374,7 +374,7 @@ int main( int argc, char **argv )
 				start_events = clock();
 				nEventsToProcess--;
 			}
-			sprintf(command, "/run/beamOn %d", nEventsToProcess);
+			sprintf(command, "/run/beamOn %ld", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 		
@@ -397,7 +397,7 @@ int main( int argc, char **argv )
 				start_events = clock();
 				nEventsToProcess--;
 			}
-			sprintf(command, "/run/beamOn %d", nEventsToProcess);
+			sprintf(command, "/run/beamOn %ld", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 	}
