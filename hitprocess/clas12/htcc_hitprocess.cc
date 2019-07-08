@@ -103,16 +103,31 @@ static htccConstants initializeHTCCConstants(int runno)
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-	
-	
+
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector = identity[0].id;
 	int idring   = identity[1].id;
 	int idhalf   = identity[2].id;
 	int thisPid  = aHit->GetPID();
+
+	if(aHit->isBackgroundHit == 1) {
+
+		// background hit has all the nphe in the charge infp. Time is also first step
+		double nphe     = aHit->GetCharge();
+		double stepTime = aHit->GetTime()[0];
+
+		dgtz["sector"] = idsector;
+		dgtz["ring"]   = idring;
+		dgtz["half"]   = idhalf;
+		dgtz["nphe"]   = nphe;
+		dgtz["time"]   = stepTime;
+		dgtz["hitn"]   = hitn;
+
+		return dgtz;
+	}
 	
+
 	trueInfos tInfos(aHit);
 	
 	int ndetected;
@@ -236,10 +251,6 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		default:
 			cout << " > Unknown HTCC status: " << htccc.status[idsector-1][idhalf-1][idring-1] << " for sector " << idsector << ",  halfsector " << idhalf << ", ring  " << idring << endl;
 	}
-	
-	
-	
-	
 	
 	dgtz["sector"] = idsector;
 	dgtz["ring"]   = idring;

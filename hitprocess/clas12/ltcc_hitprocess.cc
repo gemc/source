@@ -60,16 +60,33 @@ static ltccConstants initializeLTCCConstants(int runno)
 map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-	
-	
+
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector  = identity[0].id;
 	int idside    = identity[1].id;
 	int idsegment = identity[2].id;
 	int thisPid   = aHit->GetPID();
+
+	if(aHit->isBackgroundHit == 1) {
+		
+		// background hit has all the nphe in the charge infp. Time is also first step
+		double nphe     = aHit->GetCharge();
+		double stepTime = aHit->GetTime()[0];
+
+		dgtz["sector"]  = idsector;
+		dgtz["side"]    = idside;
+		dgtz["segment"] = idsegment;
+		dgtz["adc"]     = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];
+		dgtz["time"]    = stepTime;
+		dgtz["nphe"]    = nphe;
+		dgtz["npheD"]   = nphe;
+		dgtz["hitn"]    = hitn;
+
+		return dgtz;
+	}
 	
+
 	trueInfos tInfos(aHit);
 	
 	// if anything else than a photon hits the PMT
