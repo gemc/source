@@ -159,16 +159,37 @@ static ecConstants initializeECConstants(int runno)
 map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-
-	vector<identifier> identity = aHit->GetId();
 
 	// get sector, stack (inner or outer), view (U, V, W), and strip.
+	vector<identifier> identity = aHit->GetId();
 	int sector = identity[0].id;
 	int stack  = identity[1].id;
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
 	int layer  = (stack-1)*3+view+3; // layer=1-3 (PCAL) 4-9 (ECAL)
+
+	if(aHit->isBackgroundHit == 1) {
+
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
+
+		dgtz["hitn"]   = hitn;
+		dgtz["sector"] = sector;
+		dgtz["stack"]  = stack;
+		dgtz["view"]   = view;
+		dgtz["strip"]  = strip;
+
+		double adc  = totEdep / ecc.ADC_GeV_to_evio ; // no gain as that comes from data already
+		double tdc = stepTime * ecc.TDC_time_to_evio ;
+
+		dgtz["ADC"] = (int) adc;
+		dgtz["TDC"]  = (int) tdc;
+
+		return dgtz;
+	}
+	
+
 
 	trueInfos tInfos(aHit);
 
