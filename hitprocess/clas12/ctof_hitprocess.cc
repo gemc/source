@@ -227,8 +227,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	
 	map<string, double> dgtz;
 	
+	// hit ids
 	vector<identifier> identity = aHit->GetId();
-	
 	int sector = 1;
 	int panel = 1;
 	int paddle = identity[0].id;
@@ -236,8 +236,6 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	
 	// TDC conversion factors
 	double tdcconv = ctc.tdcconv[sector - 1][panel - 1][side][paddle - 1];
-	
-	
 	
 	if(aHit->isBackgroundHit == 1) {
 		

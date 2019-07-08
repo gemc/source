@@ -191,15 +191,44 @@ static ftofConstants initializeFTOFConstants(int runno) {
 
 map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-	
+
+	// hit ids
 	vector<identifier> identity = aHit->GetId();
-	
+
 	int sector = identity[0].id;
 	int panel = identity[1].id;
 	int paddle = identity[2].id;
 	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT
+
+	// TDC conversion factors
+	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
+
+
+	if(aHit->isBackgroundHit == 1) {
+
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
+
+		dgtz["hitn"]   = hitn;
+		dgtz["sector"] = sector;
+		dgtz["layer"] = panel;
+		dgtz["paddle"] = paddle;
+		dgtz["side"] = (int) pmt;
+
+		double adc  = totEdep * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] ; // no gain as that comes from data already
+		double tdc = stepTime/tdcconv;
+
+		dgtz["ADC"] = (int) adc;
+		dgtz["ADCu"] = (int) adc;
+
+		dgtz["TDC"]  = (int) tdc;
+		dgtz["TDCu"] = (int) tdc;
+
+		return dgtz;
+	}
 	
+
 	trueInfos tInfos(aHit);
 	
 	// Get the paddle half-length
@@ -237,10 +266,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	double eneR = tInfos.eTot*attRight;
 	
 	double ene = tInfos.eTot*att;
-	
-	// TDC conversion factors
-	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
-	
+
 	// giving geantinos some energies
 	if (aHit->GetPID() == 0) {
 		double gmomentum = aHit->GetMom().mag() / GeV;
