@@ -61,6 +61,7 @@ void MHit::Draw()
 	}
 }
 
+// electronic noise hit constructor
 MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
 {
 	isElectronicNoise = 1;
@@ -89,6 +90,7 @@ MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
 }
 
 
+// background hit constructor
 MHit::MHit(double energy, double tim, int nphe, vector<identifier> vid)
 {
 	isBackgroundHit = 1;

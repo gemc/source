@@ -971,9 +971,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	// Increase event number. Notice: this is different than evt->GetEventID()
 	evtN++;
-	
-	
-	
+
 	return;
 }
 

@@ -29,9 +29,10 @@ class MHit : public G4VHit
 public:
 	MHit();
 	
-	// electronic noise hit
+	// electronic noise hit constructor
 	MHit(double edep, double time, vector<identifier> identity, int pid);
-	// background hit
+
+	// background hit constructor
 	MHit(double edep, double time, int nphe, vector<identifier> identity);
 
 	virtual ~MHit();

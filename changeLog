@@ -1,6 +1,9 @@
 Changelog for GEMC
 ==================
 
+7/8/19
+ - added background merging for FTOF, EC, PCAL, FT_CAL, FT_HODO, LTCC, HTCC
+
 6/17/19
 
  - number of events made long int

@@ -52,8 +52,6 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 	ProcessHitRoutine = NULL;
 	if(verbosity > 1)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
-
-
 }
 
 
@@ -321,8 +319,6 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 			}
 		}
 	}
-
-
 
 
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore
