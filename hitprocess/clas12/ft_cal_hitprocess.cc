@@ -148,59 +148,48 @@ static ftCalConstants initializeFTCALConstants(int runno)
 map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
-	
+
+	// ids
 	vector<identifier> identity = aHit->GetId();
+	// use Crystal ID to define IDX and IDY
+	int IDX = identity[0].id;
+	int IDY = identity[1].id;
+	int iCrystal = (IDY-1)*22+IDX-1;
+
+	if(aHit->isBackgroundHit == 1) {
+
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
+		double charge   = totEdep*ftcc.mips_charge[iCrystal]/ftcc.mips_energy[iCrystal];
+
+		dgtz["hitn"]      = hitn;
+		dgtz["sector"]    = 1;
+		dgtz["layer"]     = 1;
+		dgtz["component"] = iCrystal;
+		dgtz["adc"]       = (int) (charge/ftcc.fadc_to_charge[iCrystal]);
+		dgtz["tdc"]       = (int) (stepTime*ftcc.time_to_tdc);
+;
+
+		return dgtz;
+	}
+	
 	trueInfos tInfos(aHit);
 	
 	
 	// R.De Vita (November 2016)
-	
-	/* old digitization
-	 // relevant parameter for digitization (in the future should be read from database)
-	 double adc_charge_tochannel=20;    // conversion factor from charge(pC) to ADC channels
-	 double PbWO4_light_yield =240/MeV; // Lead Tungsten Light Yield (APD have similar QE for
-	 // fast component, lambda=420nm-ly=120ph/MeV, and slow component,
-	 // lambda=560nm-ly=20ph/MeV, taking fast component only)
-	 // double PbWO4_light_yield =672/MeV; // LY at -25 deg=2.8 x LY at +18 deg
-	 double APD_qe    = 0.70;           // APD Quantum Efficiency (Hamamatsu S8664-55)
-	 double APD_size  = 100*mm*mm;       // APD size ( 10 mm x 10 mm)
-	 double APD_noise = 0.0033;          // relative noise based on a Voltage and Temperature stability of 10 mV (3.9%/V) and 0.1 C (3.3%/C)
-	 
-	 double mips_energy = 15.3*MeV;
-	 double mips_charge = 6.005;
-	 double ns_per_sample = 4*ns;
-	 double fadc_input_impedence = 50;
-	 double fadc_LSB = 0.4884;
-	 double fadc_to_charge = fadc_LSB*ns_per_sample/fadc_input_impedence;
-	 
-	 double time_to_tdc=100/ns_per_sample;// conversion factor from time(ns) to TDC channels)
-	 double tdc_max=8191;               // TDC range
-	 double time_res=0.2;               // time resolution
-	 double light_speed =15;
-	 
-	 double AMP_input_noise = 5500;     // preamplifier input noise in number of electrons
-	 double AMP_gain        = 700;      // preamplifier gain
-	 double APD_gain  = 150;            // based on FT note
-	 */
-	
+
 	// Get the crystal length: in the FT crystal are BOXes and the half-length is the 3rd element
 	double length = 2 * aHit->GetDetector().dimensions[2];
 	// Get the crystal width (rear face): in the FT crystal are BOXes and the half-length is the 2th element
 	//	double width  = 2 * aHit->GetDetector().dimensions[1];
 	
-	// use Crystal ID to define IDX and IDY
-	int IDX = identity[0].id;
-	int IDY = identity[1].id;
-	
-	int iCrystal = (IDY-1)*22+IDX-1;
-	
+
 	// initialize ADC and TDC
 	int ADC = 0;
 	int TDC = 8191;
 	
-	
-	
+
 	if(tInfos.eTot>0)
 	{
 		/*
