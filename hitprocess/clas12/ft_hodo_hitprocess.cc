@@ -136,15 +136,33 @@ static ftHodoConstants initializeFTHODOConstants(int runno)
 map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
 
-	vector<identifier> identity = aHit->GetId();
-	trueInfos tInfos(aHit);
-	
 	// use Crystal ID to define IDX and IDY
+	vector<identifier> identity = aHit->GetId();
 	int isector    = identity[0].id;
 	int ilayer     = identity[1].id;
 	int icomponent = identity[2].id;
+
+	if(aHit->isBackgroundHit == 1) {
+
+		// background hit has all the energy in the first step. Time is also first step
+		double totEdep  = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
+
+		double charge   = totEdep*fthc.mips_charge[isector-1][ilayer-1][icomponent-1]/fthc.mips_energy[isector-1][ilayer-1][icomponent-1];
+
+		dgtz["hitn"]      = hitn;
+		dgtz["sector"]    = isector;
+		dgtz["layer"]     = ilayer;
+		dgtz["component"] = icomponent;
+		dgtz["adc"]       = (int) (charge/fthc.fadc_LSB);
+		dgtz["tdc"]       = (int) (stepTime*fthc.time_to_tdc);;
+
+		return dgtz;
+	}
+
+	trueInfos tInfos(aHit);
+	
 
 	// initialize ADC and TDC
 	int ADC = 0;
@@ -198,6 +216,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// decide if write an hit or not
 	writeHit = true;
+
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
