@@ -12,7 +12,7 @@
 using namespace ccdb;
 
 
-static bmtConstants initializeBMTConstants(int runno)
+static bmtConstants initializeBMTConstants(int runno, string digiVariation = "na")
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
@@ -105,8 +105,8 @@ static bmtConstants initializeBMTConstants(int runno)
 
 
 	// now connecting to target geometry to get its position
-	// TODO: VARIATION and RUN NUMBERS SHOULD NOT BE HARDCODED
-	sprintf(bmtc.database,"/geometry/target:11:rga_fall2018");
+	// TODO: RUN NUMBER SHOULD NOT BE HARDCODED
+	sprintf(bmtc.database,"/geometry/target:11:%s", digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
 	bmtc.targetZPos = data[0][3]*cm;
 
@@ -318,9 +318,11 @@ double BMT_HitProcess :: voltage(double charge, double time, double forTime)
 
 void BMT_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(bmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bmtc = initializeBMTConstants(runno);
+		bmtc = initializeBMTConstants(runno, digiVariation);
 		bmtc.runNo = runno;
 	}
 }

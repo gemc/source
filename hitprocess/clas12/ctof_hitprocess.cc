@@ -15,7 +15,7 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ctofConstants initializeCTOFConstants(int runno) {
+static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "default") {
 	ctofConstants ctc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
@@ -54,7 +54,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ctc.connection));
 	cout << "Connecting to " << ctc.connection << "/calibration/ctof" << endl;
 	
-	cout << "CTOF:Getting attenuation" << endl;
 	sprintf(ctc.database, "/calibration/ctof/attenuation:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -66,7 +65,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		ctc.attlen[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	cout << "CTOF:Getting effective_velocity" << endl;
 	sprintf(ctc.database, "/calibration/ctof/effective_velocity:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -78,7 +76,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		ctc.veff[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	cout << "CTOF:Getting status" << endl;
 	sprintf(ctc.database, "/calibration/ctof/status:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -90,7 +87,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		ctc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	cout << "CTOF:Getting gain_balance" << endl;
 	sprintf(ctc.database, "/calibration/ctof/gain_balance:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -118,7 +114,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 	 }
 	 */
 	
-	cout << "CTOF:Getting time_offset" << endl;
 	sprintf(ctc.database, "/calibration/ctof/time_offsets:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -131,7 +126,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		ctc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
 	}
 	
-	cout << "CTOF:Getting tdc_conv" << endl;
 	sprintf(ctc.database, "/calibration/ctof/tdc_conv:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -144,7 +138,6 @@ static ctofConstants initializeCTOFConstants(int runno) {
 	}
 	
 	
-	cout << "CTOF:Getting geometry" << endl;
 	sprintf(ctc.database, "/geometry/ctof/ctof:%d", ctc.runNo);
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -200,24 +193,25 @@ static ctofConstants initializeCTOFConstants(int runno) {
 		// order is important as we could have duplicate entries w/o it
 		ctc.TT.addHardwareItem({sector, panel, pmt, order}, Hardware(crate, slot, channel));
 	}
-	cout << "  > Data loaded in translation table " << ctc.TT.getName() << endl;
+
 
 
 	// now connecting to target geometry to get its position
-	// TODO: VARIATION and RUN NUMBERS SHOULD NOT BE HARDCODED
-	sprintf(ctc.database,"/geometry/target:11:rga_fall2018");
+	// TODO: RUN NUMBER SHOULD NOT BE HARDCODED
+	sprintf(ctc.database,"/geometry/target:11:%s", digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ctc.database);
 	ctc.targetZPos = data[0][3]*cm;
-
-
 
 	return ctc;
 }
 
 void ctof_HitProcess::initWithRunNumber(int runno) {
+
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if (ctc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ctc = initializeCTOFConstants(runno);
+		ctc = initializeCTOFConstants(runno, digiVariation);
 		ctc.runNo = runno;
 	}
 }

@@ -654,7 +654,6 @@ void goptions::setGoptions()
 	optMap["RUN_WEIGHTS"].type  = 1;
 	optMap["RUN_WEIGHTS"].ctgr  = "control";
 
-
 	optMap["RFSETUP"].args = "no";
 	optMap["RFSETUP"].name = "Radio-frequency signal";
 	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
@@ -675,6 +674,10 @@ void goptions::setGoptions()
 	optMap["RFSTART"].help += "      \"eventTime\".....................: the RF time is identical to the event start time\n";
 	optMap["RFSTART"].ctgr = "control";
 
+	optMap["DIGITIZATION_VARIATION"].args = "default";
+	optMap["DIGITIZATION_VARIATION"].name = "Common variation to be used in the digitization routines";
+	optMap["DIGITIZATION_VARIATION"].help = "Common variation to be used in the digitization routines\n";
+	optMap["DIGITIZATION_VARIATION"].ctgr = "control";
 
 
 
@@ -682,7 +685,6 @@ void goptions::setGoptions()
 
 	// Output
 	// ------
-
 	optMap["OUTPUT"].args = "no, output";
 	optMap["OUTPUT"].help = "Type of output, output filename. Supported output: evio, txt. Example: -OUTPUT=\"evio, out.ev\"";
 	optMap["OUTPUT"].name = "Type of output, output filename. ";
@@ -860,7 +862,6 @@ void goptions::setGoptions()
 
 
 	// EM Fields
-
 	optMap["HALL_FIELD"].args = "no";
 	optMap["HALL_FIELD"].help = "Magnetic Field of the Hall. \n";
 	optMap["HALL_FIELD"].name = "Magnetic Field of the Hall";
