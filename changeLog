@@ -1,10 +1,16 @@
 Changelog for GEMC
 ==================
 
+7/23/19
+
+ - exiting if gcard is not found
+
 7/10/19
-- added DIGITIZATION_VARIATION, to be used by digitization routines.
+
+ - added DIGITIZATION_VARIATION, to be used by digitization routines.
 
 7/8/19
+
  - added background merging for FTOF, EC, PCAL, FT_CAL, FT_HODO, LTCC, HTCC
 
 6/17/19

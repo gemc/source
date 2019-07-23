@@ -164,9 +164,12 @@ int goptions::setOptMap(int argc, char **argv)
 		string arg = argv[i];
 		pos = arg.find(".gcard");
 		if(pos != string::npos) {
-			ifstream my_file(argv[i]);
+			ifstream my_file(arg);
 			if(my_file) {
-				scanGcard(argv[i]);
+				scanGcard(arg);
+			} else {
+				cout << " >>  gcard file : " << arg <<" not found. Exiting." << endl;
+				exit(0);
 			}
 		}
 	}
