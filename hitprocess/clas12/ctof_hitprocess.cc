@@ -43,7 +43,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	cout << "CTOF:Setting time resolution" << endl;
 	
 	for (int c = 1; c < ctc.npaddles + 1; c++) {
-		ctc.tres.push_back(1e-3 * 65.); //ps to ns
+		ctc.tres.push_back(1e-3 * 90.); //ps to ns
 	}
 	
 	int isec, ilay;
