@@ -12,7 +12,7 @@
 using namespace ccdb;
 
 
-static bmtConstants initializeBMTConstants(int runno, string digiVariation = "na")
+static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;

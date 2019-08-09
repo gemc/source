@@ -247,9 +247,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			// 4-momenta
 			double Mom   = mom/MeV   + (2.0*G4UniformRand()-1.0)*dmom/MeV;
 			double Theta = acos(G4UniformRand()*(cos(theta/rad-dtheta/rad)-cos(theta/rad+dtheta/rad)) + cos(theta/rad+dtheta/rad))/rad;
-			if(primaryFlat)
-			Theta = theta/rad + (2.0*G4UniformRand()-1.0)*dtheta/rad;
-
+			if(primaryFlat) {
+				Theta = theta/rad + (2.0*G4UniformRand()-1.0)*dtheta/rad;
+			}
 			double Phi   = phi/rad   + (2.0*G4UniformRand()-1.0)*dphi/rad;
 			double mass = Particle->GetPDGMass();
 
