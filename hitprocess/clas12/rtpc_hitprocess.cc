@@ -82,29 +82,30 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     // ----------------------------------------- //
     
     // ------------ B=0 T Parameters ------------//
-    /*double a_t1 = 2.29627e-05;
-    double a_t2 = -3.93146e-05;
-    double a_t3 = -5.28600e-03;
-    double a_t4 = 2.78240e-02;
-    double a_t5 = 6.96145e+02;
+    /*double a_t1 = 0;
+     double a_t2 = 0;
+     double a_t3 = 0;
+     double a_t4 = 0;
+    double a_t5 = 6.96387e+02;
+     
     
-    double b_t1 = -7.35833e-06;
-    double b_t2 = 6.81331e-05;
-    double b_t3 = 1.53858e-03;
-    double b_t4 = -2.31373e-02;
-    double b_t5 = -4.74214e+01;
+     double b_t1 = 0;
+     double b_t2 = 0;
+     double b_t3 = 0;
+     double b_t4 = 0;
+    double b_t5 = -4.73759e+01;
     
-    double a_phi1 = 1.12871e-08;
-    double a_phi2 = 1.50882e-08;
-    double a_phi3 = -3.83492e-06;
-    double a_phi4 = -3.43608e-06;
-    double a_phi5 = 2.16630e-05;
+     double a_phi1 = 0;
+     double a_phi2 = 0;
+     double a_phi3 = 0;
+     double a_phi4 = 0;
+     double a_phi5 = 0;
     
-    double b_phi1 = -5.03125e-09;
-    double b_phi2 = -4.94344e-09;
-    double b_phi3 = 1.77409e-06;
-    double b_phi4 = 2.73528e-06;
-    double b_phi5 = -3.45254e-05;
+     double b_phi1 = 0;
+     double b_phi2 = 0;
+     double b_phi3 = 0;
+     double b_phi4 = 0;
+     double b_phi5 = 0;
     
     // Diffusion parameters
     c_t=0.0;
@@ -116,10 +117,10 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
     a_z=0.0;
     b_z =0.0;
     
-    t_2END = 0.0;
+    t_2END = 500.0;
     sigma_t_gap = 0;
     phi_2END = 0.0;
-    sigma_phi_gap = 0.0; */
+    sigma_phi_gap = 0.0;*/
     // ------------------------------------------//
     
     
@@ -150,9 +151,9 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
     // -------------------------- TIME SHIFT for non-primary tracks ---------------------------
     if(aHit->GetTId() != timeShift_map.cend()->first){
-        if(aHit->GetTId()>2) timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-7000.,7000.)));
+        if(aHit->GetTId()>2) timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-8000.,8000.)));
         else if(aHit->GetTId()<3) timeShift_map.insert(make_pair(aHit->GetTId(),0.));
-        else timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-7000.,7000.)));
+        else timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-8000.,8000.)));
         
     }
     
