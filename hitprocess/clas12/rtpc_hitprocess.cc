@@ -151,10 +151,8 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
     // -------------------------- TIME SHIFT for non-primary tracks ---------------------------
     if(aHit->GetTId() != timeShift_map.cend()->first){
-        if(aHit->GetTId()>2) timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-8000.,8000.)));
-        else if(aHit->GetTId()<3) timeShift_map.insert(make_pair(aHit->GetTId(),0.));
-        else timeShift_map.insert(make_pair(aHit->GetTId(),G4RandFlat::shoot(-8000.,8000.)));
-        
+        if(aHit->GetTId()< 3) timeShift_map[aHit->GetTId()] = 0.0;
+        else timeShift_map[aHit->GetTId()] = G4RandFlat::shoot(-8000.,8000.);
     }
     
     
