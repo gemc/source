@@ -141,22 +141,22 @@ static ftofConstants initializeFTOFConstants(int runno) {
 	sprintf(ftc.database, "/calibration/ftof/tres:%d", ftc.runNo);
 	data.clear();
 	calib->GetCalib(data, ftc.database);
-	for (unsigned row = 0; row < data.size(); row++) {
-		isec = data[row][0];
-		ilay = data[row][1];
-		int paddle   = data[row][2];
-		double sigma = data[row][3];
-		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
-			
-			cout << " paddle " << paddle << "  old tres for panel 0: " << 1e-3 * (c * 4.545 + 95.465) << "  new tres: " << sigma << endl;
-			
-			ftc.tres[isec][ilay].push_back(sigma);
-			
+
+	for(isec = 0; isec < 6; isec++) {
+		for(ilay = 0; ilay < 3; ilay++) {
+			ftc.tres[isec][ilay].resize(ftc.npaddles[ilay]);
 		}
-		
 	}
-	
-//	// updated on 1/15/19 - Dan Carman: resolutions from data
+
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0] - 1;
+		ilay = data[row][1] - 1;
+		int ipaddle   = data[row][2] - 1;
+		double sigma = data[row][3];
+			ftc.tres[isec][ilay][ipaddle] = sigma;
+	}
+
+// updated on 1/9/2020: leaving this one here for reference. We now use constants from CCDB
 //	cout << "FTOF:Setting time resolution" << endl;
 //	for (int p = 0; p < 3; p++) {
 //		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
