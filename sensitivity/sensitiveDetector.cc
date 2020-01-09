@@ -361,6 +361,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "nCapture")              return 32;
 	if(procName == "anti_neutronInelastic") return 33;
 	if(procName == "anti_protonInelastic")  return 34;
+	if(procName == "hBertiniCaptureAtRest") return 35;
 	if(procName == "pi-Inelastic")          return 40;
 	if(procName == "pi+Inelastic")          return 41;
 	if(procName == "Decay")                 return 50;
@@ -391,7 +392,5 @@ int sensitiveDetector::processID(string procName)
 
 	return 999;
 }
-
-
 
 
