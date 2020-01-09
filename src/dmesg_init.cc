@@ -127,7 +127,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 
 	if(HIGH_RES==1)
 	{
-		commands.push_back("/vis/viewer/set/background .8 .9 .98 1");   // 205, 230, 251 = CD, E6, FA
+		commands.push_back("/vis/viewer/set/background 1 1 1 1");   // 205, 230, 251 = CD, E6, FA
 		commands.push_back("/vis/viewer/set/autoRefresh 1");
 		commands.push_back("/vis/scene/add/trajectories rich smooth");
 		commands.push_back("/vis/scene/add/hits");
@@ -159,7 +159,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	gemcColorIDModel->SetDefault("gray");
 	gemcColorIDModel->Set("neutron", "black");
 	gemcColorIDModel->Set("gamma",   "blue");
-	gemcColorIDModel->Set("e-",      "cyan");
+	gemcColorIDModel->Set("e-",      "red");
 	gemcColorIDModel->Set("pi+",     "magenta");
 	gemcColorIDModel->Set("pi-",     "yellow");
 	gemcColorIDModel->Set("proton",  G4Colour(0.95, 0.6, 0.3));  // orange
@@ -180,7 +180,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 			if(charge>0)
 				gemcColorIDModel->Set(pname,  "red");
 			if(charge==0)
-				gemcColorIDModel->Set(pname,  "white");
+				gemcColorIDModel->Set(pname,  "blue");
 			if(charge<0)
 				gemcColorIDModel->Set(pname,  "green");
 		}
