@@ -52,7 +52,8 @@ public:
 	double pedestal_sigm[6][3][62][2] = {};
 	
 	// tres: Gaussian sigma for smearing time resolution
-	vector<double> tres[3];
+	// indexes are sector/layer/paddle
+	vector<double> tres[6][3];
 	
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.

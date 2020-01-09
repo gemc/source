@@ -41,15 +41,6 @@ static ftofConstants initializeFTOFConstants(int runno) {
 	ftc.pmtPEYld = 500;
 	//	ftc.tdcLSB        = 42.5532;// counts per ns (23.5 ps LSB)
 	
-	// updated on 1/15/19 - Dan Carman: resolutions from data 
-	cout << "FTOF:Setting time resolution" << endl;
-	for (int p = 0; p < 3; p++) {
-		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
-			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 4.545 + 95.465)); //ps to ns
-			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.820 + 59.16)); //ps to ns
-			if (p == 2) ftc.tres[p].push_back(1e-3 * (200.0)); //ps to ns fixed number
-		}
-	}
 	
 	ftc.dEMIP[0] = ftc.thick[0] * ftc.dEdxMIP;
 	ftc.dEMIP[1] = ftc.thick[1] * ftc.dEdxMIP;
@@ -145,6 +136,36 @@ static ftofConstants initializeFTOFConstants(int runno) {
 		ftc.tdcconv[isec - 1][ilay - 1][0].push_back(data[row][3]);
 		ftc.tdcconv[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
+	
+	cout << "FTOF:Getting resolutions" << endl;
+	sprintf(ftc.database, "/calibration/ftof/tres:%d", ftc.runNo);
+	data.clear();
+	calib->GetCalib(data, ftc.database);
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0];
+		ilay = data[row][1];
+		int paddle   = data[row][2];
+		double sigma = data[row][3];
+		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
+			
+			cout << " paddle " << paddle << "  old tres for panel 0: " << 1e-3 * (c * 4.545 + 95.465) << "  new tres: " << sigma << endl;
+			
+			ftc.tres[isec][ilay].push_back(sigma);
+			
+		}
+		
+	}
+	
+//	// updated on 1/15/19 - Dan Carman: resolutions from data
+//	cout << "FTOF:Setting time resolution" << endl;
+//	for (int p = 0; p < 3; p++) {
+//		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
+//			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 4.545 + 95.465)); //ps to ns
+//			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.820 + 59.16)); //ps to ns
+//			if (p == 2) ftc.tres[p].push_back(1e-3 * (200.0)); //ps to ns fixed number
+//		}
+//	}
+
 	
 	// setting voltage signal parameters
 	ftc.vpar[0] = 50; // delay, ns
@@ -309,7 +330,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		- ftc.toff_P2P[sector-1][panel-1][paddle-1];
 		
 		tdcu = (tU + timeWalkU) / tdcconv;
-		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[panel - 1][paddle - 1]) / tdcconv;
+		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
 		
 	}
 	
@@ -523,7 +544,7 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 			- ftc.toff_P2P[sector-1][panel-1][paddle-1]
 			+ timeWalk;
 			
-			double stepTime = G4RandGauss::shoot(stepTimeU, sqrt(2) * ftc.tres[panel - 1][paddle - 1]);
+			double stepTime = G4RandGauss::shoot(stepTimeU, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]);
 			
 			stepIndex.push_back(s); // Since it is going to be only one hit, i.e. only one step
 			chargeAtElectronics.push_back(adc);
