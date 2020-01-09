@@ -42,7 +42,7 @@ void MHit::Draw()
 		if(Etot > SID.signalThreshold)
 		{
 			circle.SetVisAttributes(G4VisAttributes(colour_hit));
-			circle.SetScreenSize(5);
+			circle.SetScreenSize(10);
 		}
 		else if(Etot > 0 && Etot <= SID.signalThreshold)
 		{
