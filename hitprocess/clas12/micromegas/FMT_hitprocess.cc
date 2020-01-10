@@ -19,7 +19,8 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static fmtConstants initializeFMTConstants(int runno)
+//static fmtConstants initializeFMTConstants(int runno)
+static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	fmtConstants fmtc;
@@ -276,9 +277,11 @@ map< string, vector <int> >  FMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 void FMT_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(fmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fmtc = initializeFMTConstants(runno);
+		fmtc = initializeFMTConstants(runno, digiVariation);
 		fmtc.runNo = runno;
 	}
 }

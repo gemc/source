@@ -560,7 +560,7 @@ double ctof_HitProcess::voltage(double charge, double time, double forTime) {
 }
 
 // this static function will be loaded first thing by the executable
-ctofConstants ctof_HitProcess::ctc = initializeCTOFConstants(-1);
+ctofConstants ctof_HitProcess::ctc = initializeCTOFConstants(1);
 
 
 

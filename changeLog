@@ -1,6 +1,23 @@
 Changelog for GEMC
 ==================
 
+1/9/2020
+
+ - GUI background color changed to white
+ - Neutrals particles color changed to blue
+ - FTOF resolution coming from CCDB
+ - Double radius for hits above thresholds
+ - added hBertiniCaptureAtRest to process catalogueq
+
+12/18/19
+
+ - Modified RTPC hit process parameters and bank names.
+
+
+10/7/19
+
+ - added hBertiniCaptureAtRest tag
+
 7/23/19
 
  - exiting if gcard is not found
