@@ -35,7 +35,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	else
 		fmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	fmtc.variation  = "default";
+	fmtc.variation  = digiVariation;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
 	vector<vector<double> > data;
 	//Load the geometrical constant for all layers
@@ -54,7 +54,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 
 	
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim");
+	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim:11:%s", digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());
