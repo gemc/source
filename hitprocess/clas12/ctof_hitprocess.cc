@@ -39,13 +39,8 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	ctc.dEMIP = ctc.thick * ctc.dEdxMIP;
 	ctc.pmtPEYld = 500;
 	//	ctc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
-	
-	cout << "CTOF:Setting time resolution" << endl;
-	
-	for (int c = 1; c < ctc.npaddles + 1; c++) {
-		ctc.tres.push_back(1e-3 * 90.); //ps to ns
-	}
-	
+
+
 	int isec, ilay;
 	//	int isec, ilay, istr;
 	
@@ -150,7 +145,19 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.zoffset[isec - 1][ilay - 1].push_back(offset);
 		//	cout << data[row][2] << " " << length << " " << offset << endl;
 	}
-	
+
+
+	cout << "CTOF:Setting time resolution" << endl;
+	sprintf(ctc.database, "/calibration/ctof/tres:%d", ctc.runNo);
+	data.clear();
+	calib->GetCalib(data, ctc.database);
+
+	for (unsigned row = 0; row < data.size(); row++) {
+		double sigma = data[row][3];
+		ctc.tres.push_back(sigma);
+	}
+
+
 	// setting voltage signal parameters
 	ctc.vpar[0] = 50; // delay, ns
 	ctc.vpar[1] = 10; // rise time, ns
@@ -329,24 +336,24 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	}
 	// Status flags
 	switch (ctc.status[sector - 1][panel - 1][side][paddle - 1]) {
-		case 0:
-			break;
-		case 1:
-			adc = 0;
-			break;
-		case 2:
-			tdc = 0;
-			break;
-		case 3:
-			adc = tdc = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
-			",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
+	case 0:
+		break;
+	case 1:
+		adc = 0;
+		break;
+	case 2:
+		tdc = 0;
+		break;
+	case 3:
+		adc = tdc = 0;
+		break;
+
+	case 5:
+		break;
+
+	default:
+		cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
+		",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
 	}
 	
 	dgtz["hitn"] = hitn;
@@ -490,7 +497,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 		//pmt = 0 or 1,
 		
 		double d = length + (1. - 2. * side)*(Pos[s].z() - offset); // The distance between the hit and PMT?
-		// attenuation factor
+																						// attenuation factor
 		double att = exp(-d / cm / attlen);
 		
 		// Gain factors to simulate CTOF PMT gain matching algorithm.
