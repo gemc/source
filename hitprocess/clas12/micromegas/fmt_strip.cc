@@ -26,12 +26,12 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	if(Nel>0&&sqrt(x*x+y*y)<fmtc.R_max && sqrt(x*x+y*y)>fmtc.R_min)
 	{
 		
-		x_real = x*cos(fmtc.alpha[layer])+y*sin(fmtc.alpha[layer]);
-		y_real = y*cos(fmtc.alpha[layer])-x*sin(fmtc.alpha[layer]);
+		x_real = x*cos(-fmtc.alpha[layer])-y*sin(-fmtc.alpha[layer]);
+		y_real = y*cos(-fmtc.alpha[layer])+x*sin(-fmtc.alpha[layer]);
 		
 		if(y_real>-fmtc.y_central && y_real < fmtc.y_central){ 
-			if (x_real<=0) ClosestStrip = (int) (floor((fmtc.y_central-y_real)/fmtc.pitch)+1);
-			if (x_real>0) ClosestStrip = (int) (floor((y_real+fmtc.y_central)/fmtc.pitch)+1) + fmtc.N_halfstr+fmtc.N_sidestr;
+			if (x_real>=0) ClosestStrip = (int) (floor((fmtc.y_central-y_real)/fmtc.pitch)+1);
+			if (x_real<0) ClosestStrip = (int) (floor((y_real+fmtc.y_central)/fmtc.pitch)+1) + fmtc.N_halfstr+fmtc.N_sidestr;
 		}
 		else if(y_real <= -fmtc.y_central && y_real > -fmtc.R_max){ 
 			ClosestStrip = (int) (floor((fmtc.y_central-y_real)/fmtc.pitch)+1); 
@@ -133,16 +133,16 @@ void fmt_strip::Carac_strip(int strip, fmtConstants fmtc){
 		if (fabs(strip_y)/fmtc.R_min<1){
 			strip_length=fmtc.R_max*sin(acos(fabs(strip_y)/fmtc.R_max))-fmtc.R_min*sin(acos(fabs(strip_y)/fmtc.R_min));
 			if (strip<=fmtc.N_str/2) 
-				strip_x=-strip_length/2.-fmtc.R_min*sin(acos(fabs(strip_y)/fmtc.R_min));
-			else
 				strip_x=strip_length/2.+fmtc.R_min*sin(acos(fabs(strip_y)/fmtc.R_min));
+			else
+				strip_x=-strip_length/2.-fmtc.R_min*sin(acos(fabs(strip_y)/fmtc.R_min));
 		}
 		else{ 
 			strip_length=fmtc.R_max*sin(acos(fabs(strip_y)/fmtc.R_max));
 			if (strip<=fmtc.N_str/2) 
-				strip_x=-strip_length/2.;
-			else
 				strip_x=strip_length/2.;
+			else
+				strip_x=-strip_length/2.;
 		}
 	}
 }
