@@ -134,6 +134,7 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// decide if write an hit or not
 	writeHit = true;
+
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -175,7 +176,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 		fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
 
 		if(fmtc.runNo == 0){
-			cout << " > BMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
+			cout << " > FMT: Field found with value " << fieldValue[2]/gauss << " gauss. Setting Lorentz angle accordingly." << endl;
 			fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
 			fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
 		}
@@ -184,7 +185,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	{
 		fmtc.ThetaL=0;
 		fmtc.Theta_Ls=0;
-		if(fmtc.runNo == 0) cout << " > BMT: No field found. Lorentz angle set to zero." << endl;
+		if(fmtc.runNo == 0) cout << " > FMT: No field found. Lorentz angle set to zero." << endl;
 	}
 	
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);
