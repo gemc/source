@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+
+2/4/2020
+
+ - added entry "doubleRotation" for volume rotation: this must be followed
+   by a set of 6 numbers with units, describing two consecutive euler rotations.
+
 1/9/2020
 
  - GUI background color changed to white

@@ -95,53 +95,51 @@ G4RotationMatrix calc_rotation(string r, string dname)
 	string var;
 	vars >> var;
 	
-	if(var != "ordered:")
-	{
-		             rot.rotateX(get_number(var,1));
-		vars >> var; rot.rotateY(get_number(var,1));
-		vars >> var; rot.rotateZ(get_number(var,1));
-	}
-	else
-	{
+	if(var != "ordered:" && var != "doubleRotation:") {
+		             rot.rotateX(get_number(var, 1));
+		vars >> var; rot.rotateY(get_number(var, 1));
+		vars >> var; rot.rotateZ(get_number(var, 1));
+	} else if (var == "doubleRotation:") {
+		rot.rotateX(get_number(var, 1));
+		vars >> var; rot.rotateY(get_number(var, 1));
+		vars >> var; rot.rotateZ(get_number(var, 1));
+		vars >> var; rot.rotateX(get_number(var, 1));
+		vars >> var; rot.rotateY(get_number(var, 1));
+		vars >> var; rot.rotateZ(get_number(var, 1));
+	} else if(var == "ordered:") {
 		string order;
 		vars >> order;
-		if(order == "xzy")
-		{
-			vars >> var; rot.rotateX(get_number(var,1));
-			vars >> var; rot.rotateZ(get_number(var,1));
-			vars >> var; rot.rotateY(get_number(var,1));
-		}
-		else if(order == "yxz")
-		{
-			vars >> var; rot.rotateY(get_number(var,1));
-			vars >> var; rot.rotateX(get_number(var,1));
-			vars >> var; rot.rotateZ(get_number(var,1));
-		}
-		else if(order == "yzx")
-		{
-			vars >> var; rot.rotateY(get_number(var,1));
-			vars >> var; rot.rotateZ(get_number(var,1));
-			vars >> var; rot.rotateX(get_number(var,1));
-		}
-		else if(order == "zxy")
-		{
-			vars >> var; rot.rotateZ(get_number(var,1));
-			vars >> var; rot.rotateX(get_number(var,1));
-			vars >> var; rot.rotateY(get_number(var,1));
-		}
-		else if(order == "zyx")
-		{
-			vars >> var; rot.rotateZ(get_number(var,1));
-			vars >> var; rot.rotateY(get_number(var,1));
-			vars >> var; rot.rotateX(get_number(var,1));
-		}
-		else
-		{
+		if(order == "xzy") {
+			vars >> var; rot.rotateX(get_number(var, 1));
+			vars >> var; rot.rotateZ(get_number(var, 1));
+			vars >> var; rot.rotateY(get_number(var, 1));
+		} else if(order == "yxz") {
+			vars >> var; rot.rotateY(get_number(var, 1));
+			vars >> var; rot.rotateX(get_number(var, 1));
+			vars >> var; rot.rotateZ(get_number(var, 1));
+		} else if(order == "yzx") {
+			vars >> var; rot.rotateY(get_number(var, 1));
+			vars >> var; rot.rotateZ(get_number(var, 1));
+			vars >> var; rot.rotateX(get_number(var, 1));
+		} else if(order == "zxy") {
+			vars >> var; rot.rotateZ(get_number(var, 1));
+			vars >> var; rot.rotateX(get_number(var, 1));
+			vars >> var; rot.rotateY(get_number(var, 1));
+		} else if(order == "zyx") {
+			vars >> var; rot.rotateZ(get_number(var, 1));
+			vars >> var; rot.rotateY(get_number(var, 1));
+			vars >> var; rot.rotateX(get_number(var, 1));
+		} else {
 			cout << "     >> ERROR: Ordered rotation <" << order << "> for " << dname << " is wrong, it's none of the following:"
 			<< " xzy, yxz, yzx, zxy or zyx. Exiting." << endl;
 			exit(0);
 		}
+	} else {
+		cout << "     >> ERROR: rotation type <" << var << "> unknown. Exiting." << endl;
+		exit(0);
+
 	}
+
 	
 	return rot;
 	
