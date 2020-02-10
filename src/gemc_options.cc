@@ -120,6 +120,15 @@ void goptions::setGoptions()
 	optMap["INPUT_GEN_FILE"].argsJSONDescription  = "type, filename";
 	optMap["INPUT_GEN_FILE"].argsJSONTypes  = "S S";
 
+	optMap["SHIFT_LUND_VERTEX"].args = "(0, 0, 0)cm";
+	optMap["SHIFT_LUND_VERTEX"].help = "Shift Generator File tracks vertices.\n";
+	optMap["SHIFT_LUND_VERTEX"].help += "      example: -SHIFT_LUND_VERTEX=\"(0, 0, -3)cm\" \n";
+	optMap["SHIFT_LUND_VERTEX"].name = "Shift Generator File tracks vertices.";
+	optMap["SHIFT_LUND_VERTEX"].type = 1;
+	optMap["SHIFT_LUND_VERTEX"].ctgr = "generator";
+	optMap["SHIFT_LUND_VERTEX"].argsJSONDescription  = "svx svy svz unit";
+	optMap["SHIFT_LUND_VERTEX"].argsJSONTypes  = "F F F S";
+
 	optMap["MERGE_LUND_BG"].args = "no";
 	optMap["MERGE_LUND_BG"].help = "LUND Input file to merge background events\n";
 	optMap["MERGE_LUND_BG"].help += "      example: -MERGE_LUND_BG=\"background.dat\" \n";
@@ -128,6 +137,7 @@ void goptions::setGoptions()
 	optMap["MERGE_LUND_BG"].ctgr = "generator";
 	optMap["MERGE_LUND_BG"].argsJSONDescription  = "bgLundfilename";
 	optMap["MERGE_LUND_BG"].argsJSONTypes  = "S";
+
 
 	optMap["MERGE_BGHITS"].args = "no";
 	optMap["MERGE_BGHITS"].help = "ASCII file to merge background hits\n";

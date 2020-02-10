@@ -1,6 +1,12 @@
 Changelog for GEMC
 ==================
 
+2/10/2020
+
+- added  SHIFT_LUND_VERTEX option to shift a file generator vertex.
+
+  example: -SHIFT_LUND_VERTEX="(0, 0, -3)cm"
+
 
 2/4/2020
 
