@@ -24,7 +24,7 @@ public:
 	//	1 - noADC
 	//	2 - noTDC
 	//	3 - noADC, noTDC (PMT is dead)
-	//      5 - any other reconstruction problem
+	// 5 - any other reconstruction problem
 	vector<int> status[6][3][2];
 	
 	// tdc_conc: tdc conversion factors
@@ -54,7 +54,11 @@ public:
 	// tres: Gaussian sigma for smearing time resolution
 	// indexes are sector/layer/paddle
 	vector<double> tres[6][3];
-	
+
+	// time shift to match signal in data window
+	// this is the paddle2paddle entry in CCDB
+	vector<double> timeShift[6][3];
+
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
 	double dEdxMIP;      // Nominal MIP specific energy loss (MeV/gm/cm2)
@@ -65,13 +69,13 @@ public:
 	double pmtDynodeGain; // PMT dynode gain
 	double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
-	//	double tdcLSB;        // Conversion from ns to TDC channel.
+								 //	double tdcLSB;        // Conversion from ns to TDC channel.
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 	
 	// translation table
-	TranslationTable TT;        
+	TranslationTable TT;
 	
 	
 };
