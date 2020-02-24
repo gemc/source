@@ -55,10 +55,6 @@ public:
 	// indexes are sector/layer/paddle
 	vector<double> tres[6][3];
 
-	// time shift to match signal in data window
-	// this is the paddle2paddle entry in CCDB
-	vector<double> timeShift[6][3];
-
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
 	double dEdxMIP;      // Nominal MIP specific energy loss (MeV/gm/cm2)
