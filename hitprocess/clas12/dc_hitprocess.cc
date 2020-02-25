@@ -16,7 +16,7 @@ using namespace ccdb;
 #include "Randomize.hh"
 
 
-static dcConstants initializeDCConstants(int runno)
+static dcConstants initializeDCConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	dcConstants dcc;
@@ -40,7 +40,7 @@ static dcConstants initializeDCConstants(int runno)
 	else
 		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	dcc.variation  = "main";
+	dcc.variation  = digiVariation;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 
@@ -100,6 +100,22 @@ static dcConstants initializeDCConstants(int runno)
 		dcc.deltatime_bfield_par3[sec][sl] = data[row][10];
 		dcc.deltatime_bfield_par4[sec][sl] = data[row][11];
 	}
+
+
+
+	// T0 corrections: a delay to be introduced (plus sign) to the TDC timing
+	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:11:%s", dcc.variation.c_str());
+	data.clear();
+	calib->GetCalib(data,  dcc.database);
+
+	for(unsigned row = 0; row < data.size(); row++) {
+		int sec    = data[row][0] - 1;
+		int sl     = data[row][1] - 1;
+		int slot   = data[row][2] - 1;
+		int cable  = data[row][3] - 1;
+		dcc.T0Correction[sec][sl][slot][cable] = data[row][4];
+	}
+
 	
 
 	//Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
@@ -556,9 +572,11 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 
 void dc_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(dcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		dcc = initializeDCConstants(runno);
+		dcc = initializeDCConstants(runno, digiVariation);
 		dcc.runNo = runno;
 	}
 }

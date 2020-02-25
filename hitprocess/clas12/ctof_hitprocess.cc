@@ -30,7 +30,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	else
 		ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
-	ctc.variation = "default";
+	ctc.variation = digiVariation;
 	
 	ctc.npaddles = 48;
 	ctc.thick = 3.0;
@@ -205,7 +205,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 
 	// now connecting to target geometry to get its position
 	// TODO: RUN NUMBER SHOULD NOT BE HARDCODED
-	sprintf(ctc.database,"/geometry/target:11:%s", digiVariation.c_str());
+	sprintf(ctc.database,"/geometry/target:11:%s", ctc.variation.c_str());
 	data.clear(); calib->GetCalib(data,ctc.database);
 	ctc.targetZPos = data[0][3]*cm;
 

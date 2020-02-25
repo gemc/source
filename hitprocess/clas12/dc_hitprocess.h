@@ -17,7 +17,8 @@ public:
 	string variation;
 	string date;
 	string connection;
-	
+	char   database[80];
+
 	double driftVelocity[6];
 	double miniStagger[6];
 	double dcThreshold;
@@ -44,7 +45,10 @@ public:
 	double deltanm[6][6], v0[6][6], delta_bfield_coefficient[6][6],tmaxsuperlayer[6][6];
 	double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
 	double dmaxsuperlayer[6];
-	
+
+	// sector, SL, slot, cable
+	double T0Correction[6][6][7][6];
+
 	
 };
 
