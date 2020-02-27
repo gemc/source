@@ -27,7 +27,8 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	ftc.variation = "default";
+
+	ftc.variation = digiVariation;
 	
 	ftc.npaddles[0] = 23;
 	ftc.npaddles[1] = 62;
@@ -114,7 +115,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	cout << "FTOF:Getting time_offset" << endl;
 	
-	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d%s",ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d%s",ftc.runNo, ftc.variation);
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -596,9 +597,11 @@ double ftof_HitProcess::voltage(double charge, double time, double forTime) {
 
 void ftof_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if (ftc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftc = initializeFTOFConstants(runno);
+		ftc = initializeFTOFConstants(runno, digiVariation);
 		ftc.runNo = runno;
 	}
 }
