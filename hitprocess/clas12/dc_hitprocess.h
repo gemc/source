@@ -59,8 +59,8 @@ public:
 
 		double t0corr = T0Correction[sectorI][superlayerI][slot - 1][cable - 1];
 
-		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
-		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
+//		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
+//		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
 
 		return t0corr;
 	}
