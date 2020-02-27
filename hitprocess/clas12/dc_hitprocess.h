@@ -49,8 +49,39 @@ public:
 	// sector, SL, slot, cable
 	double T0Correction[6][6][7][6];
 
-	
+
+	double get_T0(int sectorI, int superlayerI, int layerI, int nwire) {
+
+		int slot = ((nwire - 1) / 16) + 1;
+
+		int wire1to16I = ((nwire - 1) % 16);
+		int cable = CableID[layerI][wire1to16I];
+
+		double t0corr = T0Correction[sectorI][superlayerI][slot - 1][cable - 1];
+
+		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
+		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
+
+		return t0corr;
+	}
+
+
+	int CableID[6][16] = {
+		//[nLayer][nLocWire] => nLocWire=16, 7 groups of 16 wires in each layer
+		{1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6}, //Layer 1
+		{1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6}, //Layer 2
+		{1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6}, //Layer 3
+		{1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6}, //Layer 4
+		{1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6}, //Layer 5
+		{1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6}, //Layer 6
+	};
+	//===> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+	// (Local wire ID: 0 for 1st, 16th, 32th, 48th, 64th, 80th, 96th wires)
+
+
+
 };
+
 
 
 

@@ -355,7 +355,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
-	double smeared_time = unsmeared_time + dt_walk + dt_random + hit_signal_t;
+	double smeared_time = unsmeared_time + dt_walk + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
 
 	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf/tesla << " SECI: " << SECI << " SLI: " << SLI << endl;
 
