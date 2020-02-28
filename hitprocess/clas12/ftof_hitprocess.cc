@@ -115,7 +115,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	cout << "FTOF:Getting time_offset" << endl;
 	
-	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d%s",ftc.runNo, ftc.variation);
+	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s", ftc.runNo, ftc.variation.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -124,6 +124,8 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.toff_LR[isec - 1][ilay - 1].push_back(data[row][3]);
 		ftc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
 		ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
+
+		// cout << " Loading constant: " << isec << " " << ilay << " " << data[row][5] << " " << ftc.variation << endl;
 	}
 	
 	cout << "FTOF:Getting tdc_conv" << endl;
@@ -325,10 +327,19 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		double timeWalk  = A / pow(adc, B);
 		double timeWalkU = A / pow(adcu, B);
 		
+//		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
+//		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
+//		- ftc.toff_P2P[sector-1][panel-1][paddle-1];
+
 		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
-		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
-		- ftc.toff_P2P[sector-1][panel-1][paddle-1];
-		
+		- ftc.toff_RFpad[sector-1][panel-1][paddle-1];
+
+		// cout << " FTOF Unsmeared Time before p2p subtraction: " << tU << endl;
+
+		tU = tU - ftc.toff_P2P[sector-1][panel-1][paddle-1];
+
+		// cout << " FTOF Unsmeared Time after p2p subtraction: " << tU << endl;
+
 		tdcu = (tU + timeWalkU) / tdcconv;
 		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
 		

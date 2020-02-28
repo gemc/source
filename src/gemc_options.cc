@@ -687,6 +687,7 @@ void goptions::setGoptions()
 	optMap["DIGITIZATION_VARIATION"].args = "default";
 	optMap["DIGITIZATION_VARIATION"].name = "Common variation to be used in the digitization routines";
 	optMap["DIGITIZATION_VARIATION"].help = "Common variation to be used in the digitization routines\n";
+	optMap["DIGITIZATION_VARIATION"].type = 1;
 	optMap["DIGITIZATION_VARIATION"].ctgr = "control";
 
 
