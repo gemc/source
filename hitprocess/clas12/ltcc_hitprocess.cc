@@ -179,12 +179,14 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
-	
+
+	double timeOffset = G4RandGauss::shoot(ltccc.timeOffset[idsector-1][idside-1][idsegment-1], ltccc.timeRes[idsector-1][idside-1][idsegment-1]);
+
 	dgtz["sector"]  = idsector;
 	dgtz["side"]    = idside;
 	dgtz["segment"] = idsegment;
 	dgtz["adc"]     = adc;
-	dgtz["time"]    = tInfos.time;
+	dgtz["time"]    = tInfos.time + timeOffset;
 	dgtz["nphe"]    = narrived;
 	dgtz["npheD"]   = ndetected;
 	dgtz["hitn"]    = hitn;
