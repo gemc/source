@@ -17,7 +17,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static htccConstants initializeHTCCConstants(int runno)
+static htccConstants initializeHTCCConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	htccConstants htccc;
@@ -34,14 +34,13 @@ static htccConstants initializeHTCCConstants(int runno)
 	else
 		htccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
-	htccc.variation  = "main";
 	int isec,ilay;
 	
 	vector<vector<double> > data;
 	
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(htccc.connection));
 	cout<<"HTCC:Getting status"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/status:%d",htccc.runNo);
+	sprintf(htccc.database,"/calibration/htcc/status:%d", htccc.runNo);
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -50,10 +49,9 @@ static htccConstants initializeHTCCConstants(int runno)
 	}
 	
 	cout<<"HTCC:Getting time_offset"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/time:%d",htccc.runNo);
+	sprintf(htccc.database,"/calibration/htcc/time:%d:%s", htccc.runNo, digiVariation.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.tshift[isec-1][ilay-1].push_back(data[row][3]);
 	}
@@ -74,7 +72,7 @@ static htccConstants initializeHTCCConstants(int runno)
 		int idsector = data[row][3];
 		int idhalf   = data[row][4];
 		int idring   = data[row][5];
-		int order   = data[row][6];  // 0 Corresponds to FADC, and 2 corresponds to TDC
+		int order    = data[row][6];  // 0 Corresponds to FADC, and 2 corresponds to TDC
 		
 		// order is important as we could have duplicate entries w/o it
 		htccc.TT.addHardwareItem({idsector, idhalf, idring, order}, Hardware(crate, slot, channel));
@@ -463,9 +461,11 @@ double htcc_HitProcess :: voltage(double charge, double time, double forTime)
 
 void htcc_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(htccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		htccc = initializeHTCCConstants(runno);
+		htccc = initializeHTCCConstants(runno, digiVariation);
 		htccc.runNo = runno;
 	}
 }

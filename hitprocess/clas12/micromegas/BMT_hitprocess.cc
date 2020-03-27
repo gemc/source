@@ -29,7 +29,6 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 		bmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
 	
-	bmtc.variation  = "default";
 	vector<vector<double> > data;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
 	
@@ -105,8 +104,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 
 
 	// now connecting to target geometry to get its position
-	// TODO: RUN NUMBER SHOULD NOT BE HARDCODED
-	sprintf(bmtc.database,"/geometry/target:11:%s", digiVariation.c_str());
+	sprintf(bmtc.database,"/geometry/target:%d:%s", bmtc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
 	bmtc.targetZPos = data[0][3]*cm;
 

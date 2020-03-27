@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static cndConstants initializeCNDConstants(int runno)
+static cndConstants initializeCNDConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	cndConstants cndc;
@@ -30,9 +30,7 @@ static cndConstants initializeCNDConstants(int runno)
 		cndc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		cndc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	
-	cndc.variation  = "default";
-	
+		
 	int isec,ilay,istr;
 	
 	vector<vector<double> > data;
@@ -93,7 +91,7 @@ static cndConstants initializeCNDConstants(int runno)
 	}
 	
 	cout<<"CND:Getting u-turn delay"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d:%s",cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -102,7 +100,7 @@ static cndConstants initializeCNDConstants(int runno)
 	}
 	
 	cout<<"CND:Getting time offset LR"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d:%s",cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -111,7 +109,7 @@ static cndConstants initializeCNDConstants(int runno)
 	}
 	
 	cout<<"CND:Getting time offset layer"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d:%s",cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

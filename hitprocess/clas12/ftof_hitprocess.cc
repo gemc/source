@@ -28,8 +28,6 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	else
 		ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	ftc.variation = digiVariation;
-	
 	ftc.npaddles[0] = 23;
 	ftc.npaddles[1] = 62;
 	ftc.npaddles[2] = 5;
@@ -115,7 +113,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	cout << "FTOF:Getting time_offset" << endl;
 	
-	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s", ftc.runNo, ftc.variation.c_str());
+	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s", ftc.runNo, digiVariation.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -125,7 +123,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
 		ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
 
-		// cout << " Loading constant: " << isec << " " << ilay << " " << data[row][5] << " " << ftc.variation << endl;
+		// cout << " Loading constant: " << isec << " " << ilay << " " << data[row][5] << " " << digiVariation << endl;
 	}
 	
 	cout << "FTOF:Getting tdc_conv" << endl;
