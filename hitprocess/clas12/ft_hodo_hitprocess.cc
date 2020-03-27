@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ftHodoConstants initializeFTHODOConstants(int runno)
+static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	ftHodoConstants fthc;
@@ -346,9 +346,11 @@ double ft_hodo_HitProcess :: voltage(double charge, double time, double forTime)
 
 void ft_hodo_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(fthc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fthc = initializeFTHODOConstants(runno);
+		fthc = initializeFTHODOConstants(runno, digiVariation);
 		fthc.runNo = runno;
 	}
 }

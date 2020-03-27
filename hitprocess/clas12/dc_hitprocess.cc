@@ -40,7 +40,6 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	else
 		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	dcc.variation  = digiVariation;
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 
@@ -104,7 +103,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// T0 corrections: a delay to be introduced (plus sign) to the TDC timing
-	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:11:%s", dcc.variation.c_str());
+	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:%d:%s", dcc.runNo, digiVariation.c_str());
 	data.clear();
 	calib->GetCalib(data,  dcc.database);
 

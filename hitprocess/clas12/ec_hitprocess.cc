@@ -10,7 +10,7 @@ using namespace ccdb;
 // gemc headers
 #include "ec_hitprocess.h"
 
-static ecConstants initializeECConstants(int runno)
+static ecConstants initializeECConstants(int runno, string digiVariation = "default")
 {
 	ecConstants ecc;
 
@@ -29,8 +29,6 @@ static ecConstants initializeECConstants(int runno)
 	} else {
 		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
-	
-	ecc.variation  = "default";
 
 	ecc.NSTRIPS             = 36;
 	
@@ -448,9 +446,11 @@ vector<MHit*> ec_HitProcess :: electronicNoise()
 
 void ec_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(ecc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ecc = initializeECConstants(runno);
+		ecc = initializeECConstants(runno, digiVariation);
 		ecc.runNo = runno;
 	}
 }

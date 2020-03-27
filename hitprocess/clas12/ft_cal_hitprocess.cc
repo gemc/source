@@ -17,7 +17,7 @@ using namespace ccdb;
 
 
 
-static ftCalConstants initializeFTCALConstants(int runno)
+static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	ftCalConstants ftcc;
@@ -33,9 +33,7 @@ static ftCalConstants initializeFTCALConstants(int runno)
 		ftcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ftcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	
-	ftcc.variation  = "default";
-	
+		
 	int icomponent;
 	
 	vector<vector<double> > data;
@@ -435,9 +433,11 @@ double ft_cal_HitProcess :: voltage(double charge, double time, double forTime)
 
 void ft_cal_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(ftcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftcc = initializeFTCALConstants(runno);
+		ftcc = initializeFTCALConstants(runno, digiVariation);
 		ftcc.runNo = runno;
 	}
 }
