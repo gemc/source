@@ -1,5 +1,5 @@
-#ifndef IC_HITPROCESS_H
-#define IC_HITPROCESS_H 1
+#ifndef ECAL__HITPROCESS_H
+#define ECAL__HITPROCESS_H 1
 
 // gemc headers
 #include "HitProcess.h"

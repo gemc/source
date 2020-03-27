@@ -17,7 +17,6 @@ public:
 	
 	// database
 	int    runNo;
-	string variation;
 	string date;
 	string connection;
 	

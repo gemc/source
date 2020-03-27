@@ -11,7 +11,7 @@ using namespace ccdb;
 // gemc headers
 #include "pcal_hitprocess.h"
 
-static pcConstants initializePCConstants(int runno)
+static pcConstants initializePCConstants(int runno, string digiVariation = "default")
 {
 	pcConstants pcc;
 	
@@ -31,9 +31,7 @@ static pcConstants initializePCConstants(int runno)
 	} else {
 		pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
-	
-	pcc.variation  = "default";
-	
+
 	pcc.TDC_time_to_evio    = 1.      ;
 	pcc.ADC_GeV_to_evio     = 1./10000; // MIP based calibration is nominally 10 channels/MeV
 	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
@@ -433,9 +431,11 @@ double pcal_HitProcess :: voltage(double charge, double time, double forTime)
 
 void pcal_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(pcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		pcc = initializePCConstants(runno);
+		pcc = initializePCConstants(runno, digiVariation);
 		pcc.runNo = runno;
 	}
 }

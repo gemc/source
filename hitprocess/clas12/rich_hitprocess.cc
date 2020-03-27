@@ -15,7 +15,7 @@ using namespace CLHEP;
 // gemc headers
 #include "rich_hitprocess.h"
 
-static richConstants initializeRICHConstants(int runno)
+static richConstants initializeRICHConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	richConstants richc;
@@ -77,9 +77,11 @@ map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 void rich_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(richc.runNo != runno) {
 //		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		richc = initializeRICHConstants(runno);
+		richc = initializeRICHConstants(runno, digiVariation);
 		richc.runNo = runno;
 	}
 }

@@ -14,7 +14,7 @@
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ltccConstants initializeLTCCConstants(int runno)
+static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default")
 {
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
@@ -31,7 +31,6 @@ static ltccConstants initializeLTCCConstants(int runno)
 	else
 		ltccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
-	ltccc.variation  = "main";
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
 	
 	vector<vector<double> > data;
@@ -41,8 +40,7 @@ static ltccConstants initializeLTCCConstants(int runno)
 	
 	sprintf(ltccc.database,"/calibration/ltcc/spe:%d",ltccc.runNo);
 	data.clear(); calib->GetCalib(data,ltccc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
 		layer     = data[row][1] - 1;
 		component = data[row][2] - 1;
@@ -53,7 +51,21 @@ static ltccConstants initializeLTCCConstants(int runno)
 		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
-	
+
+	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s", ltccc.runNo, digiVariation.c_str());
+	data.clear(); calib->GetCalib(data,ltccc.database);
+	for(unsigned row = 0; row < data.size(); row++) {
+		sector    = data[row][0] - 1;
+		layer     = data[row][1] - 1;
+		component = data[row][2] - 1;
+
+		ltccc.timeOffset[sector][layer][component]  = data[row][3];
+		ltccc.timeRes[sector][layer][component]  = data[row][4];
+
+		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
+		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
+	}
+
 	return ltccc;
 }
 
@@ -238,9 +250,11 @@ double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
 
 void ltcc_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ltccc = initializeLTCCConstants(runno);
+		ltccc = initializeLTCCConstants(runno, digiVariation);
 		ltccc.runNo = runno;
 	}
 }

@@ -11,7 +11,6 @@ public:
 	
 	// database
 	int    runNo;
-	string variation;
 	string date;
 	string connection;
 	char   database[80];
@@ -22,8 +21,8 @@ public:
 	// add constants here
 	double speMean[6][2][18];
 	double speSigma[6][2][18];
-	
-	
+	double timeOffset[6][2][18];
+	double timeRes[6][2][18];
 };
 
 
