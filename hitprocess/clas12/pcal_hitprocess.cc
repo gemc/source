@@ -83,7 +83,14 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
 		pcc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	}
-	
+
+	// ========== Initialization of timing offset ===========
+	// ========== Initialization of timing offset ===========
+	sprintf(pcc.database,"/calibration/ec/tdc_global_offset:%d:%s", pcc.runNo, digiVariation.c_str());
+	data.clear(); calib->GetCalib(data, pcc.database);
+	pcc.tdc_global_offset = data[0][3];
+
+
 	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d",pcc.runNo);
 	data.clear(); calib->GetCalib(data,pcc.database);
 	

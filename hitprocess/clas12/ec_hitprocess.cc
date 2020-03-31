@@ -88,6 +88,12 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	}
 
+	// ========== Initialization of timing offset ===========
+	sprintf(ecc.database,"/calibration/ec/tdc_global_offset:%d:%s", ecc.runNo, digiVariation.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+	ecc.tdc_global_offset = data[0][3];
+
+
 	// ======== Initialization of EC effective velocities ===========
 	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d",ecc.runNo);
 	data.clear(); calib->GetCalib(data,ecc.database);
