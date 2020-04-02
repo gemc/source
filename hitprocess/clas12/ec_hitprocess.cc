@@ -262,7 +262,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
 			if (EC_GeV>0) {
 				ADC = EC_GeV;
-				TDC = (tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio + a0 + a2/sqrt(ADC);
+				TDC = (tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio + a0 + a2/sqrt(ADC) + ecc.tdc_global_offset;
 				//				cout<<tInfos.time<<" "<<Ttota/tInfos.nsteps<<" "<<a0<<" "<<a2/sqrt(ADC)<<endl;
 			}
 		}

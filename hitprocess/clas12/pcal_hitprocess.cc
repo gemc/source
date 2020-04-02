@@ -249,7 +249,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double PC_GeV = G4RandGauss::shoot(PC_npe,sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 			if (PC_GeV>0) {
 				ADC = PC_GeV;
-				TDC = (tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio + a0 + a2/sqrt(ADC);
+				TDC = (tInfos.time+Ttota/tInfos.nsteps)*pcc.TDC_time_to_evio + a0 + a2/sqrt(ADC) + pcc.tdc_global_offset;
 			}
 		}
 	}
