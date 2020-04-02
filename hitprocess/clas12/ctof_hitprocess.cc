@@ -29,9 +29,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	
-	ctc.variation = digiVariation;
-	
+		
 	ctc.npaddles = 48;
 	ctc.thick = 3.0;
 	
@@ -109,7 +107,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	 }
 	 */
 	
-	sprintf(ctc.database, "/calibration/ctof/time_offsets:%d", ctc.runNo);
+	sprintf(ctc.database, "/calibration/ctof/time_offsets:%d:%s", ctc.runNo, digiVariation.c_str());
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -204,8 +202,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 
 
 	// now connecting to target geometry to get its position
-	// TODO: RUN NUMBER SHOULD NOT BE HARDCODED
-	sprintf(ctc.database,"/geometry/target:11:%s", ctc.variation.c_str());
+	sprintf(ctc.database,"/geometry/target:%d:%s", ctc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ctc.database);
 	ctc.targetZPos = data[0][3]*cm;
 
@@ -330,6 +327,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		- ctc.toff_RFpad[sector-1][panel-1][paddle-1]
 		- ctc.toff_P2P[sector-1][panel-1][paddle-1]
 		+ timeWalk;
+
 		double t = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
 		tdcu = tU / tdcconv;
 		tdc = t / tdcconv;
