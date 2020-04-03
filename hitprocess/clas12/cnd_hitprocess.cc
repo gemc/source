@@ -372,11 +372,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if (paddle == 2) timeD = timeD + t_offset_LR;
 		else if (paddle == 1) timeN = timeN + t_offset_LR;
 		
-		// Apply global offsets for each paddle-pair (a.k.a. component):
-		
-		timeD = timeD + t_offset_layer;
-		timeN = timeN + t_offset_layer;
-		
+
 		/******** end timing determination ***********/
 		
 		// cout << "Half-length of paddle(cm): "<<length/cm<<endl;
@@ -488,14 +484,16 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	
+	// Apply global offsets for each paddle-pair (a.k.a. component):
+
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = sector;
 	dgtz["layer"]  = layer;
 	dgtz["component"] = 1;
 	dgtz["ADCL"]   = (int) ADCL;
 	dgtz["ADCR"]   = (int) ADCR;
-	dgtz["TDCL"]   = (int) TDCL;
-	dgtz["TDCR"]   = (int) TDCR;
+	dgtz["TDCL"]   = (int) TDCL + t_offset_layer;
+	dgtz["TDCR"]   = (int) TDCR + t_offset_layer;
 	
 	// decide if write an hit or not
 	writeHit = true;
