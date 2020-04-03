@@ -372,6 +372,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if (paddle == 2) timeD = timeD + t_offset_LR;
 		else if (paddle == 1) timeN = timeN + t_offset_LR;
 		
+		timeD = timeD + t_offset_layer;
+		timeN = timeN + t_offset_layer;
 
 		/******** end timing determination ***********/
 		
@@ -425,6 +427,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	{
 		cout <<  hd_msg << " layer: " << layer    << ", paddle: " << paddle  << " x=" << tInfos.x/cm << "cm, y=" << tInfos.y/cm << "cm, z=" << tInfos.z/cm << "cm" << endl;
 		cout <<  hd_msg << " Etot=" << tInfos.eTot/MeV     << "MeV, average time=" << tInfos.time  << "ns"  << endl;
+		cout <<  hd_msg << " timeD=" << timeD     << ",   offset=" << t_offset_layer  << "ns"  << endl;
 		cout <<  hd_msg << " TDCD= " << TDCD     << ", TDCN= " << TDCN    << ", ADCD= " << ADCD << ", ADCN= " << ADCN << endl;
 	}
 	
@@ -492,8 +495,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = 1;
 	dgtz["ADCL"]   = (int) ADCL;
 	dgtz["ADCR"]   = (int) ADCR;
-	dgtz["TDCL"]   = (int) TDCL + t_offset_layer;
-	dgtz["TDCR"]   = (int) TDCR + t_offset_layer;
+	dgtz["TDCL"]   = (int) TDCL;
+	dgtz["TDCR"]   = (int) TDCR;
 	
 	// decide if write an hit or not
 	writeHit = true;
@@ -555,9 +558,11 @@ double cnd_HitProcess :: voltage(double charge, double time, double forTime)
 
 void cnd_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+
 	if(cndc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		cndc = initializeCNDConstants(runno);
+		cndc = initializeCNDConstants(runno, digiVariation);
 		cndc.runNo = runno;
 	}
 }
