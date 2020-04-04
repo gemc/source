@@ -77,7 +77,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting time_offsets"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d",ftcc.runNo);
+	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d:%s", ftcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

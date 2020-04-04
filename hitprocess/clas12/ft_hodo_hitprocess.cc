@@ -82,7 +82,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting time_offsets"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/time_offsets:%d",fthc.runNo);
+	sprintf(fthc.database,"/calibration/ft/fthodo/time_offsets:%d:%s",fthc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
