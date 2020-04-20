@@ -6,8 +6,8 @@ env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh")
 
 # env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
 # env.Replace(CXX = "/usr/bin/clang++")
-#env.Append(CXXFLAGS='-Wno-shorten-64-to-32')
-#env.Append(CXXFLAGS='-Wno-sign-conversion')
+# env.Append(CXXFLAGS='-Wno-shorten-64-to-32')
+# env.Append(CXXFLAGS='-Wno-sign-conversion')
 
 # added because clhep is still behind clang (5/2015)
 if env['PLATFORM'] == 'darwin':
@@ -117,6 +117,7 @@ hitp_sources = Split("""
 	hitprocess/clas12/rtpc_hitprocess.cc
 	hitprocess/clas12/svt/bst_hitprocess.cc
 	hitprocess/clas12/svt/bst_strip.cc
+	hitprocess/clas12/atof_hitprocess.cc
 	hitprocess/clas12/ctof_hitprocess.cc
 	hitprocess/clas12/cnd_hitprocess.cc
 	hitprocess/clas12/dc_hitprocess.cc

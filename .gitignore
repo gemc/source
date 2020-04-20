@@ -16,4 +16,4 @@ gui/src/moc_gtrigger.cc
 utilities/moc_graph.cc
 lib/
 gemc
-
+.DS_Store

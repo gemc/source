@@ -6,7 +6,7 @@
 #include "counter_hitprocess.h"      ///< counter hit process common to all
 
 // CLAS12
-#include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
+#include "clas12/atof_hitprocess.h"             ///< Alert TOF
 #include "clas12/svt/bst_hitprocess.h"          ///< Barrel Silicon Tracker (bst)
 #include "clas12/cnd_hitprocess.h"              ///< Central Neutron Detector
 #include "clas12/ctof_hitprocess.h"             ///< Central TOF
@@ -22,6 +22,7 @@
 #include "clas12/micromegas/BMT_hitprocess.h"   ///< barrel micromegas
 #include "clas12/pcal_hitprocess.h"             ///< Pre-shower calorimeter
 #include "clas12/rich_hitprocess.h"             ///< Pre-shower calorimeter
+#include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
 
 // Beam Dump eXperiment
 #include "bdx/cormo_hitprocess.h"               ///< Cormorino detector
@@ -65,7 +66,10 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		// CLAS12
 		if(EXP == "clas12")
 		{
-			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
+			hitMap["atof"]     = &atof_HitProcess::createHitClass;
+			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
+			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
+			hitMap["ftm"]      = &ftm_HitProcess::createHitClass;
 			hitMap["bst"]      = &bst_HitProcess::createHitClass;
 			hitMap["cnd"]      = &cnd_HitProcess::createHitClass;
 			hitMap["ctof"]     = &ctof_HitProcess::createHitClass;
@@ -78,11 +82,9 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ft_trk"]   = &ftm_HitProcess::createHitClass;
 			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
-			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
-			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
-			hitMap["ftm"]      = &ftm_HitProcess::createHitClass;
 			hitMap["pcal"]     = &pcal_HitProcess::createHitClass;
 			hitMap["rich"]     = &rich_HitProcess::createHitClass;
+			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
 		}
 		// Aprime
 		else if(EXP == "HPS")
