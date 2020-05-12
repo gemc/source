@@ -32,7 +32,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.runNo = runno;
 	dcc.dcThreshold  = 50;  // eV
 
-	// database
+	// database AAAA check with Mauri about the date
 	//	dcc.date       = "2016-03-15";
 	dcc.date       = "2017-08-01";
 	if(getenv ("CCDB_CONNECTION") != NULL)
@@ -44,9 +44,9 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// reading efficiency parameters
-	string database   = "/calibration/dc/signal_generation/intrinsic_inefficiency";
-	vector<vector<double> > data;
-	calib->GetCalib(data, database);
+	sprintf(dcc.database, "/calibration/dc/signal_generation/intrinsic_inefficiency:%d:%s", dcc.runNo, digiVariation.c_str());
+    vector<vector<double> > data;
+	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		int sl = data[row][0] - 1;
@@ -54,13 +54,14 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.P2[sl]     = data[row][2];
 		dcc.P3[sl]     = data[row][3];
 		dcc.P4[sl]     = data[row][4];
-		dcc.iScale[sl] = data[row][5];
+        dcc.iScale[sl] = data[row][5];
+        cout << dcc.P1[sl] << " " << dcc.P2[sl] << " " << dcc.P3[sl] << " " << dcc.P4[sl] << " " << dcc.iScale[sl] << endl;
 	}
 
 	// reading smearing parameters
-	database   = "/calibration/dc/signal_generation/dc_resolution";
-	data.clear();
-	calib->GetCalib(data, database);
+	sprintf(dcc.database, "/calibration/dc/signal_generation/dc_resolution:%d:%s", dcc.runNo, digiVariation.c_str());
+    data.clear();
+	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		int sec = data[row][0] - 1;
@@ -82,9 +83,9 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 	//********************************************
 	//calculating distance to time:
-	database  = "/calibration/dc/time_to_distance/time2dist";
-	data.clear();
-	calib->GetCalib(data, database);
+	sprintf(dcc.database, "/calibration/dc/time_to_distance/time2dist:%d:%s", dcc.runNo, digiVariation.c_str());
+    data.clear();
+	calib->GetCalib(data, dcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++) {
 		int sec = data[row][0] - 1;
@@ -98,7 +99,12 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.deltatime_bfield_par2[sec][sl] = data[row][9];
 		dcc.deltatime_bfield_par3[sec][sl] = data[row][10];
 		dcc.deltatime_bfield_par4[sec][sl] = data[row][11];
-	}
+        //c1
+        dcc.R[sec][sl] = data[row][13];
+        //c2
+        dcc.vmid[sec][sl] = data[row][14];
+        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
+    }
 
 
 
@@ -126,8 +132,8 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// reading DC core parameters
-	database   = "/geometry/dc/superlayer";
-	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(database));
+	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s", dcc.runNo, digiVariation.c_str());
+	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
 		dcc.driftVelocity[rowI] = dcCoreModel->GetValueDouble(rowI, 7);
@@ -252,6 +258,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 	// If no step pass the threshold, getting the fastest signal of the weak tracks
+    // AAAA check with Mauri, what thisdoees and why twice
 	if(trackIds == -1)
 		trackIds = trackIdw;
 
@@ -372,8 +379,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["time"]       = ineff*unsmeared_time;
 	dgtz["stime"]      = ineff*smeared_time;
 
-	// decide if write an hit or not
+	// decide if write an hit or not based on inefficiency value
 	writeHit = true;
+    rejectHitConditions=(ineff==-1);
 
 	// define conditions to reject hit
 	if(rejectHitConditions) {
@@ -426,7 +434,7 @@ map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	return MH;
 }
 
-// returns a time in ns give:
+// OLD Exponential function: returns a time in ns give:
 // x      = distance from the wire, in cm
 // dmax   = cell size in superlayer
 // tmax   = t max in superlayer
@@ -434,7 +442,7 @@ map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 // bfield = magnitude of field in tesla
 // sector      = sector
 // superlayer      = superlayer
-double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
+double dc_HitProcess :: calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
 
 	double rtime = 0.0;
@@ -476,6 +484,48 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
 	rtime += deltatime_bfield;
 
 	return rtime;
+}
+
+// NEW Polynomial function: returns a time in ns give:
+// x      = distance from the wire, in cm
+// dmax   = cell size in superlayer
+// tmax   = t max in superlayer
+// alpha  = polar angle of the track
+// bfield = magnitude of field in tesla
+// sector      = sector
+// superlayer      = superlayer
+double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
+{
+        if(x>dmax)
+            x=dmax;
+        double time = 0;
+        // alpha correction
+        double cos30minusalpha=(double)cos((30. - alpha)*deg);
+        double dmaxalpha = dmax*cos30minusalpha;
+        double xhatalpha = x/dmaxalpha;
+        //   rcapital is an intermediate parameter
+        double rcapital = dcc.R[sector][superlayer]*dmax;
+        //   delt is another intermediate parameter
+        double delt=tmax-dmax/dcc.v0[sector][superlayer];
+        double delv=1./dcc.vmid[sector][superlayer]-1./dcc.v0[sector][superlayer];
+        //   now calculate the primary parameters a, b, c, d
+
+         double c = ((3.*delv)/(dcc.R[sector][superlayer]*dmax)+
+                     (12*dcc.R[sector][superlayer]*dcc.R[sector][superlayer]*delt)/
+                     (2.*(1-2*dcc.R[sector][superlayer])*(dmax*dmax)));
+        c = c /(4.-(1.-6.*dcc.R[sector][superlayer]*dcc.R[sector][superlayer])/(1.-2.*dcc.R[sector][superlayer]));
+        double b = delv/(rcapital*rcapital) - 4.*c/(3.*rcapital);
+        double d = 1./dcc.v0[sector][superlayer];
+        double a = (tmax -  b*dmaxalpha*dmaxalpha*dmaxalpha -
+                c*dmaxalpha*dmaxalpha - d*dmaxalpha)/(dmaxalpha*dmaxalpha*dmaxalpha*dmaxalpha) ;
+        time = a*x*x*x*x + b*x*x*x + c*x*x + d*x ;
+
+         double deltatime_bfield = dcc.delta_bfield_coefficient[sector][superlayer]*pow(bfield,2)*tmax*(dcc.deltatime_bfield_par1[sector][superlayer]*xhatalpha+dcc.deltatime_bfield_par2[sector][superlayer]*pow(xhatalpha, 2)+ dcc.deltatime_bfield_par3[sector][superlayer]*pow(xhatalpha, 3)+dcc.deltatime_bfield_par4[sector][superlayer]*pow(xhatalpha, 4));
+
+         //cout<<"dt = "<<deltatime_bfield<<" C0 "<<dcc.delta_bfield_coefficient[sector][superlayer]<<endl;
+         //calculate the time at alpha deg. and at a non-zero bfield
+         time += deltatime_bfield;
+         return time;
 }
 
 //Taking care of time walks due to discrete ionization processes:

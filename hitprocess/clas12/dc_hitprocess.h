@@ -44,6 +44,7 @@ public:
 	double deltanm[6][6], v0[6][6], delta_bfield_coefficient[6][6],tmaxsuperlayer[6][6];
 	double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
 	double dmaxsuperlayer[6];
+    double R[6][6], vmid[6][6];
 
 	// sector, SL, slot, cable
 	double T0Correction[6][6][7][6];
@@ -108,9 +109,11 @@ public:
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new dc_HitProcess;}
 	
-	// returns a time given a distance
-	double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
-	
+    // New Polynomial function: returns a time given a distance
+    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+    // OLD exponential function: returns a time given a distance
+    double calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+
 	// returns time walks according to ionisation process:
 	double time_walk_core(double x, double dmax, double epsilon, double R, double kappa, double v0);
 	
