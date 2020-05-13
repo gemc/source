@@ -37,14 +37,12 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	ecc.pmtPEYld            = 3.5     ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	ecc.pmtQE               = 0.27    ;
 	ecc.pmtDynodeGain       = 4.0     ;
-	ecc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)
-	//  Fluctuations in PMT gain distributed using Gaussian with
-	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
-	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
-	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
-	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
-	ecc.pmtFactor           = sqrt(1-ecc.pmtQE+(ecc.pmtDynodeK*ecc.pmtDynodeGain+1)/(ecc.pmtDynodeGain-1));
 	
+	//  Fluctuations in PMT gain distributed using Gaussian with
+	//  sigma = sqrt(npe)/SNR where 1/SNR = sqrt[(1 + 1/(ecc.pmtDynodeGain-1)) npe=number of photoelectrons
+	//  Adapted from G-112 (pg. 174) of RCA PMT Handbook.
+
+	ecc.pmtFactor           = sqrt(1 + 1/(ecc.pmtDynodeGain-1));	
 
 	// The callibration data will be filled in this vector data
 	vector<vector<double> > data;
@@ -104,6 +102,15 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		ecc.veff[isec-1][ilay-1].push_back(data[row][3]);
 	}
 	
+	// ======== Initialization of EC status  ===========
+	sprintf(ecc.database, "/calibration/ec/status:%d", ecc.runNo);
+	data.clear();
+	calib->GetCalib(data, ecc.database);
+	for (unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.status[isec-1][ilay-1].push_back(data[row][3]);
+	}	
 
 	// =========== Initialization of FADC250 related informations, pedestals, nsa, nsb ======================
 
@@ -255,10 +262,7 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (Etota > 0) {
 		double EC_npe = G4Poisson(Etota*ecc.pmtPEYld); //number of photoelectrons
 		if (EC_npe>0) {
-			//  Fluctuations in PMT gain distributed using Gaussian with
-			//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-			//  algorithm, values, and comment above taken from gsim.
-			double sigma  = ecc.pmtFactor/sqrt(EC_npe);
+		        double sigma  = sqrt(EC_npe)*ecc.pmtFactor;
 			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
 			if (EC_GeV>0) {
 				ADC = EC_GeV;
@@ -267,6 +271,28 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			}
 		}
 	}
+
+        // Status flags
+	switch (ecc.status[sector-1][layer-1][strip-1])
+	{
+	   case 0:
+	   break;
+	   case 1:
+	   ADC = 0;
+	   break;
+	   case 2:
+	   TDC = 0;
+	   break;
+	   case 3:
+	   ADC = TDC = 0;
+	   break;
+	
+	   case 5:
+	   break;
+	
+	   default:
+	   cout << " > Unknown EC status: " << ecc.status[sector-1][layer-1][strip-1] << " for sector " << sector << ",  layer " << layer << ", strip " << strip << endl;
+	}		
 
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
@@ -395,10 +421,7 @@ map< int, vector <double> > ec_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			if (stepE > 0) {
 				double EC_npe = G4Poisson(stepE*ecc.pmtPEYld); //number of photoelectrons
 				if (EC_npe>0) {
-					//  Fluctuations in PMT gain distributed using Gaussian with
-					//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-					//  algorithm, values, and comment above taken from gsim.
-					double sigma  = ecc.pmtFactor/sqrt(EC_npe);
+				        double sigma  = sqrt(EC_npe)*ecc.pmtFactor;
 					double EC_GeV = G4RandGauss::shoot(EC_npe, sigma)/1000./ecc.ADC_GeV_to_evio/G/ecc.pmtPEYld;
 					if (EC_GeV>0) {
 						stepIndex.push_back(s);
