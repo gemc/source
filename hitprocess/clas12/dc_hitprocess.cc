@@ -31,10 +31,11 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 	dcc.runNo = runno;
 	dcc.dcThreshold  = 50;  // eV
-
-	// database AAAA check with Mauri about the date
-	//	dcc.date       = "2016-03-15";
-	dcc.date       = "2017-08-01";
+    
+    // set value of field polarity (+1/-1): FIXME should be read from gcard
+    dcc.fieldPolarity = -1;
+    
+	// database
 	if(getenv ("CCDB_CONNECTION") != NULL)
 		dcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
@@ -55,7 +56,6 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.P3[sl]     = data[row][3];
 		dcc.P4[sl]     = data[row][4];
         dcc.iScale[sl] = data[row][5];
-        cout << dcc.P1[sl] << " " << dcc.P2[sl] << " " << dcc.P3[sl] << " " << dcc.P4[sl] << " " << dcc.iScale[sl] << endl;
 	}
 
 	// reading smearing parameters
@@ -103,7 +103,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
         dcc.R[sec][sl] = data[row][13];
         //c2
         dcc.vmid[sec][sl] = data[row][14];
-        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
+//        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
     }
 
 
@@ -136,7 +136,6 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
-		dcc.driftVelocity[rowI] = dcCoreModel->GetValueDouble(rowI, 7);
 	}
 
 	dcc.dmaxsuperlayer[0] = 2*dcc.dLayer[0];
@@ -145,10 +144,6 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.dmaxsuperlayer[3] = 2*dcc.dLayer[3];
 	dcc.dmaxsuperlayer[4] = 2*dcc.dLayer[4];
 	dcc.dmaxsuperlayer[5] = 2*dcc.dLayer[5];
-
-	dcc.driftVelocity[0] = dcc.driftVelocity[1] = 0.053;  ///< drift velocity is 53 um/ns for region1
-	dcc.driftVelocity[2] = dcc.driftVelocity[3] = 0.026;  ///< drift velocity is 26 um/ns for region2
-	dcc.driftVelocity[4] = dcc.driftVelocity[5] = 0.036;  ///< drift velocity is 36 um/ns for region3
 
 
 	// even closer:
@@ -166,7 +161,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.TT = TranslationTable("dcTT");
 	cout << "  > Data loaded in translation table " << dcc.TT.getName() << endl;
 
-	// setting voltage signal parameters
+	// setting voltage signal parameters; CURRENTLY NOT USED
 	dcc.vpar[0] = 50;  // delay, ns
 	dcc.vpar[1] = 10;  // rise time, ns
 	dcc.vpar[2] = 20;  // fall time, ns
@@ -235,8 +230,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(unsigned int s=0; s<nsteps; s++)
 	{
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
-		signal_t = stepTime[s]/ns + DOCA.mag()/dcc.driftVelocity[SLI];
-
+		signal_t = stepTime[s]/ns + DOCA.mag()/(dcc.v0[SECI][SLI]*cm/ns);
 		// cout << "signal_t: " << signal_t << " stepTime: " << stepTime[s] << " DOCA: " << DOCA.mag() << " driftVelocity: " << dcc.driftVelocity[SLI] << " Lposy: " << Lpos[s].y() << " ylength: " << ylength << " WIRE_Y: " << WIRE_Y << " Lposz: " << Lpos[s].z() << " dcc.NWIRES: " << dcc.NWIRES << endl;
 
 		if(signal_t < minTime)
@@ -257,14 +251,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 
-	// If no step pass the threshold, getting the fastest signal of the weak tracks
-    // AAAA check with Mauri, what thisdoees and why twice
-	if(trackIds == -1)
+	// If no step pass the threshold, getting the fastest signal with no threshold: FOR MAC, IS THIS WHAT WE WANT?
+    if(trackIds == -1)
 		trackIds = trackIdw;
 
-	// If no step pass the threshold, getting the fastest signal of the weak tracks
-	if(trackIds == -1)
-	trackIds = trackIdw;
 
 	// Left / Right ambiguity
 	// Finding DOCA
@@ -311,6 +301,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//Now calculate alpha according to Macs definition:
 			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg;
 
+            //B-field correction: correct alpha with theta0, the angle corresponding to the isochrone lines twist due to the electric field
+            thisMgnf = mgnf[s]/tesla; // Given in Tesla
+            double theta0 = acos(1-0.02*thisMgnf)/deg;
+            alpha-= dcc.fieldPolarity*theta0;
 
 			// compute reduced alpha (VZ)
 			// alpha in radians
@@ -328,8 +322,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
-			thisMgnf = mgnf[s]; // Given in Tesla
-
+            
 			//Get beta-value of the particle:
 			beta_particle = mom[s].mag()/E[s];
 
@@ -345,7 +338,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double random = G4UniformRand();
 
 	// unsmeared time, based on the dist-time-function and alpha;
-	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf/tesla,SECI,SLI);
+	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
 
 	// Now include (random) time walk contributions:
 
@@ -363,7 +356,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
 	double smeared_time = unsmeared_time + dt_walk + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
 
-	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf/tesla << " SECI: " << SECI << " SLI: " << SLI << endl;
+	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf << " SECI: " << SECI << " SLI: " << SLI << endl;
 
 	int ineff = 1;
 	if(random < ddEff || X > 1) ineff = -1;
@@ -438,7 +431,7 @@ map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 // x      = distance from the wire, in cm
 // dmax   = cell size in superlayer
 // tmax   = t max in superlayer
-// alpha  = polar angle of the track
+// alpha  = local angle of the track
 // bfield = magnitude of field in tesla
 // sector      = sector
 // superlayer      = superlayer
@@ -490,7 +483,7 @@ double dc_HitProcess :: calc_Time_exp(double x, double dmax, double tmax, double
 // x      = distance from the wire, in cm
 // dmax   = cell size in superlayer
 // tmax   = t max in superlayer
-// alpha  = polar angle of the track
+// alpha  = local angle of the track
 // bfield = magnitude of field in tesla
 // sector      = sector
 // superlayer      = superlayer
