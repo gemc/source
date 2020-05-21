@@ -30,9 +30,6 @@ public:
 	// smearing parameters for each sector / superlayer
 	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
 	
-	//  smearing parametes for the (random) time walk contributions:
-	double smear_time_walk[3];
-	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 	
@@ -116,10 +113,7 @@ public:
     double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
 
 	// returns time walks according to ionisation process:
-	double time_walk_core(double x, double dmax, double epsilon, double R, double kappa, double v0);
-	
-	// returns random time walks:
-	double time_rnd_core(double x, double f, double v0);
+	double doca_smearing(double x, double beta, int sector, int superlayer);
 	
 	G4ThreeVector psmear(G4ThreeVector p);
 	

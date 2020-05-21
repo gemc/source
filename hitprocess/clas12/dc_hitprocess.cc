@@ -59,26 +59,19 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	}
 
 	// reading smearing parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/dc_resolution:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_resolution:%d:%s", dcc.runNo, digiVariation.c_str());
     data.clear();
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		int sec = data[row][0] - 1;
 		int sl  = data[row][1] - 1;
-		dcc.smearP1[sec][sl]    = data[row][2];
-		dcc.smearP2[sec][sl]    = data[row][3];
-		dcc.smearP3[sec][sl]    = data[row][4];
-		dcc.smearP4[sec][sl]    = data[row][5];
-		dcc.smearScale[sec][sl] = data[row][6];
-
-		if(dcc.smearScale[sec][sl] > 1)
-		{
-			cout << "  !!!! DC Warning: the smearing parameter is greater than one for sector " << sec << " sl " << sl
-			<< ". That means that the DC response in GEMC will have"
-			<< " worse resoultion than the data. " << endl;
-		}
-	}
+		dcc.smearP1[sec][sl]    = data[row][3];
+		dcc.smearP2[sec][sl]    = data[row][4];
+		dcc.smearP3[sec][sl]    = data[row][5];
+		dcc.smearP4[sec][sl]    = data[row][6];
+		dcc.smearScale[sec][sl] = data[row][7];
+    }
 
 
 	//********************************************
@@ -91,7 +84,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		int sec = data[row][0] - 1;
 		int sl  = data[row][1] - 1;
 		dcc.v0[sec][sl] = data[row][3];
-		dcc.deltanm[sec][sl] = data[row][4];
+		dcc.deltanm[sec][sl] = data[row][4]; //used in exponential function only
 		dcc.tmaxsuperlayer[sec][sl] = data[row][5];
 		// Row left out, corresponds to distbfield
 		dcc.delta_bfield_coefficient[sec][sl] = data[row][7];
@@ -99,10 +92,8 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.deltatime_bfield_par2[sec][sl] = data[row][9];
 		dcc.deltatime_bfield_par3[sec][sl] = data[row][10];
 		dcc.deltatime_bfield_par4[sec][sl] = data[row][11];
-        //c1
-        dcc.R[sec][sl] = data[row][13];
-        //c2
-        dcc.vmid[sec][sl] = data[row][14];
+        dcc.R[sec][sl] = data[row][13];     // used in polynomial function only
+        dcc.vmid[sec][sl] = data[row][14];  // used in polynomial function only
 //        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
     }
 
@@ -120,14 +111,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		int cable  = data[row][3] - 1;
 		dcc.T0Correction[sec][sl][slot][cable] = data[row][4];
 	}
-
-	
-
-	//Include smearing parameters for time walks: (up to now fixed values, will be included in ccdb soon):
-	dcc.smear_time_walk[0] = 0.001; //Corresponds to smearing at low distances from the wire (given in mm)
-	dcc.smear_time_walk[1] = 3.0; //Adjusts ratio between time walk effects close and far away from the wire
-	dcc.smear_time_walk[2] = 30; //Adjusts random time walk smearing
-	//********************************************
+    //********************************************
 
 
 
@@ -146,7 +130,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.dmaxsuperlayer[5] = 2*dcc.dLayer[5];
 
 
-	// even closer:
+	// even number layers are closer to the beamline:
 	// layers 1,3,5 have +300 micron
 	// layers 2,4,6 have -300 micron
 	dcc.miniStagger[0] =  0.300*mm;
@@ -157,7 +141,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.miniStagger[5] = -0.300*mm;
 
 
-	// loading translation table
+	// loading translation table; CURRENTLY NOT USED
 	dcc.TT = TranslationTable("dcTT");
 	cout << "  > Data loaded in translation table " << dcc.TT.getName() << endl;
 
@@ -333,28 +317,21 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
-	// distance-dependent efficiency as a function of doca
+	// distance-dependent fractional efficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
 	// unsmeared time, based on the dist-time-function and alpha;
 	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
 
-	// Now include (random) time walk contributions:
-
-	// Include ionisation effects:
-	double dt_walk_in = time_walk_core(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.smear_time_walk[0]*beta_particle*beta_particle,dcc.smear_time_walk[1],1,dcc.v0[SECI][SLI]);
-	//Translate average value into detector response/reported value (landau-function):
-	double dt_walk = dt_walk_in + 0.5*dt_walk_in*CLHEP::RandLandau::shoot();
-
-	// Include intrinsic random time walks (due to multiple scattering):
-	double dt_random_in = time_rnd_core(doca/cm,dcc.smear_time_walk[2],dcc.v0[SECI][SLI]);
-	//And translate it to a proper detector response/reported value (gaussian):
+	// Include time smearing calculated from doca resolution
+	double dt_random_in = doca_smearing(X, beta_particle, SECI, SLI);
 	double dt_random = CLHEP::RandGauss::shoot(0,dt_random_in);
-
+    //double dt_walk = dt_walk_in + 0.5*dt_walk_in*CLHEP::RandLandau::shoot();
+    
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
-	double smeared_time = unsmeared_time + dt_walk + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
+	double smeared_time = unsmeared_time + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
 
 	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf << " SECI: " << SECI << " SLI: " << SLI << endl;
 
@@ -521,50 +498,27 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
          return time;
 }
 
-//Taking care of time walks due to discrete ionization processes:
-// x       = distance from the wire, in cm
-// dmax    = cell size in superlayer
-// epsilon = adjustable factor (in mm) times beta² of the particle, the factor is adjusted according to data at small distances from the wire
-// R       = Another (relative) parameter to adjust data at large distances from the wire
-// kappa   = Parameter to adjust the matching between the two time walk distributions --> Should not be touched!
-// v0      = velocity of the particle
-//The time returned is given in ns
-double dc_HitProcess :: time_walk_core(double x, double dmax, double epsilon, double R, double kappa, double v0){
-	double out_walk = 0.0;
+// Define DOCA smearing based on data parameterization
+// x: distance from the wire normalized to the cell size
+// beta: beta of the particle
+// sector: DC sector
+// superlayer: DC superlayer
+// returns time smearing in ns
+double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int superlayer){
+	double doca_smear = 0.0;
 
-	if(epsilon > 0 && v0 > 0){//We dont want any trouble with 1/0...
-		double xcrit = 0.615*dmax; //Reflection point
-		//Two extreme cases have to be considered:
-
-		//i) x < xcrit: Distances close to the wire
-		double dt_close = (sqrt(epsilon*epsilon + x*x) - x)/v0; //This expression is based on geometrical considerations (i.e. ions along a particle track)
-
-		//ii) x >= xcrit: Distances far from the wire
-		double dt_far = R*epsilon*epsilon/(v0*((dmax-x) + epsilon)); //Using the approach electric field ~ 1/r
-
-		//Now merge both expression via a sigmoid function, in order to have a continious distribution without discrete steps:
-		double arg = 1 + exp(-kappa*(x-xcrit));
-		out_walk = (dt_far - dt_close)/arg + dt_close;
-	}
-	return out_walk;
-}
-
-//Include random walk contributions (basically scattering):
-// x      = distance from the wire, in cm
-// f      = factor (in 10⁻3) to adjust the random contributions to data
-//v0      = velocity of the particle
-//The time returned is given in ns
-double dc_HitProcess :: time_rnd_core(double x, double f, double v0){
-	double out_rnd = 0.0;
-
-	if(x >= 0 && v0 > 0){
-		out_rnd = f*(1e-3)*sqrt(x)/v0;
-	}
-	return out_rnd;
+    doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
+                ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
+                + dcc.smearP2[sector][superlayer] * sqrt(x)
+                + dcc.smearP3[sector][superlayer] * beta*beta
+                / (1 - x + dcc.smearP4[sector][superlayer]) ) * cm
+                / (dcc.v0[sector][superlayer]*cm/ns);
+    
+	return doca_smear;
 }
 
 
-// - electronicNoise: returns a vector of hits generated / by electronics.
+// - electronicNoise: returns a vector of hits generated / by electronics: NOT CURRENTLY USED
 vector<MHit*> dc_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
