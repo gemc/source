@@ -25,7 +25,7 @@ void Lorentz::Initialize(int runno){
 
   variation  = "default";
   vector<vector<double> > data;
-  auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
+  unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
   
   sprintf(database,"/calibration/mvt/lorentz");
   data.clear(); calib->GetCalib(data,database);
