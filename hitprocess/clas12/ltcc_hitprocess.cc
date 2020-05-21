@@ -31,14 +31,14 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	else
 		ltccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ltccc.connection));
 	
 	vector<vector<double> > data;
 	// layer = left or right side
 	// component = segment number
 	int sector, layer, component;
 	
-	sprintf(ltccc.database,"/calibration/ltcc/spe:%d",ltccc.runNo);
+	sprintf(ltccc.database,"/calibration/ltcc/spe:%d:%s",ltccc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;

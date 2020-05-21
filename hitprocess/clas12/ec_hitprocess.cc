@@ -48,11 +48,11 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 
 	// The callibration data will be filled in this vector data
 	vector<vector<double> > data;
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
 	
 
 	// ======== Initialization of EC gains ===========
-	sprintf(ecc.database,"/calibration/ec/gain:%d",ecc.runNo);
+	sprintf(ecc.database,"/calibration/ec/gain:%d:%s",ecc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -63,7 +63,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	
 
 	// ========= Initializations of attenuation lengths ========
-	sprintf(ecc.database,"/calibration/ec/attenuation:%d",ecc.runNo);
+	sprintf(ecc.database,"/calibration/ec/attenuation:%d:%s",ecc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -75,7 +75,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 	
 	// ========== Initialization of timings ===========
-	sprintf(ecc.database,"/calibration/ec/timing:%d",ecc.runNo);
+	sprintf(ecc.database,"/calibration/ec/timing:%d:%s",ecc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -95,7 +95,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 
 
 	// ======== Initialization of EC effective velocities ===========
-	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d",ecc.runNo);
+	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d:%s",ecc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)

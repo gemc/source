@@ -46,9 +46,9 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	pcc.pmtFactor           = sqrt(1-pcc.pmtQE+(pcc.pmtDynodeK*pcc.pmtDynodeGain+1)/(pcc.pmtDynodeGain-1));
 	
 	vector<vector<double> > data;
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
 	
-	sprintf(pcc.database,"/calibration/ec/gain:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/gain:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -58,7 +58,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/attenuation:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -70,7 +70,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/timing:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/timing:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -91,7 +91,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	pcc.tdc_global_offset = data[0][3];
 
 
-	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)

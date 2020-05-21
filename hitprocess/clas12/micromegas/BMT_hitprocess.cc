@@ -30,10 +30,10 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	}
 	
 	vector<vector<double> > data;
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
 	
 	//Load the geometrical constant for each layer
-	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim");
+	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim:%d:%s", bmtc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -57,7 +57,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	bmtc.PITCH.resize(bmtc.NLAYERS);
 	
 	for (int layer=0; layer<bmtc.NLAYERS;layer++){
-		sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_strip_L%d",layer+1);
+		sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_strip_L%d:%d:%s", layer+1, bmtc.runNo, digiVariation.c_str());
 		data.clear(); calib->GetCalib(data,bmtc.database);
 		
 		bmtc.GROUP[layer].resize(data.size());

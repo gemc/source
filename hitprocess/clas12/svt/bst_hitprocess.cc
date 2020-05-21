@@ -34,7 +34,7 @@ static bstConstants initializeBSTConstants(int runno, string digiVariation = "de
 	//	bstc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	//
 	//	bstc.variation  = "main";
-	//	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bstc.connection));
+	//	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bstc.connection));
 	
 	return bstc;
 }

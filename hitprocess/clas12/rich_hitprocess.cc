@@ -33,7 +33,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	//		richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	//
 	//	richc.variation  = "main";
-	//	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+	//	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
 	
 	return richc;
 }

@@ -35,10 +35,10 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	else
 		fmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
 	vector<vector<double> > data;
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_global");
+	sprintf(fmtc.database,"/geometry/fmt/fmt_global:%d:%s", fmtc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	// all dimensions are in mm
 
