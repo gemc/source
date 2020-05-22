@@ -101,7 +101,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	}
 
 
-	sprintf(pcc.database, "/calibration/ec/status:%d", pcc.runNo);
+	sprintf(pcc.database, "/calibration/ec/status:%d:%s", pcc.runNo, digiVariation.c_str());
 	data.clear();
 	calib->GetCalib(data, pcc.database);
 	for (unsigned row = 0; row < data.size(); row++)

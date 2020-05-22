@@ -103,7 +103,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 	
 	// ======== Initialization of EC status  ===========
-	sprintf(ecc.database, "/calibration/ec/status:%d", ecc.runNo);
+	sprintf(ecc.database, "/calibration/ec/status:%d:%s", ecc.runNo, digiVariation.c_str());
 	data.clear();
 	calib->GetCalib(data, ecc.database);
 	for (unsigned row = 0; row < data.size(); row++)
