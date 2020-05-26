@@ -71,6 +71,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.smearP3[sec][sl]    = data[row][5];
 		dcc.smearP4[sec][sl]    = data[row][6];
 		dcc.smearScale[sec][sl] = data[row][7];
+        cout<< sec << " " << sl << " " << dcc.smearP1[sec][sl] << " " << dcc.smearP2[sec][sl] << " " << dcc.smearP3[sec][sl] << " " << dcc.smearP4[sec][sl] << " " << dcc.smearScale[sec][sl] << endl;
     }
 
 
@@ -317,7 +318,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// percentage distance from the wire
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
-	// distance-dependent fractional efficiency as a function of doca
+	// distance-dependent fractional inefficiency as a function of doca
 	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
 	double random = G4UniformRand();
 
@@ -326,8 +327,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// Include time smearing calculated from doca resolution
 	double dt_random_in = doca_smearing(X, beta_particle, SECI, SLI);
-	double dt_random = CLHEP::RandGauss::shoot(0,dt_random_in);
-    //double dt_walk = dt_walk_in + 0.5*dt_walk_in*CLHEP::RandLandau::shoot();
+    double dt_random = dt_random_in*CLHEP::RandLandau::shoot();
+    //double dt_random = fabs(CLHEP::RandGauss::shoot(0,dt_random_in));
+    //cout << X << " " << beta_particle << " " << dcc.v0[SECI][SLI] << " " << dt_random_in << endl;
     
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
@@ -507,11 +509,12 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
 double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int superlayer){
 	double doca_smear = 0.0;
 
-    doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
+    
+    doca_smear  = 0.1 * dcc.smearScale[sector][superlayer] *
                 ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
                 + dcc.smearP2[sector][superlayer] * sqrt(x)
                 + dcc.smearP3[sector][superlayer] * beta*beta
-                / (1 - x + dcc.smearP4[sector][superlayer]) ) * cm
+                / (1 - x + dcc.smearP4[sector][superlayer]) )*cm
                 / (dcc.v0[sector][superlayer]*cm/ns);
     
 	return doca_smear;
