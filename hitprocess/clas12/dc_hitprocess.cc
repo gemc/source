@@ -71,7 +71,6 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.smearP3[sec][sl]    = data[row][5];
 		dcc.smearP4[sec][sl]    = data[row][6];
 		dcc.smearScale[sec][sl] = data[row][7];
-        cout<< sec << " " << sl << " " << dcc.smearP1[sec][sl] << " " << dcc.smearP2[sec][sl] << " " << dcc.smearP3[sec][sl] << " " << dcc.smearP4[sec][sl] << " " << dcc.smearScale[sec][sl] << endl;
     }
 
 
@@ -217,7 +216,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
 		signal_t = stepTime[s]/ns + DOCA.mag()/(dcc.v0[SECI][SLI]*cm/ns);
 		// cout << "signal_t: " << signal_t << " stepTime: " << stepTime[s] << " DOCA: " << DOCA.mag() << " driftVelocity: " << dcc.driftVelocity[SLI] << " Lposy: " << Lpos[s].y() << " ylength: " << ylength << " WIRE_Y: " << WIRE_Y << " Lposz: " << Lpos[s].z() << " dcc.NWIRES: " << dcc.NWIRES << endl;
-
+        
 		if(signal_t < minTime)
 		{
 			trackIdw = stepTrackId[s];
@@ -508,16 +507,19 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
 // returns time smearing in ns
 double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int superlayer){
 	double doca_smear = 0.0;
-
     
-    doca_smear  = 0.1 * dcc.smearScale[sector][superlayer] *
+    double dmax = 1;
+    if(x>dmax) x=dmax;
+
+    doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
                 ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
                 + dcc.smearP2[sector][superlayer] * sqrt(x)
                 + dcc.smearP3[sector][superlayer] * beta*beta
-                / (1 - x + dcc.smearP4[sector][superlayer]) )*cm
-                / (dcc.v0[sector][superlayer]*cm/ns);
-    
-	return doca_smear;
+                / (1 - x + dcc.smearP4[sector][superlayer]) )
+                / (dcc.v0[sector][superlayer])*cm;
+    doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
+
+    return doca_smear;
 }
 
 
