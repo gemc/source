@@ -117,8 +117,8 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 	// reading DC core parameters
 	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s", dcc.runNo, digiVariation.c_str());
-	auto_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
-	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
+	unique_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
+    for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
 	}
 
