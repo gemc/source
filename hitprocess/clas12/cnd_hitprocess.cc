@@ -35,11 +35,11 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	
 	vector<vector<double> > data;
 	
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(cndc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(cndc.connection));
 	cout<<"Connecting to "<<cndc.connection<<"/calibration/cnd"<<endl;
 	
 	cout<<"CND:Getting status"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Status_LR:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/Status_LR:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -49,7 +49,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting TDC slope"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -59,7 +59,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting attenuation"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Attenuation:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/Attenuation:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -69,7 +69,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting effective_velocity"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/EffV:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/EffV:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -79,7 +79,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting energy calibration"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Energy:%d",cndc.runNo);
+	sprintf(cndc.database,"/calibration/cnd/Energy:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -91,7 +91,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting u-turn delay"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d:%s",cndc.runNo, digiVariation.c_str());
+	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -100,7 +100,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset LR"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d:%s",cndc.runNo, digiVariation.c_str());
+	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -109,7 +109,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset layer"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d:%s",cndc.runNo, digiVariation.c_str());
+	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d:%s", cndc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

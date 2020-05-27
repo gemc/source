@@ -41,7 +41,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	else
 		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 
 	// reading efficiency parameters
@@ -118,7 +118,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	// reading DC core parameters
 	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s", dcc.runNo, digiVariation.c_str());
 	unique_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
-    for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
+  for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
 	}
 

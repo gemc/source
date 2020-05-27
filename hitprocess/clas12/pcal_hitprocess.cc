@@ -37,18 +37,17 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	pcc.pmtQE               = 0.27    ;
 	pcc.pmtDynodeGain       = 4.0     ;
-	pcc.pmtDynodeK          = 0.5     ; // K=0 (Poisson) K=1(exponential)	vector<vector<double> > data;
+	
 	//  Fluctuations in PMT gain distributed using Gaussian with
-	//  sigma=1/SNR where SNR = sqrt[(1-QE+(k*del+1)/(del-1))/npe] del = dynode gain k=0-1
-	//  Adapted from G-75 (pg. 169) and and G-111 (pg. 174) from RCA PMT Handbook.
-	//  Factor k for dynode statistics can range from k=0 (Poisson) to k=1 (exponential).
-	//  Note: GSIM sigma was incorrect (used 1/sigma for sigma).
-	pcc.pmtFactor           = sqrt(1-pcc.pmtQE+(pcc.pmtDynodeK*pcc.pmtDynodeGain+1)/(pcc.pmtDynodeGain-1));
+	//  sigma = sqrt(npe)/SNR where 1/SNR = sqrt[(1 + 1/(pcc.pmtDynodeGain-1)) npe=number of photoelectrons
+	//  Adapted from G-112 (pg. 174) of RCA PMT Handbook.
+
+	pcc.pmtFactor           = sqrt(1 + 1/(pcc.pmtDynodeGain-1));
 	
 	vector<vector<double> > data;
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
 	
-	sprintf(pcc.database,"/calibration/ec/gain:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/gain:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -58,7 +57,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/attenuation:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/attenuation:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -70,7 +69,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/timing:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/timing:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -91,7 +90,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	pcc.tdc_global_offset = data[0][3];
 
 
-	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d",pcc.runNo);
+	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d:%s",pcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -100,6 +99,16 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		//istr = data[row][2];
 		pcc.veff[isec-1][ilay-1].push_back(data[row][3]);
 	}
+
+
+	sprintf(pcc.database, "/calibration/ec/status:%d:%s", pcc.runNo, digiVariation.c_str());
+	data.clear();
+	calib->GetCalib(data, pcc.database);
+	for (unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		pcc.status[isec-1][ilay-1].push_back(data[row][3]);
+	}	
 	
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
 	// they will be initialized from CCDB, when the DB will be ready
@@ -242,10 +251,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (Etota > 0) {
 		double PC_npe = G4Poisson(Etota*pcc.pmtPEYld); //number of photoelectrons
 		if (PC_npe>0) {
-			//  Fluctuations in PMT gain distributed using Gaussian with
-			//  sigma SNR = sqrt(ngamma)/sqrt(del/del-1) del = dynode gain = 3 (From RCA PMT Handbook) p. 169)
-			//  algorithm, values, and comment above taken from gsim.
-			double sigma = pcc.pmtFactor/sqrt(PC_npe);
+		        double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
 			double PC_GeV = G4RandGauss::shoot(PC_npe,sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 			if (PC_GeV>0) {
 				ADC = PC_GeV;
@@ -253,6 +259,28 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			}
 		}
 	}
+
+        // Status flags
+	switch (pcc.status[sector-1][view-1][strip-1])
+	{
+	   case 0:
+	   break;
+	   case 1:
+	   ADC = 0;
+	   break;
+	   case 2:
+	   TDC = 0;
+	   break;
+	   case 3:
+	   ADC = TDC = 0;
+	   break;
+	
+	   case 5:
+	   break;
+	
+	   default:
+	   cout << " > Unknown PCAL status: " << pcc.status[sector-1][view-1][strip-1] << " for sector " << sector << ",  view " << view << ", strip " << strip << endl;
+	}	
 	
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
@@ -400,7 +428,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			if (stepE > 0) {
 				double PC_npe = G4Poisson(stepE*pcc.pmtPEYld); //number of photoelectrons
 				if (PC_npe>0) {
-					double sigma  = pcc.pmtFactor/sqrt(PC_npe);
+				        double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
 					double PC_GeV = G4RandGauss::shoot(PC_npe, sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 					if (PC_GeV>0) {
 						stepIndex.push_back(s);

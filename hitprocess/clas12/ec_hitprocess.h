@@ -34,6 +34,14 @@ public:
 
 	//veff: effective velocity (cm/ns)
 	vector<double> veff[nsect][nlayer];
+
+	// status:
+	//	0 - fully functioning
+	//	1 - noADC
+	//	2 - noTDC
+	//	3 - noADC, noTDC (PMT is dead)
+	// 5 - any other reconstruction problem
+	vector<int> status[nsect][nlayer];	
 	
 	// ======== FADC Pedestals and sigmas ===========
 	double pedestal[nsect][nlayer][nview] = {};
