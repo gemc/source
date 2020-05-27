@@ -35,7 +35,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 		fthc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
 	fthc.variation  = "default";
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fthc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fthc.connection));
 
 
 	int isector,ilayer;
@@ -43,7 +43,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	vector<vector<double> > data;
 
 	cout<<"FT-Hodo:Getting status"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/status:%d",fthc.runNo);
+	sprintf(fthc.database,"/calibration/ft/fthodo/status:%d:%s",fthc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -53,7 +53,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting noise"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/noise:%d",fthc.runNo);
+	sprintf(fthc.database,"/calibration/ft/fthodo/noise:%d:%s",fthc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -71,7 +71,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting charge_to_energy"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/charge_to_energy:%d",fthc.runNo);
+	sprintf(fthc.database,"/calibration/ft/fthodo/charge_to_energy:%d:%s",fthc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

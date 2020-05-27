@@ -41,7 +41,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	else
 		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(dcc.connection));
 
 
 	// reading efficiency parameters

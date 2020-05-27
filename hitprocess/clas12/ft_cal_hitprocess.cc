@@ -38,11 +38,11 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	
 	vector<vector<double> > data;
 	
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftcc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftcc.connection));
 	cout<<"Connecting to "<<ftcc.connection<<"/calibration/ft/ftcal"<<endl;
 	
 	cout<<"FT-Cal:Getting status"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d",ftcc.runNo);
+	sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s",ftcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -51,7 +51,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting noise"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d",ftcc.runNo);
+	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d:%s",ftcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -64,7 +64,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting charge_to_energy"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d",ftcc.runNo);
+	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d:%s",ftcc.runNo, digiVariation.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
