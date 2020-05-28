@@ -14,11 +14,11 @@ public:
 	
 	// database
 	int    runNo;
-	string date;
 	string connection;
 	char   database[80];
 
-	double driftVelocity[6];
+    int    fieldPolarity;
+//	double driftVelocity[6];
 	double miniStagger[6];
 	double dcThreshold;
 	int NWIRES;
@@ -30,9 +30,6 @@ public:
 	// smearing parameters for each sector / superlayer
 	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
 	
-	//  smearing parametes for the (random) time walk contributions:
-	double smear_time_walk[3];
-	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 	
@@ -43,6 +40,7 @@ public:
 	//parameters for time to distance:
 	double deltanm[6][6], v0[6][6], delta_bfield_coefficient[6][6],tmaxsuperlayer[6][6];
 	double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
+    double vmid[6][6], R[6][6];
 	double dmaxsuperlayer[6];
 
 	// sector, SL, slot, cable
@@ -108,14 +106,14 @@ public:
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new dc_HitProcess;}
 	
-	// returns a time given a distance
-	double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
-	
+    // returns a time given a distance: old exponential function
+    double calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+    
+    // returns a time given a distance: neew polynomial function
+    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+
 	// returns time walks according to ionisation process:
-	double time_walk_core(double x, double dmax, double epsilon, double R, double kappa, double v0);
-	
-	// returns random time walks:
-	double time_rnd_core(double x, double f, double v0);
+	double doca_smearing(double x, double beta, int sector, int superlayer);
 	
 	G4ThreeVector psmear(G4ThreeVector p);
 	
