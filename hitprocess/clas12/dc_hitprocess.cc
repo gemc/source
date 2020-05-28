@@ -28,13 +28,9 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	// with the proper run number coming from options or run table
 	if(runno == -1) return dcc;
 
-
 	dcc.runNo = runno;
 	dcc.dcThreshold  = 50;  // eV
-    
-    // set value of field polarity (+1/-1): FIXME should be read from gcard
-    dcc.fieldPolarity = -1;
-    
+
 	// database
 	if(getenv ("CCDB_CONNECTION") != NULL)
 		dcc.connection = (string) getenv("CCDB_CONNECTION");
@@ -46,7 +42,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 	// reading efficiency parameters
 	sprintf(dcc.database, "/calibration/dc/signal_generation/intrinsic_inefficiency:%d:%s", dcc.runNo, digiVariation.c_str());
-    vector<vector<double> > data;
+	vector<vector<double> > data;
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -55,12 +51,12 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.P2[sl]     = data[row][2];
 		dcc.P3[sl]     = data[row][3];
 		dcc.P4[sl]     = data[row][4];
-        dcc.iScale[sl] = data[row][5];
+		dcc.iScale[sl] = data[row][5];
 	}
 
 	// reading smearing parameters
 	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_resolution:%d:%s", dcc.runNo, digiVariation.c_str());
-    data.clear();
+	data.clear();
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -71,13 +67,13 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.smearP3[sec][sl]    = data[row][5];
 		dcc.smearP4[sec][sl]    = data[row][6];
 		dcc.smearScale[sec][sl] = data[row][7];
-    }
+	}
 
 
 	//********************************************
 	//calculating distance to time:
 	sprintf(dcc.database, "/calibration/dc/time_to_distance/time2dist:%d:%s", dcc.runNo, digiVariation.c_str());
-    data.clear();
+	data.clear();
 	calib->GetCalib(data, dcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++) {
@@ -92,10 +88,10 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		dcc.deltatime_bfield_par2[sec][sl] = data[row][9];
 		dcc.deltatime_bfield_par3[sec][sl] = data[row][10];
 		dcc.deltatime_bfield_par4[sec][sl] = data[row][11];
-        dcc.R[sec][sl] = data[row][13];     // used in polynomial function only
-        dcc.vmid[sec][sl] = data[row][14];  // used in polynomial function only
-//        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
-    }
+		dcc.R[sec][sl] = data[row][13];     // used in polynomial function only
+		dcc.vmid[sec][sl] = data[row][14];  // used in polynomial function only
+		//        cout << dcc.v0[sec][sl] << " " << dcc.deltanm[sec][sl] << " " << dcc.tmaxsuperlayer[sec][sl] << " " << dcc.R[sec][sl] << " " << dcc.vmid[sec][sl] << endl;
+	}
 
 
 
@@ -111,14 +107,14 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 		int cable  = data[row][3] - 1;
 		dcc.T0Correction[sec][sl][slot][cable] = data[row][4];
 	}
-    //********************************************
+	//********************************************
 
 
 
 	// reading DC core parameters
 	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s", dcc.runNo, digiVariation.c_str());
 	unique_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
-  for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
+	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
 	}
 
@@ -216,7 +212,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
 		signal_t = stepTime[s]/ns + DOCA.mag()/(dcc.v0[SECI][SLI]*cm/ns);
 		// cout << "signal_t: " << signal_t << " stepTime: " << stepTime[s] << " DOCA: " << DOCA.mag() << " driftVelocity: " << dcc.driftVelocity[SLI] << " Lposy: " << Lpos[s].y() << " ylength: " << ylength << " WIRE_Y: " << WIRE_Y << " Lposz: " << Lpos[s].z() << " dcc.NWIRES: " << dcc.NWIRES << endl;
-        
+
 		if(signal_t < minTime)
 		{
 			trackIdw = stepTrackId[s];
@@ -236,7 +232,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 	// If no step pass the threshold, getting the fastest signal with no threshold: FOR MAC, IS THIS WHAT WE WANT?
-    if(trackIds == -1)
+	if(trackIds == -1)
 		trackIds = trackIdw;
 
 
@@ -285,10 +281,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//Now calculate alpha according to Macs definition:
 			alpha = asin((const1*rotated_vector.x() + const2*rotated_vector.y())/rotated_vector.mag())/deg;
 
-            //B-field correction: correct alpha with theta0, the angle corresponding to the isochrone lines twist due to the electric field
-            thisMgnf = mgnf[s]/tesla; // Given in Tesla
-            double theta0 = acos(1-0.02*thisMgnf)/deg;
-            alpha-= dcc.fieldPolarity*theta0;
+			//B-field correction: correct alpha with theta0, the angle corresponding to the isochrone lines twist due to the electric field
+			thisMgnf = mgnf[s]/tesla; // Given in Tesla
+			double theta0 = acos(1-0.02*thisMgnf)/deg;
+			alpha-= dcc.fieldPolarity*theta0;
 
 			// compute reduced alpha (VZ)
 			// alpha in radians
@@ -306,7 +302,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			doca = DOCA.mag();
 			if(DOCA.y() >=0 ) LR = 1;
 			else  LR = -1;
-            
+
 			//Get beta-value of the particle:
 			beta_particle = mom[s].mag()/E[s];
 
@@ -326,9 +322,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// Include time smearing calculated from doca resolution
 	double dt_random_in = doca_smearing(X, beta_particle, SECI, SLI);
-        //double dt_random = dt_random_in*CLHEP::RandLandau::shoot();
-        double dt_random = fabs(CLHEP::RandGauss::shoot(0,dt_random_in));
-    //cout << X << " " << beta_particle << " " << dcc.v0[SECI][SLI] << " " << dt_random_in << endl;
+  //double dt_random = dt_random_in*CLHEP::RandLandau::shoot();
+  double dt_random = fabs(CLHEP::RandGauss::shoot(0,dt_random_in));
+   //cout << X << " " << beta_particle << " " << dcc.v0[SECI][SLI] << " " << dt_random_in << endl;
     
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
@@ -352,7 +348,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// decide if write an hit or not based on inefficiency value
 	writeHit = true;
-    rejectHitConditions=(ineff==-1);
+	rejectHitConditions=(ineff==-1);
 
 	// define conditions to reject hit
 	if(rejectHitConditions) {
@@ -467,36 +463,36 @@ double dc_HitProcess :: calc_Time_exp(double x, double dmax, double tmax, double
 // superlayer      = superlayer
 double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer)
 {
-        if(x>dmax)
-            x=dmax;
-        double time = 0;
-        // alpha correction
-        double cos30minusalpha=(double)cos((30. - alpha)*deg);
-        double dmaxalpha = dmax*cos30minusalpha;
-        double xhatalpha = x/dmaxalpha;
-        //   rcapital is an intermediate parameter
-        double rcapital = dcc.R[sector][superlayer]*dmax;
-        //   delt is another intermediate parameter
-        double delt=tmax-dmax/dcc.v0[sector][superlayer];
-        double delv=1./dcc.vmid[sector][superlayer]-1./dcc.v0[sector][superlayer];
-        //   now calculate the primary parameters a, b, c, d
+	if(x>dmax)
+		x=dmax;
+	double time = 0;
+	// alpha correction
+	double cos30minusalpha=(double)cos((30. - alpha)*deg);
+	double dmaxalpha = dmax*cos30minusalpha;
+	double xhatalpha = x/dmaxalpha;
+	//   rcapital is an intermediate parameter
+	double rcapital = dcc.R[sector][superlayer]*dmax;
+	//   delt is another intermediate parameter
+	double delt=tmax-dmax/dcc.v0[sector][superlayer];
+	double delv=1./dcc.vmid[sector][superlayer]-1./dcc.v0[sector][superlayer];
+	//   now calculate the primary parameters a, b, c, d
 
-         double c = ((3.*delv)/(dcc.R[sector][superlayer]*dmax)+
-                     (12*dcc.R[sector][superlayer]*dcc.R[sector][superlayer]*delt)/
-                     (2.*(1-2*dcc.R[sector][superlayer])*(dmax*dmax)));
-        c = c /(4.-(1.-6.*dcc.R[sector][superlayer]*dcc.R[sector][superlayer])/(1.-2.*dcc.R[sector][superlayer]));
-        double b = delv/(rcapital*rcapital) - 4.*c/(3.*rcapital);
-        double d = 1./dcc.v0[sector][superlayer];
-        double a = (tmax -  b*dmaxalpha*dmaxalpha*dmaxalpha -
-                c*dmaxalpha*dmaxalpha - d*dmaxalpha)/(dmaxalpha*dmaxalpha*dmaxalpha*dmaxalpha) ;
-        time = a*x*x*x*x + b*x*x*x + c*x*x + d*x ;
+	double c = ((3.*delv)/(dcc.R[sector][superlayer]*dmax)+
+					(12*dcc.R[sector][superlayer]*dcc.R[sector][superlayer]*delt)/
+					(2.*(1-2*dcc.R[sector][superlayer])*(dmax*dmax)));
+	c = c /(4.-(1.-6.*dcc.R[sector][superlayer]*dcc.R[sector][superlayer])/(1.-2.*dcc.R[sector][superlayer]));
+	double b = delv/(rcapital*rcapital) - 4.*c/(3.*rcapital);
+	double d = 1./dcc.v0[sector][superlayer];
+	double a = (tmax -  b*dmaxalpha*dmaxalpha*dmaxalpha -
+					c*dmaxalpha*dmaxalpha - d*dmaxalpha)/(dmaxalpha*dmaxalpha*dmaxalpha*dmaxalpha) ;
+	time = a*x*x*x*x + b*x*x*x + c*x*x + d*x ;
 
-         double deltatime_bfield = dcc.delta_bfield_coefficient[sector][superlayer]*pow(bfield,2)*tmax*(dcc.deltatime_bfield_par1[sector][superlayer]*xhatalpha+dcc.deltatime_bfield_par2[sector][superlayer]*pow(xhatalpha, 2)+ dcc.deltatime_bfield_par3[sector][superlayer]*pow(xhatalpha, 3)+dcc.deltatime_bfield_par4[sector][superlayer]*pow(xhatalpha, 4));
+	double deltatime_bfield = dcc.delta_bfield_coefficient[sector][superlayer]*pow(bfield,2)*tmax*(dcc.deltatime_bfield_par1[sector][superlayer]*xhatalpha+dcc.deltatime_bfield_par2[sector][superlayer]*pow(xhatalpha, 2)+ dcc.deltatime_bfield_par3[sector][superlayer]*pow(xhatalpha, 3)+dcc.deltatime_bfield_par4[sector][superlayer]*pow(xhatalpha, 4));
 
-         //cout<<"dt = "<<deltatime_bfield<<" C0 "<<dcc.delta_bfield_coefficient[sector][superlayer]<<endl;
-         //calculate the time at alpha deg. and at a non-zero bfield
-         time += deltatime_bfield;
-         return time;
+	//cout<<"dt = "<<deltatime_bfield<<" C0 "<<dcc.delta_bfield_coefficient[sector][superlayer]<<endl;
+	//calculate the time at alpha deg. and at a non-zero bfield
+	time += deltatime_bfield;
+	return time;
 }
 
 // Define DOCA smearing based on data parameterization
@@ -507,19 +503,19 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
 // returns time smearing in ns
 double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int superlayer){
 	double doca_smear = 0.0;
-    
-    double dmax = 1;
-    if(x>dmax) x=dmax;
 
-    doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
-                ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
-                + dcc.smearP2[sector][superlayer] * sqrt(x)
-                + dcc.smearP3[sector][superlayer] * beta*beta
-                / (1 - x + dcc.smearP4[sector][superlayer]) )
-                / (dcc.v0[sector][superlayer])*cm;
-    doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
+	double dmax = 1;
+	if(x>dmax) x=dmax;
 
-    return doca_smear;
+	doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
+	( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
+	 + dcc.smearP2[sector][superlayer] * sqrt(x)
+	 + dcc.smearP3[sector][superlayer] * beta*beta
+	 / (1 - x + dcc.smearP4[sector][superlayer]) )
+	/ (dcc.v0[sector][superlayer])*cm;
+	doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
+
+	return doca_smear;
 }
 
 
@@ -574,11 +570,32 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 void dc_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string hardcodedTorusMapName = "TorusSymmetric";
 
 	if(dcc.runNo != runno) {
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		dcc = initializeDCConstants(runno, digiVariation);
 		dcc.runNo = runno;
+
+		double scaleFactor = 1;
+		vector<aopt> FIELD_SCALES_OPTION = gemcOpt.getArgs("SCALE_FIELD");
+		for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
+			vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
+			if(scales.size() == 2) {
+				if (scales[0].find(hardcodedTorusMapName) != string::npos) {
+					scaleFactor = get_number(scales[1]);
+				}
+			}
+		}
+		dcc.fieldPolarity = scaleFactor;
+
+		string nofield = gemcOpt.optMap["NO_FIELD"].args;
+		if(nofield == "all" || nofield.find(hardcodedTorusMapName) != string::npos ) {
+			dcc.fieldPolarity = 1;
+		}
+
+		cout << " > Initializing " << HCname << " digitization for run number: " << dcc.runNo << ", torus polarity: " << dcc.fieldPolarity << endl;
+
+
 	}
 }
 

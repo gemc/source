@@ -17,8 +17,8 @@ public:
 	string connection;
 	char   database[80];
 
-    int    fieldPolarity;
-//	double driftVelocity[6];
+	int    fieldPolarity;
+	//	double driftVelocity[6];
 	double miniStagger[6];
 	double dcThreshold;
 	int NWIRES;
@@ -40,7 +40,7 @@ public:
 	//parameters for time to distance:
 	double deltanm[6][6], v0[6][6], delta_bfield_coefficient[6][6],tmaxsuperlayer[6][6];
 	double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
-    double vmid[6][6], R[6][6];
+	double vmid[6][6], R[6][6];
 	double dmaxsuperlayer[6];
 
 	// sector, SL, slot, cable
@@ -56,8 +56,8 @@ public:
 
 		double t0corr = T0Correction[sectorI][superlayerI][slot - 1][cable - 1];
 
-//		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
-//		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
+		//		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
+		//		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
 
 		return t0corr;
 	}
@@ -106,11 +106,11 @@ public:
 	// creates the HitProcess
 	static HitProcess *createHitClass() {return new dc_HitProcess;}
 	
-    // returns a time given a distance: old exponential function
-    double calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
-    
-    // returns a time given a distance: neew polynomial function
-    double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+	// returns a time given a distance: old exponential function
+	double calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
+
+	// returns a time given a distance: neew polynomial function
+	double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
 
 	// returns time walks according to ionisation process:
 	double doca_smearing(double x, double beta, int sector, int superlayer);
