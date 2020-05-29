@@ -322,10 +322,10 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// Include time smearing calculated from doca resolution
 	double dt_random_in = doca_smearing(X, beta_particle, SECI, SLI);
-	double dt_random = dt_random_in*CLHEP::RandLandau::shoot();
-	//double dt_random = fabs(CLHEP::RandGauss::shoot(0,dt_random_in));
-	//cout << X << " " << beta_particle << " " << dcc.v0[SECI][SLI] << " " << dt_random_in << endl;
-
+  //double dt_random = dt_random_in*CLHEP::RandLandau::shoot();
+  double dt_random = fabs(CLHEP::RandGauss::shoot(0,dt_random_in));
+   //cout << X << " " << beta_particle << " " << dcc.v0[SECI][SLI] << " " << dt_random_in << endl;
+    
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
 	double smeared_time = unsmeared_time + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
