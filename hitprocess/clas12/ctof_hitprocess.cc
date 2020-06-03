@@ -15,7 +15,7 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "default") {
+static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no) {
 	ctofConstants ctc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
@@ -209,16 +209,6 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	return ctc;
 }
 
-void ctof_HitProcess::initWithRunNumber(int runno) {
-
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-
-	if (ctc.runNo != runno) {
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ctc = initializeCTOFConstants(runno, digiVariation);
-		ctc.runNo = runno;
-	}
-}
 
 map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 {
@@ -563,6 +553,19 @@ double ctof_HitProcess::voltage(double charge, double time, double forTime) {
 	//return DGauss(forTime, ctc.vpar, charge, time);
 	return PulseShape(forTime, ctc.vpar, charge, time);
 }
+
+void ctof_HitProcess::initWithRunNumber(int runno) {
+
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+
+	if (ctc.runNo != runno) {
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime);
+		ctc.runNo = runno;
+	}
+}
+
 
 // this static function will be loaded first thing by the executable
 ctofConstants ctof_HitProcess::ctc = initializeCTOFConstants(-1);

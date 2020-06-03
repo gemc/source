@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static bstConstants initializeBSTConstants(int runno, string digiVariation = "default")
+static bstConstants initializeBSTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	bstConstants bstc;
@@ -322,11 +322,12 @@ double bst_HitProcess :: voltage(double charge, double time, double forTime)
 
 void bst_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(bstc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bstc = initializeBSTConstants(runno, digiVariation);
+		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime);
 		bstc.runNo = runno;
 	}
 }

@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static cndConstants initializeCNDConstants(int runno, string digiVariation = "default")
+static cndConstants initializeCNDConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	cndConstants cndc;
@@ -558,11 +558,12 @@ double cnd_HitProcess :: voltage(double charge, double time, double forTime)
 
 void cnd_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(cndc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		cndc = initializeCNDConstants(runno, digiVariation);
+		cndc = initializeCNDConstants(runno, digiVariation, digiSnapshotTime);
 		cndc.runNo = runno;
 	}
 }

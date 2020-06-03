@@ -14,7 +14,7 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "default") {
+static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no) {
 	ftofConstants ftc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
@@ -606,11 +606,12 @@ double ftof_HitProcess::voltage(double charge, double time, double forTime) {
 
 void ftof_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if (ftc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftc = initializeFTOFConstants(runno, digiVariation);
+		ftc = initializeFTOFConstants(runno, digiVariation, digiSnapshotTime);
 		ftc.runNo = runno;
 	}
 }

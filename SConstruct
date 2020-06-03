@@ -122,7 +122,6 @@ hitp_sources = Split("""
 	hitprocess/clas12/cnd_hitprocess.cc
 	hitprocess/clas12/dc_hitprocess.cc
 	hitprocess/clas12/ec_hitprocess.cc
-	hitprocess/clas12/ecs_hitprocess.cc
 	hitprocess/clas12/ftof_hitprocess.cc
 	hitprocess/clas12/ft_cal_hitprocess.cc
 	hitprocess/clas12/ft_hodo_hitprocess.cc

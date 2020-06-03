@@ -5,7 +5,7 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default")
+static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	ftmConstants ftmc;
 	
@@ -26,17 +26,6 @@ static ftmConstants initializeFTMConstants(int runno, string digiVariation = "de
 }
 
 
-void ftm_HitProcess::initWithRunNumber(int runno)
-{
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	
-	if(this->ftmcc.runNo != runno)
-	{
-		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftmcc = initializeFTMConstants(runno, digiVariation);
-		ftmcc.runNo = runno;
-	}
-}
 
 map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
@@ -188,3 +177,15 @@ vector<MHit*> ftm_HitProcess :: electronicNoise()
 ftmConstants ftm_HitProcess::ftmcc = initializeFTMConstants(-1);
 
 
+void ftm_HitProcess::initWithRunNumber(int runno)
+{
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+
+	if(this->ftmcc.runNo != runno)
+	{
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		ftmcc = initializeFTMConstants(runno, digiVariation, digiSnapshotTime);
+		ftmcc.runNo = runno;
+	}
+}

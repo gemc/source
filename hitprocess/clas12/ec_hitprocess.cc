@@ -10,7 +10,7 @@ using namespace ccdb;
 // gemc headers
 #include "ec_hitprocess.h"
 
-static ecConstants initializeECConstants(int runno, string digiVariation = "default")
+static ecConstants initializeECConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	ecConstants ecc;
 
@@ -475,11 +475,12 @@ vector<MHit*> ec_HitProcess :: electronicNoise()
 
 void ec_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(ecc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ecc = initializeECConstants(runno, digiVariation);
+		ecc = initializeECConstants(runno, digiVariation, digiSnapshotTime);
 		ecc.runNo = runno;
 	}
 }

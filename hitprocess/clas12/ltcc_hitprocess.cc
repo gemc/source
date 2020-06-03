@@ -14,7 +14,7 @@
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default")
+static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
@@ -252,11 +252,12 @@ double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
 
 void ltcc_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ltccc = initializeLTCCConstants(runno, digiVariation);
+		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime);
 		ltccc.runNo = runno;
 	}
 }

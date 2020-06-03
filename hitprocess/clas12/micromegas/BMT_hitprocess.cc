@@ -12,7 +12,7 @@
 using namespace ccdb;
 
 
-static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default")
+static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
@@ -316,11 +316,12 @@ double BMT_HitProcess :: voltage(double charge, double time, double forTime)
 
 void BMT_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(bmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bmtc = initializeBMTConstants(runno, digiVariation);
+		bmtc = initializeBMTConstants(runno, digiVariation, digiSnapshotTime);
 		bmtc.runNo = runno;
 	}
 }

@@ -14,7 +14,7 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static atofConstants initializeATOFConstants(int runno, string digiVariation = "default") {
+static atofConstants initializeATOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no) {
 	atofConstants atc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
@@ -98,11 +98,12 @@ double atof_HitProcess::voltage(double charge, double time, double forTime) {
 
 void atof_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if (atc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		atc = initializeATOFConstants(runno, digiVariation);
+		atc = initializeATOFConstants(runno, digiVariation, digiSnapshotTime);
 		atc.runNo = runno;
 	}
 }

@@ -20,7 +20,7 @@ using namespace CLHEP;
 using namespace ccdb;
 
 //static fmtConstants initializeFMTConstants(int runno)
-static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default")
+static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	fmtConstants fmtc;
@@ -277,11 +277,12 @@ map< string, vector <int> >  FMT_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 void FMT_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(fmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fmtc = initializeFMTConstants(runno, digiVariation);
+		fmtc = initializeFMTConstants(runno, digiVariation, digiSnapshotTime);
 		fmtc.runNo = runno;
 	}
 }

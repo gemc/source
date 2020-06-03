@@ -16,7 +16,7 @@ using namespace ccdb;
 #include "Randomize.hh"
 
 
-static dcConstants initializeDCConstants(int runno, string digiVariation = "default")
+static dcConstants initializeDCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	dcConstants dcc;
@@ -569,11 +569,14 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 
 void dc_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+
 	string hardcodedTorusMapName = "TorusSymmetric";
 
 	if(dcc.runNo != runno) {
-		dcc = initializeDCConstants(runno, digiVariation);
+		
+		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime);
 		dcc.runNo = runno;
 
 		double scaleFactor = 1;

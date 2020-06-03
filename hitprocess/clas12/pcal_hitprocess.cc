@@ -11,7 +11,7 @@ using namespace ccdb;
 // gemc headers
 #include "pcal_hitprocess.h"
 
-static pcConstants initializePCConstants(int runno, string digiVariation = "default")
+static pcConstants initializePCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	pcConstants pcc;
 	
@@ -466,11 +466,12 @@ double pcal_HitProcess :: voltage(double charge, double time, double forTime)
 
 void pcal_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(pcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		pcc = initializePCConstants(runno, digiVariation);
+		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime);
 		pcc.runNo = runno;
 	}
 }

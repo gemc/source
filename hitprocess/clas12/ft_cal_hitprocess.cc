@@ -17,7 +17,7 @@ using namespace ccdb;
 
 
 
-static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default")
+static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
 {
 	// all these constants should be read from CCDB
 	ftCalConstants ftcc;
@@ -433,11 +433,12 @@ double ft_cal_HitProcess :: voltage(double charge, double time, double forTime)
 
 void ft_cal_HitProcess::initWithRunNumber(int runno)
 {
-	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
 
 	if(ftcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftcc = initializeFTCALConstants(runno, digiVariation);
+		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime);
 		ftcc.runNo = runno;
 	}
 }
