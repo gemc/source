@@ -11,14 +11,18 @@ using namespace ccdb;
 // gemc headers
 #include "pcal_hitprocess.h"
 
-static pcConstants initializePCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static pcConstants initializePCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	pcConstants pcc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return pcc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	int isec,ilay;
 	//	int isec,ilay,istr;
 	
@@ -47,7 +51,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	vector<vector<double> > data;
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(pcc.connection));
 	
-	sprintf(pcc.database,"/calibration/ec/gain:%d:%s",pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database,"/calibration/ec/gain:%d:%s%s",pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -57,7 +61,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/attenuation:%d:%s",pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database,"/calibration/ec/attenuation:%d:%s%s",pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -69,7 +73,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
 	}
 	
-	sprintf(pcc.database,"/calibration/ec/timing:%d:%s",pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database,"/calibration/ec/timing:%d:%s%s",pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -85,12 +89,12 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 
 	// ========== Initialization of timing offset ===========
 	// ========== Initialization of timing offset ===========
-	sprintf(pcc.database,"/calibration/ec/tdc_global_offset:%d:%s", pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database,"/calibration/ec/tdc_global_offset:%d:%s%s", pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data, pcc.database);
 	pcc.tdc_global_offset = data[0][3];
 
 
-	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d:%s",pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d:%s%s",pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -101,7 +105,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	}
 
 
-	sprintf(pcc.database, "/calibration/ec/status:%d:%s", pcc.runNo, digiVariation.c_str());
+	sprintf(pcc.database, "/calibration/ec/status:%d:%s%s", pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, pcc.database);
 	for (unsigned row = 0; row < data.size(); row++)

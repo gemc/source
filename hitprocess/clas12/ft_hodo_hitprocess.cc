@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	ftHodoConstants fthc;
@@ -23,6 +23,10 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return fthc;
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 
 	// database
@@ -43,7 +47,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	vector<vector<double> > data;
 
 	cout<<"FT-Hodo:Getting status"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/status:%d:%s",fthc.runNo, digiVariation.c_str());
+	sprintf(fthc.database,"/calibration/ft/fthodo/status:%d:%s%s",fthc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -53,7 +57,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting noise"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/noise:%d:%s",fthc.runNo, digiVariation.c_str());
+	sprintf(fthc.database,"/calibration/ft/fthodo/noise:%d:%s%s",fthc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -71,7 +75,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting charge_to_energy"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/charge_to_energy:%d:%s",fthc.runNo, digiVariation.c_str());
+	sprintf(fthc.database,"/calibration/ft/fthodo/charge_to_energy:%d:%s%s",fthc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -82,7 +86,7 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	}
 
 	cout<<"FT-Hodo:Getting time_offsets"<<endl;
-	sprintf(fthc.database,"/calibration/ft/fthodo/time_offsets:%d:%s",fthc.runNo, digiVariation.c_str());
+	sprintf(fthc.database,"/calibration/ft/fthodo/time_offsets:%d:%s%s",fthc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fthc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

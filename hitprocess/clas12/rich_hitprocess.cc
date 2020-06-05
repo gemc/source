@@ -15,7 +15,7 @@ using namespace CLHEP;
 // gemc headers
 #include "rich_hitprocess.h"
 
-static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	richConstants richc;

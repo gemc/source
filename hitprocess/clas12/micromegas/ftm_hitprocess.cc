@@ -5,7 +5,7 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	ftmConstants ftmc;
 	

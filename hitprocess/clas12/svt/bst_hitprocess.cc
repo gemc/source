@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static bstConstants initializeBSTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static bstConstants initializeBSTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	bstConstants bstc;

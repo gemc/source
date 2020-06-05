@@ -10,13 +10,17 @@ using namespace ccdb;
 // gemc headers
 #include "ec_hitprocess.h"
 
-static ecConstants initializeECConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static ecConstants initializeECConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	ecConstants ecc;
 
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ecc;
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 	int isec,ilay;
 
@@ -50,7 +54,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	
 
 	// ======== Initialization of EC gains ===========
-	sprintf(ecc.database,"/calibration/ec/gain:%d:%s",ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database,"/calibration/ec/gain:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -61,7 +65,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	
 
 	// ========= Initializations of attenuation lengths ========
-	sprintf(ecc.database,"/calibration/ec/attenuation:%d:%s",ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database,"/calibration/ec/attenuation:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -73,7 +77,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 	
 	// ========== Initialization of timings ===========
-	sprintf(ecc.database,"/calibration/ec/timing:%d:%s",ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database,"/calibration/ec/timing:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -87,13 +91,13 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 
 	// ========== Initialization of timing offset ===========
-	sprintf(ecc.database,"/calibration/ec/tdc_global_offset:%d:%s", ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database,"/calibration/ec/tdc_global_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 	ecc.tdc_global_offset = data[0][3];
 
 
 	// ======== Initialization of EC effective velocities ===========
-	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d:%s",ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 
 	for(unsigned row = 0; row < data.size(); row++)
@@ -103,7 +107,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 	
 	// ======== Initialization of EC status  ===========
-	sprintf(ecc.database, "/calibration/ec/status:%d:%s", ecc.runNo, digiVariation.c_str());
+	sprintf(ecc.database, "/calibration/ec/status:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ecc.database);
 	for (unsigned row = 0; row < data.size(); row++)

@@ -17,7 +17,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static htccConstants initializeHTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static htccConstants initializeHTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	htccConstants htccc;
@@ -25,7 +25,11 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return htccc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	// database
 	htccc.runNo = runno;
 	htccc.date       = "2016-03-15";
@@ -40,7 +44,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(htccc.connection));
 	cout<<"HTCC:Getting status, gain"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/status:%d:%s", htccc.runNo, digiVariation.c_str());
+	sprintf(htccc.database,"/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -48,7 +52,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		htccc.status[isec-1][ilay-1].push_back(data[row][3]);
 	}
 
-	sprintf(htccc.database,"/calibration/htcc/mc_gain:%d:%s", htccc.runNo, digiVariation.c_str());
+	sprintf(htccc.database,"/calibration/htcc/mc_gain:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -58,7 +62,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 
 
 	cout<<"HTCC:Getting time_offset"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/time:%d:%s", htccc.runNo, digiVariation.c_str());
+	sprintf(htccc.database,"/calibration/htcc/time:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		isec   = data[row][0]; ilay   = data[row][1];

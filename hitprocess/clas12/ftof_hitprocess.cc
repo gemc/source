@@ -14,13 +14,17 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no) {
+static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no") {
 	ftofConstants ftc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if (runno == -1) return ftc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	ftc.runNo = runno;
 	ftc.date = "2015-11-29";
 	if (getenv("CCDB_CONNECTION") != NULL)
@@ -53,7 +57,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	cout << "Connecting to " << ftc.connection << "/calibration/ftof" << endl;
 	
 	cout << "FTOF:Getting attenuation" << endl;
-	sprintf(ftc.database, "/calibration/ftof/attenuation:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/attenuation:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -64,7 +68,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting effective_velocity" << endl;
-	sprintf(ftc.database, "/calibration/ftof/effective_velocity:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/effective_velocity:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -75,7 +79,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting status" << endl;
-	sprintf(ftc.database, "/calibration/ftof/status:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/status:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -86,7 +90,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting gain_balance" << endl;
-	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -97,7 +101,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting time_walk" << endl;
-	sprintf(ftc.database, "/calibration/ftof/time_walk:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/time_walk:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -113,7 +117,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	cout << "FTOF:Getting time_offset" << endl;
 	
-	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -127,7 +131,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting tdc_conv" << endl;
-	sprintf(ftc.database, "/calibration/ftof/tdc_conv:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/tdc_conv:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -138,7 +142,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting resolutions" << endl;
-	sprintf(ftc.database, "/calibration/ftof/tres:%d:%s", ftc.runNo, digiVariation.c_str());
+	sprintf(ftc.database, "/calibration/ftof/tres:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 

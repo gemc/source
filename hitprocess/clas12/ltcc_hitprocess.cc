@@ -14,7 +14,7 @@
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
@@ -22,7 +22,11 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ltccc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	// database
 	ltccc.runNo = runno;
 	ltccc.date       = "2016-03-15";
@@ -38,7 +42,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	// component = segment number
 	int sector, layer, component;
 	
-	sprintf(ltccc.database,"/calibration/ltcc/spe:%d:%s",ltccc.runNo, digiVariation.c_str());
+	sprintf(ltccc.database,"/calibration/ltcc/spe:%d:%s%s",ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
@@ -52,7 +56,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
 
-	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s", ltccc.runNo, digiVariation.c_str());
+	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;

@@ -20,11 +20,15 @@ using namespace CLHEP;
 using namespace ccdb;
 
 //static fmtConstants initializeFMTConstants(int runno)
-static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	fmtConstants fmtc;
 	if(runno == -1) return fmtc;
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 
 	// database
@@ -38,7 +42,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
 	vector<vector<double> > data;
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_global:%d:%s", fmtc.runNo, digiVariation.c_str());
+	sprintf(fmtc.database,"/geometry/fmt/fmt_global:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	// all dimensions are in mm
 
@@ -53,7 +57,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 
 	
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim:%d:%s", fmtc.runNo, digiVariation.c_str());
+	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());

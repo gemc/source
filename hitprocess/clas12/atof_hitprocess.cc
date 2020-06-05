@@ -14,13 +14,17 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static atofConstants initializeATOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no) {
+static atofConstants initializeATOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no") {
 	atofConstants atc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if (runno == -1) return atc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	atc.runNo = runno;
 	atc.date = "2020-04-20";
 	if (getenv("CCDB_CONNECTION") != NULL)

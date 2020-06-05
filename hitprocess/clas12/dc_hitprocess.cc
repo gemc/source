@@ -16,7 +16,7 @@ using namespace ccdb;
 #include "Randomize.hh"
 
 
-static dcConstants initializeDCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static dcConstants initializeDCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	dcConstants dcc;
@@ -27,6 +27,10 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return dcc;
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 	dcc.runNo = runno;
 	dcc.dcThreshold  = 50;  // eV
@@ -41,7 +45,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// reading efficiency parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/intrinsic_inefficiency:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/calibration/dc/signal_generation/intrinsic_inefficiency:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	vector<vector<double> > data;
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -55,7 +59,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	}
 
 	// reading smearing parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_resolution:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_resolution:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -72,7 +76,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 	//********************************************
 	//calculating distance to time:
-	sprintf(dcc.database, "/calibration/dc/time_to_distance/time2dist:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/calibration/dc/time_to_distance/time2dist:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, dcc.database);
 	
@@ -96,7 +100,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// T0 corrections: a delay to be introduced (plus sign) to the TDC timing
-	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data,  dcc.database);
 
@@ -112,7 +116,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// reading DC core parameters
-	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s", dcc.runNo, digiVariation.c_str());
+	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	unique_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);

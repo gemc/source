@@ -12,11 +12,16 @@
 using namespace ccdb;
 
 
-static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
 	if(runno == -1) return bmtc;
+
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
@@ -33,7 +38,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
 	
 	//Load the geometrical constant for each layer
-	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim:%d:%s", bmtc.runNo, digiVariation.c_str());
+	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim:%d:%s%s", bmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -57,7 +62,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	bmtc.PITCH.resize(bmtc.NLAYERS);
 	
 	for (int layer=0; layer<bmtc.NLAYERS;layer++){
-		sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_strip_L%d:%d:%s", layer+1, bmtc.runNo, digiVariation.c_str());
+		sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_strip_L%d:%d:%s%s", layer+1, bmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,bmtc.database);
 		
 		bmtc.GROUP[layer].resize(data.size());
@@ -104,7 +109,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 
 
 	// now connecting to target geometry to get its position
-	sprintf(bmtc.database,"/geometry/target:%d:%s", bmtc.runNo, digiVariation.c_str());
+	sprintf(bmtc.database,"/geometry/target:%d:%s%s", bmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
 	bmtc.targetZPos = data[0][3]*cm;
 

@@ -17,7 +17,7 @@ using namespace ccdb;
 
 
 
-static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no)
+static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
 {
 	// all these constants should be read from CCDB
 	ftCalConstants ftcc;
@@ -25,7 +25,11 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return ftcc;
-	
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
+
 	// database
 	ftcc.runNo = runno;
 	ftcc.date       = "2016-03-15";
@@ -42,7 +46,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	cout<<"Connecting to "<<ftcc.connection<<"/calibration/ft/ftcal"<<endl;
 	
 	cout<<"FT-Cal:Getting status"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s",ftcc.runNo, digiVariation.c_str());
+	sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -51,7 +55,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting noise"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d:%s",ftcc.runNo, digiVariation.c_str());
+	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -64,7 +68,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting charge_to_energy"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d:%s",ftcc.runNo, digiVariation.c_str());
+	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -77,7 +81,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting time_offsets"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d:%s", ftcc.runNo, digiVariation.c_str());
+	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d:%s%s", ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
