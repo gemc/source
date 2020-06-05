@@ -78,7 +78,7 @@ map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 void rich_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 
 	if(richc.runNo != runno) {
 //		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;

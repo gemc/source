@@ -690,11 +690,11 @@ void goptions::setGoptions()
 	optMap["DIGITIZATION_VARIATION"].type = 1;
 	optMap["DIGITIZATION_VARIATION"].ctgr = "control";
 
-	optMap["DIGITIZATION_TIMESNAP"].args = "no";
-	optMap["DIGITIZATION_TIMESNAP"].name = "Common variation to be used in the digitization routines";
-	optMap["DIGITIZATION_TIMESNAP"].help = "Common variation to be used in the digitization routines\n";
-	optMap["DIGITIZATION_TIMESNAP"].type = 1;
-	optMap["DIGITIZATION_TIMESNAP"].ctgr = "control";
+	optMap["DIGITIZATION_TIMESTAMP"].args = "no";
+	optMap["DIGITIZATION_TIMESTAMP"].name = "Timestamp to be used in digitization routines";
+	optMap["DIGITIZATION_TIMESTAMP"].help = "Timestamp to be used in digitization routines\n";
+	optMap["DIGITIZATION_TIMESTAMP"].type = 1;
+	optMap["DIGITIZATION_TIMESTAMP"].ctgr = "control";
 
 
 

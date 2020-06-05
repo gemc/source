@@ -257,7 +257,7 @@ double ltcc_HitProcess :: voltage(double charge, double time, double forTime)
 void ltcc_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;

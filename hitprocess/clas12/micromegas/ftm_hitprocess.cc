@@ -180,7 +180,7 @@ ftmConstants ftm_HitProcess::ftmcc = initializeFTMConstants(-1);
 void ftm_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 
 	if(this->ftmcc.runNo != runno)
 	{

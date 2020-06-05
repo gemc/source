@@ -574,7 +574,7 @@ double dc_HitProcess :: voltage(double charge, double time, double forTime)
 void dc_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESNAP"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 
 	string hardcodedTorusMapName = "TorusSymmetric";
 
