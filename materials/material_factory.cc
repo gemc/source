@@ -468,6 +468,11 @@ map<string, G4Material*>  materialsWithIsotopes()
 			// LD2 already defined, so we can add the isotopes in our map here
 			mats["ND3"] = thisMat;
 		}
+		if(thisMat->GetName() == "H3")
+		{
+			// H3 already defined, so we can add the isotopes in our map here
+			mats["H3"] = thisMat;
+		}
 	
 	}
 	
@@ -519,7 +524,21 @@ map<string, G4Material*>  materialsWithIsotopes()
 	mats["ND3"] = new G4Material("ND3", 1.007*g/cm3, 2, kStateLiquid, 1.0*kelvin);
 	mats["ND3"]->AddElement(Nitro, 1);
 	mats["ND3"]->AddElement(deuterium, 3);
+
+
+
+	// ----  tritium 
+
+	// Tritium isotope
+	G4Isotope* triton  = new G4Isotope("triton", Z=1, N=3, a=3.0160492*g/mole);
 	
+	// Tritium element
+	G4Element* tritium = new G4Element("tritium", "tritium", 1);
+	tritium->AddIsotope(triton, 1);
+	
+	// Tritium gas
+	mats["H3"] = new G4Material("H3", 0.0034*g/cm3, 1, kStateGas, 40.0*kelvin);
+	mats["H3"]->AddElement(tritium, 1);
 
 	
 	return mats;
