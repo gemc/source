@@ -45,32 +45,33 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 
 
 	// reading efficiency parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/intrinsic_inefficiency:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	sprintf(dcc.database, "/calibration/dc/signal_generation/inefficiency:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	vector<vector<double> > data;
 	calib->GetCalib(data, dcc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
-		int sl = data[row][0] - 1;
-		dcc.P1[sl]     = data[row][1];
-		dcc.P2[sl]     = data[row][2];
-		dcc.P3[sl]     = data[row][3];
-		dcc.P4[sl]     = data[row][4];
-		dcc.iScale[sl] = data[row][5];
-	}
+    for(unsigned row = 0; row < data.size(); row++)
+    {
+        int sec = data[row][0] - 1;
+        int sl  = data[row][1] - 1;
+        dcc.iScale[sec][sl] = data[row][3];
+        dcc.P1[sec][sl]     = data[row][4];
+        dcc.P2[sec][sl]     = data[row][5];
+        dcc.P3[sec][sl]     = data[row][6];
+        dcc.P4[sec][sl]     = data[row][7];
+    }
 
 	// reading smearing parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_resolution:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_smearing:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
-		int sec = data[row][0] - 1;
-		int sl  = data[row][1] - 1;
-		dcc.smearP1[sec][sl]    = data[row][3];
-		dcc.smearP2[sec][sl]    = data[row][4];
-		dcc.smearP3[sec][sl]    = data[row][5];
-		dcc.smearP4[sec][sl]    = data[row][6];
-		dcc.smearScale[sec][sl] = data[row][7];
+        int sec = data[row][0] - 1;
+        int sl  = data[row][1] - 1;
+        dcc.smearScale[sec][sl] = data[row][3];
+        dcc.smearP1[sec][sl]    = data[row][4];
+        dcc.smearP2[sec][sl]    = data[row][5];
+        dcc.smearP3[sec][sl]    = data[row][6];
+        dcc.smearP4[sec][sl]    = data[row][7];
 	}
 
 
@@ -318,7 +319,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double X = (doca/cm) / (2*dcc.dLayer[SLI]);
 
 	// distance-dependent fractional inefficiency as a function of doca
-	double ddEff = dcc.iScale[SLI]*(dcc.P1[SLI]/pow(X*X + dcc.P2[SLI], 2) + dcc.P3[SLI]/pow( (1-X) + dcc.P4[SLI], 2));
+    double ddEff = dcc.iScale[SECI][SLI]*(dcc.P1[SECI][SLI]/pow(X*X + dcc.P2[SECI][SLI], 2) + dcc.P3[SECI][SLI]/pow( (1-X) + dcc.P4[SECI][SLI], 2));
 	double random = G4UniformRand();
 
 	// unsmeared time, based on the dist-time-function and alpha;
@@ -506,20 +507,21 @@ double dc_HitProcess :: calc_Time(double x, double dmax, double tmax, double alp
 // superlayer: DC superlayer
 // returns time smearing in ns
 double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int superlayer){
-	double doca_smear = 0.0;
+    double doca_smear = 0.0;
+    
+    double dmax = 1;
+    if(x>dmax) x=dmax;
 
-	double dmax = 1;
-	if(x>dmax) x=dmax;
+    beta=1;
+    superlayer=1;
+    doca_smear  = dcc.smearScale[sector][superlayer] *
+                ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
+                + dcc.smearP2[sector][superlayer] * sqrt(x)
+                + dcc.smearP3[sector][superlayer] * beta*beta
+                / (1 - x + dcc.smearP4[sector][superlayer]) ) * cm;
+    doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
 
-	doca_smear  = 0.001 * dcc.smearScale[sector][superlayer] *
-	( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
-	 + dcc.smearP2[sector][superlayer] * sqrt(x)
-	 + dcc.smearP3[sector][superlayer] * beta*beta
-	 / (1 - x + dcc.smearP4[sector][superlayer]) )
-	/ (dcc.v0[sector][superlayer])*cm;
-	doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
-
-	return doca_smear;
+    return doca_smear;
 }
 
 
