@@ -1,6 +1,52 @@
 Changelog for GEMC
 ==================
 
+
+.. Note::
+6/23/20 gemc 2.8 released.
+
+|
+
+6/16/2020
+
+ - added tritium isotope
+
+
+6/03/2020
+
+ - added DIGITIZATION_TIMESTAMP option to pass to digitization routines
+
+
+5/19/2020
+
+ - fix cylindrical-x and cylindrical-y field map bug
+
+
+5/14/2020
+
+ - CLAS12 DC hit process updates: b-field correction to local angle, drift-velocity from t2d table
+ - CLAS12 Implement status tables and revert to GSIM photoelectron variance generator
+
+4/20/2020
+
+ - added ALERT atof hit process
+
+
+3/31/2020
+
+ - CLAS12 added global offset for ec, pcal and htcc
+
+
+3/27/2020
+
+ - CLAS12 using non hardcoded run number and digiVariation all detectors
+
+
+2/25/2020
+
+ - CLAS12 dc T0corrections
+
+
 2/10/2020
 
 - added  SHIFT_LUND_VERTEX option to shift a file generator vertex.
@@ -140,6 +186,7 @@ Changelog for GEMC
    rerun them with SAVE_ALL_ANCESTORS=1, then do post-analysis of their trajectory history.
 
 1/16/19
+
  - Richard Holmes: SAVE_SELECTED option to save selected event RNG states:
 
    Provides and implements a new command line option::
@@ -154,7 +201,7 @@ Changelog for GEMC
 
    For example::
 
-    SAVE_SELECTED="7xx10000, 11, 0.0MeV, 2000MeV, trackE, ./”
+    SAVE_SELECTED="7xx10000, 11, 0.0MeV, 2000MeV, trackE, ./"
 
    saves RNG state in files in the current directory for events in which there was a hit in detectors 70010000, 70110000, 70210000, etc. by an electron with energy from 0 to 2 GeV.
 

@@ -1,15 +1,9 @@
 GEMC Future Development
 
-TODO:
-
-Remove warning from linux gcc (check JLAB cue machines CentOS 7)
 
 
-Wanted features:
-================
-
-- add magnetic field lines: /vis/scene/add/magneticField 5
-(doesn't work for both fields why)
+Wanted features, coming with gemc3
+==================================
 
 - make detector factories external plugins
 
@@ -38,16 +32,6 @@ Code Improvements:
 - change primaryFlat to thetaGauss thetaUniform cthetaGauss cthetaUniform.
 - add system name to material name
 - sqlite support. Dropdown menu: available systems.
-
-
-
-Fixes
-=====
-
-Log of load path should be corrected /group still show /group even though the detector is loaded
-from a different path using the GEMC_DIR variable
-
-
 
 
 
