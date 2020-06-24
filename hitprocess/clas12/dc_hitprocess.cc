@@ -512,8 +512,6 @@ double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int sup
     double dmax = 1;
     if(x>dmax) x=dmax;
 
-    beta=1;
-    superlayer=1;
     doca_smear  = dcc.smearScale[sector][superlayer] *
                 ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
                 + dcc.smearP2[sector][superlayer] * sqrt(x)
