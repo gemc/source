@@ -763,6 +763,15 @@ void goptions::setGoptions()
 	optMap["FILTER_HADRONS"].type = 0;
 	optMap["FILTER_HADRONS"].ctgr = "output";
 
+	// No output if no high mom hit
+	optMap["FILTER_HIGHMOM"].arg = 0;
+	optMap["FILTER_HIGHMOM"].help = "If set to non-0, do not write events if there are no high mom hit. Otherwise if \n";
+	optMap["FILTER_HIGHMOM"].help += "nonzero write only events having a hit with mom > FILTER_HIGHMOM. For example\n";
+	optMap["FILTER_HIGHMOM"].help += " -FILTER_HIGHMOM=1 for mom > 1MeV";
+	optMap["FILTER_HIGHMOM"].name = "If set to non-0 (or >1), do not write output if there are no  high mom hit";
+	optMap["FILTER_HIGHMOM"].type = 0;
+	optMap["FILTER_HIGHMOM"].ctgr = "output";
+	
 	// sampling time of electronics (typically FADC), and number of sampling / event
 	// the VT output is sampled every TSAMPLING nanoseconds to produce a ADC
 	// the default number of samples is 500 ADC points, at 4ns intervals (total electronic event time = 2 microseconds)

@@ -93,6 +93,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
 	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
 	FILTER_HADRONS   = (int) gemcOpt.optMap["FILTER_HADRONS"].arg;
+	FILTER_HIGHMOM   = (int) gemcOpt.optMap["FILTER_HIGHMOM"].arg;	
 	rw               = runWeights(opts);
 	
 	WRITE_ALLRAW     = replaceCharInStringWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
@@ -280,7 +281,35 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if (not foundHad) return;
 	}
 	
-	
+	// if FILTER_HIGHMOM is set, checking if there is  any high mom hits
+	if (FILTER_HIGHMOM != 0) 
+	  {
+	    int foundHighmom = 0;
+	    for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) 
+	      {
+		MHC = it->second->GetMHitCollection();
+		if (MHC) nhits = MHC->GetSize();
+		else nhits = 0;
+		for (int h=0; h<nhits; h++)
+		  {
+		    vector<G4ThreeVector>           mmts = (*MHC)[h]->GetMoms();
+		    for(unsigned int t=0; t<mmts.size(); t++){
+// 		      	cout << "mom " << mmts[t].mag() << endl;
+			if (mmts[t].mag()>FILTER_HIGHMOM)
+			  {
+// 		      	cout << "mom " << mmts[t].mag() << endl;			    
+			    foundHighmom = 1;
+			    break;
+			  }
+		    }
+
+		  }
+	      }
+	    
+	    // stop here if there are no  any high mom hits
+	    if (not foundHighmom) return;
+	  }	
+	  
 	if(evtN%Modulo == 0 )
 	cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
 	
