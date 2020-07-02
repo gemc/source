@@ -6,7 +6,9 @@
 #include "counter_hitprocess.h"      ///< counter hit process common to all
 
 // CLAS12
-#include "clas12/atof_hitprocess.h"             ///< Alert TOF
+//#include "clas12/atof_hitprocess.h"             ///< Alert TOF
+#include "clas12/alert/myatof_hitprocess.h"             ///< Alert TOF
+#include "clas12/alert/ahdc_hitprocess.h"             ///< Alert Drift Chamber
 #include "clas12/svt/bst_hitprocess.h"          ///< Barrel Silicon Tracker (bst)
 #include "clas12/cnd_hitprocess.h"              ///< Central Neutron Detector
 #include "clas12/ctof_hitprocess.h"             ///< Central TOF

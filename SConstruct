@@ -100,7 +100,7 @@ env.Library(source = field_sources, target = "lib/gfields")
 
 
 # Hit Processes
-env.Append(CPPPATH = ['hitprocess', 'hitprocess/clas12', 'hitprocess/clas12/svt', 'hitprocess/clas12/micromegas'])
+env.Append(CPPPATH = ['hitprocess', 'hitprocess/clas12', 'hitprocess/clas12/svt', 'hitprocess/clas12/micromegas', 'hitprocess/clas12/alert'])
 env.Append(CPPPATH = ['hitprocess/Aprime', 'hitprocess/GlueX', 'hitprocess/solid'])
 hitp_sources = Split("""
 	hitprocess/HitProcess_MapRegister.cc
@@ -117,7 +117,8 @@ hitp_sources = Split("""
 	hitprocess/clas12/rtpc_hitprocess.cc
 	hitprocess/clas12/svt/bst_hitprocess.cc
 	hitprocess/clas12/svt/bst_strip.cc
-	hitprocess/clas12/atof_hitprocess.cc
+	hitprocess/clas12/alert/myatof_hitprocess.cc
+	hitprocess/clas12/alert/ahdc_hitprocess.cc
 	hitprocess/clas12/ctof_hitprocess.cc
 	hitprocess/clas12/cnd_hitprocess.cc
 	hitprocess/clas12/dc_hitprocess.cc
