@@ -28,7 +28,7 @@ public:
 	double P1[6][6], P2[6][6], P3[6][6], P4[6][6], iScale[6][6];
 	
 	// smearing parameters for each sector / superlayer
-	double smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6], smearScale[6][6];
+	double smearP0[6][6], smearP1[6][6], smearP2[6][6], smearP3[6][6], smearP4[6][6];
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
