@@ -67,7 +67,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	{
         int sec = data[row][0] - 1;
         int sl  = data[row][1] - 1;
-        dcc.smearScale[sec][sl] = data[row][3];
+        dcc.smearP0[sec][sl]    = data[row][3];
         dcc.smearP1[sec][sl]    = data[row][4];
         dcc.smearP2[sec][sl]    = data[row][5];
         dcc.smearP3[sec][sl]    = data[row][6];
@@ -512,11 +512,11 @@ double dc_HitProcess :: doca_smearing(double x, double beta, int sector, int sup
     double dmax = 1;
     if(x>dmax) x=dmax;
 
-    doca_smear  = dcc.smearScale[sector][superlayer] *
-                ( ( sqrt (x*x + dcc.smearP1[sector][superlayer] * beta*beta) - x )
-                + dcc.smearP2[sector][superlayer] * sqrt(x)
-                + dcc.smearP3[sector][superlayer] * beta*beta
-                / (1 - x + dcc.smearP4[sector][superlayer]) ) * cm;
+    doca_smear  = (dcc.smearP0[sector][superlayer]
+                 + dcc.smearP1[sector][superlayer] * x
+                 + dcc.smearP2[sector][superlayer] * x * x
+                 + dcc.smearP3[sector][superlayer] * x * x * x
+                 + dcc.smearP4[sector][superlayer] * x * x * x * x) * cm;
     doca_smear  = doca_smear/(dcc.v0[sector][superlayer]*cm/ns);
 
     return doca_smear;
