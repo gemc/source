@@ -213,7 +213,8 @@ int goptions::setOptMap(int argc, char **argv)
 		{
 			cout <<  endl << endl;
 			cout <<  "    Help Options:" <<  endl << endl ;
-			cout <<  "   >  -help-all:  all available options. " <<  endl << endl;
+			cout <<  "   >  -help-all:  all available options. "  << endl;
+			cout <<  "   >  -help-html:  write a formatted file options.html with the available gemc options. " <<  endl << endl;
 			for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++) {
 				cout <<  "   >  -help-" << *itcat << "     ";
 				cout.width(15);
