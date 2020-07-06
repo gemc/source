@@ -1,0 +1,515 @@
+<html>
+	<STYLE TYPE="text/css">
+<!--
+.pretty-table
+{
+	padding: 0;
+	margin: 0;
+	border-collapse: collapse;
+	border: 1px solid #333;
+	font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	color: #000;
+	background: #fcf0e4;
+}
+.pretty-table caption
+{
+	caption-side: bottom;
+	font-size: 0.9em;
+	font-style: italic;
+	text-align: right;
+	padding: 0.5em 0;
+}
+.pretty-table th, .pretty-table td
+{
+	border: 1px dotted #666;
+	padding: 0.5em;
+	text-align: left;
+	color: #632a39;
+}
+.pretty-table th[scope=col]
+{
+	color: #000;
+	background-color: #afadcc;
+	text-transform: uppercase;
+	font-size: 0.9em;
+	border-bottom: 2px solid #333;
+	border-right: 2px solid #333;
+}
+.pretty-table th+th[scope=col]
+{
+	color: #009;
+	background-color: #7d98b3;
+	border-right: 1px dotted #666;
+}
+.pretty-table th[scope=row]
+{
+	background-color: #b8cfe5;
+	border-right: 2px solid #333;
+}
+pre{font-family:Helvetica;font-size:12pt
+	overflow: auto; 
+}
+--->
+</STYLE>
+</head>
+<body>
+<br><br>
+<center>
+<h1> GEMC options</h1>
+</center>
+<br><br><br>
+<table cellsize=20>
+<tr><td>
+<table class="pretty-table">
+<caption>options. This table is produced with the option: -help-html </caption>
+<tr><th scope="col" >Category</th>
+    <th scope="col" >Option</th>
+    <th scope="col" >Help</th></tr>
+<tr><th scope="row"></th> <td>INTEGRATEDDGT</td><td><pre>
+De-activates integrated digitized output for system(s). Example: -INTEGRATEDDGT="DC, TOF"</pre></td></tr>
+<tr><th scope="row">control</th> <td>CHECK_OVERLAPS</td><td><pre>
+Checks Overlapping Volumes:
+      1.  Check Overlaps at Construction Time
+      2.  Check Overlaps based on standard lines grid setup
+      3.  Check Overlaps by shooting lines according to a cylindrical pattern
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>DAWN_N</td><td><pre>
+Number of events to be displayed with the DAWN driver (also activate the DAWN driver).</pre></td></tr>
+<tr><th scope="row">control</th> <td>DIGITIZATION_TIMESTAMP</td><td><pre>
+Timestamp to be used in digitization routines
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>DIGITIZATION_VARIATION</td><td><pre>
+Common variation to be used in the digitization routines
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>ENERGY_CUT</td><td><pre>
+Set an energy cut in MeV below which no particle will be tracked further. -1. turns this off.</pre></td></tr>
+<tr><th scope="row">control</th> <td>EVN</td><td><pre>
+Initial Event Number.</pre></td></tr>
+<tr><th scope="row">control</th> <td>EXEC_MACRO</td><td><pre>
+Executes commands in macro file.</pre></td></tr>
+<tr><th scope="row">control</th> <td>GUIPOS</td><td><pre>
+Specify the position of the QT display window. Default is at 50, 50 </pre></td></tr>
+<tr><th scope="row">control</th> <td>HIGH_RES</td><td><pre>
+Use High Resolution Graphics
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>HIT_PROCESS_LIST</td><td><pre>
+Registers Hit Process Routines. Can register multiple experiments, separated by space, e.v. "clas12 aprime"
+      clas12.  CLAS12 hit process routines (default)
+      aprime.  aprime hit process routines
+      gluex.   GlueX  hit process routines
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>MAX_X_POS</td><td><pre>
+Max X Position in millimeters. Beyond this the track will be killed</pre></td></tr>
+<tr><th scope="row">control</th> <td>MAX_Y_POS</td><td><pre>
+Max Y Position in millimeters. Beyond this the track will be killed</pre></td></tr>
+<tr><th scope="row">control</th> <td>MAX_Z_POS</td><td><pre>
+Max Z Position in millimeters. Beyond this the track will be killed</pre></td></tr>
+<tr><th scope="row">control</th> <td>QTSTYLE</td><td><pre>
+Sets the GUI Style. Available options: 
+      - QCleanlooksStyle 
+      - QMacStyle 
+      - QPlastiqueStyle 
+      - QWindowsStyle 
+      - QMotifStyle</pre></td></tr>
+<tr><th scope="row">control</th> <td>RANDOM</td><td><pre>
+Random Engine Initialization. The argument (seed) can be an integer or the string TIME.</pre></td></tr>
+<tr><th scope="row">control</th> <td>RECORD_OPTICALPHOTONS</td><td><pre>
+Set to one if you want to save mirror hits in the output. Default is 0.
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RECORD_PASSBY</td><td><pre>
+Set to one if you want to save zero energy hits in the output. Default is 0.
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RERUN_SELECTED</td><td><pre>
+Rerun saved events  arg is list of run #[, directory]
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RFSETUP</td><td><pre>
+Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:
+      1. radioFrequency (GHz)
+      2. radioInterval (number of bunches)
+     Any additional parameter (in ns) will add an RF signal with that time distance from the original.
+     Example1:  250MHz (0.25 GHz) RF signal, 1 output, output frequency is 50 bunches: 
+      -RFSETUP="0.25, 50" 
+     Example2: two 500MHz (0.5 GHz) RF signals, they are separated by 30 ns and both output frequency is 80 bunches: 
+      -RFSETUP="0.5, 80, 30" 
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RFSTART</td><td><pre>
+Radio-frequency time model. Available options are:
+      "eventVertex, 0, 0, 0" (default): the RF time is the event start time + the light time-distance of the first particle from the point (0,0,0)
+      "eventTime".....................: the RF time is identical to the event start time
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RUNNO</td><td><pre>
+Run Number. Controls the geometry and calibration parameters. Default is 1
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RUN_WEIGHTS</td><td><pre>
+Simulate events based on run based conditions table (text file)
+      The text file must have two columns, run# and weight.
+      For example:
+
+        11 0.1
+        12 0.7
+        13 0.2
+
+      Will simulate 10% of events with run number 11 conditions, 70% run 12 and 20% run 13.
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>SAVE_ALL_ANCESTORS</td><td><pre>
+Set to 1 to save all ancestors of hits. High Memory Usage. Default is 0.
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>SAVE_ALL_MOTHERS</td><td><pre>
+Set to 1 to save mother vertex and pid infos in output. High Memory Usage. Default is 0.
+                       2: saves in LUND format any particle that generate hits
+                       3: same as 2 but if a track’s mother also produced hits, only the mother is saved so the hits are not double counted
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>USE_GUI</td><td><pre>
+ GUI switch
+      0.  Don't use the graphical interface
+      1.  OGLSQt (OGL, OGLS, OGLSQt)
+      2.  OGLIQt (OGLI, OGLIQt) 
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>gcard</td><td><pre>
+gemc card file.</pre></td></tr>
+<tr><th scope="row">control</th> <td>geometry</td><td><pre>
+Specify the size of the QT display window. Default '600x600' </pre></td></tr>
+<tr><th scope="row">fields</th> <td>ACTIVEFIELDS</td><td><pre>
+List of activated fields
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>DISPLACE_FIELDMAP</td><td><pre>
+Displace Magnetic Field map from the lab origin.
+      Usage:
+      -DISPLACE_FIELDMAP="fieldname, dx*unit, dy*unit, dz*unit"
+      Example: -DISPLACE_FIELDMAP="srr-solenoid, 3.5*mm, 0*mm, 0*mm"
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>FIELDS_FILENAMES</td><td><pre>
+List of activated fields
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>FIELD_DIR</td><td><pre>
+Magnetic Field Maps Location. 
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>FIELD_PROPERTIES</td><td><pre>
+Mapped field minimum step, integration method, interpolation
+
+      Usage:
+      -FIELD_PROPERTIES="fieldname, minStep, integralAlgorithm, (interpolationMethod)"
+
+      Example: -FIELD_PROPERTIES="srr-solenoid, 1*mm, G4ClassicalRK4, linear"
+
+      Available Integration Methods:
+       - G4CashKarpRKF45: Fift Order Range Kutta, for very smooth fields
+       - G4ClassicalRK4: Fourth Order Range Kutta. Robust for every field.
+       - G4SimpleHeum: Third order stepper.
+       - G4SimpleRunge: Simplified (second order) Range Kutta (faster).
+       - G4ImplicitEuler: Second order stepper, for faster varying fields.
+       - G4ExplicitEuler: First order stepper, for rough fields.
+       - G4HelixImplicitEuler: Second order, specialized for helix-like trajectories.
+       - G4HelixExplicitEuler: First order, specialized for helix-like trajectories.
+       - G4HelixSimpleRunge: Second order Range Kutta, specialized for helix-like trajectories.
+       - G4NystromRK4: provides accuracy near that of G4ClassicalRK4 with a significantly reduced cost in field evaluation.
+
+       Available Interpolation Methods:
+       - none: closest grid point.
+       - linear: linear interpolation.
+
+       Note: specifying interpolation method is optional. "linear" is the default.
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>G4FIELDCACHESIZE</td><td><pre>
+Sets Geant4 Magnetic Field Cache Size (in mm) 
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>HALL_FIELD</td><td><pre>
+Magnetic Field of the Hall. 
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>MAX_FIELD_STEP</td><td><pre>
+Sets Maximum Acceptable Step in Magnetic Field (in mm).
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>NO_FIELD</td><td><pre>
+Sets Magnetic Field of a volume to zero. "all" means no magnetic field at all. 
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>PHYS_VERBOSITY</td><td><pre>
+Physics List Verbosity</pre></td></tr>
+<tr><th scope="row">fields</th> <td>ROTATE_FIELDMAP</td><td><pre>
+Rotate Magnetic Field map.
+      Usage:
+      -ROTATE_FIELDMAP="fieldname, alpha*unit, beta*unit, gamma*unit"
+      Example: -ROTATE_FIELDMAP="srr-solenoid, 0*deg, 0*deg, 2*deg"
+</pre></td></tr>
+<tr><th scope="row">fields</th> <td>SCALE_FIELD</td><td><pre>
+Scales Magnetic Field by a factor.
+      Usage:
+      -SCALE_FIELD="fieldname, scalefactor"
+      Example: -SCALE_FIELD="srr-solenoid, 0.5"
+</pre></td></tr>
+<tr><th scope="row">general</th> <td>DF</td><td><pre>
+Selects Detector System and Factory type. 
+      Example:
+        -DF="CTOF, MYSQL"  selects the MYSQL factory for the detector CTOF
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>ALIGN_ZAXIS</td><td><pre>
+Align z axis to a custom direction. Options:
+      - "beamp"  aligns z axis to the beam directions specified by BEAM_P.
+      - "custom, theta*unit, phi*unit" aligns z axis to a custom direction, changes BEAM_P reference frame.</pre></td></tr>
+<tr><th scope="row">generator</th> <td>BEAM_P</td><td><pre>
+Beam particle, momentum, angles (in respect of z-axis). 
+      Example: -BEAM_P="e-, 6*GeV, 15*deg, 20*deg" sets 6 GeV electrons 15 degrees in theta, 20 degrees in phi. 
+      Use -BEAM_P="show_all" to print the list of G4 supported particles.
+      An optional string "KE" can be appended to this option to specify Kinetic energy instead of momentum.
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>BEAM_V</td><td><pre>
+Primary Particle Vertex. Example: -BEAM_V="(0, 0, -20)cm". </pre></td></tr>
+<tr><th scope="row">generator</th> <td>COSMICAREA</td><td><pre>
+Target (x,y,z) location and radius of area of interest</pre></td></tr>
+<tr><th scope="row">generator</th> <td>COSMICRAYS</td><td><pre>
+Cosmic Generator. The model has a (cos(theta), p) probability function:
+
+              a^(b*cos(theta))/(c*p^2). 
+
+      The COSMICRAYS option sets the parameters and the momentum range in the last two numbers. 
+      By default the parameters are: 
+       a = 55.6: 
+       b = 1.04: 
+       c = 64: 
+      One can use the defaults or set the pars with the options: 
+      example 1: -COSMICRAYS="default, 1, 10" will use the default parameterization, and momentum range [1-10] GeV 
+      example 2: -COSMICRAYS="55, 2, 66, 3, 4" will set the parameterization, and momentum range [3-4] GeV 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>EVTN</td><td><pre>
+Starting Event Number</pre></td></tr>
+<tr><th scope="row">generator</th> <td>INPUT_GEN_FILE</td><td><pre>
+Generator Input. Current availables file formats:
+      LUND. 
+      example: -INPUT_GEN_FILE="LUND, input.dat" or -INPUT_GEN_FILE="StdHEP, darkphoton.stdhep" 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>ION_P</td><td><pre>
+Primary particle is an ion. Sets Z, A and Charge of the primary particle. Setting the charge is optional. 
+      Example 1: -ION_P="6 12" sets the Z to 6, A to 12. Charge will be Z. 
+      Example 2: -ION_P="6 12 -4" sets the Z to 6, A to 12, and charge to -4. 
+      Notice: BEAM_P still sets the particle momentum, and its type must be GenericIon
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>LUMI2_SPREAD_P</td><td><pre>
+Spread Luminosity Particle 2 energy and angles (in respect of z-axis). 
+      Example: -LUMI2_SPREAD_P="0*GeV, 10*deg, 20*deg" spreads 10 degrees in theta, 20 degrees in phi. 
+      If the word flat is added to the option, theta is flat instead of cos(theta). 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>LUMI_SPREAD_P</td><td><pre>
+Spread Luminosity Particle energy and angles (in respect of z-axis). 
+      Example: -LUMI_SPREAD_P="0*GeV, 10*deg, 20*deg" spreads 10 degrees in theta, 20 degrees in phi. 
+      If the word flat is added to the option, theta is flat instead of cos(theta). 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>MERGE_BGHITS</td><td><pre>
+ASCII file to merge background hits
+      example: -MERGE_BGHITS="background.dat" 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>MERGE_LUND_BG</td><td><pre>
+LUND Input file to merge background events
+      example: -MERGE_LUND_BG="background.dat" 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>N</td><td><pre>
+Number of events to be simulated.</pre></td></tr>
+<tr><th scope="row">generator</th> <td>NGENP</td><td><pre>
+Max Number of Generated Particles to save in the Output.</pre></td></tr>
+<tr><th scope="row">generator</th> <td>POLAR</td><td><pre>
+Primary Particle polarization percentage and angles  (in respect of z-axis). 
+      Example: -POLAR="90, 90*deg, 270*deg" sets 90% polarization 90 degrees in theta, 270 degrees in phi. 
+      Use -POLAR="show_all" to print the list of G4 supported particles.
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>PROPAGATE_DVERTEXTIME</td><td><pre>
+Calculate propogation time of detached vertex events and fire them at this later time. 
+         0: Off (default)
+         1: On
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>SHIFT_LUND_VERTEX</td><td><pre>
+Shift Generator File tracks vertices.
+      example: -SHIFT_LUND_VERTEX="(0, 0, -3)cm" 
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>SKIPNGEN</td><td><pre>
+Skip N events</pre></td></tr>
+<tr><th scope="row">generator</th> <td>SPREAD_P</td><td><pre>
+Spread Primary Particle energy and angles (in respect of z-axis). 
+      Example: -SPREAD_P="0*GeV, 10*deg, 20*deg" spreads 10 degrees in theta, 20 degrees in phi. 
+      If the word flat is added as last argument to the option, theta is flat instead of cos(theta). 
+      An optional argument "KE" can be appended to this option to specify Kinetic energy instead of momentum.
+</pre></td></tr>
+<tr><th scope="row">generator</th> <td>SPREAD_V</td><td><pre>
+Spread Primary Particle Radius, Z position. Example: -SPREAD_V="(0.1, 10)cm". </pre></td></tr>
+<tr><th scope="row">generator</th> <td>STEER_BEAM</td><td><pre>
+Steer the beam, and translate the vertex, of an StdHep file by the amount specified in Beam_P, Beam_V, Spread_V 
+</pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI2_EVENT</td><td><pre>
+Luminosity Particle 2 Parameters: number of Particles/Event, Time Between Bunches. The Time Window is specified with the LUMI_EVENT flag
+            Example: -LUMI2_EVENT="10000, 2*ns" simulate 10K particles per event at 2ns intervals. 
+</pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI2_P</td><td><pre>
+Luminosity Particle 2, momentum, angles (in respect of z-axis). 
+            Example: -LUMI2_P="proton, 1*GeV, 25*deg, 2*deg" sets 1 GeV protons, 25 degrees in theta, 2 degrees in phi. 
+            Use -LUMI2_P="show_all" to print the list of G4 supported particles.
+</pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI2_SPREAD_V</td><td><pre>
+Spread Luminosity Particle 2 Radius, Z position. Example: -SPREAD_V="(0.1, 10)cm". </pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI2_V</td><td><pre>
+Luminosity Particle 2 Vertex. Example: -LUMI2_V="(0, 0, -20)cm". </pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI_EVENT</td><td><pre>
+Luminosity Particle Parameters: number of Particles/Event, Time Window, Time Between Bunches
+            Example: -LUMI_EVENT="10000, 120*ns, 2*ns" simulate 10K particles per event distributed over 120 ns, at 2ns intervals. 
+</pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI_P</td><td><pre>
+Luminosity Particle, momentum, angles (in respect of z-axis). 
+            Example: -LUMI_P="proton, 1*GeV, 25*deg, 2*deg" sets 1 GeV protons, 25 degrees in theta, 2 degrees in phi. 
+            Use -LUMI_P="show_all" to print the list of G4 supported particles.
+</pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI_SPREAD_V</td><td><pre>
+Spread Luminosity Particle Radius, Z position. Example: -SPREAD_V="(0.1, 10)cm". </pre></td></tr>
+<tr><th scope="row">luminosity</th> <td>LUMI_V</td><td><pre>
+Luminosity Particle Vertex. Example: -LUMI_V="(0, 0, -20)cm". </pre></td></tr>
+<tr><th scope="row">materials</th> <td>CHANGEVOLUMEMATERIALTO</td><td><pre>
+Changes a volume material. Usage: -CHANGEVOLUMEMATERIALTO="volume, new material" 
+</pre></td></tr>
+<tr><th scope="row">materials</th> <td>DEFAULT_MATERIAL</td><td><pre>
+Default material for missing material field.
+</pre></td></tr>
+<tr><th scope="row">materials</th> <td>HALL_MATERIAL</td><td><pre>
+Composition of the Experimental Hall. 
+            Air normal simulation
+            Air_Opt Simulation with Optical Physics
+            Vacuum (default)
+</pre></td></tr>
+<tr><th scope="row">materials</th> <td>SWITCH_MATERIALTO</td><td><pre>
+Switches a material for another. Usage: -SWITCH_MATERIALTO="old, new" 
+</pre></td></tr>
+<tr><th scope="row">mysql</th> <td>DATABASE</td><td><pre>
+Selects mysql Database.</pre></td></tr>
+<tr><th scope="row">mysql</th> <td>DBHOST</td><td><pre>
+Selects mysql server host name.</pre></td></tr>
+<tr><th scope="row">mysql</th> <td>DBPORT</td><td><pre>
+Select mysql server port.</pre></td></tr>
+<tr><th scope="row">mysql</th> <td>DBPSWD</td><td><pre>
+mysql password</pre></td></tr>
+<tr><th scope="row">mysql</th> <td>DBUSER</td><td><pre>
+Select mysql user name</pre></td></tr>
+<tr><th scope="row">output</th> <td>ALLRAWS</td><td><pre>
+Activates step-by-step output for system(s). Example: -ALLRAWS="DC, TOF"</pre></td></tr>
+<tr><th scope="row">output</th> <td>ELECTRONICNOISE</td><td><pre>
+Activates electronic noise routines for system(s). Example: -ELECTRONICNOISE="dc, ftof"</pre></td></tr>
+<tr><th scope="row">output</th> <td>FILTER_HADRONS</td><td><pre>
+If set to 1, do not write events if there are no hadrons. Otherwise if 
+nonzero write only events having a hadron with matching ID. For example
+ -FILTER_HADRONS=2212 for protons</pre></td></tr>
+<tr><th scope="row">output</th> <td>FILTER_HIGHMOM</td><td><pre>
+If set to non-0, do not write events if there are no high mom hit. Otherwise if 
+nonzero write only events having a hit with mom > FILTER_HIGHMOM. For example
+ -FILTER_HIGHMOM=1 for mom > 1MeV</pre></td></tr>
+<tr><th scope="row">output</th> <td>FILTER_HITS</td><td><pre>
+If set to 1, do not write output if there are no hits in the detectors</pre></td></tr>
+<tr><th scope="row">output</th> <td>FILTER_NULL_VARIABLES</td><td><pre>
+If set to 1, filters out variables with no valuable info in the output.</pre></td></tr>
+<tr><th scope="row">output</th> <td>INTEGRATEDRAW</td><td><pre>
+Activates integrated geant4 raw output for system(s). Example: -INTEGRATEDRAW="DC, TOF"</pre></td></tr>
+<tr><th scope="row">output</th> <td>OUTPUT</td><td><pre>
+Type of output, output filename. Supported output: evio, txt. Example: -OUTPUT="evio, out.ev"</pre></td></tr>
+<tr><th scope="row">output</th> <td>SAVE_SELECTED</td><td><pre>
+Save events with selected hit types
+  arg is list of id, pid, low limit, high limit, variable[, directory]
+  e.g. 7xx10000, 11, 0.0*MeV, 2000*MeV, trackE, /.
+</pre></td></tr>
+<tr><th scope="row">output</th> <td>SIGNALVT</td><td><pre>
+Activates voltage (t) output for system(s). Example: -SIGNALVT="DC, TOF"</pre></td></tr>
+<tr><th scope="row">output</th> <td>TSAMPLING</td><td><pre>
+Sampling time of electronics (typically FADC)</pre></td></tr>
+<tr><th scope="row">output</th> <td>VTRESOLUTION</td><td><pre>
+Voltage versus time resolution, in ns</pre></td></tr>
+<tr><th scope="row">physics</th> <td>FORCE_MUON_RADIATIVE_DECAY</td><td><pre>
+Force muon radiative decay</pre></td></tr>
+<tr><th scope="row">physics</th> <td>PHYSICS</td><td><pre>
+  Physics List. The list is modular. 
+
+     For example, 'STD' would only activate the standard electromagnetic processes, while
+     'QGSC_BERT + STD + HP + Optical' would also activate high precision hadronic and optical physics.
+
+     For a complete list, see http://geant4.cern.ch/support/physicsLists/referencePL/referencePL.shtml'
+
+     Available modules:
+
+      Hadronic: 
+      The FTF model is based on the FRITIOF description of string excitation and fragmentation.
+      - FTFP_BERT
+      - FTFP_BERT_HP
+      - FTFP_BERT_TRV
+      - FTF_BIC
+
+      QGSP is the basic physics list applying the quark gluon string model for high  energy interactions of protons, neutrons, pions, and Kaons and nuclei.
+      - QGSC_BERT
+      - QGSP_BERT_HP
+      - QGSP_BIC
+      - QGSP_BIC_HP
+      - QGSP_FTFP_BERT
+
+      Electromagnetic: 
+      - STD
+      - EMV: Designed for HEP productions. Production thresholds are enabled on secondary particles for all EM processes.
+      - EMX: Designed for HEP productions. Alternative G4Generator2BS angular generator is used for the bremsstrahlung process.
+      - EMY: Higher accuracy of electrons, hadrons and ion tracking without magnetic field
+      - EMZ: Higher accuracy of electrons, hadrons and ion tracking. Use the most accurate standard and low-energy models.
+      - LIV: Higher accuracy of electrons, hadrons and ion tracking without magnetic field. Livermore model on top of emstandard_opt4.
+      - PEN: Higher accuracy of electrons, hadrons and ion tracking without magnetic field. Penelope model on top of emstandard_opt4.
+</pre></td></tr>
+<tr><th scope="row">physics</th> <td>SYNRAD</td><td><pre>
+ Adds Synchrotron Radiation     Possible values:
+     0: no Synchrotron Radiation (default)
+     1: vacuum Synchrotron Radiation 
+     2: material Synchrotron Radiation 
+</pre></td></tr>
+<tr><th scope="row">transportation</th> <td>FASTMCMODE</td><td><pre>
+Activate FASTMC Mode. Possible values: 
+
+       0: No FASTMC (default).
+       1: Disable secondaries, disable hit processes.
+       2: Disable all physics but transportation, disable hit process.
+       10: Disable secondaries, hit processes are enabled.
+       20: Disable all physics but transportation, hit processes are enabled.
+</pre></td></tr>
+<tr><th scope="row">transportation</th> <td>HALL_DIMENSIONS</td><td><pre>
+(x,y,z) semi-dimensions of the experimental Hall.
+</pre></td></tr>
+<tr><th scope="row">transportation</th> <td>PRODUCTIONCUT</td><td><pre>
+Production cut for root, in mm
+</pre></td></tr>
+<tr><th scope="row">transportation</th> <td>PRODUCTIONCUTFORVOLUMES</td><td><pre>
+Production cut for volumes (separated by commas), in mm
+      Example: "outerMount, taggerInnerShield, 50" will set the production cut for the volumes outerMount and taggerInnerShield to 5cm
+</pre></td></tr>
+<tr><th scope="row">transportation</th> <td>REMOVESENSITIVITY</td><td><pre>
+Removes a volumes sensitivity. Usage: -REMOVESENSITIVITY=volumename1, volumename2, ... 
+</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>BANK_VERBOSITY</td><td><pre>
+Controls Bank Log Output.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>CATCH</td><td><pre>
+Catch volumes matching the given string.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>FIELD_VERBOSITY</td><td><pre>
+Controls Electro-Magnetic Fields Log Output:
+  0: no log  1: field definitions log  2: max field details</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>G4P_VERBOSITY</td><td><pre>
+Controls Physical Volumes Construction Log Output.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>G4TRACK_VERBOSITY</td><td><pre>
+Controls Geant4 Track Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>GEN_VERBOSITY</td><td><pre>
+Controls Geant4 Generator Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>GEO_VERBOSITY</td><td><pre>
+Controls Geometry Construction Log Output.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>GUI_VERBOSITY</td><td><pre>
+Controls GUI Construction Log Output.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>HIT_VERBOSITY</td><td><pre>
+Controls Hits Log Output. </pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>LOG_VERBOSITY</td><td><pre>
+Controls General Log Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>MATERIAL_VERBOSITY</td><td><pre>
+Controls Geant4 Material Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>MIRROR_VERBOSITY</td><td><pre>
+Controls Mirrors Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>PARAMETER_VERBOSITY</td><td><pre>
+Controls Parameters Verbosity.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>PHY_VERBOSITY</td><td><pre>
+Controls Physics List Log Output.</pre></td></tr>
+<tr><th scope="row">verbosity</th> <td>PRINT_EVENT</td><td><pre>
+-PRINT_EVENT=N: Print Event Number every N events.</pre></td></tr>
+</table>
+</td>
+<td>
+</table>
+ </body></html>
