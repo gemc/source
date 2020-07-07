@@ -473,6 +473,11 @@ map<string, G4Material*>  materialsWithIsotopes()
 			// H3 already defined, so we can add the isotopes in our map here
 			mats["H3"] = thisMat;
 		}
+		if(thisMat->GetName() == "Hgas")
+                {
+                        // Hgas already defined, so we can add the isotopes in our map here
+                        mats["Hgas"] = thisMat;
+                }
 	
 	}
 	
@@ -540,6 +545,11 @@ map<string, G4Material*>  materialsWithIsotopes()
 	mats["H3"] = new G4Material("H3", 0.0034*g/cm3, 1, kStateGas, 40.0*kelvin);
 	mats["H3"]->AddElement(tritium, 1);
 
+
+	// hydrogen gas
+	G4Element* Hydrogen   = new G4Element("Hydrogen",  "H",  Z=1,  a=1.01*g/mole);        
+	mats["Hgas"] = new G4Material("Hgas", 0.00275*g/cm3, 1, kStateGas, 50.0*kelvin);
+	mats["Hgas"]->AddElement(Hydrogen,1);
 	
 	return mats;
 }
