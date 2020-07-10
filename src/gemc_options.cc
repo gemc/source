@@ -641,11 +641,17 @@ void goptions::setGoptions()
 	optMap["RECORD_PASSBY"].ctgr = "control";
 	
 	optMap["RECORD_OPTICALPHOTONS"].arg = 0;
-	optMap["RECORD_OPTICALPHOTONS"].name = "Set to one if you want to save mirror hits in the output";
-	optMap["RECORD_OPTICALPHOTONS"].help = "Set to one if you want to save mirror hits in the output. Default is 0.\n";
+	optMap["RECORD_OPTICALPHOTONS"].name = "Set to one if you want the optical photons to produce hits";
+	optMap["RECORD_OPTICALPHOTONS"].help = "Set to one if you want the optical photons to produce hits. Default is 0.\n";
 	optMap["RECORD_OPTICALPHOTONS"].type = 0;
 	optMap["RECORD_OPTICALPHOTONS"].ctgr = "control";
-	
+
+	optMap["RECORD_MIRRORS"].arg = 0;
+	optMap["RECORD_MIRRORS"].name = "Set to one if you want to save mirror hits in the output";
+	optMap["RECORD_MIRRORS"].help = "Set to one if you want to save mirror hits in the output. Default is 0.\n";
+	optMap["RECORD_MIRRORS"].type = 0;
+	optMap["RECORD_MIRRORS"].ctgr = "control";
+
 	optMap["RUNNO"].arg  = 1;
 	optMap["RUNNO"].name = "Run Number. Controls the geometry and calibration parameters";
 	optMap["RUNNO"].help = "Run Number. Controls the geometry and calibration parameters. Default is 1\n";

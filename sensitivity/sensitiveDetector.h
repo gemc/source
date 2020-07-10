@@ -59,15 +59,16 @@ private:
 	HitProcess     *ProcessHitRoutine;                           ///< To call PID
 	int             HCID;                                        ///< HCID increases every new hit collection.
 
-	string hd_msg1;          ///< New Hit message
-	string hd_msg2;          ///< Normal Message
-	string hd_msg3;          ///< End of hit Collection message
-	string catch_v;          ///< Volume Name for Verbosity
-	double verbosity;        ///< Hit Verbosity
-	double RECORD_PASSBY;    ///< If set to one, records particles even if they do not leave any energy
-	double RECORD_OPTICALPHOTONS;    ///< If set to one, records particles in the mirror detectors
-	string ELECTRONICNOISE;  ///< List of detectors for which electronic noise routines will be called
-	int fastMCMode;          ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
+	string hd_msg1;                ///< New Hit message
+	string hd_msg2;                ///< Normal Message
+	string hd_msg3;                ///< End of hit Collection message
+	string catch_v;                ///< Volume Name for Verbosity
+	double verbosity;              ///< Hit Verbosity
+	double RECORD_PASSBY;          ///< If set to one, records particles even if they do not leave any energy
+	double RECORD_OPTICALPHOTONS;  ///< If set to one, optical photons can produce a hit
+	double RECORD_MIRRORS;         ///< If set to one, records particles in the mirror type detectors
+	string ELECTRONICNOISE;        ///< List of detectors for which electronic noise routines will be called
+	int fastMCMode;                ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
 
 
 public:

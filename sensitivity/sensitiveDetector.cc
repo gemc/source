@@ -24,11 +24,12 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	hd_msg2 = gemcOpt.optMap["LOG_MSG"].args + " > ";
 	hd_msg3 = gemcOpt.optMap["LOG_MSG"].args + " End of Hit Collections >> ";
 	catch_v = gemcOpt.optMap["CATCH"].args;
-	verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
-	RECORD_PASSBY = gemcOpt.optMap["RECORD_PASSBY"].arg;
+	verbosity             = gemcOpt.optMap["HIT_VERBOSITY"].arg;
+	RECORD_PASSBY         = gemcOpt.optMap["RECORD_PASSBY"].arg;
 	RECORD_OPTICALPHOTONS = gemcOpt.optMap["RECORD_OPTICALPHOTONS"].arg;
-	ELECTRONICNOISE  = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
-	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+	RECORD_MIRRORS        = gemcOpt.optMap["RECORD_MIRRORS"].arg;
+	ELECTRONICNOISE       = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
+	fastMCMode            = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy
@@ -45,11 +46,19 @@ sensitiveDetector::~sensitiveDetector(){}
 
 void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 {
+
 	Id_Set.clear();
 	hitCollection = new MHitCollection(HCname, collectionName[0]);
 	if(HCID < 0)  HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
 	HCE->AddHitsCollection( HCID, hitCollection );
 	ProcessHitRoutine = NULL;
+	// if RECORD_MIRRORS but it's not a mirror detector, reset it to zero
+	if(RECORD_MIRRORS == 1) {
+		if(collectionName[0] != "mirror") {
+			RECORD_MIRRORS = 0;
+		}
+	}
+
 	if(verbosity > 1)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
 }
