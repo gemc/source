@@ -36,13 +36,11 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	// for FASTMC mode = 2 this is necessary so it does record the hit
 	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3 || fastMCMode == 2)
 		RECORD_PASSBY = 1;
-	
-	
-	
+
 	// skip sensitive detector if it's a mirror and RECORD_MIRRORS is set to zero
-	skipMirror = false;
+	skipSensitivity = false;
 	if(RECORD_MIRRORS == 0 && collectionName[0] == "mirror") {
-		skipMirror = true;
+		skipSensitivity = true;
 	}
 	
 	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
@@ -68,32 +66,39 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 
 G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
-	// First check on energy deposited
+	if (skipSensitivity) {
+		return false;
+	}
+
+	// do not record G4OpticalPhoton unless RECORD_OPTICALPHOTONS is set to 1
+	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) {
+		return false;
+	}
+
+	// check on energy deposited
 	double depe = aStep->GetTotalEnergyDeposit();
+
 	// don't enter if RECORD_PASSBY is not set and it's not an optical photon
 	// Notice: a gamma will not directly release energy on a scintillator
 	// but will convert, and the pair will release energy
 	// so by default right now gammas are not recorded and the hit belongs to the pair
-	
-	G4VTouchable* TH =  (G4VTouchable*) aStep->GetPreStepPoint()->GetTouchable();
-	
-	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
+	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
 		return false;
-	
-	
-	
-	// do not record Mirrors unless specified
-	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) return false;
-	
+	}
+
 	G4Track *trk = aStep->GetTrack();
+
 	// this is expensive should we really check?
-	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) return false;
-	
+	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) {
+		return false;
+	}
+
+	G4VTouchable* TH =  (G4VTouchable*) aStep->GetPreStepPoint()->GetTouchable();
+
 	G4StepPoint   *prestep     = aStep->GetPreStepPoint();
 	G4StepPoint   *poststep    = aStep->GetPostStepPoint();
 	string         processName = "na";
-	
-	
+
 	///< Hit informations
 	///< The hit position is taken from PostStepPoint (inside the sensitive volume)
 	///< Transformation to local coordinates has to be done with prestep
