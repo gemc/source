@@ -69,7 +69,7 @@ private:
 	double RECORD_MIRRORS;         ///< If set to one, records particles in the mirror type detectors
 	string ELECTRONICNOISE;        ///< List of detectors for which electronic noise routines will be called
 	int fastMCMode;                ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
-
+	bool  skipSensitivity;         ///< skip sensitive detector condition
 
 public:
 	vector<identifier> GetDetectorIdentifier(string name) {return (*hallMap)[name].identity;} ///< returns detector identity

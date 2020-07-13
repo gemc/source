@@ -30,15 +30,21 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 	RECORD_MIRRORS        = gemcOpt.optMap["RECORD_MIRRORS"].arg;
 	ELECTRONICNOISE       = replaceCharInStringWithChars(gemcOpt.optMap["ELECTRONICNOISE"].args, ",", "  ");
 	fastMCMode            = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
-
+	
 	// when background is being saved, all tracks passing by detectors
 	// are saved even if they do not deposit energy
 	// for FASTMC mode = 2 this is necessary so it does record the hit
 	if(gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg == 3 || fastMCMode == 2)
 		RECORD_PASSBY = 1;
-		
-	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
 
+	// skip sensitive detector if it's a mirror and RECORD_MIRRORS is set to zero
+	skipSensitivity = false;
+	if(RECORD_MIRRORS == 0 && collectionName[0] == "mirror") {
+		skipSensitivity = true;
+	}
+	
+	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
+	
 }
 
 sensitiveDetector::~sensitiveDetector(){}
@@ -46,19 +52,13 @@ sensitiveDetector::~sensitiveDetector(){}
 
 void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 {
-
+	
 	Id_Set.clear();
 	hitCollection = new MHitCollection(HCname, collectionName[0]);
 	if(HCID < 0)  HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
 	HCE->AddHitsCollection( HCID, hitCollection );
 	ProcessHitRoutine = NULL;
-	// if RECORD_MIRRORS but it's not a mirror detector, reset it to zero
-	if(RECORD_MIRRORS == 1) {
-		if(collectionName[0] != "mirror") {
-			RECORD_MIRRORS = 0;
-		}
-	}
-
+	
 	if(verbosity > 1)
 		cout << "   > " << collectionName[0] << " initialized." << endl;
 }
@@ -66,29 +66,38 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 
 G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
-	// First check on energy deposited
+	if (skipSensitivity) {
+		return false;
+	}
+
+	// do not record G4OpticalPhoton unless RECORD_OPTICALPHOTONS is set to 1
+	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) {
+		return false;
+	}
+
+	// check on energy deposited
 	double depe = aStep->GetTotalEnergyDeposit();
+
 	// don't enter if RECORD_PASSBY is not set and it's not an optical photon
 	// Notice: a gamma will not directly release energy on a scintillator
 	// but will convert, and the pair will release energy
 	// so by default right now gammas are not recorded and the hit belongs to the pair
-	
+	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+		return false;
+	}
+
+	G4Track *trk = aStep->GetTrack();
+
+	// this is expensive should we really check?
+	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) {
+		return false;
+	}
+
 	G4VTouchable* TH =  (G4VTouchable*) aStep->GetPreStepPoint()->GetTouchable();
 
-	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
-		return false;
-
-	// do not record Mirrors unless specified
-	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) return false;
-	
-	G4Track *trk = aStep->GetTrack();
-	// this is expensive should we really check?
-	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) return false;
-	
 	G4StepPoint   *prestep     = aStep->GetPreStepPoint();
 	G4StepPoint   *poststep    = aStep->GetPostStepPoint();
 	string         processName = "na";
-	
 
 	///< Hit informations
 	///< The hit position is taken from PostStepPoint (inside the sensitive volume)
@@ -124,22 +133,22 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		cout << endl << "  !!! Error: >" <<  GetDetectorHitType(name) << "< NOT FOUND IN  ProcessHit Map for volume: " << name << " - exiting." << endl;
 		return false;
 	}
-
-    // getting magnetic field
-    const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
-    double fieldValue[3] = {0, 0, 0};
-    double hitFieldValue = 0;
-
-    G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
-
-    // if no field manager, the field is zero
-    if(fmanager) {
-        fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
-
-        hitFieldValue = sqrt(fieldValue[0]*fieldValue[0] + fieldValue[1]*fieldValue[1] + fieldValue[2]*fieldValue[2]);
-
-    }
-
+	
+	// getting magnetic field
+	const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
+	double fieldValue[3] = {0, 0, 0};
+	double hitFieldValue = 0;
+	
+	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
+	
+	// if no field manager, the field is zero
+	if(fmanager) {
+		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
+		
+		hitFieldValue = sqrt(fieldValue[0]*fieldValue[0] + fieldValue[1]*fieldValue[1] + fieldValue[2]*fieldValue[2]);
+		
+	}
+	
 	///< Process VID: getting Identifier at the ProcessHitRoutine level
 	///< A process routine can generate hit sharing
 	vector<identifier> PID = ProcessHitRoutine->processID(VID, aStep, (*hallMap)[name]);
@@ -167,7 +176,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		
 		if(verbosity > 9 || name.find(catch_v) != string::npos)
 			cout << endl << hd_msg2 << " Before hit Process Identification:"  << endl << VID
-			     << hd_msg2 << " After:  hit Process Identification:" << endl << mhPID << endl;
+			<< hd_msg2 << " After:  hit Process Identification:" << endl << mhPID << endl;
 		
 		///< Checking if it's new hit or existing hit. Use the overloaded "=="
 		if(verbosity > 9) cout << endl << endl << " BEGIN SEARCH for same hit in Identifier Set..." << endl;
@@ -206,8 +215,8 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			thisHit->SetCharge(q);
 			thisHit->SetMatName(materialName);
 			thisHit->SetProcID(processID(processName));
-            thisHit->SetSDID(SDID);
-            thisHit->SetMgnf(hitFieldValue);
+			thisHit->SetSDID(SDID);
+			thisHit->SetMgnf(hitFieldValue);
 			hitCollection->insert(thisHit);
 			Id_Set.insert(mhPID);
 			
@@ -251,8 +260,8 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 					thisHit->SetMatName(materialName);
 					thisHit->SetProcID(processID(processName));
 					thisHit->SetDetector((*hallMap)[name]);
-                    thisHit->SetMgnf(hitFieldValue);
-
+					thisHit->SetMgnf(hitFieldValue);
+					
 					if(verbosity > 6 || name.find(catch_v) != string::npos)
 					{
 						string pid    = aStep->GetTrack()->GetDefinition()->GetParticleName();
@@ -281,7 +290,7 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 {
 	int nhitC = hitCollection->GetSize();
 	if(!nhitC) return;
-
+	
 	// adding electronic noise to hits
 	// only if requested by user
 	// notice: there should be routine to decide if hit is in the same TW
@@ -292,21 +301,21 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 		for(unsigned int h=0; h<noiseHits.size(); h++)
 			hitCollection->insert(noiseHits[h]);
 	}
-
-//	cout << HCname << " Before: HITC " << hitCollection << " size: " << nhitC << endl;
-
-//	// adding background noise to hits
-//	for(auto bgh: currentBackground) {
-//		if(bgh != nullptr) {
-//			hitCollection->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
-//		}
-//	}
-//
-//	nhitC = hitCollection->GetSize();
-//	cout << HCname << " After: HITC " << hitCollection << " size: " << nhitC << endl;
-
-
-
+	
+	//	cout << HCname << " Before: HITC " << hitCollection << " size: " << nhitC << endl;
+	
+	//	// adding background noise to hits
+	//	for(auto bgh: currentBackground) {
+	//		if(bgh != nullptr) {
+	//			hitCollection->insert(new MHit(bgh->energy, bgh->timeFromEventStart, bgh->nphe, bgh->identity));
+	//		}
+	//	}
+	//
+	//	nhitC = hitCollection->GetSize();
+	//	cout << HCname << " After: HITC " << hitCollection << " size: " << nhitC << endl;
+	
+	
+	
 	MHit *aHit;
 	double Etot;
 	if(verbosity > 2 && nhitC)
@@ -328,8 +337,8 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 			}
 		}
 	}
-
-
+	
+	
 	if(ProcessHitRoutine) delete ProcessHitRoutine; // not needed anymore
 }
 
@@ -393,12 +402,12 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "tInelastic")            return 130;
 	if(procName == "xi0Inelastic")          return 140;
 	if(procName == "omega-Inelastic")       return 150;
-
+	
 	if(procName == "na")                    return 999;
-
+	
 	if(verbosity > 0)
 		cout << " Warning: process name " << procName << " not catalogued." << endl;
-
+	
 	return 999;
 }
 
