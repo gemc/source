@@ -222,6 +222,9 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 		return;
 	}
 
+	// field rotation based on ROTATE_FIELDMAP
+	RotateField(Bfield);
+
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well

@@ -295,6 +295,9 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 	  if (xx<0 && yy>=0)	{ Bfield[0] =-B2; Bfield[1] = B1; Bfield[2] = B3;}
 	}	
 
+	// field rotation based on ROTATE_FIELDMAP
+	RotateField(Bfield);
+
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well

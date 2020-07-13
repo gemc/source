@@ -332,6 +332,9 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 	Bfield[1] =  sign*mfield[0] * sin(dphi/rad) + mfield[1] * cos(dphi/rad);
 	Bfield[2] =  sign*mfield[2];
 
+	// field rotation based on ROTATE_FIELDMAP
+	RotateField(Bfield);
+
 	if(verbosity>3 && FIRST_ONLY != 99) {
 
 		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm: "

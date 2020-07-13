@@ -135,7 +135,10 @@ public:
 	void GetFieldValue_phiSegmented( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_cartesian3d( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	
-	
+
+	void RotateField( double *Bfield) const;
+
+
 	// we want to rotate the field (axes), not the point
 	// so each rotation is the inverse of the point rotation
 	double yRotX(double p[3]) const {return  p[1]*cosAlhpa + p[2]*sinAlpha;}

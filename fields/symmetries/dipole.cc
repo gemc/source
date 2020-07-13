@@ -183,6 +183,9 @@ void gMappedField::GetFieldValue_Dipole( const double x[3], double *Bfield, int 
 	}
 
 
+	// field rotation based on ROTATE_FIELDMAP
+	RotateField(Bfield);
+
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well
