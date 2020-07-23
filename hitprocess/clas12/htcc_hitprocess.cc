@@ -59,6 +59,17 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.mc_gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
+	cout <<"HTCC:Getting mc_gain, mc_smearing" <<endl;            
+        sprintf(htccc.database,"/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear() ; calib->GetCalib(data,htccc.database);
+	for(unsigned row = 0; row < data.size(); row++)                  
+          {
+            isec   = data[row][0]; ilay   = data[row][1];
+            htccc.mc_smear[isec-1][ilay-1].push_back(data[row][3]);
+	  }                                                                                                                    
+
+
+
 
 
 	cout<<"HTCC:Getting time_offset"<<endl;
@@ -266,7 +277,8 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = idsector;
 	dgtz["ring"]   = idring;
 	dgtz["half"]   = idhalf;
-	dgtz["nphe"]   = ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1];
+	//	dgtz["nphe"]   = ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1];
+        dgtz["nphe"]   = G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
 	dgtz["time"]   = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 	dgtz["hitn"]   = hitn;
 	
