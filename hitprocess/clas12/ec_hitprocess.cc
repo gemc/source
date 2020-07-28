@@ -10,7 +10,7 @@ using namespace ccdb;
 // gemc headers
 #include "ec_hitprocess.h"
 
-static ecConstants initializeECConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static ecConstants initializeECConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	ecConstants ecc;
 
@@ -484,7 +484,7 @@ void ec_HitProcess::initWithRunNumber(int runno)
 
 	if(ecc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ecc = initializeECConstants(runno, digiVariation, digiSnapshotTime);
+		ecc = initializeECConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		ecc.runNo = runno;
 	}
 }

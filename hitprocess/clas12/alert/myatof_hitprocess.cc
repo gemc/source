@@ -40,16 +40,16 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// hit ids
 	vector<identifier> identity = aHit->GetId();
 
-	int sector;
-        int zregion;
-	int paddle;
+//	int sector;
+//	int zregion;
+//	int paddle;
 	double adc;
 	double time;
 
 	if(aHit->isBackgroundHit == 1) {
 
 		vector<double>        stepTime    = aHit->GetTime();
-			cout << " This is a background hit with time " << stepTime[0] << endl;
+		cout << " This is a background hit with time " << stepTime[0] << endl;
 		dgtz["sector"]     = 0;
 		dgtz["superlayer"]      = 0;
 		dgtz["layer"]      = 0;
@@ -62,28 +62,28 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		}
 		return dgtz;
 	}
-			
-		adc = 999.999;
-		time = 888.888;
-		
-			dgtz["sector"] = identity[0].id;
-			dgtz["superlayer"] = identity[1].id;
-			dgtz["layer"] = identity[2].id;
-			dgtz["paddle"] = identity[3].id;
-			dgtz["adc"] = adc;
-			dgtz["time"] = time;
-			dgtz["hitn"] = hitn;		//(2202,99)
-		
-		cout << " start of the ATOF hit " << endl;
-		cout << " value in identity[0].id = sector var: " << identity[0].id << endl;	
-		cout << " value in identity[1].id = superlayer var: " << identity[1].id << endl;
-		cout << " value in identity[2].id = layer var: " << identity[2].id << endl;
-		cout << " value in identity[3].id = paddle var: " << identity[3].id << endl;
-		//cout << " value in identity[3].id var: " << identity[3].id << endl;
-		cout << " value in adc var: " << adc << endl;
-		cout << " value in time var: " << time << endl;
-		cout << " value in hitn var: " << hitn << endl;
-		cout << " end of the ATOF hit " << endl;
+
+	adc = 999.999;
+	time = 888.888;
+
+	dgtz["sector"] = identity[0].id;
+	dgtz["superlayer"] = identity[1].id;
+	dgtz["layer"] = identity[2].id;
+	dgtz["paddle"] = identity[3].id;
+	dgtz["adc"] = adc;
+	dgtz["time"] = time;
+	dgtz["hitn"] = hitn;		//(2202,99)
+
+	cout << " start of the ATOF hit " << endl;
+	cout << " value in identity[0].id = sector var: " << identity[0].id << endl;
+	cout << " value in identity[1].id = superlayer var: " << identity[1].id << endl;
+	cout << " value in identity[2].id = layer var: " << identity[2].id << endl;
+	cout << " value in identity[3].id = paddle var: " << identity[3].id << endl;
+	//cout << " value in identity[3].id var: " << identity[3].id << endl;
+	cout << " value in adc var: " << adc << endl;
+	cout << " value in time var: " << time << endl;
+	cout << " value in hitn var: " << hitn << endl;
+	cout << " end of the ATOF hit " << endl;
 
 
 

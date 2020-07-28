@@ -55,10 +55,10 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//int LAY   = identity[2].id - 1; // layer id
 	//int nwire = identity[3].id;     // wire id
 
-	int superlayer;
-        int layer;
-	int wireNum;
-	double doca;
+//	int superlayer;
+//	int layer;
+//	int wireNum;
+//	double doca;
 	double adc;
 	double time;
 	
@@ -67,7 +67,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	if(aHit->isBackgroundHit == 1) {
 
 		vector<double>        stepTime    = aHit->GetTime();
-			cout << " This is a background hit with time " << stepTime[0] << endl;
+		cout << " This is a background hit with time " << stepTime[0] << endl;
 		dgtz["superlayer"]     = 0;
 		dgtz["layer"]      = 0;
 		dgtz["wireNum"]       = 0;
@@ -106,77 +106,77 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	//
 	// Get the information x,y,z and Edep at each ionization point
-	// 
+	//
 
-    // -------------------------- TIME SHIFT for non-primary tracks ---------------------------
-    //if(aHit->GetTId() != timeShift_map.cend()->first){
-        //if(aHit->GetTId()< 3) timeShift_map[aHit->GetTId()] = 0.0;
-        //else timeShift_map[aHit->GetTId()] = G4RandFlat::shoot(-8000.,8000.);
-    //}
-    
+	// -------------------------- TIME SHIFT for non-primary tracks ---------------------------
+	//if(aHit->GetTId() != timeShift_map.cend()->first){
+	//if(aHit->GetTId()< 3) timeShift_map[aHit->GetTId()] = 0.0;
+	//else timeShift_map[aHit->GetTId()] = G4RandFlat::shoot(-8000.,8000.);
+	//}
+
 	double LposX=0.;
 	double LposY=0.;
 	double LposZ=0.;
 	double DiffEdep=0.;
 
-	double shift_t = 0.0;
-    
+//	double shift_t = 0.0;
 
-	    	for(unsigned int s=0; s<tInfos.nsteps; s++)
-		{
-			LposX = Lpos[s].x();
-			LposY = Lpos[s].y();
-			LposZ = Lpos[s].z();
 
-			DiffEdep = Edep[s];
+	for(unsigned int s=0; s<tInfos.nsteps; s++)
+	{
+		LposX = Lpos[s].x();
+		LposY = Lpos[s].y();
+		LposZ = Lpos[s].z();
 
-              		//z_cm = LposZ/10.0;
-            
-			/* 
-			// rtpc example has code for drift length and drift time calculation
-            		// all in cm
-            		a_t=a_t1*(pow(z_cm,4)) + a_t2*(pow(z_cm,3)) + a_t3*(pow(z_cm,2)) + a_t4*z_cm + a_t5;
-            		b_t=b_t1*(pow(z_cm,4)) + b_t2*(pow(z_cm,3)) + b_t3*(pow(z_cm,2)) + b_t4*z_cm + b_t5;
-            		...
-        		*/ 
-			// For now, we use simple variables, without realistic formulae
-	  
-            		// time shift
-            		//shift_t = timeShift_map.find(aHit->GetTId())->second;
-            		// NO time shift
-            		//shift_t = 0.0;
-            
-            		//tdc=t_s2pad+t_gap+shift_t;
-	    		time = stepTime[s]++;
-            
-	    		//adc=DiffEdep;
-	    		adc = DiffEdep++;
-		}
-		
-			// Here are the dgtz varibles that we want to calculate using MC true info of a hit
-			// They are visible in the gemc simulation output: integrated digitized bank (2302,0)
-			dgtz["superlayer"] = identity[0].id;	//identity[0].id; 	//(2302,1)
-       			dgtz["layer"] = identity[1].id;		//identity[2].id;		//(2302,2)
-        		dgtz["wireNum"] = identity[2].id;	//identity[3].id;	//(2302,3)
-        		dgtz["adc"]    = adc;		//(2302,4)
-			dgtz["time"]   = time;		//(2302,5)	
-			dgtz["hitn"] = hitn;		//(2302,99)
-		
-		cout << " start of the AHDC hit " << endl;
-		cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;	
-		cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
-		cout << " value in identity[2].id = wireNum var: " << identity[2].id << endl;
-		cout << " value in identity[3].id var: " << identity[3].id << endl;
-		cout << " value in adc var: " << adc << endl;
-		cout << " value in time var: " << time << endl;
-		cout << " value in hitn var: " << hitn << endl;
-		cout << " end of the AHDC hit " << endl;
-		
-		//cout << " value in superlayer var: " << identity[0].id << endl;	
-		//cout << " value in layer var: " << identity[1].id << endl;
-		//cout << " value in wireNum var: " << identity[2].id << endl;
-		
-		
+		DiffEdep = Edep[s];
+
+		//z_cm = LposZ/10.0;
+
+		/*
+		 // rtpc example has code for drift length and drift time calculation
+		 // all in cm
+		 a_t=a_t1*(pow(z_cm,4)) + a_t2*(pow(z_cm,3)) + a_t3*(pow(z_cm,2)) + a_t4*z_cm + a_t5;
+		 b_t=b_t1*(pow(z_cm,4)) + b_t2*(pow(z_cm,3)) + b_t3*(pow(z_cm,2)) + b_t4*z_cm + b_t5;
+		 ...
+		 */
+		// For now, we use simple variables, without realistic formulae
+
+		// time shift
+		//shift_t = timeShift_map.find(aHit->GetTId())->second;
+		// NO time shift
+		//shift_t = 0.0;
+
+		//tdc=t_s2pad+t_gap+shift_t;
+		time = stepTime[s]++;
+
+		//adc=DiffEdep;
+		adc = DiffEdep++;
+	}
+
+	// Here are the dgtz varibles that we want to calculate using MC true info of a hit
+	// They are visible in the gemc simulation output: integrated digitized bank (2302,0)
+	dgtz["superlayer"] = identity[0].id;	//identity[0].id; 	//(2302,1)
+	dgtz["layer"] = identity[1].id;		//identity[2].id;		//(2302,2)
+	dgtz["wireNum"] = identity[2].id;	//identity[3].id;	//(2302,3)
+	dgtz["adc"]    = adc;		//(2302,4)
+	dgtz["time"]   = time;		//(2302,5)
+	dgtz["hitn"] = hitn;		//(2302,99)
+
+	cout << " start of the AHDC hit " << endl;
+	cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;
+	cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
+	cout << " value in identity[2].id = wireNum var: " << identity[2].id << endl;
+	cout << " value in identity[3].id var: " << identity[3].id << endl;
+	cout << " value in adc var: " << adc << endl;
+	cout << " value in time var: " << time << endl;
+	cout << " value in hitn var: " << hitn << endl;
+	cout << " end of the AHDC hit " << endl;
+
+	//cout << " value in superlayer var: " << identity[0].id << endl;
+	//cout << " value in layer var: " << identity[1].id << endl;
+	//cout << " value in wireNum var: " << identity[2].id << endl;
+
+
 	
 	// decide if write an hit or not
 	writeHit = true;
@@ -202,29 +202,29 @@ vector<identifier> ahdc_HitProcess::processID(vector<identifier> id, G4Step* aSt
 	int nwire = 13;
 
 	/*
-	G4StepPoint   *prestep   = aStep->GetPreStepPoint();
-	G4StepPoint   *poststep  = aStep->GetPostStepPoint();
-	G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction
-	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
-	->GetTopTransform().TransformPoint(xyz);
+	 G4StepPoint   *prestep   = aStep->GetPreStepPoint();
+	 G4StepPoint   *poststep  = aStep->GetPostStepPoint();
+	 G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction
+	 G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
+	 ->GetTopTransform().TransformPoint(xyz);
 
-	double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
-	double deltay  = 0.9;
-	double loc_y   = Lxyz.y() + ylength;    ///< Distance from bottom of G4Trap. ministaggger does not affect it since the field/guardwires are fixed.
+	 double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
+	 double deltay  = 0.9;
+	 double loc_y   = Lxyz.y() + ylength;    ///< Distance from bottom of G4Trap. ministaggger does not affect it since the field/guardwires are fixed.
 
-	int nwire = (int) floor(loc_y/deltay);
+	 int nwire = (int) floor(loc_y/deltay);
 
-	// resetting nwire for extreme cases
-	if(nwire <= 0 )  nwire = 1;
-	if(nwire >= 31) nwire = 30;
-	*/
+	 // resetting nwire for extreme cases
+	 if(nwire <= 0 )  nwire = 1;
+	 if(nwire >= 31) nwire = 30;
+	 */
 
 	// setting wire number
 	yid[3].id = nwire;
 
 	// checking that the next wire is not the one closer
 	//if(fabs( (nwire+1)*deltay - loc_y ) < fabs( nwire*deltay - loc_y ) && nwire != 112 )
-		//yid[3].id = nwire + 1;
+	//yid[3].id = nwire + 1;
 
 	// all energy to this wire (no energy sharing)
 	yid[3].id_sharing = 1;

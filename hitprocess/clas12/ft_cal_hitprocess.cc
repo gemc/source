@@ -17,7 +17,7 @@ using namespace ccdb;
 
 
 
-static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static ftCalConstants initializeFTCALConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	ftCalConstants ftcc;
@@ -442,7 +442,7 @@ void ft_cal_HitProcess::initWithRunNumber(int runno)
 
 	if(ftcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime);
+		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		ftcc.runNo = runno;
 	}
 }

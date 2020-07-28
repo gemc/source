@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static bstConstants initializeBSTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static bstConstants initializeBSTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	bstConstants bstc;
@@ -327,7 +327,7 @@ void bst_HitProcess::initWithRunNumber(int runno)
 
 	if(bstc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime);
+		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		bstc.runNo = runno;
 	}
 }

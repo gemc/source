@@ -16,7 +16,7 @@ using namespace ccdb;
 #include "Randomize.hh"
 
 
-static dcConstants initializeDCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static dcConstants initializeDCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	dcConstants dcc;
@@ -580,7 +580,7 @@ void dc_HitProcess::initWithRunNumber(int runno)
 
 	if(dcc.runNo != runno) {
 		
-		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime);
+		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		dcc.runNo = runno;
 
 		double scaleFactor = 1;

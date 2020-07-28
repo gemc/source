@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	ftHodoConstants fthc;
@@ -355,7 +355,7 @@ void ft_hodo_HitProcess::initWithRunNumber(int runno)
 
 	if(fthc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fthc = initializeFTHODOConstants(runno, digiVariation, digiSnapshotTime);
+		fthc = initializeFTHODOConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		fthc.runNo = runno;
 	}
 }

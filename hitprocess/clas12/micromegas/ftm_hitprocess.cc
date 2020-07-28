@@ -5,7 +5,7 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static ftmConstants initializeFTMConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	ftmConstants ftmc;
 	
@@ -185,7 +185,7 @@ void ftm_HitProcess::initWithRunNumber(int runno)
 	if(this->ftmcc.runNo != runno)
 	{
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftmcc = initializeFTMConstants(runno, digiVariation, digiSnapshotTime);
+		ftmcc = initializeFTMConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		ftmcc.runNo = runno;
 	}
 }

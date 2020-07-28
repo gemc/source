@@ -15,7 +15,7 @@ using namespace ccdb;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no") {
+static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false) {
 	ctofConstants ctc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
@@ -566,7 +566,7 @@ void ctof_HitProcess::initWithRunNumber(int runno) {
 
 	if (ctc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime);
+		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		ctc.runNo = runno;
 	}
 }

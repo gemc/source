@@ -17,7 +17,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static htccConstants initializeHTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static htccConstants initializeHTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	htccConstants htccc;
@@ -491,7 +491,7 @@ void htcc_HitProcess::initWithRunNumber(int runno)
 
 	if(htccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		htccc = initializeHTCCConstants(runno, digiVariation, digiSnapshotTime);
+		htccc = initializeHTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		htccc.runNo = runno;
 	}
 }

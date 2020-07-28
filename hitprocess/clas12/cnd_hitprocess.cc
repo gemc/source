@@ -15,7 +15,7 @@ using namespace CLHEP;
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static cndConstants initializeCNDConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static cndConstants initializeCNDConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	cndConstants cndc;
@@ -573,7 +573,7 @@ void cnd_HitProcess::initWithRunNumber(int runno)
 
 	if(cndc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		cndc = initializeCNDConstants(runno, digiVariation, digiSnapshotTime);
+		cndc = initializeCNDConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		cndc.runNo = runno;
 	}
 }

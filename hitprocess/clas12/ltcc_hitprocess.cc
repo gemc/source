@@ -14,7 +14,7 @@
 #include <CCDB/CalibrationGenerator.h>
 using namespace ccdb;
 
-static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	ltccConstants ltccc;
@@ -261,7 +261,7 @@ void ltcc_HitProcess::initWithRunNumber(int runno)
 
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime);
+		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		ltccc.runNo = runno;
 	}
 }

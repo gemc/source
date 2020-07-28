@@ -12,7 +12,7 @@
 using namespace ccdb;
 
 
-static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static bmtConstants initializeBMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	bmtConstants bmtc;
@@ -326,7 +326,7 @@ void BMT_HitProcess::initWithRunNumber(int runno)
 
 	if(bmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bmtc = initializeBMTConstants(runno, digiVariation, digiSnapshotTime);
+		bmtc = initializeBMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		bmtc.runNo = runno;
 	}
 }

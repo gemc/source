@@ -20,7 +20,7 @@ using namespace CLHEP;
 using namespace ccdb;
 
 //static fmtConstants initializeFMTConstants(int runno)
-static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static fmtConstants initializeFMTConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	fmtConstants fmtc;
@@ -286,7 +286,7 @@ void FMT_HitProcess::initWithRunNumber(int runno)
 
 	if(fmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fmtc = initializeFMTConstants(runno, digiVariation, digiSnapshotTime);
+		fmtc = initializeFMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		fmtc.runNo = runno;
 	}
 }

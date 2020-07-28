@@ -11,7 +11,7 @@ using namespace ccdb;
 // gemc headers
 #include "pcal_hitprocess.h"
 
-static pcConstants initializePCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no")
+static pcConstants initializePCConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	pcConstants pcc;
 	
@@ -475,7 +475,7 @@ void pcal_HitProcess::initWithRunNumber(int runno)
 
 	if(pcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime);
+		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
 		pcc.runNo = runno;
 	}
 }
