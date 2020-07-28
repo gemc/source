@@ -190,8 +190,8 @@ void goptions::setGoptions()
 	//
 	//
 	//
-	// ` Ray
-	// ----------
+	// Cosmic Rays
+	// ----------_
 
 	optMap["COSMICRAYS"].args = "no";
 	optMap["COSMICRAYS"].help = "Cosmic Generator. The model has a (cos(theta), p) probability function:\n\n";
@@ -701,6 +701,13 @@ void goptions::setGoptions()
 	optMap["DIGITIZATION_TIMESTAMP"].help = "Timestamp to be used in digitization routines\n";
 	optMap["DIGITIZATION_TIMESTAMP"].type = 1;
 	optMap["DIGITIZATION_TIMESTAMP"].ctgr = "control";
+
+	optMap["HARDWARESTATUS"].arg  = 0;
+	optMap["HARDWARESTATUS"].name = "Accounts for hardware status";
+	optMap["HARDWARESTATUS"].help = "Accounts for hardware status\n";
+	optMap["HARDWARESTATUS"].help += "This flag can be used by the digitization routines to account for hardware status\n";
+	optMap["HARDWARESTATUS"].type = 0;
+	optMap["HARDWARESTATUS"].ctgr = "control";
 
 
 

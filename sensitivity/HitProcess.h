@@ -69,7 +69,9 @@ public:
 	void init(string name, goptions go, map<string, double> gp) {
 		gemcOpt   = go;
 		gpars     = gp;
-		verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
+		verbosity                = gemcOpt.optMap["HIT_VERBOSITY"].arg;
+		accountForHardwareStatus = gemcOpt.optMap["HARDWARESTATUS"].arg;
+
 		log_msg   = "  > " + HCname + "  Hit Process ";
 		HCname = name;
 		rejectHitConditions = false;
@@ -142,6 +144,7 @@ protected:
 	double verbosity;
 	string log_msg;
 	bool rejectHitConditions;
+	bool accountForHardwareStatus;
 
 	inline double DGauss(double x, double *par, double Edep, double stepTime)
 	{

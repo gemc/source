@@ -291,7 +291,7 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 	}else if (symmetry == "cartesian_3D_quadrant"){
 	  if (xx>=0 && yy>=0)	{ Bfield[0] = B1; Bfield[1] = B2; Bfield[2] = B3;}
 	  if (xx>=0 && yy<0)	{ Bfield[0] = B2; Bfield[1] =-B1; Bfield[2] = B3;}
-	  if (xx<0 && yy<0)	{ Bfield[0] =-B1; Bfield[1] =-B2; Bfield[2] = B3;}
+	  if (xx<0 && yy<0)	    { Bfield[0] =-B1; Bfield[1] =-B2; Bfield[2] = B3;}
 	  if (xx<0 && yy>=0)	{ Bfield[0] =-B2; Bfield[1] = B1; Bfield[2] = B3;}
 	}	
 

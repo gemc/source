@@ -34,24 +34,26 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 		cndc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		cndc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-		
+
 	int isec,ilay,istr;
 	
 	vector<vector<double> > data;
 	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(cndc.connection));
-	cout<<"Connecting to "<<cndc.connection<<"/calibration/cnd"<<endl;
-	
-	cout<<"CND:Getting status"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear(); calib->GetCalib(data,cndc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
-		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
-		cndc.status_L[isec-1][ilay-1][istr-1]=data[row][3];
-		cndc.status_R[isec-1][ilay-1][istr-1]=data[row][4];
+	cout<<"Connecting to " << cndc.connection << "/calibration/cnd"<<endl;
+
+	if(accountForHardwareStatus) {
+		cout<<"CND:Getting status" << endl;
+		sprintf(cndc.database,"/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+		data.clear(); calib->GetCalib(data,cndc.database);
+		for(unsigned row = 0; row < data.size(); row++)
+		{
+			isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+			cndc.status_L[isec-1][ilay-1][istr-1]=data[row][3];
+			cndc.status_R[isec-1][ilay-1][istr-1]=data[row][4];
+		}
 	}
-	
+
 	cout<<"CND:Getting TDC slope"<<endl;
 	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
@@ -279,9 +281,11 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		adc_mip_D = cndc.mip_dir_L[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_L[sector-1][layer-1][0];
-		
-		status_D = cndc.status_L[sector-1][layer-1][0];
-		status_N = cndc.status_R[sector-1][layer-1][0];
+		if(accountForHardwareStatus) {
+
+			status_D = cndc.status_L[sector-1][layer-1][0];
+			status_N = cndc.status_R[sector-1][layer-1][0];
+		}
 	}
 	
 	else if (paddle == 2) {   // hit is in paddle R
@@ -298,8 +302,10 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		adc_mip_D = cndc.mip_dir_R[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_R[sector-1][layer-1][0];
 		
-		status_D = cndc.status_R[sector-1][layer-1][0];
-		status_N = cndc.status_L[sector-1][layer-1][0];
+		if(accountForHardwareStatus) {
+			status_D = cndc.status_R[sector-1][layer-1][0];
+			status_N = cndc.status_L[sector-1][layer-1][0];
+		}
 	}
 	else cout <<"/n Help, do not recognise paddle number " << paddle << "!!!" << endl;
 	
@@ -436,8 +442,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	// Status flags
-	switch (status_D)
-	{
+	if(accountForHardwareStatus) {
+		switch (status_D)
+		{
 		case 0:
 			break;
 		case 1:
@@ -451,12 +458,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			break;
 		case 5:
 			break;
-			
+
 		default:
 			cout << " > Unknown CND status: " << status_D << " for sector " << sector << ",  layer " << layer << ", paddle " << paddle << endl;
-	}
-	switch (status_N)
-	{
+		}
+		switch (status_N)
+		{
 		case 0:
 			break;
 		case 1:
@@ -470,20 +477,19 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			break;
 		case 5:
 			break;
-			
+
 		default:
 			cout << " > Unknown CND status: " << status_N << " for sector " << sector << ",  layer " << layer << ", paddle " << 3 - paddle << endl;
+		}
 	}
+
 	
-	if (paddle == 1)
-	{
+	if (paddle == 1) {
 		ADCL = (int) ADCD;
 		ADCR = (int) ADCN;
 		TDCL = (int) TDCD;
 		TDCR = (int) TDCN;
-	}
-	if (paddle == 2)
-	{
+	} else if (paddle == 2) {
 		ADCL = (int) ADCN;
 		ADCR = (int) ADCD;
 		TDCL = (int) TDCN;
