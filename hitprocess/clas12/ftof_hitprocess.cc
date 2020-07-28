@@ -24,14 +24,14 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	ftc.runNo = runno;
 	ftc.date = "2015-11-29";
 	if (getenv("CCDB_CONNECTION") != NULL)
 		ftc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ftc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-
+	
 	ftc.npaddles[0] = 23;
 	ftc.npaddles[1] = 62;
 	ftc.npaddles[2] = 5;
@@ -78,17 +78,18 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.veff[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	cout << "FTOF:Getting status" << endl;
-	sprintf(ftc.database, "/calibration/ftof/status:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear();
-	calib->GetCalib(data, ftc.database);
-	for (unsigned row = 0; row < data.size(); row++) {
-		isec = data[row][0];
-		ilay = data[row][1];
-		ftc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
-		ftc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	if(accountForHardwareStatus) {
+		cout << "FTOF:Getting status" << endl;
+		sprintf(ftc.database, "/calibration/ftof/status:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+		data.clear();
+		calib->GetCalib(data, ftc.database);
+		for (unsigned row = 0; row < data.size(); row++) {
+			isec = data[row][0];
+			ilay = data[row][1];
+			ftc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
+			ftc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
+		}
 	}
-	
 	cout << "FTOF:Getting gain_balance" << endl;
 	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
@@ -126,7 +127,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.toff_LR[isec - 1][ilay - 1].push_back(data[row][3]);
 		ftc.toff_RFpad[isec-1][ilay-1].push_back(data[row][4]);
 		ftc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
-
+		
 		// cout << " Loading constant: " << isec << " " << ilay << " " << data[row][5] << " " << digiVariation << endl;
 	}
 	
@@ -145,31 +146,31 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	sprintf(ftc.database, "/calibration/ftof/tres:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
-
+	
 	for(isec = 0; isec < 6; isec++) {
 		for(ilay = 0; ilay < 3; ilay++) {
 			ftc.tres[isec][ilay].resize(ftc.npaddles[ilay]);
 		}
 	}
-
+	
 	for (unsigned row = 0; row < data.size(); row++) {
 		isec = data[row][0] - 1;
 		ilay = data[row][1] - 1;
 		int ipaddle   = data[row][2] - 1;
 		double sigma = data[row][3];
-			ftc.tres[isec][ilay][ipaddle] = sigma;
+		ftc.tres[isec][ilay][ipaddle] = sigma;
 	}
-
-// updated on 1/9/2020: leaving this one here for reference. We now use constants from CCDB
-//	cout << "FTOF:Setting time resolution" << endl;
-//	for (int p = 0; p < 3; p++) {
-//		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
-//			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 4.545 + 95.465)); //ps to ns
-//			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.820 + 59.16)); //ps to ns
-//			if (p == 2) ftc.tres[p].push_back(1e-3 * (200.0)); //ps to ns fixed number
-//		}
-//	}
-
+	
+	// updated on 1/9/2020: leaving this one here for reference. We now use constants from CCDB
+	//	cout << "FTOF:Setting time resolution" << endl;
+	//	for (int p = 0; p < 3; p++) {
+	//		for (int c = 1; c < ftc.npaddles[p] + 1; c++) {
+	//			if (p == 0) ftc.tres[p].push_back(1e-3 * (c * 4.545 + 95.465)); //ps to ns
+	//			if (p == 1) ftc.tres[p].push_back(1e-3 * (c * 0.820 + 59.16)); //ps to ns
+	//			if (p == 2) ftc.tres[p].push_back(1e-3 * (200.0)); //ps to ns fixed number
+	//		}
+	//	}
+	
 	
 	// setting voltage signal parameters
 	ftc.vpar[0] = 50; // delay, ns
@@ -216,44 +217,44 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 
 map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	map<string, double> dgtz;
-
+	
 	// hit ids
 	vector<identifier> identity = aHit->GetId();
-
+	
 	int sector = identity[0].id;
 	int panel = identity[1].id;
 	int paddle = identity[2].id;
 	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT
-
+	
 	// TDC conversion factors
 	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
-
-
+	
+	
 	if(aHit->isBackgroundHit == 1) {
-
+		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-
+		
 		dgtz["hitn"]   = hitn;
 		dgtz["sector"] = sector;
 		dgtz["layer"] = panel;
 		dgtz["paddle"] = paddle;
 		dgtz["side"] = (int) pmt;
-
+		
 		double adc  = totEdep * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] ; // no gain as that comes from data already
 		double tdc = stepTime/tdcconv;
-
+		
 		dgtz["ADC"] = (int) adc;
 		dgtz["ADCu"] = (int) adc;
-
+		
 		dgtz["TDC"]  = (int) tdc;
 		dgtz["TDCu"] = (int) tdc;
-
+		
 		return dgtz;
 	}
 	
-
+	
 	trueInfos tInfos(aHit);
 	
 	// Get the paddle half-length
@@ -291,7 +292,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	double eneR = tInfos.eTot*attRight;
 	
 	double ene = tInfos.eTot*att;
-
+	
 	// giving geantinos some energies
 	if (aHit->GetPID() == 0) {
 		double gmomentum = aHit->GetMom().mag() / GeV;
@@ -329,19 +330,19 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		double timeWalk  = A / pow(adc, B);
 		double timeWalkU = A / pow(adcu, B);
 		
-//		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
-//		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
-//		- ftc.toff_P2P[sector-1][panel-1][paddle-1];
-
+		//		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
+		//		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
+		//		- ftc.toff_P2P[sector-1][panel-1][paddle-1];
+		
 		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
 		- ftc.toff_RFpad[sector-1][panel-1][paddle-1];
-
+		
 		// cout << " FTOF Unsmeared Time before p2p subtraction: " << tU << endl;
-
+		
 		tU = tU - ftc.toff_P2P[sector-1][panel-1][paddle-1];
-
+		
 		// cout << " FTOF Unsmeared Time after p2p subtraction: " << tU << endl;
-
+		
 		tdcu = (tU + timeWalkU) / tdcconv;
 		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
 		
@@ -349,7 +350,8 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	
 	// Status flags
-	switch (ftc.status[sector - 1][panel - 1][pmt][paddle - 1]) {
+	if(accountForHardwareStatus) {
+		switch (ftc.status[sector - 1][panel - 1][pmt][paddle - 1]) {
 		case 0:
 			break;
 		case 1:
@@ -367,8 +369,8 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 			
 		default:
 			cout << " > Unknown FTOF status: " << ftc.status[sector - 1][panel - 1][0][paddle - 1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left " << endl;
+		}
 	}
-	
 	
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][0][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left: " << adcl << endl;
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][1][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " right:  " << adcr << endl;
@@ -612,7 +614,7 @@ void ftof_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if (ftc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		ftc = initializeFTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

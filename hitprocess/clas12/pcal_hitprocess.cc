@@ -22,7 +22,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	int isec,ilay;
 	//	int isec,ilay,istr;
 	
@@ -35,7 +35,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	} else {
 		pcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
-
+	
 	pcc.TDC_time_to_evio    = 1.      ;
 	pcc.ADC_GeV_to_evio     = 1./10000; // MIP based calibration is nominally 10 channels/MeV
 	pcc.pmtPEYld            = 11.5    ; // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
@@ -45,7 +45,7 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 	//  Fluctuations in PMT gain distributed using Gaussian with
 	//  sigma = sqrt(npe)/SNR where 1/SNR = sqrt[(1 + 1/(pcc.pmtDynodeGain-1)) npe=number of photoelectrons
 	//  Adapted from G-112 (pg. 174) of RCA PMT Handbook.
-
+	
 	pcc.pmtFactor           = sqrt(1 + 1/(pcc.pmtDynodeGain-1));
 	
 	vector<vector<double> > data;
@@ -86,14 +86,14 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		pcc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
 		pcc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
 	}
-
+	
 	// ========== Initialization of timing offset ===========
 	// ========== Initialization of timing offset ===========
 	sprintf(pcc.database,"/calibration/ec/tdc_global_offset:%d:%s%s", pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data, pcc.database);
 	pcc.tdc_global_offset = data[0][3];
-
-
+	
+	
 	sprintf(pcc.database,"/calibration/ec/effective_velocity:%d:%s%s",pcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,pcc.database);
 	
@@ -103,17 +103,17 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 		//istr = data[row][2];
 		pcc.veff[isec-1][ilay-1].push_back(data[row][3]);
 	}
-
-
-	sprintf(pcc.database, "/calibration/ec/status:%d:%s%s", pcc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear();
-	calib->GetCalib(data, pcc.database);
-	for (unsigned row = 0; row < data.size(); row++)
-	{
-		isec = data[row][0]; ilay = data[row][1];
-		pcc.status[isec-1][ilay-1].push_back(data[row][3]);
-	}	
 	
+	
+	if(accountForHardwareStatus) {
+		sprintf(pcc.database, "/calibration/ec/status:%d:%s%s", pcc.runNo, digiVariation.c_str(), timestamp.c_str());
+		data.clear();
+		calib->GetCalib(data, pcc.database);
+		for (unsigned row = 0; row < data.size(); row++) {
+			isec = data[row][0]; ilay = data[row][1];
+			pcc.status[isec-1][ilay-1].push_back(data[row][3]);
+		}	
+	}
 	// FOR now we will initialize pedestals and sigmas to a random value, in the future
 	// they will be initialized from CCDB, when the DB will be ready
 	const double const_ped_value = 101;
@@ -170,35 +170,35 @@ static pcConstants initializePCConstants(int runno, string digiVariation = "defa
 map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-
+	
 	// get sector, view (U, V, W), and strip.
 	vector<identifier> identity = aHit->GetId();
 	int sector = identity[0].id;
 	int module = identity[1].id;
 	int view   = identity[2].id;
 	int strip  = identity[3].id;
-
+	
 	if(aHit->isBackgroundHit == 1) {
-
+		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-
+		
 		dgtz["hitn"]   = hitn;
 		dgtz["module"] = sector;
 		dgtz["view"]   = view;
 		dgtz["strip"]  = strip;
-
+		
 		double adc  = totEdep / pcc.ADC_GeV_to_evio ; // no gain as that comes from data already
 		double tdc = stepTime * pcc.TDC_time_to_evio ;
-
+		
 		dgtz["ADC"] = (int) adc;
 		dgtz["TDC"]  = (int) tdc;
-
+		
 		return dgtz;
 	}
 	
-
+	
 	trueInfos tInfos(aHit);
 	
 	HCname = "PCAL Hit Process";
@@ -255,7 +255,7 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if (Etota > 0) {
 		double PC_npe = G4Poisson(Etota*pcc.pmtPEYld); //number of photoelectrons
 		if (PC_npe>0) {
-		        double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
+			double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
 			double PC_GeV = G4RandGauss::shoot(PC_npe,sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 			if (PC_GeV>0) {
 				ADC = PC_GeV;
@@ -263,29 +263,30 @@ map<string, double> pcal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			}
 		}
 	}
-
-        // Status flags
-	switch (pcc.status[sector-1][view-1][strip-1])
-	{
-	   case 0:
-	   break;
-	   case 1:
-	   ADC = 0;
-	   break;
-	   case 2:
-	   TDC = 0;
-	   break;
-	   case 3:
-	   ADC = TDC = 0;
-	   break;
 	
-	   case 5:
-	   break;
-	
-	   default:
-	   cout << " > Unknown PCAL status: " << pcc.status[sector-1][view-1][strip-1] << " for sector " << sector << ",  view " << view << ", strip " << strip << endl;
-	}	
-	
+	// Status flags
+	if(accountForHardwareStatus) {
+		switch (pcc.status[sector-1][view-1][strip-1])
+		{
+		case 0:
+			break;
+		case 1:
+			ADC = 0;
+			break;
+		case 2:
+			TDC = 0;
+			break;
+		case 3:
+			ADC = TDC = 0;
+			break;
+			
+		case 5:
+			break;
+			
+		default:
+			cout << " > Unknown PCAL status: " << pcc.status[sector-1][view-1][strip-1] << " for sector " << sector << ",  view " << view << ", strip " << strip << endl;
+		}	
+	}
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
@@ -394,7 +395,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	// Get scintillator mother volume dimensions (mm)
 	//double pDy1 = aHit->GetDetector().dimensions[3];  ///< G4Trap Semilength.
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
-	//double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
+													  //double BA   = sqrt(4*pow(pDy1,2) + pow(pDx2,2)) ;
 	
 	vector<G4ThreeVector> pos  = aHit->GetPos();
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
@@ -432,7 +433,7 @@ map< int, vector <double> > pcal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 			if (stepE > 0) {
 				double PC_npe = G4Poisson(stepE*pcc.pmtPEYld); //number of photoelectrons
 				if (PC_npe>0) {
-				        double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
+					double sigma  = sqrt(PC_npe)*pcc.pmtFactor;
 					double PC_GeV = G4RandGauss::shoot(PC_npe, sigma)/1000./pcc.ADC_GeV_to_evio/G/pcc.pmtPEYld;
 					if (PC_GeV>0) {
 						stepIndex.push_back(s);
@@ -472,7 +473,7 @@ void pcal_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(pcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

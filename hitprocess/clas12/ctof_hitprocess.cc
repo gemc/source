@@ -25,7 +25,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	cout << "Entering initializeCTOF" << endl;
 	
 	ctc.runNo = runno;
@@ -34,7 +34,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-		
+	
 	ctc.npaddles = 48;
 	ctc.thick = 3.0;
 	
@@ -42,8 +42,8 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	ctc.dEMIP = ctc.thick * ctc.dEdxMIP;
 	ctc.pmtPEYld = 500;
 	//	ctc.tdcLSB        = 41.6667; // counts per ns (24 ps LSB)
-
-
+	
+	
 	int isec, ilay;
 	//	int isec, ilay, istr;
 	
@@ -74,17 +74,18 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.veff[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	sprintf(ctc.database, "/calibration/ctof/status:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear();
-	calib->GetCalib(data, ctc.database);
-	for (unsigned row = 0; row < data.size(); row++) {
-		isec = data[row][0];
-		ilay = data[row][1];
-		//        istr = data[row][2];
-		ctc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
-		ctc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	if(accountForHardwareStatus) {
+		sprintf(ctc.database, "/calibration/ctof/status:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+		data.clear();
+		calib->GetCalib(data, ctc.database);
+		for (unsigned row = 0; row < data.size(); row++) {
+			isec = data[row][0];
+			ilay = data[row][1];
+			//        istr = data[row][2];
+			ctc.status[isec - 1][ilay - 1][0].push_back(data[row][3]);
+			ctc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
+		}
 	}
-	
 	sprintf(ctc.database, "/calibration/ctof/gain_balance:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -148,19 +149,19 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.zoffset[isec - 1][ilay - 1].push_back(offset);
 		//	cout << data[row][2] << " " << length << " " << offset << endl;
 	}
-
-
+	
+	
 	cout << "CTOF:Setting time resolution" << endl;
 	sprintf(ctc.database, "/calibration/ctof/tres:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ctc.database);
-
+	
 	for (unsigned row = 0; row < data.size(); row++) {
 		double sigma = data[row][3];
 		ctc.tres.push_back(sigma);
 	}
-
-
+	
+	
 	// setting voltage signal parameters
 	ctc.vpar[0] = 50; // delay, ns
 	ctc.vpar[1] = 10; // rise time, ns
@@ -184,7 +185,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	// ORDER: 0=Updtream  2=Downstream.
 	
 	string database = "/daq/tt/ctof:1";
-
+	
 	data.clear();
 	calib->GetCalib(data, database);
 	cout << "  > " << ctc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
@@ -203,14 +204,14 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		// order is important as we could have duplicate entries w/o it
 		ctc.TT.addHardwareItem({sector, panel, pmt, order}, Hardware(crate, slot, channel));
 	}
-
-
-
+	
+	
+	
 	// now connecting to target geometry to get its position
 	sprintf(ctc.database,"/geometry/target:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ctc.database);
 	ctc.targetZPos = data[0][3]*cm;
-
+	
 	return ctc;
 }
 
@@ -322,33 +323,36 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		- ctc.toff_RFpad[sector-1][panel-1][paddle-1]
 		- ctc.toff_P2P[sector-1][panel-1][paddle-1]
 		+ timeWalk;
-
+		
 		double t = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
 		tdcu = tU / tdcconv;
 		tdc = t / tdcconv;
 	}
-	// Status flags
-	switch (ctc.status[sector - 1][panel - 1][side][paddle - 1]) {
-	case 0:
-		break;
-	case 1:
-		adc = 0;
-		break;
-	case 2:
-		tdc = 0;
-		break;
-	case 3:
-		adc = tdc = 0;
-		break;
-
-	case 5:
-		break;
-
-	default:
-		cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
-		",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
-	}
 	
+	if(accountForHardwareStatus) {
+		
+		// Status flags
+		switch (ctc.status[sector - 1][panel - 1][side][paddle - 1]) {
+		case 0:
+			break;
+		case 1:
+			adc = 0;
+			break;
+		case 2:
+			tdc = 0;
+			break;
+		case 3:
+			adc = tdc = 0;
+			break;
+			
+		case 5:
+			break;
+			
+		default:
+			cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
+			",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
+		}
+	}
 	dgtz["hitn"] = hitn;
 	dgtz["paddle"] = paddle;
 	dgtz["side"] = side;
@@ -490,7 +494,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 		//pmt = 0 or 1,
 		
 		double d = length + (1. - 2. * side)*(Pos[s].z() - offset); // The distance between the hit and PMT?
-																						// attenuation factor
+																	// attenuation factor
 		double att = exp(-d / cm / attlen);
 		
 		// Gain factors to simulate CTOF PMT gain matching algorithm.
@@ -560,10 +564,10 @@ double ctof_HitProcess::voltage(double charge, double time, double forTime) {
 }
 
 void ctof_HitProcess::initWithRunNumber(int runno) {
-
+	
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if (ctc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

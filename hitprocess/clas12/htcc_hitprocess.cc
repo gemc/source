@@ -43,15 +43,19 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	vector<vector<double> > data;
 	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(htccc.connection));
-	cout<<"HTCC:Getting status, gain"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear() ; calib->GetCalib(data,htccc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
-		isec   = data[row][0]; ilay   = data[row][1];
-		htccc.status[isec-1][ilay-1].push_back(data[row][3]);
-	}
 
+	if(accountForHardwareStatus) {
+
+		cout<<"HTCC:Getting status"<<endl;
+		sprintf(htccc.database,"/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+		data.clear() ; calib->GetCalib(data,htccc.database);
+		for(unsigned row = 0; row < data.size(); row++)
+		{
+			isec   = data[row][0]; ilay   = data[row][1];
+			htccc.status[isec-1][ilay-1].push_back(data[row][3]);
+		}
+	}
+	cout<<"HTCC:Getting mc_gain"<<endl;
 	sprintf(htccc.database,"/calibration/htcc/mc_gain:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -59,14 +63,14 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.mc_gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
-	cout <<"HTCC:Getting mc_gain, mc_smearing" <<endl;            
-        sprintf(htccc.database,"/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout <<"HTCC:Getting mc_gain, mc_smearing" <<endl;
+	sprintf(htccc.database,"/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
-	for(unsigned row = 0; row < data.size(); row++)                  
-          {
-            isec   = data[row][0]; ilay   = data[row][1];
-            htccc.mc_smear[isec-1][ilay-1].push_back(data[row][3]);
-	  }                                                                                                                    
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec   = data[row][0]; ilay   = data[row][1];
+		htccc.mc_smear[isec-1][ilay-1].push_back(data[row][3]);
+	}
 
 
 
@@ -250,9 +254,12 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		cout <<  log_msg << " (sector, ring, half)=(" << idsector << ", " << idring << ", " << idhalf << ")"
 		<< " x=" << tInfos.x/cm << " y=" << tInfos.y/cm << " z=" << tInfos.z/cm << endl;
 	}
+
 	//status flags
-	switch (htccc.status[idsector-1][idhalf-1][idring-1])
-	{
+	if(accountForHardwareStatus) {
+
+		switch (htccc.status[idsector-1][idhalf-1][idring-1])
+		{
 		case 0:
 			break;
 		case 1:
@@ -272,13 +279,14 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			
 		default:
 			cout << " > Unknown HTCC status: " << htccc.status[idsector-1][idhalf-1][idring-1] << " for sector " << idsector << ",  halfsector " << idhalf << ", ring  " << idring << endl;
+		}
 	}
 	
 	dgtz["sector"] = idsector;
 	dgtz["ring"]   = idring;
 	dgtz["half"]   = idhalf;
 	//	dgtz["nphe"]   = ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1];
-        dgtz["nphe"]   = G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
+	dgtz["nphe"]   = G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
 	dgtz["time"]   = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 	dgtz["hitn"]   = hitn;
 	
