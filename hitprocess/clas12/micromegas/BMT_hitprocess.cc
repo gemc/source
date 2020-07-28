@@ -326,7 +326,7 @@ void BMT_HitProcess::initWithRunNumber(int runno)
 
 	if(bmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bmtc = initializeBMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		bmtc = initializeBMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		bmtc.runNo = runno;
 	}
 }

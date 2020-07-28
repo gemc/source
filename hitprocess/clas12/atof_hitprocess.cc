@@ -107,7 +107,7 @@ void atof_HitProcess::initWithRunNumber(int runno)
 
 	if (atc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		atc = initializeATOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		atc = initializeATOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		atc.runNo = runno;
 	}
 }

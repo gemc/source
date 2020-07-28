@@ -580,7 +580,7 @@ void dc_HitProcess::initWithRunNumber(int runno)
 
 	if(dcc.runNo != runno) {
 		
-		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		dcc.runNo = runno;
 
 		double scaleFactor = 1;

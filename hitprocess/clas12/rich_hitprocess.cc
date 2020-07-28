@@ -82,7 +82,7 @@ void rich_HitProcess::initWithRunNumber(int runno)
 
 	if(richc.runNo != runno) {
 //		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		richc = initializeRICHConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		richc = initializeRICHConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		richc.runNo = runno;
 	}
 }

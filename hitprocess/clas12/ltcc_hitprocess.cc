@@ -261,7 +261,7 @@ void ltcc_HitProcess::initWithRunNumber(int runno)
 
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ltccc.runNo = runno;
 	}
 }

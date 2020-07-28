@@ -327,7 +327,7 @@ void bst_HitProcess::initWithRunNumber(int runno)
 
 	if(bstc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		bstc.runNo = runno;
 	}
 }

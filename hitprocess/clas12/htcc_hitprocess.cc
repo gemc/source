@@ -491,7 +491,7 @@ void htcc_HitProcess::initWithRunNumber(int runno)
 
 	if(htccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		htccc = initializeHTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		htccc = initializeHTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		htccc.runNo = runno;
 	}
 }

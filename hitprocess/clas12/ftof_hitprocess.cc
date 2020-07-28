@@ -615,7 +615,7 @@ void ftof_HitProcess::initWithRunNumber(int runno)
 
 	if (ftc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftc = initializeFTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ftc = initializeFTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ftc.runNo = runno;
 	}
 }

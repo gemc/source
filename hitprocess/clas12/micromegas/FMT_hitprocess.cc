@@ -286,7 +286,7 @@ void FMT_HitProcess::initWithRunNumber(int runno)
 
 	if(fmtc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fmtc = initializeFMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		fmtc = initializeFMTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		fmtc.runNo = runno;
 	}
 }

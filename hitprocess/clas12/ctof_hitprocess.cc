@@ -566,7 +566,7 @@ void ctof_HitProcess::initWithRunNumber(int runno) {
 
 	if (ctc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ctc = initializeCTOFConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ctc.runNo = runno;
 	}
 }

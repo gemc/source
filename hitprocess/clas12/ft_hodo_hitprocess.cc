@@ -355,7 +355,7 @@ void ft_hodo_HitProcess::initWithRunNumber(int runno)
 
 	if(fthc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		fthc = initializeFTHODOConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		fthc = initializeFTHODOConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		fthc.runNo = runno;
 	}
 }

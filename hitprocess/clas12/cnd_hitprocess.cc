@@ -573,7 +573,7 @@ void cnd_HitProcess::initWithRunNumber(int runno)
 
 	if(cndc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		cndc = initializeCNDConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		cndc = initializeCNDConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		cndc.runNo = runno;
 	}
 }

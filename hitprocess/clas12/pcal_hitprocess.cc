@@ -475,7 +475,7 @@ void pcal_HitProcess::initWithRunNumber(int runno)
 
 	if(pcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		pcc = initializePCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		pcc.runNo = runno;
 	}
 }

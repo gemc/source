@@ -185,7 +185,7 @@ void ftm_HitProcess::initWithRunNumber(int runno)
 	if(this->ftmcc.runNo != runno)
 	{
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftmcc = initializeFTMConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ftmcc = initializeFTMConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ftmcc.runNo = runno;
 	}
 }

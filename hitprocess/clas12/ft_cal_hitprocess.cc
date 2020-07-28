@@ -442,7 +442,7 @@ void ft_cal_HitProcess::initWithRunNumber(int runno)
 
 	if(ftcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ftcc.runNo = runno;
 	}
 }

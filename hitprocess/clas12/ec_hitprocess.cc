@@ -484,7 +484,7 @@ void ec_HitProcess::initWithRunNumber(int runno)
 
 	if(ecc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		ecc = initializeECConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatusaccountForHardwareStatus);
+		ecc = initializeECConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		ecc.runNo = runno;
 	}
 }
