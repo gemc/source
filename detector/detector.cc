@@ -805,7 +805,7 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	}
 	i = MMats->find(material);
 	
-	// if material is still not defined, use air
+	// if material is still not defined, use DEFAULT_MATERIAL
 	if(i == MMats->end() && LogicV == 0)
 	{
 		if(defmat == "none")
