@@ -88,19 +88,19 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 
 					// checking map consistency for first coordinate
 					if( (min1  + i1*cell1 - d1)/d1 > 0.001) {
-						cout << "   !! Error:  coordinate index wrong. Map point should be " <<  min1  + i1*cell1
+						cout << "   !! Error:  coordinate 1 index wrong. Map point should be " <<  min1  + i1*cell1
 						<< " but it's  " << d1 << " instead." << endl;
 					}
 					// checking map consistency for second coordinate
 					if( (min2  + i2*cell2 - d2)/d2 > 0.001) {
-						cout << "   !! Error:  coordinate index wrong. Map point should be " <<  min2  + i2*cell2
+						cout << "   !! Error:  coordinate 2 index wrong. Map point should be " <<  min2  + i2*cell2
 						<< " but it's  " << d2 << " instead." << endl;
 					}
 
 					// checking map consistency for third coordinate
 					if( (min3  + i3*cell3 - d3)/d3 > 0.001) {
-						cout << "   !! Error:  coordinate index wrong. Map point should be " <<  min2  + i2*cell2
-						<< " but it's  " << d2 << " instead." << endl;
+						cout << "   !! Error:  coordinate 3 index wrong. Map point should be " <<  min3  + i3*cell3
+						<< " but it's  " << d3 << " instead." << endl;
 					}
 
 
@@ -171,7 +171,7 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 					}
 
 					if(verbosity>4 && verbosity != 99) {
-						cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ", " << d3 << ")   values: (" << b1 << ", " << b2 << ", " << b3 << ")";
+						cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ", " << d3 << ")   values: (" << b1/tesla << ", " << b2/tesla << ", " << b3/tesla << ") tesla";
 						cout << ",  indexes (t1, t2, t3) = ("  << t1 << ", " << t2 << ", " << t3 << ") " ;
 						cout << ",  array sizes = ("  << np_1 << ", " << np_2 << ", " << np_3 << ") " << endl;
 					}
