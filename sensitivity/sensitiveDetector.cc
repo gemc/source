@@ -388,6 +388,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "muPairProd")            return 61;
 	if(procName == "muBrems")               return 62;
 	if(procName == "muonNuclear")           return 63;
+	if(procName == "muMinusCaptureAtRest")  return 64;
 	if(procName == "kaon-Inelastic")        return 70;
 	if(procName == "kaon+Inelastic")        return 71;
 	if(procName == "kaon0Inelastic")        return 72;
@@ -402,7 +403,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "tInelastic")            return 130;
 	if(procName == "xi0Inelastic")          return 140;
 	if(procName == "omega-Inelastic")       return 150;
-	
+
 	if(procName == "na")                    return 999;
 	
 	if(verbosity > 0)
