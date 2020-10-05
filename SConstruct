@@ -2,7 +2,7 @@ from init_env import init_environment
 
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
-env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh")
+env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh hipo")
 
 # env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
 # env.Replace(CXX = "/usr/bin/clang++")
@@ -150,6 +150,8 @@ env.Append(CPPPATH = 'output')
 output_sources = Split("""
 	output/outputFactory.cc
 	output/evio_output.cc
+	output/hipo_output.cc
+	output/hipoSchemas.cc
 	output/txt_output.cc
 	output/txt_simple_output.cc
 	output/gbank.cc""")

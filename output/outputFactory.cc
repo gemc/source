@@ -3,6 +3,7 @@
 #include "options.h"
 #include "string_utilities.h"
 #include "evio_output.h"
+#include "hipo_output.h"
 #include "txt_output.h"
 #include "txt_simple_output.h"
 
@@ -47,6 +48,10 @@ outputContainer::outputContainer(goptions Opts)
 		pchan = new evioFileChannel(trimSpacesFromString(outFile).c_str(), "w", evio_buffer);
 		pchan->open();
 	}
+	if(outType == "hipo") {
+		initializeHipo(outFile);
+	}
+
 }
 
 outputContainer::~outputContainer()
@@ -67,9 +72,10 @@ map<string, outputFactoryInMap> registerOutputFactories()
 {
 	map<string, outputFactoryInMap> outputMap;
 
-	outputMap["txt"]   =   &txt_output::createOutput;
-	outputMap["txt_simple"]   =   &txt_simple_output::createOutput;
-	outputMap["evio"]  =  &evio_output::createOutput;
+	outputMap["txt"]        = &txt_output::createOutput;
+	outputMap["txt_simple"] = &txt_simple_output::createOutput;
+	outputMap["evio"]       = &evio_output::createOutput;
+	outputMap["hipo"]       = &hipo_output::createOutput;
 
 	return outputMap;
 }

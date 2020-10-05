@@ -22,6 +22,9 @@
 #include "evioFileChannel.hxx"
 using namespace evio;
 
+// Hipo
+#include "hipo4/writer.h"
+
 // geant4
 #include "G4ThreeVector.hh"
 
@@ -203,20 +206,27 @@ public:
 
 class ancestorInfo
 {
- public:
-  ancestorInfo() {};
-  ~ancestorInfo() {};
-  int pid;
-  int tid;
-  int mtid;
-  double trackE;
-  G4ThreeVector p;
-  G4ThreeVector vtx;
+public:
+	ancestorInfo() {};
+	~ancestorInfo() {};
+	int pid;
+	int tid;
+	int mtid;
+	double trackE;
+	G4ThreeVector p;
+	G4ThreeVector vtx;
 
-  int    getVariableFromStringI(string);
-  double getVariableFromStringD(string);
+	int    getVariableFromStringI(string);
+	double getVariableFromStringD(string);
 };
 
+class HipoSchema {
+public:
+	HipoSchema();
+
+	hipo::schema runConfig;
+
+};
 
 /// \class outputContainer
 /// <b> outputContainer </b>\n\n
@@ -233,6 +243,11 @@ public:
 
 	ofstream        *txtoutput;
 	evioFileChannel *pchan;
+
+	// hipo schema and writer
+	void initializeHipo(string outputfile);
+	hipo::writer    *writer;
+
 };
 
 /// \class outputFactory
@@ -277,11 +292,11 @@ public:
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int) = 0;
 
-        // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
-        // This method should be called once at the end of event action, and the 1st argument 
-        // is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
+	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+	// This method should be called once at the end of event action, and the 1st argument
+	// is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
 	virtual void writeFADCMode1( map<int, vector<hitOutput> >, int)  = 0;
-        
+
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int) = 0;
 
@@ -300,6 +315,10 @@ typedef outputFactory *(*outputFactoryInMap)();
 outputFactory *getOutputFactory(map<string, outputFactoryInMap>*, string);
 
 map<string, outputFactoryInMap> registerOutputFactories();
+
+
+
+
 
 
 #endif
