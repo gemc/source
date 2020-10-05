@@ -29,11 +29,16 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 //	}
 }
 
-// instantiates the DOM tree
-// write header bank
-// each variable is a domnode
+// instantiates hipo event
+// write run::config bank
 void hipo_output :: writeHeader(outputContainer* output, map<string, double> data, gBank bank)
 {
+	outEvent = new hipo::event();
+
+
+	hipo::bank runConfigBank( schemaDet ,ndets);
+
+
 
 }
 

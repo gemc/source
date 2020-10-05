@@ -7,8 +7,6 @@
 #ifndef TXT_OUTPUT_H
 #define TXT_OUTPUT_H 1
 
-
-
 // gemc headers
 #include "outputFactory.h"
 

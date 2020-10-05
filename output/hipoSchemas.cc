@@ -1,5 +1,6 @@
 // gemc headers
 #include "outputFactory.h"
+#include "hipoSchemas.h"
 
 HipoSchema :: HipoSchema()
 {
@@ -48,14 +49,20 @@ HipoSchema :: HipoSchema()
 
 }
 
-void outputContainer::initializeHipo(string outputfile) {
+void outputContainer::initializeHipo(string outputFile) {
 
 
 	HipoSchema *hipoSchema = new HipoSchema();
 
-	cout << " Initializing hip4 writer to filename:" << outputfile << endl;
+	cout << " Initializing hip4 writer to filename:" << outputFile << endl;
 	writer = new hipo::writer();
 
+	// Open a writer and register schemas with the writer.
+	// The schemas have to be added to the writer before openning
+	// the file, since they are written into the header of the file.
 	writer->getDictionary().addSchema(hipoSchema->runConfig);
+
+	
+	writer->open(outputFile.c_str());
 
 }

@@ -220,13 +220,6 @@ public:
 	double getVariableFromStringD(string);
 };
 
-class HipoSchema {
-public:
-	HipoSchema();
-
-	hipo::schema runConfig;
-
-};
 
 /// \class outputContainer
 /// <b> outputContainer </b>\n\n

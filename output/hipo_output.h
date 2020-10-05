@@ -72,6 +72,8 @@ public:
 	// write event and close stream if necessary
 	void writeEvent(outputContainer*) ;
 
+	hipo::event *outEvent;
+
 	
 };
 

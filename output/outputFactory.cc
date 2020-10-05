@@ -43,8 +43,7 @@ outputContainer::outputContainer(goptions Opts)
 
 	if(outType != "no") cout << hd_msg << " Opening output file \"" << trimSpacesFromString(outFile) << "\"." << endl;
 	if(outType == "txt" || outType == "txt_simple")  txtoutput = new ofstream(trimSpacesFromString(outFile).c_str());
-	if(outType == "evio")
-	{
+	if(outType == "evio") {
 		pchan = new evioFileChannel(trimSpacesFromString(outFile).c_str(), "w", evio_buffer);
 		pchan->open();
 	}
