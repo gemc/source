@@ -24,6 +24,7 @@ using namespace evio;
 
 // Hipo
 #include "hipo4/writer.h"
+#include "hipoSchemas.h"
 
 // geant4
 #include "G4ThreeVector.hh"
@@ -238,8 +239,12 @@ public:
 	evioFileChannel *pchan;
 
 	// hipo schema and writer
+	// The schemas have to be added to the writer before openning
+	// the file, since they are written into the header of the file.
+	// Thus the schema has to be declared in this base class
 	void initializeHipo(string outputfile);
-	hipo::writer    *writer;
+	hipo::writer    *hipoWriter;
+	HipoSchema      *hipoSchema;
 
 };
 

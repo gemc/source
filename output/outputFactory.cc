@@ -59,11 +59,15 @@ outputContainer::~outputContainer()
 
 	if(outType != "no")   cout << " Closing " << outFile << "." << endl;
 	if(outType == "txt" || outType == "txt_simple")  txtoutput->close();
-	if(outType == "evio")
-	{
+	if(outType == "evio") {
 		pchan->close();
 		delete pchan;
 	}
+	if(outType == "hipo") {
+		cout << hd_msg << " Closing Hipo file \"" << trimSpacesFromString(outFile) << "\"." << endl;
+		hipoWriter->close();
+	}
+
 }
 
 

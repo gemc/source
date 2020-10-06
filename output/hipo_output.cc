@@ -33,12 +33,28 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 // write run::config bank
 void hipo_output :: writeHeader(outputContainer* output, map<string, double> data, gBank bank)
 {
-	outEvent = new hipo::event();
+	if(outEvent == nullptr) {
+		outEvent = new hipo::event();
+	} else {
+		outEvent->reset();
+	}
 
 
-	hipo::bank runConfigBank( schemaDet ,ndets);
 
+	// Create runConfigBank with 1 row based on schema
+	hipo::bank runConfigBank(output->hipoSchema->runConfigSchema, 1);
 
+	runConfigBank.putInt("run",   0, data["runNo"]);
+	runConfigBank.putInt("event", 0, data["evn"]);
+
+	time_t t = std::time(0);
+	int now = static_cast<int> (t);
+	runConfigBank.putInt("unixtime", 0, now);
+	runConfigBank.putInt("trigger",  0, 0);
+
+	runConfigBank.show();
+
+	outEvent->addStructure(runConfigBank);
 
 }
 
@@ -310,5 +326,6 @@ void hipo_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 
 void hipo_output :: writeEvent(outputContainer* output)
 {
+	output->hipoWriter->addEvent(*outEvent);
 }
 

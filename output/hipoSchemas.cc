@@ -16,7 +16,7 @@ HipoSchema :: HipoSchema()
 	//           unique number associated with bank.
 
 
-	runConfig = hipo::schema("RUN::config", 10000, 11);
+	runConfigSchema = hipo::schema("RUN::config", 10000, 11);
 
 
 
@@ -43,7 +43,7 @@ HipoSchema :: HipoSchema()
 	//					{"name":"torus",        "type":"F", "info":"torus setting relative value(-1.0 to 1.0)"},
 	//					{"name":"solenoid",     "type":"F", "info":"solenoid field setting (-1.0 to 1.0)"}
 	//					]
-	runConfig.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B, mode/B, torus/F, solenoid/F");
+	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L,type/B,mode/B,torus/F,solenoid/F");
 
 	cout << " Done defining Hipo4 schemas." << endl;
 
@@ -52,17 +52,17 @@ HipoSchema :: HipoSchema()
 void outputContainer::initializeHipo(string outputFile) {
 
 
-	HipoSchema *hipoSchema = new HipoSchema();
+	hipoSchema = new HipoSchema();
 
 	cout << " Initializing hip4 writer to filename:" << outputFile << endl;
-	writer = new hipo::writer();
+	hipoWriter = new hipo::writer();
 
 	// Open a writer and register schemas with the writer.
 	// The schemas have to be added to the writer before openning
 	// the file, since they are written into the header of the file.
-	writer->getDictionary().addSchema(hipoSchema->runConfig);
+	hipoWriter->getDictionary().addSchema(hipoSchema->runConfigSchema);
 
 	
-	writer->open(outputFile.c_str());
+	hipoWriter->open(outputFile.c_str());
 
 }

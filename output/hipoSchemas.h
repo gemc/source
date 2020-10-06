@@ -6,7 +6,7 @@ class HipoSchema {
 public:
 	HipoSchema();
 
-	hipo::schema runConfig;
+	hipo::schema runConfigSchema;
 
 
 	
