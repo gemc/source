@@ -39,18 +39,21 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 		outEvent->reset();
 	}
 
-
-
 	// Create runConfigBank with 1 row based on schema
 	hipo::bank runConfigBank(output->hipoSchema->runConfigSchema, 1);
 
 	runConfigBank.putInt("run",   0, data["runNo"]);
 	runConfigBank.putInt("event", 0, data["evn"]);
 
+	// time in seconds
 	time_t t = std::time(0);
 	int now = static_cast<int> (t);
-	runConfigBank.putInt("unixtime", 0, now);
-	runConfigBank.putInt("trigger",  0, 0);
+	runConfigBank.putInt("unixtime",  0, now);
+
+	// oth
+	runConfigBank.putInt("trigger",   0, 0);
+	runConfigBank.putInt("timestamp", 0, 0);
+	runConfigBank.putInt("type",      0, 0);
 
 	runConfigBank.show();
 
