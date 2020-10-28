@@ -55,7 +55,17 @@ map<string, detector> gdml_det_factory::loadDetectors()
 
 		// the volume name has to be "World"
 		// its origin are "root" coordinate
-		G4LogicalVolume* gdmlWorld = parser.GetVolume("World");
+		G4LogicalVolume* gdmlWorld;
+
+		if(parser.GetVolume("World") != nullptr) {
+			gdmlWorld = parser.GetVolume("World");
+			cout << "GDML World volume is <World>" << endl;
+		} else {
+			cout << "Trying GDML World volume <" << dname << ">" << endl;
+			gdmlWorld = parser.GetVolume(dname);
+		}
+
+
 		G4PhysicalVolumeStore::DeRegister(parser.GetWorldVolume());
 
 		// first daughters: these volumes will be the ones with mother = "root"

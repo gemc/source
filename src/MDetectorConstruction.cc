@@ -156,8 +156,9 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 			// checking that we didn't already processed this file
 			if(gdmlAlreadyProcessed.find(filename) == gdmlAlreadyProcessed.end()) {
 
-				if(VERB > 1)
+				if(VERB > 1) {
 				 cout << "  > Parsing GDML Physical volumes from " << filename << endl;
+				}
 
 				// parsing G4 volumes
 				G4GDMLParser *parser = new G4GDMLParser();
@@ -165,9 +166,14 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 
 				G4PhysicalVolumeStore::DeRegister(parser->GetWorldVolume());
 
-				// the volume name has to be "World"
+				size_t lastindex = filename.find_last_of(".");
+				string detectorName = filename.substr(0, lastindex);
+
+				// the setup volume name has to be "detectorName"
 				// its oririn are "root" coordinate
 				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
+//				G4LogicalVolume* gdmlWorld = parser->GetVolume(detectorName);
+				cout << "ASD DET CONST " << gdmlWorld << endl;
 
 				// only daughters of World will be a new G4PVPlacement in root
 				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {

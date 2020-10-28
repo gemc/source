@@ -413,8 +413,7 @@ detector get_detector(G4VPhysicalVolume *pv, goptions go, runConditions RC)
 
 		// Adding gcard rotation for this detector if if non zero
 		G4ThreeVector more_rot = RC.detectorConditionsMap[det.name].get_vrotation();
-		if(more_rot.mag2() != 0)
-		{
+		if(more_rot.mag2() != 0) {
 			if(verbosity > 3 || det.name.find(catch_v) != string::npos)
 				cout << hd_msg << " Detector " << det.name << " is rotated by: " << more_rot/deg << " deg" << endl;
 

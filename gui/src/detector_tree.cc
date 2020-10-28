@@ -439,7 +439,7 @@ void detector_tree::write_gdml_file(string name)
 	}
 	
 	G4GDMLParser parser;
-	parser.Write(fileout.c_str(),detect.GetPhysical(),false);	
+	parser.Write(fileout.c_str(), detect.GetPhysical(), false);
 }
 
 
