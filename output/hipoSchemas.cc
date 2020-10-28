@@ -100,25 +100,47 @@ HipoSchema :: HipoSchema()
 	rawSCALERSchema.parse( "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
 	rawVTPSchema.parse(    "crate/B, word/I");
 	rawEPICSSchema.parse(  "json/B");
+	emptySchema.parse(     "empty/B");
 
+	schemasToLoad["RUN::config"] = runConfigSchema;
+	schemasToLoad["CTOF::adc"] = ctofADCSchema;
+	schemasToLoad["CTOF::tdc"] = ctofTDCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 
 }
 
-void outputContainer::initializeHipo(string outputFile) {
+#include <cstring>
+// type: 0 = adc, 1 = tdc
+hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 
+	string schemaType = type == 0 ? "adc" : "tdc";
+
+	string toUpperS = schemaName;
+	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
+	string thisSchema = toUpperS + "::" + schemaType;
+
+	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
+		return schemasToLoad[thisSchema];
+	} else {
+		return emptySchema;
+	}
+}
+
+
+void outputContainer::initializeHipo(string outputFile) {
 
 	hipoSchema = new HipoSchema();
 
-	cout << " Initializing hip4 writer to filename:" << outputFile << endl;
+	cout << " Initializing hipo4 writer to filename:" << outputFile << endl;
 	hipoWriter = new hipo::writer();
 
 	// Open a writer and register schemas with the writer.
 	// The schemas have to be added to the writer before openning
 	// the file, since they are written into the header of the file.
-	hipoWriter->getDictionary().addSchema(hipoSchema->runConfigSchema);
-
+	for (auto &schema: hipoSchema->schemasToLoad) {
+		hipoWriter->getDictionary().addSchema(schema.second);
+	}
 	
 	hipoWriter->open(outputFile.c_str());
 

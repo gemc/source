@@ -21,18 +21,20 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 	vector<string> data;
 	vector<string> jdata;
 
-//	// writing both key and argument as one string
-//	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
-//		if(it->first != "JSON") {
-//			data.push_back(it->first + ":  " + it->second + "  ");
-//		}
-//	}
+	//	// writing both key and argument as one string
+	//	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
+	//		if(it->first != "JSON") {
+	//			data.push_back(it->first + ":  " + it->second + "  ");
+	//		}
+	//	}
 }
 
 // instantiates hipo event
 // write run::config bank
 void hipo_output :: writeHeader(outputContainer* output, map<string, double> data, gBank bank)
 {
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+
 	if(outEvent == nullptr) {
 		outEvent = new hipo::event();
 	} else {
@@ -55,10 +57,11 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	runConfigBank.putInt("timestamp", 0, 0);
 	runConfigBank.putInt("type",      0, 0);
 
-	runConfigBank.show();
+	if(verbosity > 0) {
+		runConfigBank.show();
+	}
 
 	outEvent->addStructure(runConfigBank);
-
 }
 
 // write user infos header
@@ -78,11 +81,11 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 {
 	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
 	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
-	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  
+	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;
 
 	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
- 	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
-	  SAVE_ALL_MOTHERS = 1;
+	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
+		SAVE_ALL_MOTHERS = 1;
 
 	gBank bank  = getBankFromMap("generated", banksMap);
 	gBank sbank = getBankFromMap("psummary", banksMap);
@@ -165,30 +168,30 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
 {
-  vector<int> pid;
-  vector<int> tid;
-  vector<int> mtid;
-  vector<double> trackE;
-  vector<double> px;
-  vector<double> py;
-  vector<double> pz;
-  vector<double> vx;
-  vector<double> vy;
-  vector<double> vz;
-  
-  for (unsigned i = 0; i < ainfo.size(); i++)
-    {
-      pid.push_back (ainfo[i].pid);
-      tid.push_back (ainfo[i].tid);
-      mtid.push_back (ainfo[i].mtid);
-      trackE.push_back (ainfo[i].trackE);
-      px.push_back (ainfo[i].p.getX()/MeV);
-      py.push_back (ainfo[i].p.getY()/MeV);
-      pz.push_back (ainfo[i].p.getZ()/MeV);
-      vx.push_back (ainfo[i].vtx.getX()/MeV);
-      vy.push_back (ainfo[i].vtx.getY()/MeV);
-      vz.push_back (ainfo[i].vtx.getZ()/MeV);
-    }
+	vector<int> pid;
+	vector<int> tid;
+	vector<int> mtid;
+	vector<double> trackE;
+	vector<double> px;
+	vector<double> py;
+	vector<double> pz;
+	vector<double> vx;
+	vector<double> vy;
+	vector<double> vz;
+
+	for (unsigned i = 0; i < ainfo.size(); i++)
+	{
+		pid.push_back (ainfo[i].pid);
+		tid.push_back (ainfo[i].tid);
+		mtid.push_back (ainfo[i].mtid);
+		trackE.push_back (ainfo[i].trackE);
+		px.push_back (ainfo[i].p.getX()/MeV);
+		py.push_back (ainfo[i].p.getY()/MeV);
+		pz.push_back (ainfo[i].p.getZ()/MeV);
+		vx.push_back (ainfo[i].vtx.getX()/MeV);
+		vy.push_back (ainfo[i].vtx.getY()/MeV);
+		vz.push_back (ainfo[i].vtx.getZ()/MeV);
+	}
 
 
 }
@@ -232,30 +235,104 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	if(HO.size() == 0) return;
-	
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
-	gBank dgtBank = getDgtBankFromMap(hitType, banksMap);
+	gBank dgtBank     = getDgtBankFromMap(hitType, banksMap);
 
 	initBank(output, thisHitBank, DGTINT_ID);
 
-	for(map<int, string>::iterator it =  dgtBank.orderedNames.begin(); it != dgtBank.orderedNames.end(); it++)
-	{
-		int bankId   = dgtBank.getVarId(it->second);
-		int bankType = dgtBank.getVarBankType(it->second);
+	// we only need the first hit to get the definitions
+	map<string, double> dgts = HO[0].getDgtz();
 
-		// we only need the first hit to get the definitions
-		map<string, double> dgts = HO[0].getDgtz();
+	bool hasADCBank = false;
+	bool hasTDCBank = false;
 
-		if(dgts.find(it->second) != dgts.end() && bankId > 0 && bankType == DGTINT_ID)
-		{
-			vector<double> thisVar;
-			for(unsigned int nh=0; nh<HO.size(); nh++)
-			{
-				map<string, double> theseDgts = HO[nh].getDgtz();
-				thisVar.push_back(theseDgts[it->second]);
-			}
+	// check if there is at least one adc or tdc var
+	// switching the aboves to true in case
+	for(auto &bankName : dgtBank.orderedNames ) {
+		if(bankName.second.find("ADC_") != string::npos ) {
+			hasADCBank = true;
+		}
+		if(bankName.second.find("TDC_") != string::npos ) {
+			hasTDCBank = true;
 		}
 	}
+
+	if(verbosity > 2) {
+		if(hasADCBank) {
+			cout << hitType << " has ADC bank." << endl;
+		}
+		if(hasTDCBank) {
+			cout << hitType << " has TDC bank." << endl;
+		}
+	}
+
+	// looping over the loaded banknames (this to make sure we only publish the ones declared
+	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
+	for(auto &bankName : dgtBank.orderedNames ) {
+
+		string bname = bankName.second;
+		int bankId   = dgtBank.getVarId(bname);       // bankId is num
+		int bankType = dgtBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
+
+		if(dgts.find(bname) != dgts.end() && bankId > 0 && bankType == DGTINT_ID) {
+
+
+			if(hasADCBank) {
+				hipo::schema detectorSchema = output->hipoSchema->getSchema(hitType, 0);
+				if(detectorSchema.getEntryName(0) != "empty") {
+					hipo::bank detectorBank(detectorSchema, HO.size());
+
+					for(unsigned int nh=0; nh<HO.size(); nh++) {
+
+						map<string, double> theseDgts = HO[nh].getDgtz();
+
+						for(auto &thisVar: theseDgts) {
+							// found data match to bank definition
+							if(thisVar.first == bname) {
+
+
+
+
+								if(verbosity > 2) {
+									cout << "hit index " << nh << ", name " << thisVar.first << ", value: " << thisVar.second << ", type: " << bankType << endl;
+								}
+							}
+						}
+						//thisVar.push_back(theseDgts[it->second]);
+
+					}
+
+
+				}
+			}
+
+			if(hasTDCBank) {
+				hipo::schema detectorSchema = output->hipoSchema->getSchema(hitType, 1);
+				if(detectorSchema.getEntryName(0) != "empty") {
+					hipo::bank detectorBank(detectorSchema, HO.size());
+
+				}
+			}
+
+			if(verbosity > 2) {
+				cout << " bankName " << bname << ", hittype " << hitType  << endl;
+			}
+
+
+
+
+
+
+		}
+
+
+
+	}
+
+
+
 }
 
 

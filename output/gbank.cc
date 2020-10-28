@@ -475,12 +475,9 @@ void gBank::orderNames()
 	}
 	
 	int j = 0;
-	for(int i=minId; i<=maxId; i++)
-	{
-		for(unsigned k=0; k<gid.size(); k++)
-		{
-			if(i == gid[k])
-			{
+	for(int i=minId; i<=maxId; i++) {
+		for(unsigned k=0; k<gid.size(); k++) {
+			if(i == gid[k]) {
 				orderedNames[j++] = name[k];
 			}
 		}
@@ -505,22 +502,17 @@ gBank getBankFromMap(string name, map<string, gBank>* banksMap)
 gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap)
 {
 	gBank thisBank, dgtBank;
-	if(banksMap->find(name) == banksMap->end())
-	{
+	if(banksMap->find(name) == banksMap->end()) {
 		cout << "   !!! Error: >" << name << "< dgt bank definitions not found. Exiting." << endl;
 		exit(0);
-	}
-	else
-	{
+	} else {
 		// thisBank may have definitions other than DGT
 		// so I'm extracting just the DGT variables from it.
 		thisBank = (*banksMap)[name];
 		
 		dgtBank = gBank(DGTINT_ID, thisBank.bankName, thisBank.bdescription);
-		for(unsigned int i=0; i<thisBank.name.size(); i++)
-		{
-			if(thisBank.getVarBankType(thisBank.name[i]) == DGTINT_ID)
-			{
+		for(unsigned int i=0; i<thisBank.name.size(); i++) {
+			if(thisBank.getVarBankType(thisBank.name[i]) == DGTINT_ID) {
 				dgtBank.load_variable(thisBank.name[i], thisBank.gid[i], thisBank.type[i], thisBank.description[i]);
 			}
 		}

@@ -497,6 +497,7 @@ void goptions::setGoptions()
 	optMap["MIRROR_VERBOSITY"].ctgr = "verbosity";
 	optMap["MIRROR_VERBOSITY"].argsJSONDescription  = "MIRROR_VERBOSITY";
 	optMap["MIRROR_VERBOSITY"].argsJSONTypes        = "F";
+
 	//
 	//
 	//

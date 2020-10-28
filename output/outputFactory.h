@@ -302,7 +302,6 @@ public:
 	virtual void writeEvent(outputContainer*) = 0;
 
 	string outputType;
-
 	virtual ~outputFactory(){;}
 };
 

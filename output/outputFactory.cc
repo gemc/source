@@ -19,7 +19,6 @@ using namespace std;
 
 outputFactory *getOutputFactory(map<string, outputFactoryInMap> *outputFactoryMap, string outputType)
 {
-
 	if(outputFactoryMap->find(outputType) == outputFactoryMap->end())
 	{
 		cout << endl << endl << "  >>> WARNING: Output type <" << outputType << "> NOT FOUND IN  Output Map." << endl;

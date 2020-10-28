@@ -5,18 +5,19 @@
 #ifndef HIPO_OUTPUT_H
 #define HIPO_OUTPUT_H 1
 
+/*
+
+	Hipo Library: https://github.com/gavalian/hipo
+	CLAS12 Bank Definitions: https://github.com/JeffersonLab/clas12-offline-software/tree/development/etc/bankdefs/hipo4
+
+	The Digitized banks are in data.json
+
+ */
+
+
 // gemc headers
 #include "outputFactory.h"
 
-
-/*
- 
- README for HIPO
- 
- 
- 
- 
- */
 
 // Class definition
 class hipo_output : public outputFactory
@@ -73,7 +74,6 @@ public:
 	void writeEvent(outputContainer*) ;
 
 	hipo::event *outEvent = nullptr;
-
 	
 };
 

@@ -44,6 +44,13 @@ public:
 	hipo::schema rawSCALERSchema;
 	hipo::schema rawVTPSchema;
 	hipo::schema rawEPICSSchema;
+	hipo::schema emptySchema;
+
+	map<string, hipo::schema> schemasToLoad;
+
+
+	// type: 0 = adc, 1 = tdc
+	hipo::schema getSchema(string schemaName, int type) ;
 
 
 };
