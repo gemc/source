@@ -77,16 +77,12 @@ double get_number(string v,int warn_no_unit)
 {
 	string value = trimSpacesFromString(v);
 	
-	if(value.find("*") == string::npos)
-	{
+	if(value.find("*") == string::npos) {
 		// no * found, this should be a number
 		// No unit is still ok if the number is 0
 		if(value.length()>0 && warn_no_unit && stringToDouble(value) != 0) cout << "Warning: All numbers should be paired with a unit: " << v << endl;
 		return stringToDouble(value);
-	}
-	
-	else
-	{
+	} else {
 		double answer = scan_number(value.substr(0, value.find("*")).c_str());
 		string units  = trimSpacesFromString(value.substr(value.find("*")+1, value.find("*") + 20));
 		if(       units == "m")         answer *= m;
@@ -121,18 +117,13 @@ double get_number(string v,int warn_no_unit)
 }
 
 
-
-
-void print_vstring(vector<string> s)
-{
+void print_vstring(vector<string> s) {
 	for(unsigned int i=0; i<s.size(); i++)
 		cout << "string element: " << i << "  content: " << s[i] << endl;
 }
 
 
-
-string get_variation(string var)
-{
+string get_variation(string var) {
 	string variation = var;
 	vector<string> vars = getStringVectorFromString(var);
 	if(vars[0] == "main" && vars.size() > 1)
@@ -142,8 +133,7 @@ string get_variation(string var)
 	return variation;
 }
 
-bool is_main_variation(string var)
-{
+bool is_main_variation(string var) {
 	if(var.find("main:") == 0)
 		return 1;
 	

@@ -57,7 +57,7 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	runConfigBank.putInt("timestamp", 0, 0);
 	runConfigBank.putInt("type",      0, 0);
 
-	if(verbosity > 0) {
+	if(verbosity > 2) {
 		runConfigBank.show();
 	}
 
@@ -100,9 +100,7 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> btime;
 	vector<double> multiplicity;
 
-
-	for(unsigned i=0; i<MAXP && i<MGP.size(); i++)
-	{
+	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
 		pid.push_back(MGP[i].PID);
 		px.push_back(MGP[i].momentum.getX()/MeV);
 		py.push_back(MGP[i].momentum.getY()/MeV);
@@ -115,8 +113,7 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	}
 
 
-	if(SAVE_ALL_MOTHERS)
-	{
+	if(SAVE_ALL_MOTHERS) {
 		vector<string> dname;
 		vector<int>    stat;
 		vector<double> etot;
@@ -179,8 +176,7 @@ void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo
 	vector<double> vy;
 	vector<double> vz;
 
-	for (unsigned i = 0; i < ainfo.size(); i++)
-	{
+	for (unsigned i = 0; i < ainfo.size(); i++) {
 		pid.push_back (ainfo[i].pid);
 		tid.push_back (ainfo[i].tid);
 		mtid.push_back (ainfo[i].mtid);
@@ -196,8 +192,7 @@ void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo
 
 }
 
-void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int what)
-{
+void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int what) {
 
 }
 
@@ -209,6 +204,7 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank rawBank = getBankFromMap("raws", banksMap);
 
+	// perform initializations if necessary
 	initBank(output, thisHitBank, RAWINT_ID);
 
 	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++)
@@ -240,6 +236,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank dgtBank     = getDgtBankFromMap(hitType, banksMap);
 
+	// perform initializations if necessary
 	initBank(output, thisHitBank, DGTINT_ID);
 
 	// we only need the first hit to get the definitions
@@ -248,14 +245,28 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	bool hasADCBank = false;
 	bool hasTDCBank = false;
 
+	hipo::schema detectorADCSchema = output->hipoSchema->getSchema(hitType, 0);
+	hipo::schema detectorTDCSchema = output->hipoSchema->getSchema(hitType, 1);
+	hipo::bank detectorADCBank(detectorADCSchema, HO.size());
+	hipo::bank detectorTDCBank(detectorTDCSchema, HO.size());
+
 	// check if there is at least one adc or tdc var
-	// switching the aboves to true in case
+	// and if the schema is valid
 	for(auto &bankName : dgtBank.orderedNames ) {
+
+		// flag ADC content if any variable has ADC_ prefix AND detectorADCSchema exists
 		if(bankName.second.find("ADC_") != string::npos ) {
-			hasADCBank = true;
+			if(detectorADCSchema.getEntryName(0) != "empty") {
+				hasADCBank = true;
+			}
 		}
+
+		// flag TDC content if any variable has TDC_ prefix detectorTDCSchema schema exists
 		if(bankName.second.find("TDC_") != string::npos ) {
-			hasTDCBank = true;
+
+			if(detectorTDCSchema.getEntryName(0) != "empty") {
+				hasTDCBank = true;
+			}
 		}
 	}
 
@@ -268,6 +279,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 		}
 	}
 
+
 	// looping over the loaded banknames (this to make sure we only publish the ones declared
 	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
 	for(auto &bankName : dgtBank.orderedNames ) {
@@ -278,60 +290,100 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 
 		if(dgts.find(bname) != dgts.end() && bankId > 0 && bankType == DGTINT_ID) {
 
-
 			if(hasADCBank) {
-				hipo::schema detectorSchema = output->hipoSchema->getSchema(hitType, 0);
-				if(detectorSchema.getEntryName(0) != "empty") {
-					hipo::bank detectorBank(detectorSchema, HO.size());
 
-					for(unsigned int nh=0; nh<HO.size(); nh++) {
+				// looping over the hits
+				for(unsigned int nh=0; nh<HO.size(); nh++) {
+					map<string, double> theseDgts = HO[nh].getDgtz();
+					for(auto &thisVar: theseDgts) {
 
-						map<string, double> theseDgts = HO[nh].getDgtz();
+						// found data match to bank definition
+						if(thisVar.first == bname) {
 
-						for(auto &thisVar: theseDgts) {
-							// found data match to bank definition
-							if(thisVar.first == bname) {
+							string varType = dgtBank.getVarType(thisVar.first);
 
-
-
-
-								if(verbosity > 2) {
-									cout << "hit index " << nh << ", name " << thisVar.first << ", value: " << thisVar.second << ", type: " << bankType << endl;
+							// sector, layer, component are common in adc/tdc so their names are w/o prefix
+							// sector, layers are "Bytes"
+							if(bname == "sector" || bname == "layer") {
+								detectorADCBank.putByte(bname.c_str(), nh, thisVar.second);
+							} else if(bname == "component") {
+								detectorADCBank.putShort(bname.c_str(), nh, thisVar.second);
+							} else {
+								// all other ADC vars must begin with "ADC_"
+								if(bname.find("ADC_") == 0) {
+									string adcName = bname.substr(4);
+									if(varType == "i") {
+										detectorADCBank.putInt(adcName.c_str(), nh, thisVar.second);
+									} else if(varType == "d") {
+										detectorADCBank.putFloat(adcName.c_str(), nh, thisVar.second);
+									}
 								}
 							}
+
+							if(verbosity > 2) {
+								cout << "hit index " << nh << ", name " << bname << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+							}
 						}
-						//thisVar.push_back(theseDgts[it->second]);
-
 					}
-
-
 				}
 			}
 
 			if(hasTDCBank) {
-				hipo::schema detectorSchema = output->hipoSchema->getSchema(hitType, 1);
-				if(detectorSchema.getEntryName(0) != "empty") {
-					hipo::bank detectorBank(detectorSchema, HO.size());
 
+				// looping over the hits
+				for(unsigned int nh=0; nh<HO.size(); nh++) {
+					map<string, double> theseDgts = HO[nh].getDgtz();
+					for(auto &thisVar: theseDgts) {
+
+						// found data match to bank definition
+						if(thisVar.first == bname) {
+
+							string varType = dgtBank.getVarType(thisVar.first);
+
+							// sector, layer, component are common in adc/tdc so their names are w/o prefix
+							// sector, layers are "Bytes"
+							if(bname == "sector" || bname == "layer") {
+								detectorTDCBank.putByte(bname.c_str(), nh, thisVar.second);
+							} else if(bname == "component") {
+								detectorTDCBank.putShort(bname.c_str(), nh, thisVar.second);
+							} else {
+								// all other TDC vars must begin with "ADC_"
+								if(bname.find("TDC_") == 0) {
+									string adcName = bname.substr(4);
+									if(varType == "i") {
+										detectorTDCBank.putInt(adcName.c_str(), nh, thisVar.second);
+									} else if(varType == "d") {
+										detectorTDCBank.putFloat(adcName.c_str(), nh, thisVar.second);
+									}
+								}
+
+							}
+
+							// do not repeat message logged above if hasADCBank was true
+							if(verbosity > 2 && !hasADCBank) {
+								cout << "hit index " << nh << ", name " << thisVar.first << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+							}
+						}
+					}
 				}
 			}
 
-			if(verbosity > 2) {
-				cout << " bankName " << bname << ", hittype " << hitType  << endl;
-			}
-
-
-
-
-
-
 		}
-
-
 
 	}
 
-
+	if(hasADCBank) {
+		if(verbosity > 2) {
+			detectorADCBank.show();
+		}
+		outEvent->addStructure(detectorADCBank);
+	}
+	if(hasTDCBank) {
+		if(verbosity > 2) {
+			detectorTDCBank.show();
+		}
+		outEvent->addStructure(detectorTDCBank);
+	}
 
 }
 

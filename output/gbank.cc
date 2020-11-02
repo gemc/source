@@ -46,12 +46,12 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("beamPol",    5, "Nd", "Beam Polarization");
 	abank.orderNames();
 	banks["header"] = abank;
-
+	
 	// event header
 	abank = gBank(USER_HEADER_BANK_TAG, "userHeader", "User Header Bank");
 	abank.orderNames();
 	banks["userHeader"] = abank;
-
+	
 	// generated particle infos
 	abank =  gBank(GENERATED_PARTICLES_BANK_TAG, "generated", "Generated Particles");
 	abank.load_variable("pid",           1,  "Ni", "Particle ID");
@@ -65,13 +65,13 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("multiplicity",  9,  "Ni", "number of particles at this vertex");
 	abank.orderNames();
 	banks["generated"] = abank;
-
+	
 	// RF info
 	abank =  gBank(RF_BANK_TAG, "rf", "RF Signals");
 	abank.load_variable("id",    1,  "Ni", "RF ID");
 	abank.load_variable("rf",    2,  "ND", "RF ID");
 	banks["rf"] = abank;
-
+	
 	// particle summary infos
 	// this is a daughter bank of the generated particle infos
 	abank =  gBank(GENERATED_SUMMARY_BANK_TAG, "psummary", "Generated Particles Summary");
@@ -165,7 +165,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("stepi",  98,   "Ci", "step index");
 	abank.load_variable("hitn",   99,   "Ci", "Hit Number");
 	banks["chargeTime"] = abank;
-
+	
 	
 	// flux bank digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
@@ -174,7 +174,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["flux"]   = abank;
-
+	
 	// mirror bank digitized infos
 	// mirror digitized provide just one "digitized" variable, the detector id
 	abank =  gBank(MIRROR_BANK_TAG, "mirror", "Geant4 mirror digitized information");
@@ -182,7 +182,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("id",     1,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["mirror"] = abank;
-
+	
 	// counter bank integrated digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
 	abank =  gBank(COUNTER_BANK_TAG, "counter", "Geant4 counter digitized information");
@@ -202,8 +202,8 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("nopticalphoton",  21,  "Di", "number of optical photons");
 	abank.orderNames();
 	banks["counter"]   = abank;
-
-
+	
+	
 	// ancestors bank 
 	// Information about ancestral trajectories
 	abank =  gBank (ANCESTORS_BANK_TAG, "ancestors", "Geant4 ancestors information");
@@ -219,7 +219,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable ("vz",      7,   "Rd", "z component of vertex of the ancestor");
 	abank.orderNames();
 	banks["ancestors"]   = abank;
-
+	
 	
 	// Loading all banks related to a system
 	// then checking that all sensitive detectors have a bank
@@ -318,7 +318,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 			{
 				if(verbosity>2)
 					cout << "  !!! Error: Failed to open system bank file " << fname
-					     << ". Maybe the filename doesn't exist? Exiting." << endl;
+					<< ". Maybe the filename doesn't exist? Exiting." << endl;
 			}
 		}
 		
@@ -348,7 +348,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 			if(q.size() == 0 && verbosity)
 			{
 				cout << "  ** WARNING: system  \"" << systemName << "\" not found in MYSQL database "
-					 << " for variation " << variation << endl << endl;
+				<< " for variation " << variation << endl << endl;
 			}
 			
 			vector<string> banksForSystem;
@@ -361,7 +361,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 				
 				if(name == "bankid")
 					banksForSystem.push_back(qv_tostring(q.value(0)));
-	
+				
 			}
 			
 			
@@ -393,10 +393,10 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 				}
 				abank.orderNames();
 				banks[banksForSystem[b]] = abank;
-			
+				
 			}
 			
-				
+			
 			// closing DB connection
 			closeGdb(db);
 		}
@@ -422,8 +422,7 @@ void gBank::load_variable(string n, int i, string t, string d)
 }
 
 
-int gBank::getVarId(string bank)
-{
+int gBank::getVarId(string bank) {
 	for(unsigned int i=0; i<name.size(); i++)
 	{
 		if(name[i].find(bank) == 0) return gid[i];
@@ -433,24 +432,19 @@ int gBank::getVarId(string bank)
 
 
 
-string gBank::getVarType(string var)
-{
-	for(unsigned int i=0; i<name.size(); i++)
-	if(name[i] == var && type[i].length() == 2)
-	{
-		if(type[i].find("i") == 1) return "i";
-		if(type[i].find("d") == 1) return "d";
+string gBank::getVarType(string var) {
+	for(unsigned int i=0; i<name.size(); i++) {
+		if(name[i] == var && type[i].length() == 2) {
+			if(type[i].find("i") == 1) return "i";
+			if(type[i].find("d") == 1) return "d";
+		}
 	}
-	
 	return "na";
 }
 
-int gBank::getVarBankType(string var)
-{
-	for(unsigned int i=0; i<name.size(); i++)
-	{
-		if(name[i] == var  && type[i].length() == 2)
-		{
+int gBank::getVarBankType(string var) {
+	for(unsigned int i=0; i<name.size(); i++) {
+		if(name[i] == var  && type[i].length() == 2) {
 			if(type[i].find("R") == 0) return RAWINT_ID;
 			if(type[i].find("D") == 0) return DGTINT_ID;
 			if(type[i].find("S") == 0) return RAWSTEP_ID;
@@ -460,6 +454,10 @@ int gBank::getVarBankType(string var)
 	}
 	return 0;
 }
+
+
+
+
 
 // order names based on their ID
 void gBank::orderNames()
@@ -485,10 +483,8 @@ void gBank::orderNames()
 }
 
 // get bank definitions (all)
-gBank getBankFromMap(string name, map<string, gBank>* banksMap)
-{
-	if(banksMap->find(name) == banksMap->end())
-	{
+gBank getBankFromMap(string name, map<string, gBank>* banksMap) {
+	if(banksMap->find(name) == banksMap->end()) {
 		cout << "   !!! Error: >" << name << "< bank definitions not found. Exiting." << endl;
 		exit(0);
 	}
@@ -497,10 +493,8 @@ gBank getBankFromMap(string name, map<string, gBank>* banksMap)
 }
 
 
-
 // get dgt bank definitions
-gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap)
-{
+gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap) {
 	gBank thisBank, dgtBank;
 	if(banksMap->find(name) == banksMap->end()) {
 		cout << "   !!! Error: >" << name << "< dgt bank definitions not found. Exiting." << endl;
