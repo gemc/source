@@ -58,15 +58,15 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		int adc     = floor(   7*(totEdep - minHit)/deltaADC);
 		int adchd   = floor(8196*(totEdep - minHit)/deltaADC);
 		
-		dgtz["hitn"]   = hitn;
-		dgtz["sector"] = identity[0].id;
-		dgtz["layer"]  = identity[1].id;
-		dgtz["strip"]  = identity[2].id;
-		dgtz["ADC"]    = adc;
-		dgtz["ADCHD"]  = adchd;
-		dgtz["time"]   = stepTime;
-		dgtz["bco"]    = (int) 255*G4UniformRand();
-		
+
+		dgtz["sector"]    = identity[0].id;
+		dgtz["layer"]     = identity[1].id;
+		dgtz["component"] = identity[2].id;  // strip number
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = (int) adc;
+		dgtz["ADC_time"]  = (int) 255*G4UniformRand();
+		dgtz["ADC_ped"]   = 0;
+
 		return dgtz;
 	}
 	
@@ -103,32 +103,30 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
 	int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
 	
-	if(tInfos.eTot>maxHit)
-	{
+	if(tInfos.eTot>maxHit) {
 		adc   = 7;
 		adchd = 8196;
 	}
-	if(tInfos.eTot<minHit)
-	{
+
+	if(tInfos.eTot<minHit) {
 		adc   = -5;
 		adchd = -5000;
 	}
 	
-	if(verbosity>4)
-	{
+	if(verbosity>4) {
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Card: " << card <<  "  Strip: " << strip
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	
-	dgtz["hitn"]   = hitn;
-	dgtz["layer"]  = layer;
-	dgtz["sector"] = sector;
-	dgtz["strip"]  = strip;
-	dgtz["ADC"]    = adc;
-	dgtz["ADCHD"]  = adchd;
-	dgtz["time"]   = tInfos.time;
-	dgtz["bco"]    = (int) 255*G4UniformRand();
-	
+
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = layer;
+	dgtz["component"] = strip;  // strip number
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = (int) adc;
+	dgtz["ADC_time"]  = (int) 255*G4UniformRand();
+	dgtz["ADC_ped"]   = 0;
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

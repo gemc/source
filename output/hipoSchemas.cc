@@ -103,8 +103,15 @@ HipoSchema :: HipoSchema()
 	emptySchema.parse(     "empty/B");
 
 	schemasToLoad["RUN::config"] = runConfigSchema;
-	schemasToLoad["CTOF::adc"] = ctofADCSchema;
-	schemasToLoad["CTOF::tdc"] = ctofTDCSchema;
+
+	// Central Detector
+	schemasToLoad["CTOF::adc"]   = ctofADCSchema;
+	schemasToLoad["CTOF::tdc"]   = ctofTDCSchema;
+	schemasToLoad["BMT::adc"]    = bmtADCSchema;
+	schemasToLoad["BST::adc"]    = bstADCSchema;
+
+
+
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

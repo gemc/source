@@ -236,21 +236,21 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-		
-		dgtz["hitn"]   = hitn;
-		dgtz["paddle"] = paddle;
-		dgtz["side"]   = side;
-		
+
 		double adc  = totEdep * ctc.countsForMIP[sector - 1][panel - 1][0][paddle - 1] / ctc.dEMIP ; // no gain as that comes from data already
 		double tdc = stepTime/tdcconv;
-		
-		dgtz["ADC"] = (int) adc;
-		dgtz["ADCu"] = (int) adc;
-		
-		
-		dgtz["TDC"]  = (int) tdc;
-		dgtz["TDCu"] = (int) tdc;
-		
+
+		dgtz["sector"]    = 1;
+		dgtz["layer"]     = 1;
+		dgtz["component"] = paddle;
+		dgtz["ADC_order"] = side;
+		dgtz["ADC_ADC"]   = (int) adc;
+		dgtz["ADC_time"]  = (tdc*24.0/1000);
+		dgtz["ADC_ped"]   = 0;
+
+		dgtz["TDC_order"] = side + 2;
+		dgtz["TDC_TDC"]   = (int) tdc;
+
 		return dgtz;
 	}
 	
