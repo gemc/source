@@ -166,18 +166,18 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		vector<double>        stepTime    = aHit->GetTime();
 		//	cout << " This is a background hit with time " << stepTime[0] << endl;
 
+//		int SECI  = identity[0].id - 1;
+		int SLI   = identity[1].id - 1;
+//		int LAY   = identity[2].id - 1;
+		int nwire = identity[3].id;
+
 		dgtz["hitn"]       = hitn;
 		dgtz["sector"]     = identity[0].id;
-		dgtz["layer"]      = identity[1].id;
-		dgtz["wire"]       = identity[2].id;;
-		dgtz["tdc"]        = stepTime[0];
+		dgtz["layer"]      = SLI*6 + identity[2].id;
+		dgtz["component"]  = nwire;
+		dgtz["TDC_order"] = 2;
+		dgtz["TDC_TDC"]   = stepTime[0];
 
-		if(filterDummyBanks == false) {
-			dgtz["LR"]         = 0;
-			dgtz["doca"]       = 0;
-			dgtz["time"]       = 0;
-			dgtz["stime"]      = 0;
-		}
 		return dgtz;
 	}
 
@@ -344,12 +344,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["hitn"]       = hitn;
 	dgtz["sector"]     = identity[0].id;
 	dgtz["layer"]      = SLI*6 + identity[2].id;
-	dgtz["wire"]       = nwire;
-	dgtz["tdc"]        = smeared_time;
-	dgtz["LR"]         = LR;
-	dgtz["doca"]       = doca;
-	dgtz["time"]       = ineff*unsmeared_time;
-	dgtz["stime"]      = ineff*smeared_time;
+	dgtz["component"]  = nwire;
+	dgtz["TDC_order"]  = 2;
+	dgtz["TDC_TDC"]    = smeared_time;
 
 	// decide if write an hit or not based on inefficiency value
 	writeHit = true;

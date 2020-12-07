@@ -99,12 +99,13 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		int layer  = identity[1].id;
 		int strip  = identity[2].id;
 
-		dgtz["hitn"]   = hitn;
-		dgtz["sector"] = sector;
-		dgtz["layer"]  = layer;
-		dgtz["strip"]  = strip;
-		dgtz["Edep"]   = totEdep;
-		dgtz["ADC"]    = int(1e6*totEdep/fmtc.w_i);
+		dgtz["sector"]    = sector;
+		dgtz["layer"]     = layer;
+		dgtz["component"] = strip;  // strip number
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = int(1e6*totEdep/fmtc.w_i);
+		dgtz["ADC_time"]  = 0;
+		dgtz["ADC_ped"]   = 0;
 
 		return dgtz;
 	}
@@ -123,18 +124,18 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	
-	dgtz["hitn"]   = hitn;
-	dgtz["layer"]  = layer;
-	dgtz["sector"] = sector;
-	dgtz["strip"]  = strip;
-	dgtz["Edep"]   = tInfos.eTot;
-	dgtz["ADC"]   = (int) (tInfos.eTot*1e6/fmtc.w_i);
-	
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = layer;
+	dgtz["component"] = strip;  // strip number
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = int(1e6*tInfos.eTot/fmtc.w_i);
+	dgtz["ADC_time"]  = 0;
+	dgtz["ADC_ped"]   = 0;
+
 	if (strip==-1) {
-		dgtz["Edep"]   = 0;
-		dgtz["ADC"]   = 0;
+		dgtz["ADC_ADC"]   = 0;
 	}
-	
+
 	// decide if write an hit or not
 	writeHit = true;
 

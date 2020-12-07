@@ -47,7 +47,7 @@ outputContainer::outputContainer(goptions Opts)
 		pchan->open();
 	}
 	if(outType == "hipo") {
-		initializeHipo(outFile);
+		initializeHipo(trimSpacesFromString(outFile).c_str());
 	}
 
 }

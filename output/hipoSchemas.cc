@@ -16,6 +16,7 @@ HipoSchema :: HipoSchema()
 	//           unique number associated with bank.
 
 	// CLAS12 schemas are defined at https://github.com/JeffersonLab/clas12-offline-software/tree/development/etc/bankdefs/hipo4
+	// Detectors: https://github.com/JeffersonLab/clas12-offline-software/blob/development/etc/bankdefs/hipo4/data.json
 	runConfigSchema = hipo::schema("RUN::config", 10000, 11);
 
 	// detectors
@@ -67,15 +68,18 @@ HipoSchema :: HipoSchema()
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
-	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+
+	// todolater
+	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
-	dcDOCASchema.parse(    "LR/B, doca/F, sdoca/F, time/F, stime/F");
+
 	ecalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ecalTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	ftcalADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	fthodoADCSchema.parse( "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ftofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
@@ -105,12 +109,12 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["RUN::config"] = runConfigSchema;
 
 	// Central Detector
-	schemasToLoad["CTOF::adc"]   = ctofADCSchema;
-	schemasToLoad["CTOF::tdc"]   = ctofTDCSchema;
 	schemasToLoad["BMT::adc"]    = bmtADCSchema;
 	schemasToLoad["BST::adc"]    = bstADCSchema;
-
-
+	schemasToLoad["CTOF::adc"]   = ctofADCSchema;
+	schemasToLoad["CTOF::tdc"]   = ctofTDCSchema;
+	schemasToLoad["FMT::adc"]    = fmtADCSchema;
+	schemasToLoad["DC::tdc"]     = dcTDCSchema;
 
 
 	cout << " Done defining Hipo4 schemas." << endl;
