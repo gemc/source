@@ -134,7 +134,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<identifier> identity = aHit->GetId();
 	int idsector = identity[0].id;
 	int idring   = identity[1].id;
-	int idhalf   = identity[2].id;
+	int idhalf   = identity[2].id; // layer is half sector (1 or 2)
 	int thisPid  = aHit->GetPID();
 
 	if(aHit->isBackgroundHit == 1) {
@@ -143,12 +143,20 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double nphe     = aHit->GetCharge();
 		double stepTime = aHit->GetTime()[0];
 
-		dgtz["sector"] = idsector;
-		dgtz["ring"]   = idring;
-		dgtz["half"]   = idhalf;
-		dgtz["nphe"]   = nphe;
-		dgtz["time"]   = stepTime;
 		dgtz["hitn"]   = hitn;
+
+		dgtz["sector"]    = idsector;
+		dgtz["layer"]     = idhalf;
+		dgtz["component"] = idring;
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = (int) nphe*100;
+		dgtz["ADC_time"]  = (stepTime*24.0/1000);
+		dgtz["ADC_ped"]   = 0;
+
+		dgtz["TDC_order"] = 0;
+		dgtz["TDC_TDC"]   = (int) stepTime;
+
+
 
 		return dgtz;
 	}
@@ -282,14 +290,24 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	dgtz["sector"] = idsector;
-	dgtz["ring"]   = idring;
-	dgtz["half"]   = idhalf;
-	//	dgtz["nphe"]   = ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1];
-	dgtz["nphe"]   = G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
-	dgtz["time"]   = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
+
+	double adc  = 100 * G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
+	double time = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
+
 	dgtz["hitn"]   = hitn;
-	
+
+	dgtz["sector"]    = idsector;
+	dgtz["layer"]     = idhalf;
+	dgtz["component"] = idring;
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = (int) adc;
+	dgtz["ADC_time"]  = (int) (time*24.0/1000);
+	dgtz["ADC_ped"]   = 0;
+
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = (int) (time*24.0/1000);
+
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
