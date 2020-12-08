@@ -90,14 +90,19 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double nphe     = aHit->GetCharge();
 		double stepTime = aHit->GetTime()[0];
 
-		dgtz["sector"]  = idsector;
-		dgtz["side"]    = idside;
-		dgtz["segment"] = idsegment;
-		dgtz["adc"]     = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];
-		dgtz["time"]    = stepTime;
-		dgtz["nphe"]    = nphe;
-		dgtz["npheD"]   = nphe;
-		dgtz["hitn"]    = hitn;
+		dgtz["hitn"]   = hitn;
+
+		dgtz["sector"]    = idsector;
+		dgtz["layer"]     = idside;
+		dgtz["component"] = idsegment;
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];;
+		dgtz["ADC_time"]  = (int) (stepTime*24.0/1000);
+		dgtz["ADC_ped"]   = 0;
+
+		dgtz["TDC_order"] = 0;
+		dgtz["TDC_TDC"]   = (int) (stepTime*24.0/1000);
+
 
 		return dgtz;
 	}
@@ -109,20 +114,15 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// the nphe is the particle id
 	// and identifiers are negative
 	// this should be changed, what if we still have a photon later?
-	dgtz["sector"]  = -idsector;
-	dgtz["side"]    = -idside;
-	dgtz["segment"] = -idsegment;
-	dgtz["adc"]     = 0;
-	dgtz["nphe"]    = thisPid;
-	dgtz["npheD"]   = 0;
-	dgtz["time"]    = tInfos.time;
-	dgtz["hitn"]    = hitn;
-	
-	
 	// if the particle is not an opticalphoton return bank filled with negative identifiers
-	if(thisPid != 0)
+	if(thisPid != 0) {
+
+		dgtz["sector"]    = -idsector;
+		dgtz["layer"]     = -idside;
+		dgtz["component"] = -idsegment;
+
 		return dgtz;
-	
+	}
 	
 	vector<int> tids = aHit->GetTIds();      // track ID at EACH STEP
 	vector<int> pids = aHit->GetPIDs();      // particle ID at EACH STEP
@@ -185,16 +185,22 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
 
 	double timeOffset = G4RandGauss::shoot(ltccc.timeOffset[idsector-1][idside-1][idsegment-1], ltccc.timeRes[idsector-1][idside-1][idsegment-1]);
+	double time = tInfos.time + timeOffset;
 
-	dgtz["sector"]  = idsector;
-	dgtz["side"]    = idside;
-	dgtz["segment"] = idsegment;
-	dgtz["adc"]     = adc;
-	dgtz["time"]    = tInfos.time + timeOffset;
-	dgtz["nphe"]    = narrived;
-	dgtz["npheD"]   = ndetected;
-	dgtz["hitn"]    = hitn;
-	
+	dgtz["hitn"]   = hitn;
+
+	dgtz["sector"]    = idsector;
+	dgtz["layer"]     = idside;
+	dgtz["component"] = idsegment;
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = adc;
+	dgtz["ADC_time"]  = (int) (time*24.0/1000);
+	dgtz["ADC_ped"]   = 0;
+
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = (int) (time*24.0/1000);
+
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

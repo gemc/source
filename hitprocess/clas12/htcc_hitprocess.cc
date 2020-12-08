@@ -164,23 +164,23 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	trueInfos tInfos(aHit);
 	
-	int ndetected;
 	// if anything else than a photon hits the PMT
 	// the nphe is the particle id
 	// and identifiers are negative
 	// this should be changed, what if we still have a photon later?
-	dgtz["sector"] = -idsector;
-	dgtz["ring"]   = -idring;
-	dgtz["half"]   = -idhalf;
-	dgtz["nphe"]   = thisPid;
-	dgtz["time"]   = tInfos.time;
-	dgtz["hitn"]   = hitn;
-	
-	
 	// if the particle is not an opticalphoton return bank filled with negative identifiers
-	if(thisPid != 0)
+	if(thisPid != 0) {
 		return dgtz;
-	
+
+		dgtz["sector"]    = -idsector;
+		dgtz["layer"]     = -idhalf;
+		dgtz["component"] = -idring;
+	}
+
+
+	int ndetected;
+
+
 	// Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
 	// we want to implement QE here in a flexible way:
 	
