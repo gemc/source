@@ -172,9 +172,10 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["sector"]    = 1;
 		dgtz["layer"]     = 1;
 		dgtz["component"] = iCrystal;
-		dgtz["adc"]       = (int) (charge/ftcc.fadc_to_charge[iCrystal]);
-		dgtz["tdc"]       = (int) (stepTime*ftcc.time_to_tdc);
-		;
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = (int) (charge/ftcc.fadc_to_charge[iCrystal]);
+		dgtz["ADC_time"]  = (int) stepTime*ftcc.time_to_tdc/25;
+		dgtz["ADC_ped"]   = 0;
 
 		return dgtz;
 	}
@@ -267,9 +268,12 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]    = 1;
 	dgtz["layer"]     = 1;
 	dgtz["component"] = iCrystal;
-	dgtz["adc"]       = ADC;
-	dgtz["tdc"]       = TDC;
-	
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = (int) TDC/25;
+	dgtz["ADC_ped"]   = 0;
+
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

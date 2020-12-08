@@ -81,46 +81,55 @@ HipoSchema :: HipoSchema()
 	// need to add pcal to this
 	ecalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ecalTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-
-
-
 	ftcalADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	fthodoADCSchema.parse( "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ftrkTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+
 	ftofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ftofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	ftrkTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+
 	htccADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	htccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	ltccADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ltccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	rfADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	rfTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	richTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 	rtpcADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	rtpcPOSSchema.parse(   "step/I, time/F, energy/F, posx/F, posy/F, posz/F, phi/F, tid/F");
+
 	bandADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	bandTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	helADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	helFLIPSchema.parse(   "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
 	helONLINESchema.parse( "helicity/B, helicityRaw/B");
+
 	rawADCSchema.parse(    "crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
 	rawTDCSchema.parse(    "crate/B, slot/B, channel/S, order/B, TDC/I");
 	rawSCALERSchema.parse( "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
 	rawVTPSchema.parse(    "crate/B, word/I");
 	rawEPICSSchema.parse(  "json/B");
+
 	emptySchema.parse(     "empty/B");
 
 	schemasToLoad["RUN::config"] = runConfigSchema;
 
-	// Central Detector
-	schemasToLoad["BMT::adc"]    = bmtADCSchema;
-	schemasToLoad["BST::adc"]    = bstADCSchema;
-	schemasToLoad["CTOF::adc"]   = ctofADCSchema;
-	schemasToLoad["CTOF::tdc"]   = ctofTDCSchema;
-	schemasToLoad["FMT::adc"]    = fmtADCSchema;
-	schemasToLoad["DC::tdc"]     = dcTDCSchema;
-	schemasToLoad["EC::adc"]     = ecalADCSchema;
-	schemasToLoad["EC::tdc"]     = ecalTDCSchema;
+	// The names corresponds to the hit process routine names, capitalized
+	schemasToLoad["BMT::adc"]     = bmtADCSchema;
+	schemasToLoad["BST::adc"]     = bstADCSchema;
+	schemasToLoad["CTOF::adc"]    = ctofADCSchema;
+	schemasToLoad["CTOF::tdc"]    = ctofTDCSchema;
+	schemasToLoad["FMT::adc"]     = fmtADCSchema;
+	schemasToLoad["DC::tdc"]      = dcTDCSchema;
+	schemasToLoad["EC::adc"]      = ecalADCSchema;
+	schemasToLoad["EC::tdc"]      = ecalTDCSchema;
+	schemasToLoad["FT_CAL::adc"]  = ftcalADCSchema;
+	schemasToLoad["FT_HODO::adc"] = fthodoADCSchema;
+	schemasToLoad["FT_TRK::adc"]  = ftrkTDCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

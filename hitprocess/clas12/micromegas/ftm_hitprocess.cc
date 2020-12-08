@@ -53,8 +53,11 @@ map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]     = 1;
 	dgtz["layer"]      = layer;
 	dgtz["component"]  = strip;
-	dgtz["adc"]        = adc;
-	
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = adc;
+	dgtz["ADC_time"]  = 0;
+	dgtz["ADC_ped"]   = 0;
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

@@ -156,9 +156,11 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["sector"]    = isector;
 		dgtz["layer"]     = ilayer;
 		dgtz["component"] = icomponent;
-		dgtz["adc"]       = (int) (charge/fthc.fadc_LSB);
-		dgtz["tdc"]       = (int) (stepTime*fthc.time_to_tdc);;
-		
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = (int) (charge/fthc.fadc_LSB);
+		dgtz["ADC_time"]  = (int) (stepTime*fthc.time_to_tdc)/25;
+		dgtz["ADC_ped"]   = 0;
+
 		return dgtz;
 	}
 	
@@ -213,9 +215,11 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]    = isector;
 	dgtz["layer"]     = ilayer;
 	dgtz["component"] = icomponent;
-	dgtz["adc"]       = ADC;
-	dgtz["tdc"]       = TDC;
-	
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = TDC/25;
+	dgtz["ADC_ped"]   = 0;
+
 	// decide if write an hit or not
 	writeHit = true;
 	

@@ -306,6 +306,8 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
 
+	float tdc2ns = 0.02345f;
+
 
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -313,9 +315,8 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = strip;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = TDC/a1;
+	dgtz["ADC_time"]  = tdc2ns*TDC/a1;
 	dgtz["ADC_ped"]   = 0;
-
 	dgtz["TDC_order"] = 2;
 	dgtz["TDC_TDC"]   = TDC/a1;
 
