@@ -72,14 +72,18 @@ HipoSchema :: HipoSchema()
 	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 
-	// todolater
+	// todo later
 	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 
 	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
 
+	// need to add pcal to this
 	ecalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ecalTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+
+
+
 	ftcalADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	fthodoADCSchema.parse( "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ftofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
@@ -115,7 +119,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["CTOF::tdc"]   = ctofTDCSchema;
 	schemasToLoad["FMT::adc"]    = fmtADCSchema;
 	schemasToLoad["DC::tdc"]     = dcTDCSchema;
-
+	schemasToLoad["EC::adc"]     = ecalADCSchema;
+	schemasToLoad["EC::tdc"]     = ecalTDCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

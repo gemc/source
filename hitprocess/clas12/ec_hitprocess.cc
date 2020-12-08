@@ -188,19 +188,22 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-		
-		dgtz["hitn"]   = hitn;
-		dgtz["sector"] = sector;
-		dgtz["stack"]  = stack;
-		dgtz["view"]   = view;
-		dgtz["strip"]  = strip;
-		
 		double adc  = totEdep / ecc.ADC_GeV_to_evio ; // no gain as that comes from data already
 		double tdc = stepTime * ecc.TDC_time_to_evio ;
-		
-		dgtz["ADC"] = (int) adc;
-		dgtz["TDC"]  = (int) tdc;
-		
+
+		dgtz["hitn"]      = hitn;
+		dgtz["sector"]    = sector;
+		dgtz["layer"]     = view;
+		dgtz["component"] = strip;
+		dgtz["ADC_order"] = 0;
+		dgtz["ADC_ADC"]   = (int) adc;
+		dgtz["ADC_time"]  = (int) tdc;
+		dgtz["ADC_ped"]   = 0;
+
+		dgtz["TDC_order"] = 2;
+		dgtz["TDC_TDC"]   = (int) tdc;
+
+
 		return dgtz;
 	}
 	
@@ -302,17 +305,20 @@ map<string, double> ec_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
-	
-	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = sector;
-	dgtz["stack"]  = stack;
-	dgtz["view"]   = view;
-	dgtz["strip"]  = strip;
-	dgtz["ADC"]    = ADC;
-	dgtz["TDC"]    = TDC/a1;
-	//	cout<<sector<<" "<<layer<<" "<<strip<<" "<<ADC<<" "<<TDC/a1<<endl;
-	//	cout<<" "<<endl;
-	
+
+
+	dgtz["hitn"]      = hitn;
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = view;
+	dgtz["component"] = strip;
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = TDC/a1;
+	dgtz["ADC_ped"]   = 0;
+
+	dgtz["TDC_order"] = 2;
+	dgtz["TDC_TDC"]   = TDC/a1;
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

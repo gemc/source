@@ -204,7 +204,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	banks["counter"]   = abank;
 	
 	
-	// ancestors bank 
+	// ancestors bank
 	// Information about ancestral trajectories
 	abank =  gBank (ANCESTORS_BANK_TAG, "ancestors", "Geant4 ancestors information");
 	abank.load_variable ("pid",     1,   "Ri", "ID of the ancestor");
@@ -313,12 +313,11 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 				}
 				
 				IN.close();
-			}
-			else
-			{
-				if(verbosity>2)
+			} else {
+				if(verbosity>2) {
 					cout << "  !!! Error: Failed to open system bank file " << fname
 					<< ". Maybe the filename doesn't exist? Exiting." << endl;
+				}
 			}
 		}
 		
