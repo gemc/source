@@ -84,7 +84,6 @@ HipoSchema :: HipoSchema()
 	ftcalADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	fthodoADCSchema.parse( "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ftrkTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-
 	ftofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ftofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 
@@ -130,6 +129,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["FT_CAL::adc"]  = ftcalADCSchema;
 	schemasToLoad["FT_HODO::adc"] = fthodoADCSchema;
 	schemasToLoad["FT_TRK::adc"]  = ftrkTDCSchema;
+	schemasToLoad["FTOF::adc"]    = ftofADCSchema;
+	schemasToLoad["FTOF::tdc"]    = ftofTDCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

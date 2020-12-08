@@ -222,35 +222,33 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	vector<identifier> identity = aHit->GetId();
 	
 	int sector = identity[0].id;
-	int panel = identity[1].id;
+	int panel  = identity[1].id; // 1-1A, 2-1B, 3-2B
 	int paddle = identity[2].id;
-	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT
+	int pmt    = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
 	
 	// TDC conversion factors
 	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
-	
-	
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-		
-		dgtz["hitn"]   = hitn;
-		dgtz["sector"] = sector;
-		dgtz["layer"] = panel;
-		dgtz["paddle"] = paddle;
-		dgtz["side"] = (int) pmt;
-		
-		double adc  = totEdep * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] ; // no gain as that comes from data already
+		double adc = totEdep * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] ; // no gain as that comes from data already
 		double tdc = stepTime/tdcconv;
 		
-		dgtz["ADC"] = (int) adc;
-		dgtz["ADCu"] = (int) adc;
-		
-		dgtz["TDC"]  = (int) tdc;
-		dgtz["TDCu"] = (int) tdc;
-		
+		dgtz["hitn"]      = hitn;
+		dgtz["sector"]    = sector;
+		dgtz["layer"]     = panel;
+		dgtz["component"] = paddle;
+		dgtz["ADC_order"] = pmt;
+		dgtz["ADC_ADC"]   = (int) adc;
+		dgtz["ADC_time"]  = (tdc*24.0/1000);
+		dgtz["ADC_ped"]   = 0;
+
+		dgtz["TDC_order"] = pmt + 2;
+		dgtz["TDC_TDC"]   = (int) tdc;
+
 		return dgtz;
 	}
 	
@@ -375,17 +373,18 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][0][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left: " << adcl << endl;
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][1][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " right:  " << adcr << endl;
 	
-	
-	dgtz["hitn"] = hitn;
-	dgtz["sector"] = sector;
-	dgtz["layer"] = panel;
-	dgtz["paddle"] = paddle;
-	dgtz["side"] = (int) pmt;
-	dgtz["ADC"] = (int) adc;
-	dgtz["TDC"] = (int) tdc;
-	dgtz["ADCu"] = (int) adcu;
-	dgtz["TDCu"] = (int) tdcu;
-	
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = panel;
+	dgtz["component"] = paddle;
+	dgtz["ADC_order"] = pmt;
+	dgtz["ADC_ADC"]   = (int) adc;
+	dgtz["ADC_time"]  = (tdc*24.0/1000);
+	dgtz["ADC_ped"]   = 0;
+
+	dgtz["TDC_order"] = pmt + 2;
+	dgtz["TDC_TDC"]   = (int) tdc;
+
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
@@ -466,7 +465,7 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 	int sector = identity[0].id;
 	int panel = identity[1].id;
 	int paddle = identity[2].id;
-	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT
+	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
 	
 	identifiers.push_back(sector); // sector
 	identifiers.push_back(panel); // panel, 1a, 1b, 2a
