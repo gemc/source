@@ -18,8 +18,11 @@
 #include "frequencySyncSignal.h"
 
 // EVIO
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations" 
 #include "evioUtil.hxx"
 #include "evioFileChannel.hxx"
+#pragma clang diagnostic pop
 using namespace evio;
 
 // geant4
