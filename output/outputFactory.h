@@ -18,8 +18,12 @@
 #include "frequencySyncSignal.h"
 
 // EVIO
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations" 
+#pragma GCC diagnostic ignored "-Wdeprecated" 
 #include "evioUtil.hxx"
 #include "evioFileChannel.hxx"
+#pragma GCC diagnostic pop
 using namespace evio;
 
 // Hipo
