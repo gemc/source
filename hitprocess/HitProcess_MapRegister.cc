@@ -13,7 +13,7 @@
 #include "clas12/cnd_hitprocess.h"              ///< Central Neutron Detector
 #include "clas12/ctof_hitprocess.h"             ///< Central TOF
 #include "clas12/dc_hitprocess.h"               ///< Drift Chambers
-#include "clas12/ec_hitprocess.h"               ///< Forward Electromagnetic Calorimeter EC
+#include "clas12/ecal_hitprocess.h"             ///< PCAL and Forward Electromagnetic Calorimeter EC
 #include "clas12/ftof_hitprocess.h"             ///< Forward TOF
 #include "clas12/ft_cal_hitprocess.h"           ///< Forward Tagger Calorimeter
 #include "clas12/ft_hodo_hitprocess.h"          ///< Forward Tagger Hodoscope
@@ -22,7 +22,6 @@
 #include "clas12/ltcc_hitprocess.h"             ///< Low Threshold Cherenkov Counter
 #include "clas12/micromegas/FMT_hitprocess.h"   ///< forward micromegas
 #include "clas12/micromegas/BMT_hitprocess.h"   ///< barrel micromegas
-#include "clas12/pcal_hitprocess.h"             ///< Pre-shower calorimeter
 #include "clas12/rich_hitprocess.h"             ///< Pre-shower calorimeter
 #include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
 
@@ -42,7 +41,7 @@
 // eic
 #include "eic/eic_compton_hitprocess.h"
 #include "eic/eic_dirc_hitprocess.h"
-#include "eic/eic_ec_hitprocess.h"
+#include "eic/eic_ec_HitProcess.h"
 #include "eic/eic_preshower_hitprocess.h"
 #include "eic/eic_rich_hitprocess.h"
 
@@ -66,8 +65,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		hitMap["counter"] = &counter_HitProcess::createHitClass;
 
 		// CLAS12
-		if(EXP == "clas12")
-		{
+		if(EXP == "clas12") {
 			hitMap["myatof"]   = &myatof_HitProcess::createHitClass;
 			hitMap["ahdc"]     = &ahdc_HitProcess::createHitClass;
 			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
@@ -77,49 +75,35 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["cnd"]      = &cnd_HitProcess::createHitClass;
 			hitMap["ctof"]     = &ctof_HitProcess::createHitClass;
 			hitMap["dc"]       = &dc_HitProcess::createHitClass;
-			hitMap["ec"]       = &ec_HitProcess::createHitClass;
+			hitMap["ecal"]     = &ecal_HitProcess::createHitClass;
 			hitMap["ftof"]     = &ftof_HitProcess::createHitClass;
 			hitMap["ft_cal"]   = &ft_cal_HitProcess::createHitClass;
 			hitMap["ft_hodo"]  = &ft_hodo_HitProcess::createHitClass;
 			hitMap["ft_trk"]   = &ftm_HitProcess::createHitClass;
 			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
-			hitMap["pcal"]     = &pcal_HitProcess::createHitClass;
 			hitMap["rich"]     = &rich_HitProcess::createHitClass;
 			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
-		}
-		// Aprime
-		else if(EXP == "HPS")
-		{
+
+		} else if(EXP == "HPS") {
+			// Aprime
 			hitMap["SVT"]        = &SVT_HitProcess::createHitClass;
 			hitMap["ECAL"]       = &ECAL_HitProcess::createHitClass;
 			hitMap["muon_hodo"]  = &muon_hodo_HitProcess::createHitClass;
+		} else if( EXP == "eic" ) {
+			// EIC
+			hitMap["eic_dirc"]      = &eic_dirc_HitProcess::createHitClass;
+			hitMap["eic_ec"]        = &eic_ec_HitProcess::createHitClass;
+			hitMap["eic_preshower"] = &eic_preshower_HitProcess::createHitClass;
+			hitMap["eic_rich"]      = &eic_rich_HitProcess::createHitClass;
+			hitMap["eic_compton"]   = &eic_compton_HitProcess::createHitClass;
 		}
-		// GlueX
-		else if( EXP == "gluex" )
-		{
-		}
-		// EIC
-		else if( EXP == "eic" )
-		{
-			hitMap["eic_dirc"]  = &eic_dirc_HitProcess::createHitClass;
-			hitMap["eic_ec"]  = &eic_ec_HitProcess::createHitClass;
-			hitMap["eic_preshower"]  = &eic_preshower_HitProcess::createHitClass;
-			hitMap["eic_rich"]  = &eic_rich_HitProcess::createHitClass;
-			hitMap["eic_compton"]  = &eic_compton_HitProcess::createHitClass;
-		}
-		// SoLID
-		else if( EXP == "solid" )
-		{
-		}
-		else if( EXP == "BDX" )
-		{
+		else if( EXP == "BDX" ) {
 			hitMap["cormo"]      = &cormo_HitProcess::createHitClass;
 			hitMap["veto"]       = &veto_HitProcess::createHitClass;
 			hitMap["crs"]        = &crs_HitProcess::createHitClass;
 		}
-		else if( EXP == "injector" )
-		{
+		else if( EXP == "injector" ) {
 			hitMap["bubble"]     = &bubble_HitProcess::createHitClass;
 		}
 		

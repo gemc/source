@@ -47,17 +47,13 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double minHit = 0.0261*MeV;
 	double maxHit = 0.11747*MeV;
 	double deltaADC = maxHit - minHit;
-	
-	
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
-		double stepTime = aHit->GetTime()[0];
 		
-		int adc     = floor(   7*(totEdep - minHit)/deltaADC);
-		int adchd   = floor(8196*(totEdep - minHit)/deltaADC);
-		
+		int adc     = floor(   7*(totEdep - minHit)/deltaADC);		
 
 		dgtz["sector"]    = identity[0].id;
 		dgtz["layer"]     = identity[1].id;

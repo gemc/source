@@ -173,7 +173,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 				// its oririn are "root" coordinate
 				G4LogicalVolume* gdmlWorld = parser->GetVolume("World");
 //				G4LogicalVolume* gdmlWorld = parser->GetVolume(detectorName);
-				cout << "ASD DET CONST " << gdmlWorld << endl;
+//				cout << "ASD DET CONST " << gdmlWorld << endl;
 
 				// only daughters of World will be a new G4PVPlacement in root
 				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
@@ -214,18 +214,14 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 		}
 	}
 
-
-
 	// build mirrors
 	buildMirrors();
-
 
 	// assigns production cuts for root
 	// assigns production cuts coming from sensitive detector assignment
 	// assigns production cuts coming from PRODUCTIONCUTFORVOLUMES option
 	regions.push_back("root");
 	assignProductionCuts(regions);
-	
 
 	// now output det information if verbosity or catch is given
 	for(auto &dd : *hallMap) {
@@ -755,7 +751,7 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 		{
 			detector kid = findDetector(relatives.back());
 			detector mom = findDetector(kid.mother);
-			// cout << " ASD " << kid.name << " " << kid.mother <<  " " << kid.scanned << " " << mom.scanned << " " << mom.factory << endl;
+			 // cout << " ASD " << kid.name << " " << kid.mother <<  " " << kid.scanned << " " << mom.scanned << " " << mom.factory << " mom system: " << mom.system << endl;
 
 			// production cut affects all volumes in a system rather than just the sensitive volumes
 			// if the mother system is different than the kid system

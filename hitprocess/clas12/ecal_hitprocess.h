@@ -1,5 +1,5 @@
-#ifndef EC_HITPROCESS_H
-#define EC_HITPROCESS_H 1
+#ifndef ECAL_HITPROCESS_H
+#define ECAL_HITPROCESS_H 1
 
 // gemc headers
 #include "HitProcess.h"
@@ -47,17 +47,12 @@ public:
 	double pedestal[nsect][nlayer][nview] = {};
 	double pedestal_sigm[nsect][nlayer][nview] = {};
 	
-	
-	double NSTRIPS;             // Number of strips
-	
 	double TDC_time_to_evio;    // Conversion from time (ns) to EVIO TDC format
 	double ADC_GeV_to_evio;     // Conversion from energy (GeV) to EVIO FADC250 format
-	double pmtPEYld;            // Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	double pmtQE;               // Quantum efficiency of PMT
 	double pmtDynodeGain;       // PMT dynode gain
 	double pmtDynodeK;          // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;           // Contribution to FWHM from PMT statistical fluctuations.
-	
 	
 	// voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
@@ -68,11 +63,11 @@ public:
 
 
 // Class definition
-class ec_HitProcess : public HitProcess
+class ecal_HitProcess : public HitProcess
 {
 public:
 	
-	~ec_HitProcess(){;}
+	~ecal_HitProcess(){;}
 	
 	// constants initialized with initWithRunNumber
 	static ecConstants ecc;
@@ -96,15 +91,11 @@ public:
 	vector<identifier> processID(vector<identifier>, G4Step*, detector);
 	
 	// creates the HitProcess
-	static HitProcess *createHitClass() {return new ec_HitProcess;}
+	static HitProcess *createHitClass() {return new ecal_HitProcess;}
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
 	
 };
-
-
-
-
 
 #endif
