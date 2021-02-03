@@ -616,8 +616,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			
 			bool WRITE_TRUE_INTEGRATED = 0;
 			bool WRITE_TRUE_ALL = 0;
-			if(WRITE_INTRAW.find(hitType) != string::npos) WRITE_TRUE_INTEGRATED = 1;
-			if(WRITE_ALLRAW.find(hitType) != string::npos) WRITE_TRUE_ALL = 1;
+			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
+			if(WRITE_ALLRAW.find(hitType) != string::npos || WRITE_ALLRAW == "*") WRITE_TRUE_ALL = 1;
 			
 			vector<hitOutput> allRawOutput;
 			vector<hitOutput> allDgtOutput;

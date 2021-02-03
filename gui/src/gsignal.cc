@@ -283,8 +283,7 @@ void gsignal::createSignalsTree()
 						// this info is available only if WRITE_INTRAW is enabled
 						if(signalChoice == "Orig. Trk")
 						{
-							if(WRITE_INTRAW.find(sDetector) != string::npos)
-							{
+							if(WRITE_INTRAW.find(sDetector) != string::npos || WRITE_INTRAW == "*") {
 								signal = convertVintVdouble(aHit->GetoTrackIds());
 							}
 							else
