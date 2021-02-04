@@ -18,6 +18,7 @@ HipoSchema :: HipoSchema()
 	// CLAS12 schemas are defined at https://github.com/JeffersonLab/clas12-offline-software/tree/development/etc/bankdefs/hipo4
 	// Detectors: https://github.com/JeffersonLab/clas12-offline-software/blob/development/etc/bankdefs/hipo4/data.json
 	runConfigSchema = hipo::schema("RUN::config", 10000, 11);
+	runRFSchema     = hipo::schema("RUN::rf",     10000, 12);
 
 	// detectors
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
@@ -64,6 +65,7 @@ HipoSchema :: HipoSchema()
 	//                   D-double, L-long
 
 	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B,mode/B, torus/F, solenoid/F");
+	runRFSchema.parse("id/S, time/F");
 
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
@@ -114,6 +116,7 @@ HipoSchema :: HipoSchema()
 	emptySchema.parse(     "empty/B");
 
 	schemasToLoad["RUN::config"] = runConfigSchema;
+	schemasToLoad["RUN::rf"]     = runRFSchema;
 
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;

@@ -539,8 +539,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		FrequencySyncSignal rfs(rfsetup);
 		processOutputFactory->writeRFSignal(outContainer, rfs, getBankFromMap("rf", banksMap));
 		
-		if(VERB > 1)
-		cout << rfs << endl;
+		if(VERB > 1) {
+			cout << rfs << endl;
+		}
 	}
 	
 	// Getting Generated Particles info
@@ -724,16 +725,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// by default they are all DISABLED
 			// user can enable them one by one
 			// using the INTEGRATEDRAW option
-			if(WRITE_TRUE_INTEGRATED)
-			processOutputFactory->writeG4RawIntegrated(outContainer, allRawOutput, hitType, banksMap);
-			
+			if(WRITE_TRUE_INTEGRATED) {
+				processOutputFactory->writeG4RawIntegrated(outContainer, allRawOutput, hitType, banksMap);
+			}
+
 			// geant4 all raw information
 			// by default they are all DISABLED
 			// user can enable them one by one
 			// using the ALLRAWS option
-			if(WRITE_TRUE_ALL)
-			processOutputFactory->writeG4RawAll(outContainer, allRawOutput, hitType, banksMap);
-			
+			if(WRITE_TRUE_ALL) {
+				processOutputFactory->writeG4RawAll(outContainer, allRawOutput, hitType, banksMap);
+			}
 			
 			
 			if(VERB > 4)
@@ -853,6 +855,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						// FADC counts
 						vSignal[ts+3] = int(pedestal) + (int) voltage;
 					}
+
 					thisHitOutput.createQuantumS(vSignal);
 					
 					hit_outputs_from_AllSD[vSignal[0]].push_back(thisHitOutput);

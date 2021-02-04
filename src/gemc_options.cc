@@ -732,7 +732,7 @@ void goptions::setGoptions()
 	optMap["INTEGRATEDDGT"].help = "De-activates integrated digitized output for system(s). Example: -INTEGRATEDDGT=\"DC, TOF\"";
 	optMap["INTEGRATEDDGT"].name = "De-activates integrated digitized output for system(s). ";
 	optMap["INTEGRATEDDGT"].type = 1;
-	optMap["INTEGRATEDRAW"].ctgr = "output";
+	optMap["INTEGRATEDDGT"].ctgr = "output";
 	
 	optMap["ALLRAWS"].args = "no";
 	optMap["ALLRAWS"].help = "Activates step-by-step output for system(s). Example: -ALLRAWS=\"DC, TOF\"";

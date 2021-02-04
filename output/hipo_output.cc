@@ -42,6 +42,7 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	}
 
 	// Create runConfigBank with 1 row based on schema
+	// second argument is number of hits
 	hipo::bank runConfigBank(output->hipoSchema->runConfigSchema, 1);
 
 	runConfigBank.putInt("run",   0, data["runNo"]);
@@ -73,7 +74,32 @@ void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 
 void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
 {
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
+	// Create runRFBank with 1 row based on schema
+	// second argument is number of hits
+
+	vector<oneRFOutput> rfs = rfsignals.getOutput();
+
+	// only the first rf output is written
+	// beware: in gemc there are 2 rf outputs
+	vector<int>    ids   = rfs.front().getIDs();
+	vector<double> times = rfs.front().getValues();
+
+	hipo::bank runRFBank(output->hipoSchema->runRFSchema,  ids.size());
+
+	for(unsigned i=0; i < ids.size(); i++) {
+
+		runRFBank.putShort("id",   i, (short) ids[i]);
+		runRFBank.putFloat("time", i, (float) times[i]);
+
+	}
+
+	if(verbosity > 2) {
+		runRFBank.show();
+	}
+
+	outEvent->addStructure(runRFBank);
 
 }
 
