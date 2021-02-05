@@ -241,9 +241,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		trackIds = trackIdw;
 
 
-	// Left / Right ambiguity
+	// Left / Right ambiguity (notice: not used anymore?)
 	// Finding DOCA
-	double LR       = 0;
+	// double LR       = 0;
 	double doca     = 10000;
 	double thisMgnf = 0;
 
@@ -305,8 +305,9 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			alpha = ralpha/deg;
 
 			doca = DOCA.mag();
-			if(DOCA.y() >=0 ) LR = 1;
-			else  LR = -1;
+			// LR not used anymore
+			// if(DOCA.y() >=0 ) LR = 1;
+			// else  LR = -1;
 
 			//Get beta-value of the particle:
 			beta_particle = mom[s].mag()/E[s];

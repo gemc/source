@@ -302,18 +302,20 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 	
 	double adc = 0;
-	double adcu = 0;
 	double tdc = 0;
-	double tdcu = 0;
+	// not used anymore
+//	double adcu = 0;
+//	double tdcu = 0;
 	
+//	if (ene > 0) {
+//		adcu = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
+//	}
+
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat L and R separately, in case nphe=0
 	
-	if (ene > 0) {
-		adcu = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
-	}
-	
+
 	
 	
 	double nphe = G4Poisson(ene * ftc.pmtPEYld);
@@ -326,7 +328,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		//double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
 		
 		double timeWalk  = A / pow(adc, B);
-		double timeWalkU = A / pow(adcu, B);
+//		double timeWalkU = A / pow(adcu, B);
 		
 		//		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
 		//		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
@@ -341,7 +343,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		
 		// cout << " FTOF Unsmeared Time after p2p subtraction: " << tU << endl;
 		
-		tdcu = (tU + timeWalkU) / tdcconv;
+//		tdcu = (tU + timeWalkU) / tdcconv;
 		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
 		
 	}

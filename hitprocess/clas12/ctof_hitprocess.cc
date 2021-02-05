@@ -296,16 +296,17 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	
 	double adc = 0.;
 	double tdc = 0.;
-	double adcu = 0.;
-	double tdcu = 0.;
-	
+	// not used anymore
+	// double adcu = 0.;
+	// double tdcu = 0.;
+	// if (ene > 0)
+	//	adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
+
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat Up and Dn separately, in case nphe=0
 	
-	if (ene > 0)
-		adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
-	
+
 	
 	double nphe = G4Poisson(ene * ctc.pmtPEYld);
 	ene = nphe / ctc.pmtPEYld;
@@ -325,7 +326,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		+ timeWalk;
 		
 		double t = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
-		tdcu = tU / tdcconv;
+		// tdcu = tU / tdcconv;
 		tdc = t / tdcconv;
 	}
 	

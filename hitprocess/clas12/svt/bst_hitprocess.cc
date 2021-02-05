@@ -97,16 +97,16 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// I.e. there are 7 bins plus an overflow bin.
 	
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
-	int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
+//	int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
 	
 	if(tInfos.eTot>maxHit) {
 		adc   = 7;
-		adchd = 8196;
+//		adchd = 8196;
 	}
 
 	if(tInfos.eTot<minHit) {
 		adc   = -5;
-		adchd = -5000;
+//		adchd = -5000;
 	}
 	
 	if(verbosity>4) {
