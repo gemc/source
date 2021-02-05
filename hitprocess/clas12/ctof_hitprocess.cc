@@ -353,7 +353,6 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 			",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
 		}
 	}
-	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = 1;
 	dgtz["layer"]     = 1;

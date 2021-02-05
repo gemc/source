@@ -79,13 +79,9 @@ vector<string> init_dmesg(goptions gemcOpt)
 		commands.push_back("/geometry/test/line_test 1");
 
 
-	if(DAWN_N>0)
-	{
-		char dawn[10];
-		sprintf(dawn, "%d", DAWN_N);
-		string DN = "/run/beamOn ";
-		DN.append(dawn);
-		
+	if(DAWN_N>0) {
+		string DN = "/run/beamOn " + to_string(DAWN_N);
+
 		commands.push_back("/vis/open DAWNFILE");
 		commands.push_back("/vis/drawVolume");
 		commands.push_back("/vis/scene/add/trajectories rich smooth");

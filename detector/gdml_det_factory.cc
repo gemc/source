@@ -69,7 +69,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 		G4PhysicalVolumeStore::DeRegister(parser.GetWorldVolume());
 
 		// first daughters: these volumes will be the ones with mother = "root"
-		for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
+		for(unsigned d=0; d<gdmlWorld->GetNoDaughters (); d++) {
 
 
 			string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
@@ -81,7 +81,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 
 			// now browsing for daughters
 			G4LogicalVolume* firstDaughter = gdmlWorld->GetDaughter(d)->GetLogicalVolume();
-			for(int gd=0; gd<firstDaughter->GetNoDaughters(); gd++) {
+			for(unsigned gd=0; gd<firstDaughter->GetNoDaughters(); gd++) {
 
 				detector thisDDet = get_detector(firstDaughter->GetDaughter(d),  gemcOpt, RC);
 				thisDDet.mother = thisDetName;

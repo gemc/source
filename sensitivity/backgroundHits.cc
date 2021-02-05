@@ -101,7 +101,8 @@ GBackgroundHits::GBackgroundHits(string filename, long int nevents, int verbosit
 
 
 		// load hit from string
-		if(backgroundHitMap->size() <= nevents) {
+		long int backgroundHitMapSize = backgroundHitMap->size();
+		if(backgroundHitMapSize <= nevents) {
 			(*backgroundHitMap)[systemEventNumber].push_back(new BackgroundHit(hitsData, hitNumber, verbosity));
 		}
 	}

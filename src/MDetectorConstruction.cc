@@ -176,7 +176,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 //				cout << "ASD DET CONST " << gdmlWorld << endl;
 
 				// only daughters of World will be a new G4PVPlacement in root
-				for(int d=0; d<gdmlWorld->GetNoDaughters (); d++) {
+				for(unsigned d=0; d<gdmlWorld->GetNoDaughters (); d++) {
 
 					string thisDetName = gdmlWorld->GetDaughter(d)->GetLogicalVolume()->GetName();
 					G4LogicalVolume* thisLogical = parser->GetVolume(thisDetName.c_str());

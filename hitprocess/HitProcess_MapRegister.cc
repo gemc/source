@@ -41,7 +41,7 @@
 // eic
 #include "eic/eic_compton_hitprocess.h"
 #include "eic/eic_dirc_hitprocess.h"
-#include "eic/eic_ec_HitProcess.h"
+#include "eic/eic_ec_hitProcess.h"
 #include "eic/eic_preshower_hitprocess.h"
 #include "eic/eic_rich_hitprocess.h"
 
