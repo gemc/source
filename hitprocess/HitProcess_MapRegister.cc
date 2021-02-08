@@ -24,6 +24,7 @@
 #include "clas12/micromegas/BMT_hitprocess.h"   ///< barrel micromegas
 #include "clas12/rich_hitprocess.h"             ///< Pre-shower calorimeter
 #include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
+#include "clas12/band_hitprocess.h"		///< BAND
 
 // Beam Dump eXperiment
 #include "bdx/cormo_hitprocess.h"               ///< Cormorino detector
@@ -84,7 +85,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
 			hitMap["rich"]     = &rich_HitProcess::createHitClass;
 			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
-
+			hitMap["band"]	   = &band_HitProcess::createHitClass;
 		} else if(EXP == "HPS") {
 			// Aprime
 			hitMap["SVT"]        = &SVT_HitProcess::createHitClass;
