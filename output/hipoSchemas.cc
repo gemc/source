@@ -125,8 +125,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["CTOF::tdc"]    = ctofTDCSchema;
 	schemasToLoad["FMT::adc"]     = fmtADCSchema;
 	schemasToLoad["DC::tdc"]      = dcTDCSchema;
-	schemasToLoad["EC::adc"]      = ecalADCSchema;
-	schemasToLoad["EC::tdc"]      = ecalTDCSchema;
+	schemasToLoad["ECAL::adc"]    = ecalADCSchema;
+	schemasToLoad["ECAL::tdc"]    = ecalTDCSchema;
 	schemasToLoad["FT_CAL::adc"]  = ftcalADCSchema;
 	schemasToLoad["FT_HODO::adc"] = fthodoADCSchema;
 	schemasToLoad["FT_TRK::adc"]  = ftrkTDCSchema;

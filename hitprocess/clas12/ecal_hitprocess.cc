@@ -318,10 +318,11 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["TDC_order"] = 2;
 	dgtz["TDC_TDC"]   = TDC/a1;
 
-	//cout << "sector = " << sector << " layer = " << module << " view = " << view << " strip = " << strip << " PL_ADC = " << ADC << " TDC = " << TDC << " Edep = " << Etot << endl;
+	// cout << "sector = " << sector << " layer = " << view << " strip = " << strip << " ADC = " << ADC << " TDC = " << TDC << endl;
 
 	// decide if write an hit or not
 	writeHit = true;
+
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

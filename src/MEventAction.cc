@@ -598,10 +598,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		{
 			//  the bank idtag is the one that corresponds to the hitType
 			//MHit* aHit = (*MHC)[0];
-			
-			
-			
-			
+
 			//	string vname = (*MHC)[0]->GetDetector().name;
 			//	string hitType = it->second->GetDetectorHitType(vname);
 			

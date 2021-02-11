@@ -681,10 +681,9 @@ void MDetectorConstruction::assignProductionCuts(vector<string> volumes)
 
 					SePC_Map[regionName] ->SetProductionCut(productionThreshold);
 
-
-					if(VERB > 3)
+					if(VERB > 3) {
 						cout << "  Region " << regionName << " activated for volume " << regionDet.name << " with range: " << itr->second->SDID.prodThreshold << endl;
-					
+					}
 					SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
 					
 				}
