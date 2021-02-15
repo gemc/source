@@ -175,10 +175,10 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// pcal
 	int view   = layer;
 
-	if (layer > 3 && layer < 7) {
+	if (layer > 3 && layer <7) {
 		// ec inner (stack 1)
 		view = layer - 3;
-	} else if (layer > 7) {
+	} else if (layer >= 7) {
 		// ec inner (stack 2)
 		view = layer - 6;
 	}
@@ -309,7 +309,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
-	dgtz["layer"]     = view;
+	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
