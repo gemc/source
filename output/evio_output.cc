@@ -49,7 +49,6 @@ void evio_output :: recordSimConditions(outputContainer* output, map<string, str
 		}
 	}
 
-
 	evioDOMTree *conditionsBank = new evioDOMTree(SIMULATION_CONDITIONS_BANK_TAG, 0);
 	*conditionsBank << evioDOMNode::createEvioDOMNode(SIMULATION_CONDITIONS_BANK_TAG, 1, data);
 	output->pchan->write(*conditionsBank);
@@ -61,7 +60,6 @@ void evio_output :: recordSimConditions(outputContainer* output, map<string, str
 
 	output->pchan->write(jconditionsBank);
 	delete jconditionsBank;
-
 
 }
 

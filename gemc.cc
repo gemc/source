@@ -269,8 +269,9 @@ int main( int argc, char **argv )
 	
 	
 	// registering activated field in the option so they're written out
-	if(ExpHall->activeFields.size())
-	gemcOpt.optMap["ACTIVEFIELDS"].args = "";
+	if(ExpHall->activeFields.size()) {
+		gemcOpt.optMap["ACTIVEFIELDS"].args = "";
+	}
 	
 	for(set<string>::iterator fit = ExpHall->activeFields.begin(); fit != ExpHall->activeFields.end(); fit++)
 		gemcOpt.optMap["ACTIVEFIELDS"].args = gemcOpt.optMap["ACTIVEFIELDS"].args + *fit + " ";

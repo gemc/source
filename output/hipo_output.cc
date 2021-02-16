@@ -12,6 +12,8 @@ using namespace CLHEP;
 // hipo4
 #include "hipo4/writer.h"
 
+map<string, double> hipo_output::fieldScales = {};
+
 
 // record the simulation conditions
 // the format is a string for each variable
@@ -19,14 +21,35 @@ using namespace CLHEP;
 void hipo_output :: recordSimConditions(outputContainer* output, map<string, string> sims)
 {
 	vector<string> data;
-	vector<string> jdata;
 
-	//	// writing both key and argument as one string
-	//	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
-	//		if(it->first != "JSON") {
-	//			data.push_back(it->first + ":  " + it->second + "  ");
-	//		}
-	//	}
+	// writing both key and argument as one string
+	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
+		if(it->first == "option ACTIVEFIELDS") {
+
+			vector<string> fieldNames = getStringVectorFromString(it->second);
+
+			for(auto &fieldName: fieldNames) {
+
+
+				double scaleFactor = 1;
+
+				vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
+				for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
+					vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
+					if(scales.size() == 2) {
+						if (scales[0].find(fieldName) != string::npos) {
+							scaleFactor = get_number(scales[1]);
+							// cout << " ASD " << fieldName << " " << scaleFactor << endl;
+							// scale to 1 unless set below
+							fieldScales[trimSpacesFromString(fieldName)] = scaleFactor;
+
+						}
+					}
+				}
+
+			}
+		}
+	}
 }
 
 // instantiates hipo event
@@ -34,6 +57,10 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 void hipo_output :: writeHeader(outputContainer* output, map<string, double> data, gBank bank)
 {
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+
+//	for(auto &fieldScale: fieldScales) {
+//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
+//	}
 
 	if(outEvent == nullptr) {
 		outEvent = new hipo::event();
@@ -53,10 +80,24 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	int now = static_cast<int> (t);
 	runConfigBank.putInt("unixtime",  0, now);
 
-	// oth
+	// other infos
 	runConfigBank.putInt("trigger",   0, 0);
-	runConfigBank.putInt("timestamp", 0, 0);
+	runConfigBank.putFloat("timestamp", 0, 0);
 	runConfigBank.putInt("type",      0, 0);
+
+	// solenoid and torus scales, if present
+	if(fieldScales.find("TorusSymmetric") != fieldScales.end()) {
+		runConfigBank.putFloat("torus",      0, fieldScales["TorusSymmetric"]);
+		//		cout << "TorusSymmetric scaled by: " << fieldScales["TorusSymmetric"] << endl;
+	} else {
+		runConfigBank.putFloat("torus",      0, 0);
+	}
+	if(fieldScales.find("clas12-newSolenoid") != fieldScales.end()) {
+		runConfigBank.putFloat("solenoid",      0, fieldScales["clas12-newSolenoid"]);
+	} else {
+		runConfigBank.putFloat("solenoid",      0, 0);
+	}
+
 
 	if(verbosity > 2) {
 		runConfigBank.show();

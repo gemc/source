@@ -22,6 +22,9 @@
 // Class definition
 class hipo_output : public outputFactory
 {
+private:
+	static map<string, double> fieldScales;
+
 public:
 	~hipo_output(){;}  ///< event is deleted in WriteEvent routine
 	static outputFactory *createOutput() {return new hipo_output;}
