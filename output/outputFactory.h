@@ -261,6 +261,9 @@ class outputFactory
 {
 public:
 
+	// prepare event 
+	virtual void prepareEvent(outputContainer* output, map<string, double> *configuration) ;
+
 	// record the simulation conditions on the file
 	virtual void recordSimConditions(outputContainer*, map<string, string>) = 0;
 

@@ -29,6 +29,9 @@ public:
 	~hipo_output(){;}  ///< event is deleted in WriteEvent routine
 	static outputFactory *createOutput() {return new hipo_output;}
 	
+	// prepare event
+	virtual void prepareEvent(outputContainer* output, map<string, double> *configuration) ;
+
 	// record the simulation conditions on the file
 	void recordSimConditions(outputContainer*, map<string, string>);
 	
@@ -77,6 +80,7 @@ public:
 	void writeEvent(outputContainer*) ;
 
 	hipo::event *outEvent = nullptr;
+	hipo::bank *trueInfoBank;
 	
 };
 

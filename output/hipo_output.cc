@@ -263,6 +263,16 @@ void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 
 }
 
+void hipo_output::prepareEvent(outputContainer* output, map<string, double> *configuration){
+	//int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+
+	//	for(auto &conf: *configuration) {
+	//		cout << " Hipo prepare" << conf.first << " " << conf.second << endl;
+	//	}
+	hipo::schema trueInfoSchema = output->hipoSchema->trueInfoSchema;
+	trueInfoBank = new hipo::bank(trueInfoSchema, configuration->size());
+
+}
 
 void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
@@ -293,6 +303,8 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 		}
 	}
 }
+
+
 
 
 void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)

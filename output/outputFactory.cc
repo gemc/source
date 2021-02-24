@@ -19,8 +19,7 @@ using namespace std;
 
 outputFactory *getOutputFactory(map<string, outputFactoryInMap> *outputFactoryMap, string outputType)
 {
-	if(outputFactoryMap->find(outputType) == outputFactoryMap->end())
-	{
+	if(outputFactoryMap->find(outputType) == outputFactoryMap->end()) {
 		cout << endl << endl << "  >>> WARNING: Output type <" << outputType << "> NOT FOUND IN  Output Map." << endl;
 		return NULL;
 	}
@@ -51,6 +50,10 @@ outputContainer::outputContainer(goptions Opts)
 	}
 
 }
+
+void outputFactory::prepareEvent(outputContainer* output, map<string, double> *configuration){
+}
+
 
 outputContainer::~outputContainer()
 {
