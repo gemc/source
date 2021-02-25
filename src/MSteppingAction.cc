@@ -23,23 +23,33 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 	G4ThreeVector   pos   = aStep->GetPostStepPoint()->GetPosition();      ///< Global Coordinates of interaction
 	G4Track*        track = aStep->GetTrack();
-	
+
 	if(fabs(pos.x()) > max_x_pos ||
 	   fabs(pos.y()) > max_y_pos ||
-	   fabs(pos.z()) > max_z_pos ) track->SetTrackStatus(fStopAndKill);   ///< Killing track if outside of interest region
-	
-	if(track->GetKineticEnergy() < energyCut)
+		fabs(pos.z()) > max_z_pos ) {
+
+		cout << " Out of limits reached for track " << track->GetDefinition()->GetParticleName() ;
+		cout << " Track killed" << endl;
+
+		track->SetTrackStatus(fStopAndKill);   ///< Killing track if outside of interest region
+	}
+
+	if(track->GetKineticEnergy() < energyCut) {
+		cout << " Below energy " << energyCut << " for track " << track->GetDefinition()->GetParticleName()  ;
+		cout << " Track killed" << endl;
+
 		track->SetTrackStatus(fStopAndKill);
-	
+	}
+
 	// Anything passing material "Kryptonite" is killed
-	if(track->GetMaterial()->GetName() == "Kryptonite")
-	{
+	if(track->GetMaterial()->GetName() == "Kryptonite") {
+		cout << " In  Kryptonite" ;
+		cout << " Track killed" << endl;
 		track->SetTrackStatus(fStopAndKill);
 	}
 
 	
-	if(track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
-	{
+	if(track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) {
         // killing photon if above 100 steps
         // notice we rarely go above 20 steps for all normal CC detectors
         if(track->GetCurrentStepNumber() > 100)
@@ -53,9 +63,9 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 	// it may be the new version of geant4, or
 	// accurate magnetic fields, but it does happen that sometimes
 	// a track get stuck into a magnetic field infinite loop
-	if(track->GetCurrentStepNumber() > 10000)
+	if(track->GetCurrentStepNumber() > 10000) {
 		track->SetTrackStatus(fStopAndKill);
-
+	}
 	
 //	// checking if a step is stuck in the same position
 //	// for more than 10 steps

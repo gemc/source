@@ -46,8 +46,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	double VERB       = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	double geo_verb   = gemcOpt.optMap["GEO_VERBOSITY"].arg ;
 	string catch_v    = gemcOpt.optMap["CATCH"].args;
-	string hall_mat   = gemcOpt.optMap["HALL_MATERIAL"].args;
-	string hall_field = gemcOpt.optMap["HALL_FIELD"].args;
 
 	// Clean old geometry, if any
 	G4GeometryManager::GetInstance()->OpenGeometry();
