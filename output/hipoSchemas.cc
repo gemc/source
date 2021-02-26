@@ -159,32 +159,32 @@ HipoSchema :: HipoSchema()
 	detectorID["RTPC"]   = 19;
 	detectorID["BAND"]   = 21;
 
-	trueInfoNamesMap["pid"] = "pid";
-	trueInfoNamesMap["mpid"] = "mpid";
-	trueInfoNamesMap["tid"] = "tid";
-	trueInfoNamesMap["mtid"] = "mtid";
-	trueInfoNamesMap["otid"] = "otid";
-	trueInfoNamesMap["trackE"] = "trackE";
+	trueInfoNamesMap["pid"]     = "pid";
+	trueInfoNamesMap["mpid"]    = "mpid";
+	trueInfoNamesMap["tid"]     = "tid";
+	trueInfoNamesMap["mtid"]    = "mtid";
+	trueInfoNamesMap["otid"]    = "otid";
+	trueInfoNamesMap["trackE"]  = "trackE";
 	trueInfoNamesMap["totEdep"] = "totEdep";
-	trueInfoNamesMap["avg_x"] = "avgX";
-	trueInfoNamesMap["avg_y"] = "avgY";
-	trueInfoNamesMap["avg_z"] = "avgZ";
-	trueInfoNamesMap["avg_lx"] = "avgLx";
-	trueInfoNamesMap["avg_ly"] = "avgLy";
-	trueInfoNamesMap["avg_lz"] = "avgLz";
-	trueInfoNamesMap["px"] = "px";
-	trueInfoNamesMap["py"] = "py";
-	trueInfoNamesMap["pz"] = "pz";
-	trueInfoNamesMap["vx"] = "vx";
-	trueInfoNamesMap["vy"] = "vy";
-	trueInfoNamesMap["vz"] = "vz";
-	trueInfoNamesMap["mvx"] = "mvx";
-	trueInfoNamesMap["mvy"] = "mvy";
-	trueInfoNamesMap["mvz"] = "mvz";
-	trueInfoNamesMap["avg_t"] = "avgT";
-	trueInfoNamesMap["nsteps"] = "nsteps";
-	trueInfoNamesMap["procID"] = "procID";
-	trueInfoNamesMap["hitn"] = "hitn";
+	trueInfoNamesMap["avg_x"]   = "avgX";
+	trueInfoNamesMap["avg_y"]   = "avgY";
+	trueInfoNamesMap["avg_z"]   = "avgZ";
+	trueInfoNamesMap["avg_lx"]  = "avgLx";
+	trueInfoNamesMap["avg_ly"]  = "avgLy";
+	trueInfoNamesMap["avg_lz"]  = "avgLz";
+	trueInfoNamesMap["px"]      = "px";
+	trueInfoNamesMap["py"]      = "py";
+	trueInfoNamesMap["pz"]      = "pz";
+	trueInfoNamesMap["vx"]      = "vx";
+	trueInfoNamesMap["vy"]      = "vy";
+	trueInfoNamesMap["vz"]      = "vz";
+	trueInfoNamesMap["mvx"]     = "mvx";
+	trueInfoNamesMap["mvy"]     = "mvy";
+	trueInfoNamesMap["mvz"]     = "mvz";
+	trueInfoNamesMap["avg_t"]   = "avgT";
+	trueInfoNamesMap["nsteps"]  = "nsteps";
+	trueInfoNamesMap["procID"]  = "procID";
+	trueInfoNamesMap["hitn"]    = "hitn";
 
 }
 
