@@ -7,6 +7,7 @@
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
+#include "CLHEP/Random/RandGaussT.h"
 using namespace CLHEP;
 
 // ccdb
@@ -17,7 +18,7 @@ using namespace ccdb;
 
 double BARLENGTHS[]  = {163.7,201.9,51.2,51.2,201.9};
 
-static bandHitConstants initializeBANDHitConstants(int runno)
+static bandHitConstants initializeBANDHitConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
 	bandHitConstants bhc;
@@ -25,6 +26,10 @@ static bandHitConstants initializeBANDHitConstants(int runno)
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
 	if(runno == -1) return bhc;
+	string timestamp = "";
+	if(digiSnapshotTime != "no") {
+		timestamp = ":"+digiSnapshotTime;
+	}
 
 	bhc.nsector = 6;
 	bhc.nlayer = 6;
@@ -39,15 +44,17 @@ static bandHitConstants initializeBANDHitConstants(int runno)
 	else
 		bhc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	bhc.variation  = "default";
+
 	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bhc.connection));
 
 
 	vector<vector<double> > data;
 	int isector, ilayer, icomp;
 
+	//ADD Statustable in the future, F.H 02/08/2021
+
 	//cout<<"BAND:Getting effective velocities"<<endl;
-	sprintf(bhc.database,"/calibration/band/effective_velocity:%d",bhc.runNo);
+	sprintf(bhc.database,"/calibration/band/effective_velocity:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -61,7 +68,7 @@ static bandHitConstants initializeBANDHitConstants(int runno)
 	}
 
 	//cout<<"BAND:Getting attenuation lengths"<<endl;
-	sprintf(bhc.database,"/calibration/band/attenuation_lengths:%d",bhc.runNo);
+	sprintf(bhc.database,"/calibration/band/attenuation_lengths:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -74,7 +81,7 @@ static bandHitConstants initializeBANDHitConstants(int runno)
 	}
 
 	//cout<<"BAND:Getting TDC offsets and resolutions"<<endl;
-	sprintf(bhc.database,"/calibration/band/paddle_offsets_tdc:%d",bhc.runNo);
+	sprintf(bhc.database,"/calibration/band/paddle_offsets_tdc:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -109,7 +116,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 
 	// This is all steps for one identifier
-	
+
 	//cout << "IN INTEGRATE DGT\n";
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
@@ -121,7 +128,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// You can either loop over all the steps of the hit, or just take the
 	// Edep averaged quantities from the trueInfos object:
 	trueInfos tInfos(aHit);
-	
+
 	//double Edep = tInfos.eTot;
 	//double time = tInfos.time;
 	//double x = tInfos.lx / 10.;
@@ -132,7 +139,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	//// Based on PID, convert MeV Edep to MeVee
 	//double E_MeVee = MeVtoMeVee(PID,Z,Edep);
-	
+
 	// Based on x position and time (ToF), convert to PMT L/R time:
 
 	/*
@@ -165,7 +172,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<double> 		times 	= aHit->GetTime();
 	vector<double> 		dx 	= aHit->GetDx();        // step length
 	unsigned 		nsteps	= times.size();         // total number of steps in the hit
-	
+
 	double 	L 	= BARLENGTHS[sector-1];				 // length of the bar [cm]
 	double 	attenL  = bhc.atten_len[sector-1][layer-1][component-1]; // attenuation length of the bar [cm]
 	double 	vEff_fadc= bhc.eff_vel_fadc[sector-1][layer-1][component-1]; 	 // effective velocity of bar [cm/ns]
@@ -175,7 +182,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//double tR = time + (L/2.+x)/vEff;
 
 	//cout << time << " " << x << " " << tInfos.x << " " << vEff << "\n";
-	
+
 
 	double eTotL = 0;
 	double eTotR = 0;
@@ -192,7 +199,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double et_R_tdc = 0.; // energy-weighted timeR
 		double et_L_fadc = 0.; // energy-weighted timeL
 		double et_R_fadc = 0.; // energy-weighted timeR
-	
+
 		double et_X = 0.; // energy-weighted X
 		double et_Y = 0.; // energy-weighted Y
 		double et_Z = 0.; // energy-weighted Z
@@ -212,11 +219,11 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//cout << "\t" << Edep[s] << " " << dx[s] << " " << charge[s] << " " << pid[s] << " " << birks_constant << "\n";
 			//cout << "\t" << Edep_B << "\n";
 			//cout << "\t" << dL << " " << dR << " " << attenL << " " << e_L << " " << e_R << "\n";
-			
+
 			// Integrate energy over entire hit. These values are used for time-smearing:
 			eTotL = eTotL + e_L;
 			eTotR = eTotR + e_R;
-			
+
 			// Light-output weight the times:
 			et_L_tdc = et_L_tdc + (times[s] + dL/vEff_tdc)*e_L;
 			et_R_tdc = et_R_tdc + (times[s] + dR/vEff_tdc)*e_R;
@@ -228,9 +235,9 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			et_Z = et_Z + pos[s].z()/cm * sqrt(e_L*e_R);
 
 		}   // close loop over steps s
-		
+
 		/**** The following calculates the time based on energy-weighted average of all step times ****/
-		
+
 		tL_tdc = et_L_tdc / eTotL;      // sum(energy*time) /  sum(energy)
 		tR_tdc = et_R_tdc / eTotR;
 		tL_fadc = et_L_fadc / eTotL;      // sum(energy*time) /  sum(energy)
@@ -250,6 +257,14 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		tL_fadc = tInfos.time;
 		tR_fadc = 0;
 	}
+
+	// Apply simplistic smearing function
+	tL_fadc = CLHEP::RandGauss::shoot( tL_fadc, 0.3 );
+	tR_fadc = CLHEP::RandGauss::shoot( tR_fadc, 0.3 );
+	tL_tdc  = CLHEP::RandGauss::shoot( tL_tdc,  0.3 );
+	tR_tdc  = CLHEP::RandGauss::shoot( tR_tdc,  0.3 );
+
+
 	dgtz["hitn"]      	= (int) hitn;
 	dgtz["sector"]    	= (int) sector;
 	dgtz["layer"]     	= (int) layer;
@@ -309,7 +324,7 @@ vector<identifier>  band_HitProcess :: processID(vector<identifier> id, G4Step* 
 map< int, vector <double> > band_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 
-	// All hits within 
+	// All hits within
 
 
 	//cout << "IN CHARGE TIME\n";
@@ -431,9 +446,13 @@ map< string, vector <int> >  band_HitProcess :: multiDgt(MHit* aHit, int hitn)
 
 void band_HitProcess::initWithRunNumber(int runno)
 {
+	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
+
+
 	if(bhc.runNo != runno) {
-		//cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		bhc = initializeBANDHitConstants(runno);
+		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		bhc = initializeBANDHitConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		bhc.runNo = runno;
 	}
 }
@@ -445,7 +464,7 @@ bandHitConstants band_HitProcess::bhc = initializeBANDHitConstants(-1);
 
 double band_HitProcess::MeVtoMeVee(int PID, int Z, double E_MeV ){
 	double a1, a2, a3, a4;
-	if(PID == 11 || PID == -11 || PID == 13 || PID == -13 || PID == 22 || PID == 211 || PID == -211 ){ 
+	if(PID == 11 || PID == -11 || PID == 13 || PID == -13 || PID == 22 || PID == 211 || PID == -211 ){
 		// (anti-)electrons, (anti-)muons, gamma, pions
 		a1 = 1;
 		a2 = 0;
@@ -517,7 +536,7 @@ double band_HitProcess::BirksAttenuation(double destep, double stepl, int charge
 	//  dL = S * dE / (1 + kB * dE/dx + kB_HO * dE/dx * dE/dx )
 	//
 	//  kB = (1.26-2.02)E-2 [g/(MeVcm2)] for polyvinyltoluene scintillators
-	
+
 	// leading term:
 	double kB = 1.26E-2; 	// [g/(MeVcm2])
 	double density = 1.023; // [g/cm3]
@@ -535,6 +554,3 @@ double band_HitProcess::BirksAttenuation(double destep, double stepl, int charge
 	}
 	return response;
 }
-
-
-

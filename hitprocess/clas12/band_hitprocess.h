@@ -26,7 +26,7 @@ public:
 	double atten_len[6][6][7];
 	double tdc_offset[6][6][7];
 	double tdc_resolution[6][6][7];
-	
+
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
 	
