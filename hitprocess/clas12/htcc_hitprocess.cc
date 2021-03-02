@@ -301,11 +301,11 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = idring;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (int) (time*24.0/1000);
+	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
 
 	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = (int) (time*24.0/1000);
+	dgtz["TDC_TDC"]   = (int) time;
 
 
 	// decide if write an hit or not

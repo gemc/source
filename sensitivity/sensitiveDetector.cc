@@ -55,23 +55,37 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 	
 	Id_Set.clear();
 	hitCollection = new MHitCollection(HCname, collectionName[0]);
-	if(HCID < 0)  HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+	if(HCID < 0)  {
+		HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+	}
 	HCE->AddHitsCollection( HCID, hitCollection );
 	ProcessHitRoutine = NULL;
 	
-	if(verbosity > 1)
+	if(verbosity > 1) {
 		cout << "   > " << collectionName[0] << " initialized." << endl;
+	}
 }
 
 
 G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
 	if (skipSensitivity) {
+		if(verbosity > 5) {
+			cout << "   > skipSensitivity is true. ";
+			cout << " sensitiveDetector::ProcessHits returning false " << endl;
+		}
 		return false;
 	}
 
+	G4Track *trk = aStep->GetTrack();
+	cout << "   >  track is " << trk->GetDefinition()->GetParticleName() << endl ;
+
 	// do not record G4OpticalPhoton unless RECORD_OPTICALPHOTONS is set to 1
-	if(aStep->GetTrack()->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) {
+	if(trk->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) {
+		if(verbosity > 5) {
+			cout << "   > RECORD_OPTICALPHOTONS is 0 and the track definition " << trk->GetDefinition() << " matches a photon " ;
+			cout << " sensitiveDetector::ProcessHits returning false " << endl;
+		}
 		return false;
 	}
 
@@ -82,14 +96,21 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// Notice: a gamma will not directly release energy on a scintillator
 	// but will convert, and the pair will release energy
 	// so by default right now gammas are not recorded and the hit belongs to the pair
-	if(depe == 0 && RECORD_PASSBY == 0 && aStep->GetTrack()->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+	if(depe == 0 && RECORD_PASSBY == 0 && trk->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+		if(verbosity > 5) {
+			cout << "   > RECORD_PASSBY is 0 and depe is 0, and this is not an optical photon, track is " << trk->GetDefinition() ;
+			cout << " sensitiveDetector::ProcessHits returning false " << endl;
+		}
 		return false;
 	}
 
-	G4Track *trk = aStep->GetTrack();
 
 	// this is expensive should we really check?
 	if(trk->GetDefinition()->GetParticleName().find("unknown") != string::npos) {
+		if(verbosity > 5) {
+			cout << "   > skipSensitivity is true. ";
+			cout << " sensitiveDetector::ProcessHits returning false " << endl;
+		}
 		return false;
 	}
 
@@ -121,15 +142,13 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	vector<identifier> VID = SetId(GetDetectorIdentifier(name), TH, ctime, SDID.timeWindow, tid);                              ///< Identifier at the geant4 level, using the G4 hierarchy to set the copies
 	
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
-	if(ProcessHitRoutine == NULL)
-	{
+	if(ProcessHitRoutine == NULL) {
 		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name));
 	}
 	
 	// if not existing, exit
 	// this should never happen though
-	if(ProcessHitRoutine == NULL)
-	{
+	if(ProcessHitRoutine == NULL) {
 		cout << endl << "  !!! Error: >" <<  GetDetectorHitType(name) << "< NOT FOUND IN  ProcessHit Map for volume: " << name << " - exiting." << endl;
 		return false;
 	}
@@ -144,7 +163,6 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	// if no field manager, the field is zero
 	if(fmanager) {
 		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
-		
 		hitFieldValue = sqrt(fieldValue[0]*fieldValue[0] + fieldValue[1]*fieldValue[1] + fieldValue[2]*fieldValue[2]);
 		
 	}
@@ -156,8 +174,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	int multi_hit_size = PID.size()/singl_hit_size;
 	
 	// splitting PIDs into an array
-	for(int mh = 0; mh<multi_hit_size; mh++)
-	{
+	for(int mh = 0; mh<multi_hit_size; mh++) {
 		vector<identifier> mhPID;
 		
 		for(int this_id = 0; this_id<singl_hit_size; this_id++)
@@ -174,13 +191,16 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			mhPID.push_back(this_shit);
 		}
 		
-		if(verbosity > 9 || name.find(catch_v) != string::npos)
+		if(verbosity > 9 || name.find(catch_v) != string::npos) {
 			cout << endl << hd_msg2 << " Before hit Process Identification:"  << endl << VID
 			<< hd_msg2 << " After:  hit Process Identification:" << endl << mhPID << endl;
-		
+		}
+
 		///< Checking if it's new hit or existing hit. Use the overloaded "=="
-		if(verbosity > 9) cout << endl << endl << " BEGIN SEARCH for same hit in Identifier Set..." << endl;
-		
+		if(verbosity > 9) {
+			cout << endl << endl << " BEGIN SEARCH for same hit in Identifier Set..." << endl;
+		}
+
 		set<vector<identifier> > :: iterator itid;
 		int hit_found = 0;
 		

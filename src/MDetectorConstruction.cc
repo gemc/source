@@ -46,8 +46,6 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	double VERB       = gemcOpt.optMap["G4P_VERBOSITY"].arg ;
 	double geo_verb   = gemcOpt.optMap["GEO_VERBOSITY"].arg ;
 	string catch_v    = gemcOpt.optMap["CATCH"].args;
-	string hall_mat   = gemcOpt.optMap["HALL_MATERIAL"].args;
-	string hall_field = gemcOpt.optMap["HALL_FIELD"].args;
 
 	// Clean old geometry, if any
 	G4GeometryManager::GetInstance()->OpenGeometry();
@@ -681,10 +679,9 @@ void MDetectorConstruction::assignProductionCuts(vector<string> volumes)
 
 					SePC_Map[regionName] ->SetProductionCut(productionThreshold);
 
-
-					if(VERB > 3)
+					if(VERB > 3) {
 						cout << "  Region " << regionName << " activated for volume " << regionDet.name << " with range: " << itr->second->SDID.prodThreshold << endl;
-					
+					}
 					SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
 					
 				}
