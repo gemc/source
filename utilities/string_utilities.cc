@@ -56,11 +56,12 @@ double scan_number(const char *str)
 	// Scan the c_string str for numbers only, then return the value as a float.
 	// The str is not allowed to have spaces or alphanumerics, only 0-9 and .
 	int i=0;
-	while(char c=str[i++]) if(isalpha(c) && !(c=='-' || c=='+' || c=='e' || c=='E') )
+// 	while(char c=str[i++]) if((isalpha(c) || ispunct(c) || iscntrl(c) || isspace(c)) && !(c=='-' || c=='+' || c=='e' || c=='E') )
+	while(char c=str[i++]) if(!(isdigit(c) || c=='-' || c=='+' || c=='e' || c=='E'))
 	{
-		cout << "WARNING: Unexpected Alphanumberic character found in number string:" << str << endl;
+		cout << "WARNING: Unexpected character found in number string: " << str << endl;
+		cout << "Exiting " << endl; exit(1);
 	}
-	
 	return( stringToDouble(str));
 }
 
@@ -82,6 +83,7 @@ double get_number(string v,int warn_no_unit)
 		// No unit is still ok if the number is 0
 		if(value.length()>0 && warn_no_unit && stringToDouble(value) != 0) cout << "Warning: All numbers should be paired with a unit: " << v << endl;
 		return stringToDouble(value);
+		
 	} else {
 		double answer = scan_number(value.substr(0, value.find("*")).c_str());
 		string units  = trimSpacesFromString(value.substr(value.find("*")+1, value.find("*") + 20));
@@ -109,7 +111,7 @@ double get_number(string v,int warn_no_unit)
 		else if(  units == "ns")        answer *= ns;
 		else if(  units == "na")        answer *= 1;
 		else if(  units == "counts")    answer *= 1;
-		else cout << ">" << units << "<: unit not recognized for string <" << v << ">" << endl;
+		else {cout << ">" << units << "<: unit not recognized for string <" << v << ">. Exiting" <<  endl; exit(1);}
 		return answer;
 	}
 	
