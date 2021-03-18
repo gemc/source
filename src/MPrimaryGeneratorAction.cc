@@ -678,7 +678,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					{
 						cout << hd_msg << " Particle id " << stdhep_reader->pid(p) << " not found in G4 table." << endl << endl;
 
-						cout << "Exiting !" << endl; exit(0);				
+						cout << "Exiting !" << endl; exit(1);				
 					}
 
 					particleGun->SetParticleDefinition(Particle);
