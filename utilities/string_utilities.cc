@@ -83,7 +83,7 @@ double get_number(string v,int warn_no_unit)
 		// No unit is still ok if the number is 0
 		if(value.length()>0 && warn_no_unit && stringToDouble(value) != 0) cout << "Warning: All numbers should be paired with a unit: " << v << endl;
 // 		return stringToDouble(value);
-		return scan_number(value);		
+		return scan_number(value.c_str());		
 		
 	} else {
 		double answer = scan_number(value.substr(0, value.find("*")).c_str());
