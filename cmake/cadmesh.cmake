@@ -1,0 +1,6 @@
+message(STATUS "Checking for cadmesh")
+find_package(cadmesh QUIET)
+if(NOT cadmesh_FOUND)
+    message(STATUS "******* cadmesh was not found                          *******")
+    message(ERROR  "******* this should have been installed with mlibrary! ***** ")
+ endif()
