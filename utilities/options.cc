@@ -74,7 +74,6 @@ void goptions::scanGcard(string file)
 				// the string __REPETITION__ will be appended
 				if(e.attributeNode("name").value().toStdString() == itm->first )
 				{
-
 					found = 1;
 					count[itm->first] += 1;
 
@@ -125,8 +124,7 @@ void goptions::scanGcard(string file)
 					found = 1;
 				}
 			}
-			if( found == 0 )
-			{
+			if( found == 0 ) {
 				cout << "  !! Error: The option in the gcard file "
 				<< e.attributeNode("name").value().toStdString()
 				<< " is not known to this system. Please check your spelling." << endl;
@@ -415,9 +413,14 @@ int goptions::setOptMap(int argc, char **argv)
 		
 		// For MAC OS X, we want to ignore the -psn_# type argument. This argument is added by
 		// the system when launching an application as an "app", and # contains the process id.
-		if( found == 0 && strncmp(argv[i],"-psn_", 4) !=0 && ignoreNotFound == 0) {
-			cout << " The argument " << argv[i] << " is not known to this system / or file not found. Continuing anyway.\n\n";
-			// exit(2);
+		if( found == 0) {
+			if( strncmp(argv[i],"-psn_", 4) !=0 && ignoreNotFound == 0) {
+				cout << " The argument " << argv[i] << " is not known to this mac system / or file not found. Exiting.\n\n";
+				exit(2);
+			} else {
+				cout << " The argument " << argv[i] << " is not known to this system / or file not found. Exiting.\n\n";
+				exit(2);
+			}
 		}
 	}
 	

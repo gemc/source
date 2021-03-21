@@ -678,7 +678,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					{
 						cout << hd_msg << " Particle id " << stdhep_reader->pid(p) << " not found in G4 table." << endl << endl;
 
-						return;
+						cout << "Exiting !" << endl; exit(1);				
 					}
 
 					particleGun->SetParticleDefinition(Particle);
@@ -1342,7 +1342,7 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			{
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				return;
+				cout << "Exiting !" << endl; exit(0);				
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
@@ -1410,7 +1410,7 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 			{
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				return;
+				cout << "Exiting !" << endl; exit(0);				
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);

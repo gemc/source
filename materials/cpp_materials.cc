@@ -67,7 +67,7 @@ map<string, G4Material*> cpp_materials::initMaterials(runConditions rc, goptions
 
 	// optical vacuum  - same density as G4_Galactic
 	// same optical properties as air
-	G4Material *vacuumOpt = new G4Material("vacuumOpt", density=1.0e-22*mg/cm, nel=1);
+	G4Material *vacuumOpt = new G4Material("vacuumOpt", density=1.0e-22*mg/cm3, nel=1);
 	vacuumOpt->AddMaterial(matman->FindOrBuildMaterial("G4_Galactic"), 100.*perCent);
 
 
