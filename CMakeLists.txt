@@ -10,8 +10,8 @@ cmake_minimum_required(VERSION 3.8)
 
 project(GEMC VERSION 2.8)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(APPLE)
     # use, i.e. don't skip the full RPATH for the build tree
@@ -59,6 +59,11 @@ include(mlibrary)
 include(cadmesh)  ### Due to the way mlibrary currently gets cadmesh, we need to separately include it here.
 include(HIPO)     ### Will be needed later.
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+cmake_policy(SET CMP0100 OLD) # Do not process *.hh files with moc, uic
+
 add_definitions(${Geant4_DEFINITIONS})
 
 message(STATUS "mlibrary_INCLUDE_DIRS = ${mlibrary_INCLUDE_DIRS}")
@@ -88,10 +93,11 @@ set(GEMC_ALL_LIBRARIES
 	${cadmesh_LIBRARIES}
 	)
 
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-	message(STATUS "INCLUDE_DIR ='${dir}'")
-endforeach()
+# For debugging, print all the include directories.
+#get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+#foreach(dir ${dirs})
+#	message(STATUS "INCLUDE_DIR ='${dir}'")
+#endforeach()
 
 set(materials_sources
 	materials/material_factory.cc
@@ -124,6 +130,9 @@ set(utilities_sources
 include_directories(utilities)
 list(APPEND GEMC_ALL_SOURCES ${utilities_sources})
 
+# Do not process these files with moc, setting this avoids the policy warning.
+set_property(SOURCE "utilities/lStdHep.hh" PROPERTY SKIP_AUTOMOC ON)
+set_property(SOURCE "utilities/lXDR.hh" PROPERTY SKIP_AUTOMOC ON)
 
 set(detector_sources
 	detector/detector.cc
