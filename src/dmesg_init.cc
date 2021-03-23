@@ -67,17 +67,15 @@ vector<string> init_dmesg(goptions gemcOpt)
 	commands.push_back("/process/setVerbose 0 all");
 
 	
-	
-	
-	if(OVERL>1)
-		commands.push_back("/geometry/test/grid_test 1");
-	
-	if(OVERL>2)
-		commands.push_back("/geometry/test/cylinder_test 1");
-
-	if(OVERL>3)
-		commands.push_back("/geometry/test/line_test 1");
-
+    // Tell GEANT4 to check for overlaps. This method has changed in GEANT 4.10.0 to check overlap of each
+    // volume with its neighbors for about 10000 points on the surface. This is a fairly time consuming procedure.
+    // if CHECK_OVERLAPS is set to a number larger than 1, use that many points instead.
+	if(OVERL>=1) {
+        if (OVERL > 1) {
+            commands.push_back("/geometry/test/resolution"+ std::to_string(OVERL));
+        }
+        commands.push_back("/geometry/test/run");
+    }
 
 	if(DAWN_N>0) {
 		string DN = "/run/beamOn " + to_string(DAWN_N);
