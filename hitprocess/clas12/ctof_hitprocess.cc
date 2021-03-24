@@ -360,7 +360,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = paddle;
 	dgtz["ADC_order"] = side;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (tdc*24.0/1000);
+	dgtz["ADC_time"]  = (tdc*tdcconv);
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = side + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;

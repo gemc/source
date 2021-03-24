@@ -380,7 +380,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["component"] = paddle;
 	dgtz["ADC_order"] = pmt;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (tdc*24.0/1000);
+	dgtz["ADC_time"]  = (tdc*tdcconv);
 	dgtz["ADC_ped"]   = 0;
 
 	dgtz["TDC_order"] = pmt + 2;
