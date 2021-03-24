@@ -105,7 +105,8 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	fastMCMode       = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
 	
 	requestedNevents = (long int) gemcOpt.optMap["N"].arg ;
-	
+	ntoskip        = gemcOpt.optMap["SKIPNGEN"].arg;
+
 	
 	// fastMC mode will set SAVE_ALL_MOTHERS to 1
 	// a bit cluncky for now
@@ -235,8 +236,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	if ((gen_action->isFileOpen() == false) ||
 		 (gen_action->doneRerun() == true))
 		return;
-	
-	
+
+	// completely skip the event
+	// (still need to increase event number)
+	if(evtN <= ntoskip) {
+		evtN++;
+		return;
+	}
 	
 	MHitCollection* MHC;
 	int nhits;

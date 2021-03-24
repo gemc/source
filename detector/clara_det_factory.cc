@@ -31,8 +31,7 @@ map<string, detector> clara_det_factory::loadDetectors()
 	cout << "  > Opening geometry plugin..." << endl;
 	void* handle = dlopen(clasraPlugin.c_str(), RTLD_NOW);
 
-	if (!handle)
-	{
+	if (!handle) {
 		cerr << "  !!! Error: Cannot open library: " << dlerror() << '\n';
 		exit(0);
 	}
