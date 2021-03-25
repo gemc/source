@@ -57,9 +57,11 @@ double scan_number(const char *str)
 	// Scan the c_string str for numbers only, then return the value as a float.
 	// The str is not allowed to have spaces or alphanumerics, only 0-9 and .
 	int i=0;
-	while(char c=str[i++]) if(isalpha(c) && !(c=='-' || c=='+' || c=='e' || c=='E') )
+// 	while(char c=str[i++]) if(isalpha(c) && !(c=='-' || c=='+' || c=='e' || c=='E') ) //this line can't detect many invalid char like ","
+	while(char c=str[i++]) if(!(isdigit(c) || c=='.' || c=='-' || c=='+' || c=='e' || c=='E'))
 	{
 		cout << "WARNING: Unexpected Alphanumberic character found in number string:" << str << endl;
+		cout << "Exiting " << endl; exit(1);
 	}
 
 	return( stringToDouble(str));
