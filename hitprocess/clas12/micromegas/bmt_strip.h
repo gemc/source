@@ -44,14 +44,15 @@ public:
 	const static int NSECTORS = 3  ;	// 3 tiles per layer of MM
 
 	// Detector geometrical characteristics
+	double Z=-94.7;                // matches ideal position of BMT mother volume
 	double RADIUS[NLAYERS] ; 	// the radius of the Z detector in mm
 	int AXIS[NLAYERS] ;             // 0 if C-detector, 1 if Z detector
 	int NSTRIPS[NLAYERS] ; 	       // the number of strips
 	double LENGTH[NLAYERS] ; 	       // the strip length in mm
 	double ZMIN[NLAYERS] ; 	       // PCB upstream extremity mm
 	double ZMAX[NLAYERS] ; 	       // PCB downstream extremity mm
-	double EDGE1[NLAYERS][NSECTORS]; // the angle of the first edge of each PCB detector A, B, C
-	double EDGE2[NLAYERS][NSECTORS]; // the angle of the second edge of each PCB detector A, B, C
+	double EDGE1[NLAYERS];         // the angle of the first edge of each PCB detector A, B, C
+	double EDGE2[NLAYERS];         // the angle of the second edge of each PCB detector A, B, C
 	
 	vector<vector<int> >     GROUP;   // Number of strips with same width
 	vector<vector<double> >  PITCH;   // the width of the corresponding group of strips
@@ -85,14 +86,14 @@ public:
   double sigma; // Transverse diffusion value computed from SigmaDrift
   double sigma_phi; // sigma/radius of the tile... for Z-detector 
   
-  vector<double> FindStrip( int layer, int sector, G4ThreeVector xyz, double Edep, bmtConstants bmtc);   // Strip Finding Routine
+  vector<double> FindStrip( int layer, int sector, G4ThreeVector lxyz, double Edep, bmtConstants bmtc);   // Strip Finding Routine
     
   double getSigma( int layer, double x, double y, bmtConstants bmtc);     // sigma for C-detector
   int getClosestStrip( int layer, int sector, double angle, double z,bmtConstants bmtc);
   int getStripGroup(int layer, int strip, bmtConstants bmtc);
   double GetStripInfo(int layer, int sector, int strip, bmtConstants bmtc); 				   // the z position of a given C strip. Not used?
   int isInSector(int layer, double angle, bmtConstants bmtc);
-  double Weight_td(int layer, int sector, int strip, double angle, double z, bmtConstants bmtc); //Compute the likelihood to get an electron
+  double Weight_td(int layer, int strip, double angle, double z, bmtConstants bmtc); //Compute the likelihood to get an electron
   double GetBinomial(double n, double p); //Compute the number of electrons collected following the likelihood from Weight_td
 };
 
