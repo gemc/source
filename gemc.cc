@@ -416,7 +416,7 @@ int main( int argc, char **argv )
 
 	
 	delete runManager;
-	return 1;
+	return 0;
 }
 
 
