@@ -6,7 +6,7 @@
 #
 message(STATUS "Checking for Geant4")
 # find_package(Geant4 QUIET COMPONENTS vis_all ui_all)
-find_package(Geant4 QUIET REQUIRED qt gdml)
+find_package(GEANT4 QUIET REQUIRED qt gdml)
 if(NOT Geant4_FOUND)
     message(STATUS "******* Geant4 was not found ******* it will be installed. ")
     set(Geant4_VERSION 10.6.2 CACHE STRING "Geant4 version" FORCE)

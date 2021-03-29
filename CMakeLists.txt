@@ -48,7 +48,7 @@ add_custom_target(dependencies)
 
 include(qt5)
 include(XercesC)
-include(Geant4)
+include(GEANT4)
 include(CLHEP)
 include(xercesc)
 include(CCDB)
