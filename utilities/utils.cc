@@ -239,10 +239,9 @@ QSqlDatabase openGdb(goptions gemcOpt)
 	
 	bool ok = db.open();
 	
-	if(!ok)
-	{
+	if(!ok) {
 		cout  << "   Error! Cannot connect to database " << database << ". Exiting." << endl;
-		exit(-1);
+		exit(401);
 	}
 	
 	else

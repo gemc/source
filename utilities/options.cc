@@ -29,14 +29,14 @@ void goptions::scanGcard(string file)
 
 	if( !gcard.exists() ) {
 		cout << " >>  gcard: " << file <<" not found. Exiting." << endl;
-		exit(0);
+		exit(3);
 	}
 	
 	// opening gcard and filling domDocument
 	if(!domDocument.setContent(&gcard)) {
 		gcard.close();
 		cout << " >>  gcard format for file <" << file << "> is wrong - check XML syntax. Exiting." << endl;
-		exit(0);
+		exit(2);
 	}
 	gcard.close();
 	
@@ -167,7 +167,7 @@ int goptions::setOptMap(int argc, char **argv)
 				scanGcard(arg);
 			} else {
 				cout << " >>  gcard file : " << arg <<" not found. Exiting." << endl;
-				exit(0);
+				exit(1);
 			}
 		}
 	}
@@ -416,10 +416,10 @@ int goptions::setOptMap(int argc, char **argv)
 		if( found == 0) {
 			if( strncmp(argv[i],"-psn_", 4) !=0 && ignoreNotFound == 0) {
 				cout << " The argument " << argv[i] << " is not known to this mac system / or file not found. Exiting.\n\n";
-				exit(2);
+				exit(3);
 			} else {
 				cout << " The argument " << argv[i] << " is not known to this system / or file not found. Exiting.\n\n";
-				exit(2);
+				exit(3);
 			}
 		}
 	}

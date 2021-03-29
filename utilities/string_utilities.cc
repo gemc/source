@@ -61,7 +61,7 @@ double scan_number(const char *str)
 	// checking if the number is a valid digit, w/o commas (for example 1,000 is not valid). Exiting if something is wrong.
 	while(char c=str[i++]) if(!(isdigit(c) || c=='.' || c=='-' || c=='+' || c=='e' || c=='E')) {
 		cout << "WARNING: Unexpected alphanumberic character found in number string:" << str << endl;
-		cout << "Exiting " << endl; exit(1);
+		cout << "Exiting " << endl; exit(4);
 	}
 
 	return( stringToDouble(str));
@@ -115,7 +115,9 @@ double get_number(string v,int warn_no_unit)
 		else if(  units == "ns")        answer *= ns;
 		else if(  units == "na")        answer *= 1;
 		else if(  units == "counts")    answer *= 1;
-		else {cout << ">" << units << "<: unit not recognized for string <" << v << ">. Exiting" <<  endl; exit(1);}
+		else {cout << ">" << units << "<: unit not recognized for string <" << v << ">. Exiting" <<  endl; exit(5);
+			
+		}
 		return answer;
 	}
 	
