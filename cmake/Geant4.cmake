@@ -6,10 +6,14 @@
 #
 message(STATUS "Checking for Geant4")
 # find_package(Geant4 QUIET COMPONENTS vis_all ui_all)
-find_package(GEANT4 QUIET REQUIRED qt gdml)
+find_package(Geant4 QUIET COMPONENTS vis_all ui_all qt gdml)
 if(NOT Geant4_FOUND)
-    message(STATUS "******* Geant4 was not found ******* it will be installed. ")
-    set(Geant4_VERSION 10.6.2 CACHE STRING "Geant4 version" FORCE)
+    message(STATUS "**********************************************************************")
+    message(STATUS "** Geant4 was not found it will be installed (which is slow!)       **")
+    message(STATUS "** OR set CMAKE_PREFIX_PATH to the location of Geant4Config.cmake   **")
+    message(STATUS "** and rerun cmake. I.e. cmake -DCMAKE_PREFIX_PATH=<loc of G4/lib>  **")
+    message(STATUS "**********************************************************************")
+    set(Geant4_VERSION 10.6.3 CACHE STRING "Geant4 version" FORCE)
     set(Geant4_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/Geant4)
     add_dependencies(dependencies Geant4)
     externalproject_add(
