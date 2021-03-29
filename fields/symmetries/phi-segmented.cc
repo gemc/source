@@ -277,6 +277,9 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		double xtr = (tC   - (startMap[1] + tI*cellSize[1])) / cellSize[1];
 		double xlr = (lC   - (startMap[2] + lI*cellSize[2])) / cellSize[2];
 
+
+		// cout << " xaz: " <<  xaz << ",   xtr: " <<  xtr << ",   xlr: " <<  xlr << endl;
+
 		// first field component interpolation
 
 		// first, interpolate along azimutal
@@ -285,9 +288,13 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		double b110 = B1_3D[aI][tI+1][lI]   * (1-xaz) + B1_3D[aI+1][tI+1][lI]   * xaz;
 		double b111 = B1_3D[aI][tI+1][lI+1] * (1-xaz) + B1_3D[aI+1][tI+1][lI+1] * xaz;
 
+		// cout << " b100: " <<  b100 << ",   b101: " <<  b101 << ",   b110: " <<  b110 << ",   b111: " <<  b111 << endl;
+
 		// second, interpolate along transverse
 		double b10 = b100 * (1 - xtr) + b110*xtr;
 		double b11 = b101 * (1 - xtr) + b111*xtr;
+
+		// cout << " b10: " <<  b10 << " b11: " <<  b11  << endl;
 
 		// finally interpolate along longitudinal
 		mfield[0] = b10 * (1 - xlr) + b11 * xlr;
@@ -301,9 +308,13 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		double b210 = B2_3D[aI][tI+1][lI]   * (1-xaz) + B2_3D[aI+1][tI+1][lI]   * xaz;
 		double b211 = B2_3D[aI][tI+1][lI+1] * (1-xaz) + B2_3D[aI+1][tI+1][lI+1] * xaz;
 
+		// cout << " b200: " <<  b200 << ",   b201: " <<  b201 << ",   b210: " <<  b210 << ",   b211: " <<  b211 << endl;
+
 		// second, interpolate along transverse
 		double b20 = b200 * (1 - xtr) + b210*xtr;
 		double b21 = b201 * (1 - xtr) + b211*xtr;
+
+		// cout << " b20: " <<  b20 << " b21: " <<  b21  << endl;
 
 		// finally interpolate along longitudinal
 		mfield[1] = b20 * (1 - xlr) + b21 * xlr;
@@ -316,9 +327,13 @@ void gMappedField::GetFieldValue_phiSegmented( const double x[3], double *Bfield
 		double b310 = B3_3D[aI][tI+1][lI]   * (1-xaz) + B3_3D[aI+1][tI+1][lI]   * xaz;
 		double b311 = B3_3D[aI][tI+1][lI+1] * (1-xaz) + B3_3D[aI+1][tI+1][lI+1] * xaz;
 
+		// cout << " b300: " <<  b300 << ",   b301: " <<  b301 << ",   b310: " <<  b310 << ",   b311: " <<  b311 << endl;
+
 		// second, interpolate along transverse
 		double b30 = b300 * (1 - xtr) + b310*xtr;
 		double b31 = b301 * (1 - xtr) + b311*xtr;
+
+		// cout << " b30: " <<  b30 << " b31: " <<  b31  << endl;
 
 		// finally interpolate along longitudinal
 		mfield[2] = b30 * (1 - xlr) + b31 * xlr;
