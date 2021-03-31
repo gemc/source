@@ -5,7 +5,7 @@
 #include "MPrimaryGeneratorAction.h"
 #include "MEventAction.h"
 #include "MSteppingAction.h"
-#include "options.h"
+#include "gemcOptions.h"
 
 
 // geant4

@@ -27,7 +27,7 @@
 
 // gemc headers
 #include "detector.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"

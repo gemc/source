@@ -15,7 +15,7 @@
 
 // gemc headers
 #include "detector.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "detector_editor.h"
 
 // C++ headers

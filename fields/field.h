@@ -26,7 +26,7 @@
 // associated with the logical volume.
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "mappedField.h"
 // forward declaration of fieldFactory
 class fieldFactory;

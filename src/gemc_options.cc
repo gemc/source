@@ -1,5 +1,5 @@
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 void goptions::setGoptions()
 {

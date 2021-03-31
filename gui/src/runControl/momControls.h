@@ -5,7 +5,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 
 class momControls : public QWidget

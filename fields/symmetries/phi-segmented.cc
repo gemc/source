@@ -1,6 +1,6 @@
 // gemc headers
 #include "asciiField.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // PRAGMA TODO: can store the various cases in local variables to make routine faster? General interpolation?
 

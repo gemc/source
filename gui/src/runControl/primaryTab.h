@@ -5,7 +5,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "momControls.h"
 #include "vtxControls.h"
 

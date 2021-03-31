@@ -1,6 +1,6 @@
 // gemc headers
 #include "txt_output.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // C++ headers
 #include <fstream>

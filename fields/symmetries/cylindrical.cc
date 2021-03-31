@@ -1,6 +1,6 @@
 // gemc headers
 #include "asciiField.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // 2D phi-symmetric cylindrical field
 // Dependent on 2 cartesian coordinates (transverse, longitudinal)

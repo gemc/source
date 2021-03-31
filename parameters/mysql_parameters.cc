@@ -5,7 +5,7 @@
 #include "parameter_factory.h"
 #include "mysql_parameters.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"

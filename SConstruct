@@ -44,10 +44,10 @@ env.Library(source = parameters_sources, target = "lib/gparameters")
 env.Append(CPPPATH = 'utilities')
 util_sources = Split("""
 	utilities/string_utilities.cc
-	utilities/utils.cc
+	utilities/gemcUtils.cc
 	utilities/lStdHep.cc
 	utilities/lXDR.cc
-	utilities/options.cc""")
+	utilities/gemcOptions.cc""")
 env.Library(source = util_sources, target = "lib/gutilities")
 
 

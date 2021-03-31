@@ -11,7 +11,7 @@
 // gemc headers
 #include "gbank.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // Variable Type is two chars.
 // The first char:

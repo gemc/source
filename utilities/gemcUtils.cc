@@ -4,7 +4,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "utils.h"
+#include "gemcUtils.h"
 #include "string_utilities.h"
 #include "splash.h"
 

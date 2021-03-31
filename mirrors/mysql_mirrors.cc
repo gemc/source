@@ -5,7 +5,7 @@
 #include "mirrors_factory.h"
 #include "mysql_mirrors.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"

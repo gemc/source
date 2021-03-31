@@ -1,6 +1,6 @@
 // gemc headers
 #include "asciiField.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // 1D-dipole field
 // Dependent on 2 cartesian coordinates (longitudinal, transverse)

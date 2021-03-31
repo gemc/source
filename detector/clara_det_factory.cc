@@ -1,7 +1,7 @@
 
 // gemc headers
 #include "clara_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 #include <dlfcn.h>
 

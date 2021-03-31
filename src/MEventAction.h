@@ -21,7 +21,7 @@
 #include "gbank.h"
 #include "HitProcess.h"
 #include "sensitiveDetector.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "MPrimaryGeneratorAction.h"
 
 

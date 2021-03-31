@@ -2,10 +2,10 @@
 #define detector_factory_H 1
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "detector.h"
 #include "run_conditions.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // c++ headers
 #include <map>

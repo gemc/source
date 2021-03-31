@@ -1,6 +1,6 @@
 // gemc headers
 #include "asciiField.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 
 // 3D field in cartesian coordinates. Field itself is in cartesian coordinates.

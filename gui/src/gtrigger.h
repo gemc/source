@@ -5,7 +5,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "sensitiveDetector.h"
 #include "graph.h"
 

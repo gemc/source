@@ -7,7 +7,7 @@
 #define gbank_H 1
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 // C++ headers
 #include <sstream>

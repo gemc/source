@@ -1,7 +1,7 @@
 // gemc headers
 #include "run_conditions.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
