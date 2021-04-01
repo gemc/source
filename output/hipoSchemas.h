@@ -49,14 +49,10 @@ public:
 	hipo::schema emptySchema;
 
 	map<string, hipo::schema> schemasToLoad;
-	map<string, int> detectorID;
-	map<string, string> trueInfoNamesMap;
 
 	// type: 0 = adc, 1 = tdc
 	hipo::schema getSchema(string schemaName, int type) ;
 
-	// returns detectorID from map, given hitType
-	int getDetectorID(string hitType) ;
 
 };
 

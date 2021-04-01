@@ -50,7 +50,34 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 			}
 		}
 	}
+
+
 }
+
+// returns detectorID from map, given hitType
+int hipo_output :: getDetectorID(string hitType) {
+
+	string toUpperS = hitType;
+	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
+
+	if(detectorID.find(toUpperS) != detectorID.end() ) {
+		return detectorID[toUpperS];
+	} else {
+		return 0;
+	}
+}
+
+// returns hipo name from true info var name
+string hipo_output :: getHipoVariableName(string trueInfoVar) {
+	if(trueInfoNamesMap.find(trueInfoVar) != trueInfoNamesMap.end() ) {
+		return trueInfoNamesMap[trueInfoVar];
+	} else {
+		return trueInfoVar;
+	}
+
+}
+
+
 
 // instantiates hipo event
 // write run::config bank
@@ -104,7 +131,13 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	}
 
 	outEvent->addStructure(runConfigBank);
+
+
+
 }
+
+
+
 
 // write user infos header
 void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
@@ -266,26 +299,103 @@ void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 void hipo_output::prepareEvent(outputContainer* output, map<string, double> *configuration){
 	//int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
-	//	for(auto &conf: *configuration) {
-	//		cout << " Hipo prepare" << conf.first << " " << conf.second << endl;
-	//	}
+	int nBankEntries = 0;
+	for(auto &conf: *configuration) {
+		// cout << " Hipo preparing" << conf.first << "  with " << conf.second << " hits " << endl;
+		nBankEntries = nBankEntries + conf.second ;
+	}
+
+	// cout << " Total true info bank entries: " << nBankEntries << endl;
+
 	hipo::schema trueInfoSchema = output->hipoSchema->trueInfoSchema;
-	trueInfoBank = new hipo::bank(trueInfoSchema, configuration->size());
+	trueInfoBank = new hipo::bank(trueInfoSchema, nBankEntries);
 
 }
 
 void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	if(HO.size() == 0) return;
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
-	gBank rawBank = getBankFromMap("raws", banksMap);
+	gBank rawBank     = getBankFromMap("raws", banksMap);
 
 	// perform initializations if necessary
 	initBank(output, thisHitBank, RAWINT_ID);
 
-	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++)
-	{
+	// we only need the first hit to get the definitions
+	map<string, double> raws = HO[0].getRaws();
+
+
+	// looping over the loaded banknames (this to make sure we only publish the ones declared
+	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
+	for(auto &bankName : rawBank.orderedNames ) {
+
+		string bname   = bankName.second;
+		int bankId     = rawBank.getVarId(bname);       // bankId is num
+		int bankType   = rawBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
+		int detectorID = getDetectorID(hitType);
+
+		if(raws.find(bname) != raws.end() && bankId > 0 && bankType == RAWINT_ID) {
+
+			// looping over the hits
+			for(unsigned int nh=0; nh<HO.size(); nh++) {
+
+				map<string, double> theseRaws = HO[nh].getRaws();
+				for(auto &thisVar: theseRaws) {
+
+					// found data match to bank definition
+					if(thisVar.first == bname) {
+
+						string varType = rawBank.getVarType(thisVar.first);
+
+						trueInfoBank->putByte("detector", nh, detectorID);
+
+						string hipoName = getHipoVariableName(bname);
+						if(varType == "i") {
+							trueInfoBank->putInt(hipoName.c_str(), nh, thisVar.second);
+						} else if(varType == "d") {
+							trueInfoBank->putFloat(hipoName.c_str(), nh, thisVar.second);
+						}
+
+//						// sector, layer, component are common in adc/tdc so their names are w/o prefix
+//						// sector, layers are "Bytes"
+//						if(bname == "sector" || bname == "layer") {
+//							detectorADCBank.putByte(bname.c_str(), nh, thisVar.second);
+//						} else if(bname == "component") {
+//							detectorADCBank.putShort(bname.c_str(), nh, thisVar.second);
+//						} else {
+//							// all other ADC vars must begin with "ADC_"
+//							if(bname.find("ADC_") == 0) {
+//								string adcName = bname.substr(4);
+//								if(varType == "i") {
+//									detectorADCBank.putInt(adcName.c_str(), nh, thisVar.second);
+//								} else if(varType == "d") {
+//									detectorADCBank.putFloat(adcName.c_str(), nh, thisVar.second);
+//								}
+//							}
+//						}
+
+						if(detectorID == 0) {
+							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+						}
+
+						if(verbosity > 2) {
+							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+						}
+					}
+
+				}
+			}
+
+
+		}
+	}
+
+
+	// loop over variable names
+	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++) {
+
 		int bankId   = rawBank.getVarId(it->second);
 		int bankType = rawBank.getVarBankType(it->second);
 
@@ -373,6 +483,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 
 				// looping over the hits
 				for(unsigned int nh=0; nh<HO.size(); nh++) {
+
 					map<string, double> theseDgts = HO[nh].getDgtz();
 					for(auto &thisVar: theseDgts) {
 
@@ -405,6 +516,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 						}
 					}
 				}
+
 			}
 
 			if(hasTDCBank) {
@@ -537,6 +649,8 @@ void hipo_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 
 void hipo_output :: writeEvent(outputContainer* output)
 {
+	outEvent->addStructure(*trueInfoBank);
+
 	output->hipoWriter->addEvent(*outEvent);
 }
 

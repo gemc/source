@@ -261,21 +261,19 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	
 	// if FILTER_HADRONS is set, checking if there are any (matching) hadrons
-	if (FILTER_HADRONS == 1 || abs(FILTER_HADRONS) > 99)
-	{
+	if (FILTER_HADRONS == 1 || abs(FILTER_HADRONS) > 99) {
 		int foundHad = 0;
-		for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
-		{
+		for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
 			MHC = it->second->GetMHitCollection();
-			if (MHC) nhits = MHC->GetSize();
-			else nhits = 0;
-			for (int h=0; h<nhits; h++)
-			{
+			if (MHC) {
+				nhits = MHC->GetSize();
+			} else {
+				nhits = 0;
+			}
+			for (int h=0; h<nhits; h++) {
 				vector<int>           pids = (*MHC)[h]->GetPIDs();
-				for (vector<int>::const_iterator pit = pids.begin(); pit != pids.end(); pit++)
-				{
-					if ((FILTER_HADRONS == 1 && abs(*pit) > 99) || *pit == FILTER_HADRONS)
-					{
+				for (vector<int>::const_iterator pit = pids.begin(); pit != pids.end(); pit++) {
+					if ((FILTER_HADRONS == 1 && abs(*pit) > 99) || *pit == FILTER_HADRONS) {
 						foundHad = 1;
 						break;
 					}
@@ -482,6 +480,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	}
 	outputFactory *processOutputFactory = getOutputFactory(outputFactoryMap, outContainer->outType);
 
+	// configuration contains:
+	// number of hits in the hit collection for each sensitive detector
 	map<string, double> configuration;
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
 		MHC = it->second->GetMHitCollection();
@@ -491,7 +491,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				string hitType = it->first;
 
 				if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") {
-					configuration[hitType] = 1;
+					configuration[hitType] = MHC->GetSize();
 				}
 			}
 		}
@@ -596,9 +596,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	map<int, vector<hitOutput> > hit_outputs_from_AllSD;
 	
-	
-	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
-	{
+	// loop over sensitive detectors
+	// if there are hits, process them and/or write true infos out
+	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
 		MHC = it->second->GetMHitCollection();
 		
 		// adding background if existing
@@ -614,11 +614,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if (MHC) nhits = MHC->GetSize();
 		else nhits = 0;
 		
-		
 		// The same ProcessHit Routine must apply to all the hits  in this HitCollection.
 		// Instantiating the ProcessHitRoutine only once for the first hit.
-		if(nhits)
-		{
+		if(nhits) {
 			//  the bank idtag is the one that corresponds to the hitType
 			//MHit* aHit = (*MHC)[0];
 
@@ -627,14 +625,13 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			
 			string hitType = it->first;
 			
-			
 			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType);
 			if(!hitProcessRoutine)
 				return;
 			
-			if(fastMCMode == 0 || fastMCMode > 9)
+			if(fastMCMode == 0 || fastMCMode > 9) {
 				hitProcessRoutine->init(hitType, gemcOpt, gPars);
-			
+			}
 			bool WRITE_TRUE_INTEGRATED = 0;
 			bool WRITE_TRUE_ALL = 0;
 			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
@@ -650,8 +647,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					MPrimaries[pi].fastMC.push_back(fastMCForParticle("na"));
 			}
 			
-			for(int h=0; h<nhits; h++)
-			{
+			for(int h=0; h<nhits; h++) {
 				MHit* aHit = (*MHC)[h];
 				
 				// electronic noise hits disable? Why? TODO
@@ -661,8 +657,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				hitOutput thisHitOutput;
 				
 				// mother particle infos
-				if(SAVE_ALL_MOTHERS)
-				{
+				if(SAVE_ALL_MOTHERS) {
 					// setting track infos before processing the hit
 					vector<int> tids = aHit->GetTIds();
 					vector<int> otids = vector_otids(tids);
@@ -681,8 +676,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					hitByPrimary.push_back(0);
 					
 					// all these vector have the same length.
-					for(unsigned pi = 0; pi<MPrimaries.size(); pi++)
-					{
+					for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
 						vector<double> edeps = aHit->GetEdep();
 						vector<double> times = aHit->GetTime();
 						MPrimaries[pi].pSum.back().nphe = aHit->GetTIds().size();
@@ -690,10 +684,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 							MPrimaries[pi].fastMC.back().pOrig  = aHit->GetMom();
 							MPrimaries[pi].fastMC.back().pSmear = hitProcessRoutine->psmear(aHit->GetMom());
 						}
-						for(unsigned ss =0; ss<edeps.size(); ss++)
-						{
-							if(otids[ss] == (int) pi+1)
-							{
+						for(unsigned ss =0; ss<edeps.size(); ss++) {
+							if(otids[ss] == (int) pi+1) {
 								MPrimaries[pi].pSum.back().etot += edeps[ss];
 								hitByPrimary[pi]++;
 								// getting fastest time - should we put threshold here?
@@ -708,9 +700,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						if(MPrimaries[pi].pSum.back().etot > 0 || MPrimaries[pi].pSum.back().nphe > 0)
 							MPrimaries[pi].pSum.back().dname = hitType;
 					}
-				}
-				else
-				{
+				} else {
 					// filling mother infos with zeros
 					int thisHitSize = aHit->GetId().size();
 					vector<int>           zint  = vector_zint(thisHitSize);
@@ -731,8 +721,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				allRawOutput.push_back(thisHitOutput);
 				
 				string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-				if(VERB > 4 || vname.find(catch_v) != string::npos)
-				{
+				if(VERB > 4 || vname.find(catch_v) != string::npos) {
 					cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
 					cout << aHit->GetId();
 					double Etot = 0;
