@@ -13,11 +13,6 @@ if(NOT hipo4_FOUND)
     #
     # 	https://github.com/gavalian/hipo4.git
     #
-    find_package(LZ4 REQUIRED)
-    if(NOT LZ4_FOUND)
-        error("Could not find LZ4")
-    endif()
-
     add_dependencies(dependencies HIPO)
     externalproject_add(
             HIPO
@@ -28,7 +23,4 @@ if(NOT hipo4_FOUND)
             CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
             BUILD_COMMAND  ${CMAKE_MAKE_PROGRAM} install
     )
-    set(HIPO_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libhipo4.a CACHE PATH "hipo library" FORCE)
-    set(HIPO_LIBRARIES ${HIPO_LIBRARY} ${LZ4_LIBRARY})
-    set(HIPO_INCLUDE_DIRS ${HIPO_INCLUDE_DIR})
 endif()
