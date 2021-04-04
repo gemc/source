@@ -53,7 +53,7 @@ include(CLHEP)
 include(xercesc)
 include(CCDB)
 include(MYSQL)    ### This should eventually come from CCDB!!!
-include(SQLite3)
+# include(SQLite3)
 include(eviocxx)
 include(mlibrary)
 include(hipo4)
