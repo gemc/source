@@ -54,10 +54,9 @@ include(xercesc)
 include(CCDB)
 include(MYSQL)    ### This should eventually come from CCDB!!!
 include(SQLite3)
-include(EVIO)
+include(eviocxx)
 include(mlibrary)
-include(cadmesh)  ### Due to the way mlibrary currently gets cadmesh, we need to separately include it here.
-include(HIPO)     ### Will be needed later.
+include(hipo4)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -66,13 +65,7 @@ cmake_policy(SET CMP0100 OLD) # Do not process *.hh files with moc, uic
 
 add_definitions(${Geant4_DEFINITIONS})
 
-message(STATUS "mlibrary_INCLUDE_DIRS = ${mlibrary_INCLUDE_DIRS}")
-message(STATUS "mlibrary_LIBRARIES    = ${mlibrary_LIBRARIES}")
-
 include_directories(
-		${mlibrary_INCLUDE_DIRS}
-		${EVIO_INCLUDE_DIRS}
-		${CCDB_INCLUDE_DIRS}
 		${Qt5Xml_INCLUDE_DIRS}
 		${Qt5Widgets_INCLUDE_DIRS}
 		${Qt5Sql_INCLUDE_DIRS}
@@ -80,24 +73,17 @@ include_directories(
 		)
 
 set(GEMC_ALL_LIBRARIES
-	${mlibrary_LIBRARIES}
-	${EVIO_LIBRARIES}
-	${HIPO_LIBRARIES}
-	${CCDB_LIBRARIES}
-	${MYSQL_LIBRARIES}
-	${SQLite3_LIBRARIES}
 	${Qt5Xml_LIBRARIES}
 	${Qt5Widgets_LIBRARIES}
 	${Qt5Sql_LIBRARIES}
 	${Geant4_LIBRARIES}
-	${cadmesh_LIBRARIES}
 	)
 
-# For debugging, print all the include directories.
-#get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-#foreach(dir ${dirs})
-#	message(STATUS "INCLUDE_DIR ='${dir}'")
-#endforeach()
+set(GEMC_ALL_TARGETS
+	mlibrary
+	eviocxx
+	hipo4
+	ccdb)
 
 set(materials_sources
 	materials/material_factory.cc
@@ -261,4 +247,7 @@ include_directories(src)
 list(APPEND GEMC_ALL_SOURCES ${gemc_sources})
 
 add_executable(gemc ${GEMC_ALL_SOURCES})
-target_link_libraries(gemc ${GEMC_ALL_LIBRARIES})
+target_link_libraries(gemc PUBLIC ${GEMC_ALL_TARGETS} ${GEMC_ALL_LIBRARIES})
+add_dependencies(gemc dependencies)
+
+install(TARGETS gemc )
