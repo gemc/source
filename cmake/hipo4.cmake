@@ -7,20 +7,62 @@ message(STATUS "Checking for hipo4")
 find_package(hipo4 QUIET)
 if(NOT hipo4_FOUND)
     message(STATUS "**********************************************************************")
-    message(STATUS "******* hipo4 was not found                                     *******")
-    message(STATUS " Please install HIPO by hand and install in ${CMAKE_INSTALL_PREFIX} ")
+    message(STATUS "***    hipo4 was not found - we will install it automatically.     ***")
+    message(STATUS "*** If you do not what that, please set CMAKE_INSTALL_PREFIX       ***")
     message(STATUS "***********************************************************************")
     #
     # 	https://github.com/gavalian/hipo4.git
     #
-    add_dependencies(dependencies HIPO)
     externalproject_add(
-            HIPO
+            hipo4_external
             GIT_REPOSITORY https://github.com/mholtrop/hipo.git
-            GIT_TAG        master
+            GIT_TAG        test_branch
             SOURCE_DIR     ${CMAKE_BINARY_DIR}/hipo
             INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}
             CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-            BUILD_COMMAND  ${CMAKE_MAKE_PROGRAM} install
+            BUILD_COMMAND  ${CMAKE_MAKE_PROGRAM}
     )
+
+    # We need so see where the LZ4 library will come from.
+    find_package(LZ4 QUIET CONFIG PATHS ${PROJECT_SOURCE_DIR}/cmake )
+    if(NOT LZ4_FOUND)
+        message(STATUS "***********************************************************************")
+        message(STATUS "* We did not find a system LZ4 package -- We will build this locally. *")
+        message(STATUS "***********************************************************************")
+        set(LZ4_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/hipo/lz4/lib)
+        set(LZ4_LIBRARIES ${CMAKE_BINARY_DIR}/hipo/lz4/lib/liblz4.a)
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/hipo/lz4/lib)
+    endif(NOT LZ4_FOUND)
+
+    add_library(hipo4 SHARED IMPORTED)
+    add_dependencies(dependencies hipo4)
+    add_dependencies(hipo4 hipo4_external)
+    file(MAKE_DIRECTORY  ${CMAKE_INSTALL_PREFIX}/include/hipo4)
+    set_target_properties(hipo4 PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/hipo4"
+                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES}"
+                          )
+    set_property(TARGET hipo4 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(hipo4 PROPERTIES
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libhipo4.dylib"
+                          IMPORTED_SONAME_RELEASE "@rpath/libhipo4.dylib"
+                          )
+
+    # Everything again for _static
+    add_library(hipo4_static STATIC IMPORTED)
+    add_dependencies(dependencies hipo4_static)
+    add_dependencies(hipo4_static hipo4_external)
+    set_target_properties(hipo4_static PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/hipo4"
+                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES}"
+                          )
+    set_property(TARGET hipo4_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(hipo4_static PROPERTIES
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libhipo4.a"
+                          )
+
+else()
+    get_target_property(_hipo4_found_dir hipo4 IMPORTED_LOCATION_RELEASE)
+    message(STATUS "hipo4 found: ${_hipo4_found_dir}")
+
 endif()

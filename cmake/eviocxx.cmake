@@ -17,14 +17,14 @@ if(NOT eviocxx_FOUND)   # We did not find it, so we will build it ourselves.
     # Add in a CMakeLists.txt :-)
     # Run cmake, make, make install
     #
-    add_dependencies(dependencies evio)
+    add_dependencies(dependencies eviocxx)
     externalproject_add(
-            evio
+            eviocxx
             GIT_REPOSITORY   https://github.com/mholtrop/evio-5.1.git
             GIT_TAG          main
             SOURCE_DIR       ${CMAKE_BINARY_DIR}/evio
-            INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}
-            CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+            INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}
+            CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
             BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} install
     )
 endif()

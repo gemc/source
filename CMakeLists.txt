@@ -51,9 +51,8 @@ include(XercesC)
 include(Geant4)
 include(CLHEP)
 include(xercesc)
-include(CCDB)
+include(ccdb)
 include(MYSQL)    ### This should eventually come from CCDB!!!
-# include(SQLite3)
 include(eviocxx)
 include(mlibrary)
 include(hipo4)
@@ -80,10 +79,11 @@ set(GEMC_ALL_LIBRARIES
 	)
 
 set(GEMC_ALL_TARGETS
-	mlibrary
+	ccdb
 	eviocxx
+	mlibrary
 	hipo4
-	ccdb)
+	)
 
 set(materials_sources
 	materials/material_factory.cc
@@ -247,7 +247,7 @@ include_directories(src)
 list(APPEND GEMC_ALL_SOURCES ${gemc_sources})
 
 add_executable(gemc ${GEMC_ALL_SOURCES})
-target_link_libraries(gemc PUBLIC ${GEMC_ALL_TARGETS} ${GEMC_ALL_LIBRARIES})
 add_dependencies(gemc dependencies)
+target_link_libraries(gemc ${GEMC_ALL_TARGETS} ${GEMC_ALL_LIBRARIES})
 
 install(TARGETS gemc )
