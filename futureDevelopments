@@ -50,6 +50,11 @@ Exit Codes:
 512: DEFAULT_MATERIAL is not found
 
 
+600s: output
+
+601: hittype not in hipo map
+
+
 Wanted features, coming with gemc3
 ==================================
 

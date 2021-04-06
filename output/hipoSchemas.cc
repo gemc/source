@@ -129,9 +129,9 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["ECAL::adc"]    = ecalADCSchema;
 	schemasToLoad["ECAL::tdc"]    = ecalTDCSchema;
 	schemasToLoad["FMT::adc"]     = fmtADCSchema;
-	schemasToLoad["FT_CAL::adc"]  = ftcalADCSchema;
-	schemasToLoad["FT_HODO::adc"] = fthodoADCSchema;
-	schemasToLoad["FT_TRK::adc"]  = ftrkTDCSchema;
+	schemasToLoad["FTCAL::adc"]   = ftcalADCSchema;
+	schemasToLoad["FTHODO::adc"]  = fthodoADCSchema;
+	schemasToLoad["FTTRK::adc"]   = ftrkTDCSchema;
 	schemasToLoad["FTOF::adc"]    = ftofADCSchema;
 	schemasToLoad["FTOF::tdc"]    = ftofTDCSchema;
 	schemasToLoad["HTCC::adc"]    = htccADCSchema;
@@ -157,7 +157,16 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 
 	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
 		return schemasToLoad[thisSchema];
+	} else if(schemaName == "ft_cal") {
+		return ftcalADCSchema;
+	} else if(schemaName == "ft_hodo") {
+		return fthodoADCSchema;
+	} else if(schemaName == "ft_trk") {
+		return ftrkTDCSchema;
 	} else {
+		if( !(schemaName == "dc" && type == 0) && !(schemaName == "bmt" && type == 1)  && !(schemaName == "bst" && type == 1) &&  !(schemaName == "flux") ) {
+			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
+		}
 		return emptySchema;
 	}
 }

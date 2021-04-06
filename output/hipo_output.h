@@ -82,25 +82,31 @@ public:
 	hipo::event *outEvent = nullptr;
 	hipo::bank *trueInfoBank;
 
+	// needed to correctly index
+	int lastHipoTrueInfoBankIndex  = 0;
+
 	// map from hittype to hipo detector id
+	// notice the hittype is gemc specific
+	// need to change naming convention here to match reconstruction?
 	// defined here: https://github.com/JeffersonLab/clas12-offline-software/blob/8ed53986f8b1a2e6f3c5a63b1e6f6d7fd88020c9/common-tools/clas-detector/src/main/java/org/jlab/detector/base/DetectorType.java
 	map<string, int> detectorID = {
-		{"BMT",     1},
-		{"BST",     2},
-		{"CND",     3},
-		{"CTOF",    4},
-		{"DC",      6},
-		{"ECAL",    7},
-		{"FMT",     8},
-		{"FTCAL",  10},
-		{"FTHODO", 11},
-		{"FTTRK",  13},
-		{"FTOF",   12},
-		{"HTCC",   15},
-		{"LTCC",   16},
-		{"RICH",   18},
-		{"RTPC",   19},
-		{"BAND",   21}
+		{"bmt",     1},
+		{"bst",     2},
+		{"cnd",     3},
+		{"ctof",    4},
+		{"dc",      6},
+		{"ecal",    7},
+		{"fmt",     8},
+		{"ft_cal",  10},
+		{"ft_hodo", 11},
+		{"ft_trk",  13},
+		{"ftof",    12},
+		{"htcc",    15},
+		{"ltcc",    16},
+		{"rich",    18},
+		{"rtpc",    19},
+		{"band",    21},
+		{"flux",   100}
 	};
 
 	// returns detectorID from map, given hitType

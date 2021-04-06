@@ -232,32 +232,26 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 		if(systemName == "flux" || systemName == "mirror" || systemName == "counter") continue;
 		
 		// text factory
-		if(systemFactory == "TEXT")
-		{
-			
+		if(systemFactory == "TEXT") {
 			string fname = systemName + "__bank.txt";
 			ifstream IN(fname.c_str());
-			if(!IN)
-			{
+			if(!IN) {
 				// if file is not found, maybe it's in the GEMC_DATA_DIR directory
-				if(getenv("GEMC_DATA_DIR")  != NULL)
-				{
+				if(getenv("GEMC_DATA_DIR")  != NULL) {
 					fname = (string) getenv("GEMC_DATA_DIR") + "/" + fname;
 					IN.open(fname.c_str());
 				}
 				
 			}
 			// now file should be loaded
-			if(IN)
-			{
-				if(verbosity > 1)
+			if(IN) {
+				if(verbosity > 1) {
 					cout << "   > Loading bank TEXT definitions for <" << systemName << ">." << endl;
-				
+				}
 				
 				// first get all banks for this system
 				vector<string> banksForSystem;
-				while(!IN.eof())
-				{
+				while(!IN.eof()) {
 					string dbline;
 					getline(IN, dbline);
 					
@@ -274,10 +268,8 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 				IN.seekg(0);
 				
 				// now loading bank and variables
-				for(unsigned b=0; b<banksForSystem.size(); b++)
-				{
-					while(!IN.eof())
-					{
+				for(unsigned b=0; b<banksForSystem.size(); b++) {
+					while(!IN.eof()) {
 						string dbline;
 						getline(IN, dbline);
 						
@@ -315,8 +307,8 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 				IN.close();
 			} else {
 				if(verbosity>2) {
-					cout << "  !!! Error: Failed to open system bank file " << fname
-					<< ". Maybe the filename doesn't exist? Exiting." << endl;
+					cout << "  !!! Warning: Failed to open system bank file " << fname
+					<< ". Maybe the filename doesn't exist?." << endl;
 				}
 			}
 		}

@@ -30,7 +30,6 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 
 			for(auto &fieldName: fieldNames) {
 
-
 				double scaleFactor = 1;
 
 				vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
@@ -51,19 +50,16 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 		}
 	}
 
-
 }
 
 // returns detectorID from map, given hitType
 int hipo_output :: getDetectorID(string hitType) {
 
-	string toUpperS = hitType;
-	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
-
-	if(detectorID.find(toUpperS) != detectorID.end() ) {
-		return detectorID[toUpperS];
+	if(detectorID.find(hitType) != detectorID.end() ) {
+		return detectorID[hitType];
 	} else {
-		return 0;
+		cout << " Error: " << hitType << " has no detector id. Exiting. " << endl;
+		exit(601);
 	}
 }
 
@@ -85,9 +81,9 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 {
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
-//	for(auto &fieldScale: fieldScales) {
-//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
-//	}
+	//	for(auto &fieldScale: fieldScales) {
+	//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
+	//	}
 
 	if(outEvent == nullptr) {
 		outEvent = new hipo::event();
@@ -297,17 +293,24 @@ void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 }
 
 void hipo_output::prepareEvent(outputContainer* output, map<string, double> *configuration){
-	//int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 	int nBankEntries = 0;
+	lastHipoTrueInfoBankIndex = 0;
+
 	for(auto &conf: *configuration) {
-		// cout << " Hipo preparing" << conf.first << "  with " << conf.second << " hits " << endl;
+
+		if(verbosity > 1) {
+			cout << " Hipo preparing " << conf.first << "  with " << conf.second << " hits " << endl;
+		}
 		nBankEntries = nBankEntries + conf.second ;
 	}
 
-	// cout << " Total true info bank entries: " << nBankEntries << endl;
+	if(verbosity > 1) {
+		cout << " Total true info bank entries: " << nBankEntries << endl;
+	}
 
 	hipo::schema trueInfoSchema = output->hipoSchema->trueInfoSchema;
+
 	trueInfoBank = new hipo::bank(trueInfoSchema, nBankEntries);
 
 }
@@ -326,6 +329,7 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 	// we only need the first hit to get the definitions
 	map<string, double> raws = HO[0].getRaws();
 
+	int detectorID = getDetectorID(hitType);
 
 	// looping over the loaded banknames (this to make sure we only publish the ones declared
 	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
@@ -334,14 +338,18 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 		string bname   = bankName.second;
 		int bankId     = rawBank.getVarId(bname);       // bankId is num
 		int bankType   = rawBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
-		int detectorID = getDetectorID(hitType);
 
 		if(raws.find(bname) != raws.end() && bankId > 0 && bankType == RAWINT_ID) {
 
 			// looping over the hits
 			for(unsigned int nh=0; nh<HO.size(); nh++) {
 
+				int hipoBankIndex = lastHipoTrueInfoBankIndex + nh;
+
 				map<string, double> theseRaws = HO[nh].getRaws();
+
+				trueInfoBank->putByte("detector", hipoBankIndex, detectorID);
+
 				for(auto &thisVar: theseRaws) {
 
 					// found data match to bank definition
@@ -349,48 +357,23 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 
 						string varType = rawBank.getVarType(thisVar.first);
 
-						trueInfoBank->putByte("detector", nh, detectorID);
-
 						string hipoName = getHipoVariableName(bname);
 						if(varType == "i") {
-							trueInfoBank->putInt(hipoName.c_str(), nh, thisVar.second);
+							trueInfoBank->putInt(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						} else if(varType == "d") {
-							trueInfoBank->putFloat(hipoName.c_str(), nh, thisVar.second);
-						}
-
-//						// sector, layer, component are common in adc/tdc so their names are w/o prefix
-//						// sector, layers are "Bytes"
-//						if(bname == "sector" || bname == "layer") {
-//							detectorADCBank.putByte(bname.c_str(), nh, thisVar.second);
-//						} else if(bname == "component") {
-//							detectorADCBank.putShort(bname.c_str(), nh, thisVar.second);
-//						} else {
-//							// all other ADC vars must begin with "ADC_"
-//							if(bname.find("ADC_") == 0) {
-//								string adcName = bname.substr(4);
-//								if(varType == "i") {
-//									detectorADCBank.putInt(adcName.c_str(), nh, thisVar.second);
-//								} else if(varType == "d") {
-//									detectorADCBank.putFloat(adcName.c_str(), nh, thisVar.second);
-//								}
-//							}
-//						}
-
-						if(detectorID == 0) {
-							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+							trueInfoBank->putFloat(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						}
 
 						if(verbosity > 2) {
-							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", bank hit index " << hipoBankIndex << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
 						}
 					}
-
 				}
 			}
 
-
 		}
 	}
+	lastHipoTrueInfoBankIndex = lastHipoTrueInfoBankIndex + HO.size();
 
 
 	// loop over variable names
