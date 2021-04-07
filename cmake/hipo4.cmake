@@ -21,6 +21,8 @@ if(NOT hipo4_FOUND)
             SOURCE_DIR     ${CMAKE_BINARY_DIR}/hipo
             INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}
             CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                           -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                           -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             BUILD_COMMAND  ${CMAKE_MAKE_PROGRAM}
     )
 

@@ -15,11 +15,19 @@ endif()
 project(GEMC VERSION 2.8)
 
 if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9.3)
-	message(FATAL ERROR "Please use a later version of GCC. Your version ${CMAKE_CXX_COMPILER_VERSION} will not compile GEANT4 code.")
+	message(STATUS "*************************************************************************************************************")
+	message(STATUS "* ERROR:: Please use a later version of GCC.                                                                *")
+	message(STATUS "* Your version of ${CMAKE_CXX_COMPILER_VERSION} will not compile GEANT4 code.                                                       *")
+	message(STATUS "* Erase the current cache (just do rm -rf * :-) then rerun cmake adding the arguments:                      *")
+	message(STATUS "*   -DCMAKE_C_COMPILER=/apps/gcc/9.2.0/bin/gcc -DCMAKE_CXX_COMPILER=/apps/gcc/9.2.0/bin/g++                 *")
+	message(STATUS "*************************************************************************************************************")
+	message(FATAL_ERROR "Compiler level too low.")
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+message(STATUS "COMPILERS: ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}")
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(STATUS  "GEMC requires an out-of-source build.")

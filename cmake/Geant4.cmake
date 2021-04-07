@@ -23,6 +23,8 @@ if(NOT Geant4_FOUND)
                 URL                  "https://downloads.apache.org/xerces/c/3/sources/xerces-c-${XercesC_VERSION}.tar.gz"
                 SOURCE_DIR           ${CMAKE_BINARY_DIR}/XercesC
                 CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${Geant4_INSTALL_DIR}
+                                 -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                                 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} -j4
         )
         set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX} CACHE FILEPATH "XercesC libraries" FORCE)
@@ -47,6 +49,8 @@ if(NOT Geant4_FOUND)
         GIT_SHALLOW      ON
         SOURCE_DIR       ${CMAKE_BINARY_DIR}/Geant4
         CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${Geant4_INSTALL_DIR}
+                         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                          -DGEANT4_USE_GDML=ON
                          -DGEANT4_USE_QT=ON
                          -DGEANT4_INSTALL_DATA=ON

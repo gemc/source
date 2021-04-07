@@ -21,6 +21,8 @@ else()
                 SOURCE_DIR       ${CMAKE_BINARY_DIR}/mlibrary
                 INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}
                 CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                                 -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                                 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} install
                 UPDATE_COMMAND   ""
         )
