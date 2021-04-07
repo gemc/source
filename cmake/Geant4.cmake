@@ -7,6 +7,27 @@
 message(STATUS "Checking for Geant4")
 find_package(Geant4 QUIET COMPONENTS vis_all ui_all qt gdml)
 if(NOT Geant4_FOUND)
+    #
+    # The GDML component of GEANT4 depends on XercesC. Look for it, and if not found, build it.
+    #
+    find_package(XercesC QUIET)
+    if(NOT XercesC_FOUND)
+        message(STATUS "XercesC was not found and will be installed before GEANT4")
+        set(XercesC_VERSION 3.2.3 CACHE STRING "XercesC version" FORCE)
+        set(XercesC_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+        externalproject_add(
+                XercesC
+                URL                  "https://downloads.apache.org/xerces/c/3/sources/xerces-c-${XercesC_VERSION}.tar.gz"
+                SOURCE_DIR           ${CMAKE_BINARY_DIR}/XercesC
+                BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} -j4
+        )
+        set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX} CACHE FILEPATH "XercesC libraries" FORCE)
+        set(XercesC_INCLUDE_DIR ${XercesC_INSTALL_DIR}/include CACHE PATH "XercesC include dir" FORCE)
+    else()
+        add_custom_target(XercesC) # dummy target
+        message(STATUS "XercesC library was found at: ${XercesC_LIBRARY}")
+    endif()
+
     message(STATUS "**********************************************************************")
     message(STATUS "** Geant4 was not found it will be installed (which is slow!)       **")
     message(STATUS "** OR set CMAKE_PREFIX_PATH to the location of Geant4Config.cmake   **")
@@ -15,6 +36,8 @@ if(NOT Geant4_FOUND)
     set(Geant4_VERSION 10.6.3 CACHE STRING "Geant4 version" FORCE)
     set(Geant4_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/Geant4)
     add_dependencies(dependencies Geant4)
+    add_dependencies(Geant4 XercesC)
+    
     externalproject_add(
         Geant4
         GIT_REPOSITORY   "https://github.com/Geant4/geant4"
