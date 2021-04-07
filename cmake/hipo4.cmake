@@ -13,10 +13,11 @@ if(NOT hipo4_FOUND)
     #
     # 	https://github.com/gavalian/hipo4.git
     #
+    set(HIPO_VERSION master CACHE STRING "hipo version" FORCE)
     externalproject_add(
             hipo4_external
             GIT_REPOSITORY https://github.com/mholtrop/hipo.git
-            GIT_TAG        test_branch
+            GIT_TAG        ${HIPO_VERSION}
             SOURCE_DIR     ${CMAKE_BINARY_DIR}/hipo
             INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}
             CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
@@ -29,9 +30,12 @@ if(NOT hipo4_FOUND)
         message(STATUS "***********************************************************************")
         message(STATUS "* We did not find a system LZ4 package -- We will build this locally. *")
         message(STATUS "***********************************************************************")
-        set(LZ4_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/hipo/lz4/lib)
-        set(LZ4_LIBRARIES ${CMAKE_BINARY_DIR}/hipo/lz4/lib/liblz4.a)
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/hipo/lz4/lib)
+        set(LZ4_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
+        set(LZ4_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/liblz4.a)
+        set(LZ4_LIBRARIES_STATIC ${CMAKE_INSTALL_PREFIX}/lib/liblz4.a)
+        set(LZ4_LIBRARIES_SHARED ${CMAKE_INSTALL_PREFIX}/lib/liblz4.dylib)
+        file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib)
+        file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
     endif(NOT LZ4_FOUND)
 
     add_library(hipo4 SHARED IMPORTED)
@@ -40,7 +44,7 @@ if(NOT hipo4_FOUND)
     file(MAKE_DIRECTORY  ${CMAKE_INSTALL_PREFIX}/include/hipo4)
     set_target_properties(hipo4 PROPERTIES
                           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/hipo4"
-                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES}"
+                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES_SHARED}"
                           )
     set_property(TARGET hipo4 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(hipo4 PROPERTIES
@@ -50,11 +54,11 @@ if(NOT hipo4_FOUND)
 
     # Everything again for _static
     add_library(hipo4_static STATIC IMPORTED)
-    add_dependencies(dependencies hipo4_static)
-    add_dependencies(hipo4_static hipo4_external)
+    #   add_dependencies(dependencies hipo4_static)    ## Putting these here again causes a LZ4 to be build twice?
+    #   add_dependencies(hipo4_static hipo4_external)
     set_target_properties(hipo4_static PROPERTIES
                           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/hipo4"
-                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES}"
+                          INTERFACE_LINK_LIBRARIES "${LZ4_LIBRARIES_STATIC}"
                           )
     set_property(TARGET hipo4_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(hipo4_static PROPERTIES

@@ -52,7 +52,6 @@ include(Geant4)
 include(CLHEP)
 include(xercesc)
 include(ccdb)
-include(MYSQL)    ### This should eventually come from CCDB!!!
 include(eviocxx)
 include(mlibrary)
 include(hipo4)

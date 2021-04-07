@@ -7,10 +7,11 @@ if(NOT mlibrary_FOUND)
     message(STATUS "** OR set CMAKE_PREFIX_PATH to the location of mlibraryConfig.cmake **")
     message(STATUS "** and rerun cmake.                                                 **")
     message(STATUS "**********************************************************************")
+    set(MLIBRARY_VERSION iss197 CACHE STRING "mlibrary version" FORCE)
     externalproject_add(
             mlibrary_external
             GIT_REPOSITORY   "https://github.com/mholtrop/mlibrary.git"
-            GIT_TAG          develop
+            GIT_TAG          ${MLIBRARY_VERSION}
             SOURCE_DIR       ${CMAKE_BINARY_DIR}/mlibrary
             INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}
             CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
@@ -24,6 +25,7 @@ if(NOT mlibrary_FOUND)
     file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include/assimp)
     set_target_properties(mlibrary PROPERTIES
                           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/mlibrary;${CMAKE_INSTALL_PREFIX}/include"
+                          INTERFACE_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
                           INTERFACE_LINK_LIBRARIES "Geant4::G4Tree;Geant4::G4FR;Geant4::G4GMocren;Geant4::G4visHepRep;Geant4::G4RayTracer;Geant4::G4VRML;Geant4::G4vis_management;Geant4::G4modeling;Geant4::G4interfaces;Geant4::G4persistency;Geant4::G4analysis;Geant4::G4error_propagation;Geant4::G4readout;Geant4::G4physicslists;Geant4::G4run;Geant4::G4event;Geant4::G4tracking;Geant4::G4parmodels;Geant4::G4processes;Geant4::G4digits_hits;Geant4::G4track;Geant4::G4particles;Geant4::G4geometry;Geant4::G4materials;Geant4::G4graphics_reps;Geant4::G4intercoms;Geant4::G4global;Geant4::G4clhep;Geant4::G4expat;Geant4::G4zlib;Geant4::G4UIVisDefinitions;Qt5::Xml;Qt5::Widgets;Qt5::Sql;cadmesh"
                           )
     set_property(TARGET mlibrary APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -39,6 +41,7 @@ if(NOT mlibrary_FOUND)
 
     set_target_properties(mlibrary_static PROPERTIES
                           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/mlibrary;${CMAKE_INSTALL_PREFIX}/include"
+                          INTERFACE_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
                           INTERFACE_LINK_LIBRARIES "Geant4::G4Tree;Geant4::G4FR;Geant4::G4GMocren;Geant4::G4visHepRep;Geant4::G4RayTracer;Geant4::G4VRML;Geant4::G4vis_management;Geant4::G4modeling;Geant4::G4interfaces;Geant4::G4persistency;Geant4::G4analysis;Geant4::G4error_propagation;Geant4::G4readout;Geant4::G4physicslists;Geant4::G4run;Geant4::G4event;Geant4::G4tracking;Geant4::G4parmodels;Geant4::G4processes;Geant4::G4digits_hits;Geant4::G4track;Geant4::G4particles;Geant4::G4geometry;Geant4::G4materials;Geant4::G4graphics_reps;Geant4::G4intercoms;Geant4::G4global;Geant4::G4clhep;Geant4::G4expat;Geant4::G4zlib;Geant4::G4UIVisDefinitions;Qt5::Xml;Qt5::Widgets;Qt5::Sql;cadmesh"
                           )
     set_property(TARGET mlibrary_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)

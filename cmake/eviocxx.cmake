@@ -18,13 +18,67 @@ if(NOT eviocxx_FOUND)   # We did not find it, so we will build it ourselves.
     # Run cmake, make, make install
     #
     add_dependencies(dependencies eviocxx)
+    set(EVIO_VERSION main CACHE STRING "evio version" FORCE)
     externalproject_add(
-            eviocxx
+            eviocxx_external
             GIT_REPOSITORY   https://github.com/mholtrop/evio-5.1.git
-            GIT_TAG          main
+            GIT_TAG          ${EVIO_VERSION}
             SOURCE_DIR       ${CMAKE_BINARY_DIR}/evio
             INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}
             CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-            BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} install
+            BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM}
+            UPDATE_COMMAND   ""
     )
+    add_library(eviocxx SHARED IMPORTED)
+    add_library(evio    SHARED IMPORTED)
+    add_dependencies(dependencies eviocxx)
+    add_dependencies(eviocxx eviocxx_external)
+    file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include/eviocxx)
+    file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include/evio)
+    set_target_properties(evio PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/evio"
+                          )
+    set_target_properties(eviocxx PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/eviocxx"
+                          INTERFACE_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
+                          INTERFACE_LINK_LIBRARIES "evio"
+                          )
+
+    set_property(TARGET evio APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(evio PROPERTIES
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libevio.dylib"
+                          IMPORTED_SONAME_RELEASE "@rpath/libevio.dylib"
+                          )
+
+    set_property(TARGET eviocxx APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(eviocxx PROPERTIES
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libeviocxx.dylib"
+                          IMPORTED_SONAME_RELEASE "@rpath/libeviocxx.dylib"
+                          )
+
+    add_library(eviocxx_static STATIC IMPORTED)
+    add_library(evio_static    STATIC IMPORTED)
+
+    set_target_properties(evio_static PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/evio"
+                          )
+    set_target_properties(eviocxx_static PROPERTIES
+                          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include/eviocxx"
+                          INTERFACE_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
+                          INTERFACE_LINK_LIBRARIES "evio"
+                          )
+
+    set_property(TARGET evio_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(evio_static PROPERTIES
+                          IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libevio.a"
+                          )
+
+    set_property(TARGET eviocxx_static APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(eviocxx_static PROPERTIES
+                          IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libeviocxx.a"
+                          )
+
+
 endif()
