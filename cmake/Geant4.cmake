@@ -7,18 +7,22 @@
 message(STATUS "Checking for Geant4")
 find_package(Geant4 QUIET COMPONENTS vis_all ui_all qt gdml)
 if(NOT Geant4_FOUND)
+
+    set(XercesC_VERSION 3.2.3 CACHE STRING "XercesC version" FORCE)
+    set(Geant4_VERSION 10.6.3 CACHE STRING "Geant4 version" FORCE)
+    set(Geant4_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/Geant4)
     #
     # The GDML component of GEANT4 depends on XercesC. Look for it, and if not found, build it.
     #
     find_package(XercesC QUIET)
     if(NOT XercesC_FOUND)
         message(STATUS "XercesC was not found and will be installed before GEANT4")
-        set(XercesC_VERSION 3.2.3 CACHE STRING "XercesC version" FORCE)
         set(XercesC_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
         externalproject_add(
                 XercesC
                 URL                  "https://downloads.apache.org/xerces/c/3/sources/xerces-c-${XercesC_VERSION}.tar.gz"
                 SOURCE_DIR           ${CMAKE_BINARY_DIR}/XercesC
+                CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${Geant4_INSTALL_DIR}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} -j4
         )
         set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX} CACHE FILEPATH "XercesC libraries" FORCE)
@@ -33,11 +37,9 @@ if(NOT Geant4_FOUND)
     message(STATUS "** OR set CMAKE_PREFIX_PATH to the location of Geant4Config.cmake   **")
     message(STATUS "** and rerun cmake. I.e. cmake -DCMAKE_PREFIX_PATH=<loc of G4/lib>  **")
     message(STATUS "**********************************************************************")
-    set(Geant4_VERSION 10.6.3 CACHE STRING "Geant4 version" FORCE)
-    set(Geant4_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/Geant4)
+
     add_dependencies(dependencies Geant4)
-    add_dependencies(Geant4 XercesC)
-    
+
     externalproject_add(
         Geant4
         GIT_REPOSITORY   "https://github.com/Geant4/geant4"
@@ -54,6 +56,9 @@ if(NOT Geant4_FOUND)
         BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} -j4
         UPDATE_COMMAND   ""
     )
+
+    add_dependencies(Geant4 XercesC)
+
     SET( DEPENDENCIES_RERUN_CMAKE "YES" FORCE )
 else()
     # add_custom_target(Geant4) # dummy target

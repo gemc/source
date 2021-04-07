@@ -14,11 +14,15 @@ endif()
 
 project(GEMC VERSION 2.8)
 
-#set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9.3)
+	message(FATAL ERROR "Please use a later version of GCC. Your version ${CMAKE_CXX_COMPILER_VERSION} will not compile GEANT4 code.")
+endif()
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-	message(STATUS "GEMC requires an out-of-source build.")
+	message(STATUS  "GEMC requires an out-of-source build.")
 	message(STATUS "Please remove these files from ${CMAKE_BINARY_DIR} first:")
 	message(STATUS "CMakeCache.txt")
 	message(STATUS "CMakeFiles")
