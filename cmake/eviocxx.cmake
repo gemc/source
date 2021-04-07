@@ -79,6 +79,4 @@ if(NOT eviocxx_FOUND)   # We did not find it, so we will build it ourselves.
                           IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
                           IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libeviocxx.a"
                           )
-
-
 endif()

@@ -61,8 +61,8 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 # external dependencies are added as dependencies of this target
 add_custom_target(dependencies)
 
-include(qt5)
 include(Geant4)
+include(qt5)
 # include(XercesC)
 include(ccdb)
 include(eviocxx)
