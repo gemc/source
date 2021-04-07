@@ -6,12 +6,27 @@
 ##########################################################
 
 # minimum version of CMake, which is determined by Geant4's requirements
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(VERSION 3.12)
+if(${CMAKE_VERSION} VERSION_GREATER "3.17.0")
+	cmake_policy(SET CMP0100 OLD) # Do not process *.hh files with moc, uic
+endif()
 
 project(GEMC VERSION 2.8)
 
 #set(CMAKE_CXX_STANDARD 11)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+	message(STATUS "GEMC requires an out-of-source build.")
+	message(STATUS "Please remove these files from ${CMAKE_BINARY_DIR} first:")
+	message(STATUS "CMakeCache.txt")
+	message(STATUS "CMakeFiles")
+	message(STATUS "Once these files are removed, create a separate directory, eg mkdir build")
+	message(STATUS "and run CMake from there")
+	message(FATAL_ERROR "in-source build detected")
+endif()
+
 
 if(APPLE)
     # use, i.e. don't skip the full RPATH for the build tree
@@ -47,10 +62,8 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 add_custom_target(dependencies)
 
 include(qt5)
-include(XercesC)
 include(Geant4)
-include(CLHEP)
-include(xercesc)
+# include(XercesC)
 include(ccdb)
 include(eviocxx)
 include(mlibrary)
@@ -59,7 +72,6 @@ include(hipo4)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-cmake_policy(SET CMP0100 OLD) # Do not process *.hh files with moc, uic
 
 add_definitions(${Geant4_DEFINITIONS})
 

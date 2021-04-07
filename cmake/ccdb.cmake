@@ -86,5 +86,3 @@ if(NOT ccdb_FOUND)
 
 
 endif()
-include($ENV{HOME}/cmake/cmake_debug_properties.cmake)
-print_target_properties(ccdb)

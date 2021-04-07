@@ -5,7 +5,6 @@
 # build using the ExternalProject mechanism.
 #
 message(STATUS "Checking for Geant4")
-# find_package(Geant4 QUIET COMPONENTS vis_all ui_all)
 find_package(Geant4 QUIET COMPONENTS vis_all ui_all qt gdml)
 if(NOT Geant4_FOUND)
     message(STATUS "**********************************************************************")
@@ -30,44 +29,13 @@ if(NOT Geant4_FOUND)
     # -DGEANT4_USE_OPENGL_X11=${GEANT4_USE_OPENGL_X11} -DGEANT4_USE_QT=${GEANT4_USE_QT}
     set(Geant4_DIR ${Geant4_INSTALL_DIR}/lib/Geant4-${Geant4_VERSION} CACHE PATH "Geant4 install dir" FORCE)
     set(Geant4_INCLUDE_DIRS ${Geant4_INSTALL_DIR}/include/Geant4 CACHE PATH "Geant4 include dirs" FORCE)
-    # list of Geant4 libraries (don't know another way to do this since we need this info before G4 is actually built & installed)
-    set(Geant4_LIBRARIES G4analysis
-                         G4clhep
-                         G4digits_hits
-                         G4error_propagation
-                         G4event
-                         G4expat
-                         G4FR
-                         G4geometry
-                         G4global
-                         G4GMocren
-                         G4graphics_reps
-                         G4intercoms
-                         G4interfaces
-                         G4materials
-                         G4modeling
-                         G4parmodels
-                         G4particles
-                         G4persistency
-                         G4physicslists
-                         G4processes
-                         G4RayTracer
-                         G4readout
-                         G4run
-                         G4track
-                         G4tracking
-                         G4Tree
-                         G4visHepRep
-                         G4visXXX
-                         G4vis_management
-                         G4VRML
-                         G4zlib)
+    set(Geant4_LIBRARIES "Geant4::G4Tree;Geant4::G4FR;Geant4::G4GMocren;Geant4::G4visHepRep;Geant4::G4RayTracer;Geant4::G4VRML;Geant4::G4OpenGL;Geant4::G4gl2ps;Geant4::G4vis_management;Geant4::G4modeling;Geant4::G4interfaces;Geant4::G4persistency;Geant4::G4analysis;Geant4::G4error_propagation;Geant4::G4readout;Geant4::G4physicslists;Geant4::G4run;Geant4::G4event;Geant4::G4tracking;Geant4::G4parmodels;Geant4::G4processes;Geant4::G4digits_hits;Geant4::G4track;Geant4::G4particles;Geant4::G4geometry;Geant4::G4materials;Geant4::G4graphics_reps;Geant4::G4intercoms;Geant4::G4global;Geant4::G4clhep;Geant4::G4expat;Geant4::G4zlib;Geant4::G4UIVisDefinitions")
 else()
-    add_custom_target(Geant4) # dummy target
+    # add_custom_target(Geant4) # dummy target
     message(STATUS "Geant4 was found at: ${Geant4_DIR}")
-    #message(STATUS "Geant4 libraries: ${Geant4_LIBRARIES}")
-    #message(STATUS "Geant4 include dirs: ${Geant4_INCLUDE_DIRS}")
+    foreach(_print_item Geant4_INCLUDE_DIRS Geant4_LIBRARIES XercesC_FOUND XercesC_INCLUDE_DIR XercesC_LIBRARY_DEBUG XercesC_LIBRARY_RELEASE)
+        message(STATUS "${_print_item}  = ${${_print_item}}")
+    endforeach()
+    include($ENV{HOME}/cmake/cmake_debug_properties.cmake)
+    print_target_properties(Geant4::G4Tree)
 endif()
-
-include_directories(${Geant4_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${Geant4_LIBRARIES})
