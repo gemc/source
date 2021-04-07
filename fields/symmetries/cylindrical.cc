@@ -48,17 +48,14 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 	FILE *fp = fopen (map->identifier.c_str(), "r");
 
 	// ignoring header
-	while(tmp != "</mfield>")
-	{
+	while(tmp != "</mfield>") {
 		if(fscanf(fp, "%s", ctmp) != 0)
 			tmp = string(ctmp);
 	}
 
 	// now reading map values
-	for(int i1 = 0; i1<np_1 ; i1++)
-	{
-		for(int i2 = 0; i2<np_2 ; i2++)
-		{
+	for(int i1 = 0; i1<np_1 ; i1++) {
+		for(int i2 = 0; i2<np_2 ; i2++) {
 			if(fscanf(fp, "%lg %lg %lg %lg", &d1, &d2, &b1, &b2) != 0) {
 
 				d1 *= unit1;
@@ -70,15 +67,13 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 					cout << "  Loading Map: coordinates (" << d1 << ", " << d2 << ")   values: (" << b1 << ", " << b2 << ")." << endl;
 
 				// checking map consistency for first coordinate
-				if( (min1  + i1*cell1 - d1)/d1 > 0.001)
-				{
+				if( (min1  + i1*cell1 - d1)/d1 > 0.001) {
 					cout << "   !! Error: first coordinate index wrong. Map point should be " <<  min1  + i1*cell1
 					<< " but it's  " << d1 << " instead."  << endl;
 					cout << " min1: " << min1 << " cell1: " << cell1 << " unit1: " << unit1 << " i1: " << i1 << endl;
 				}
 				// checking map consistency for second coordinate
-				if( (min2  + i2*cell2 - d2)/d2 > 0.001)
-				{
+				if( (min2  + i2*cell2 - d2)/d2 > 0.001) {
 					cout << "   !! Error: second coordinate index wrong. Map point should be " <<  min2  + i2*cell2
 					<< " but it's  " << d2 << " instead." << endl;
 					cout << " min2: " << min2 << " cell2: " << cell2 << " unit2: " << unit2 << " i2: " << i2 << endl;
@@ -90,14 +85,12 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 
 				// The values are indexed as B1_2D[transverse][longi]
 				if(   map->getCoordinateWithSpeed(0).name == "transverse"
-					&& map->getCoordinateWithSpeed(1).name == "longitudinal")
-				{
+					&& map->getCoordinateWithSpeed(1).name == "longitudinal") {
 					map->B1_2D[t1][t2] = b1;
 					map->B2_2D[t1][t2] = b2;
 				}
 				if(   map->getCoordinateWithSpeed(0).name == "longitudinal"
-					&& map->getCoordinateWithSpeed(1).name == "transverse")
-				{
+					&& map->getCoordinateWithSpeed(1).name == "transverse") {
 					map->B1_2D[t2][t1] = b1;
 					map->B2_2D[t2][t1] = b2;
 				}
@@ -105,10 +98,10 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 		}
 
 		cout << "    [";
-		double progress = (double)i1/(double)np_1;
+		double progress = (double) (i1 + 1)/(double)np_1;
+
 		int pos = progress*barWidth;
-		for (int i = 0; i < barWidth; ++i)
-		{
+		for (int i = 0; i < barWidth; ++i) {
 			if      (i < pos)  cout << "=";
 			else if (i == pos) cout << ">";
 			else cout << " ";
@@ -137,14 +130,11 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 	} else if(symmetry == "cylindrical-x") {
 		LC  = x[0];
 		TC  = sqrt(x[1]*x[1] + x[2]*x[2]);
-//		phi = G4ThreeVector(x[2], x[0], x[1]).phi();  // old line with bug
 		phi = G4ThreeVector(x[1], x[2], x[0]).phi();  // right hand rule
 	// map plane is in XZ, phi on Z axis
-	} else if(symmetry == "cylindrical-y")
-	{
+	} else if(symmetry == "cylindrical-y") {
 		LC  = x[1];
 		TC  = sqrt(x[0]*x[0] + x[2]*x[2]);
-//		phi = G4ThreeVector(x[1], x[2], x[0]).phi(); // old line with bug
 		phi = G4ThreeVector(x[2], x[0], x[1]).phi(); // right hand rule
 	}
 
@@ -159,35 +149,26 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 	// outside map, returning no field
 	if(IT>=np[0]-1 || IL>=np[1]-1) return;
 
-
 	// no interpolation
-	if(interpolation == "none")
-	{
+	if(interpolation == "none") {
 		// checking if the point is closer to the top of the cell
 		if( fabs( startMap[0] + IT*cellSize[0] - TC) > fabs( startMap[0] + (IT+1)*cellSize[0] - TC)  ) IT++;
 		if( fabs( startMap[1] + IL*cellSize[1] - LC) > fabs( startMap[1] + (IL+1)*cellSize[1] - LC)  ) IL++;
 
-		if(symmetry == "cylindrical-z")
-		{
+		if(symmetry == "cylindrical-z") {
 			Bfield[0] = B1_2D[IT][IL] * cos(phi);
 			Bfield[1] = B1_2D[IT][IL] * sin(phi);
 			Bfield[2] = B2_2D[IT][IL];
-		}
-		else if(symmetry == "cylindrical-x")
-		{
+		} else if(symmetry == "cylindrical-x") {
 			Bfield[0] = B2_2D[IT][IL];
 			Bfield[1] = B1_2D[IT][IL] * cos(phi);
 			Bfield[2] = B1_2D[IT][IL] * sin(phi);
-		}
-		else if(symmetry == "cylindrical-y")
-		{
+		} else if(symmetry == "cylindrical-y") {
 			Bfield[1] = B2_2D[IT][IL];
 			Bfield[0] = B1_2D[IT][IL] * sin(phi);
 			Bfield[2] = B1_2D[IT][IL] * cos(phi);
 		}
-	}
-	else if (interpolation == "linear")
-	{
+	} else if (interpolation == "linear") {
 		// relative positions within cell
 		double xtr = (TC - (startMap[0] + IT*cellSize[0])) / cellSize[0];
 		double xlr = (LC - (startMap[1] + IL*cellSize[1])) / cellSize[1];
@@ -215,9 +196,7 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 			Bfield[0] = b1 * sin(phi);
 			Bfield[2] = b1 * cos(phi);
 		}
-	}
-	else
-	{
+	} else {
 		cout << "  !! Unkown field interpolation method >" << interpolation << "<" << endl;
 		return;
 	}
@@ -228,8 +207,7 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well
-	if(verbosity>3 && FIRST_ONLY != 99)
-	{
+	if(verbosity>3 && FIRST_ONLY != 99) {
 		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm:"
 		<< "("  << x[0]/cm << ", "
 		<< x[1]/cm << ", "

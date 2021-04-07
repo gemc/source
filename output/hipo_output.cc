@@ -85,10 +85,13 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
 	//	}
 
+	// this will never enter the second condition because hipo_output is instantiated every event
 	if(outEvent == nullptr) {
-		outEvent = new hipo::event();
+		outEvent = new hipo::event(1024*1024*2);
+	//	cout << " Event Size before reset: " << outEvent->getSize() << endl;
 	} else {
 		outEvent->reset();
+	//	cout << " Event Size after reset: " << outEvent->getSize() << endl;
 	}
 
 	// Create runConfigBank with 1 row based on schema
@@ -127,8 +130,6 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	}
 
 	outEvent->addStructure(runConfigBank);
-
-
 
 }
 

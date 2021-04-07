@@ -139,7 +139,7 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 
-	schemasToLoad["MC::True"]    = trueInfoSchema;
+	schemasToLoad["MC::True"]     = trueInfoSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

@@ -229,12 +229,11 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 
 	// outside map, returning no field
 	if (XX < startMap[0] || YY < startMap[1] || ZZ < startMap[2]) return;
-	if (XX >= endMap[0] || YY >= endMap[1] || ZZ >= endMap[2]) return;
+	if (XX >= endMap[0]  || YY >= endMap[1]  || ZZ >= endMap[2]) return;
 	
 	double B1,B2,B3;
 	// no interpolation
-	if(interpolation == "none")
-	{
+	if(interpolation == "none") {
 		// checking if the point is closer to the top of the cell
 		if( fabs( startMap[0] + IXX*cellSize[0] - XX) > fabs( startMap[0] + (IXX+1)*cellSize[0] - XX)  ) IXX++;
 		if( fabs( startMap[0] + IYY*cellSize[0] - YY) > fabs( startMap[0] + (IYY+1)*cellSize[0] - YY)  ) IYY++;
@@ -243,9 +242,8 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 		B1 = B1_3D[IXX][IYY][IZZ];
 		B2 = B2_3D[IXX][IYY][IZZ];
 		B3 = B3_3D[IXX][IYY][IZZ];
-	}
-	else if (interpolation == "linear")
-	{
+	} else if (interpolation == "linear") {
+		
 		// relative positions within cell
 		double Xd = (XX - (startMap[0] + IXX*cellSize[0])) / cellSize[0];
 		double Yd = (YY - (startMap[1] + IYY*cellSize[1])) / cellSize[1];
