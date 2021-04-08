@@ -10,6 +10,11 @@ public:
 	hipo::schema runRFSchema;
 	hipo::schema trueInfoSchema;
 
+	// generators
+	hipo::schema geantParticle;
+	hipo::schema lundParticle;
+
+
 	// detectors
 	hipo::schema bmtADCSchema;
 	hipo::schema bstADCSchema;

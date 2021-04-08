@@ -21,6 +21,10 @@ HipoSchema :: HipoSchema()
 	runRFSchema     = hipo::schema("RUN::rf",     10000, 12);
 	trueInfoSchema  = hipo::schema("MC::True",       40, 4);
 
+	// generators
+	geantParticle = hipo::schema("MC::Particle",  40, 2);
+	lundParticle  = hipo::schema("MC::Lund",      40, 3);
+
 	// detectors
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
 	bstADCSchema    = hipo::schema("BST::adc",    20200, 11);
@@ -68,6 +72,11 @@ HipoSchema :: HipoSchema()
 	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B,mode/B, torus/F, solenoid/F");
 	runRFSchema.parse("id/S, time/F");
 	trueInfoSchema.parse("detector/B, pid/I, mpid/I, tid/I, mtid/I, otid/I, trackE/F, totEdep/F, avgX/F, avgY/F, avgZ/F, avgLx/F, avgLy/F, avgLz/F, px/F, py/F, pz/F, vx/F, vy/F, vz/F, mvx/F, mvy/F, mvz/F, avgT/F, nsteps/I, procID/I, hitn/I");
+
+	// generators
+	geantParticle.parse("pid/I, px/F, py/F, pz/F, vx/F, vy/F, vz/F, vt/F");
+	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
+
 
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
@@ -119,6 +128,11 @@ HipoSchema :: HipoSchema()
 
 	schemasToLoad["RUN::config"] = runConfigSchema;
 	schemasToLoad["RUN::rf"]     = runRFSchema;
+	schemasToLoad["MC::True"]    = trueInfoSchema;
+
+	// generators
+	schemasToLoad["MC::Particle"] = geantParticle;
+	schemasToLoad["MC::Lund"]     = lundParticle;
 
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
@@ -138,8 +152,6 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["HTCC::tdc"]    = htccTDCSchema;
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
-
-	schemasToLoad["MC::True"]     = trueInfoSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 

@@ -16,7 +16,6 @@
 /// - Banks Format.
 /// - Materials.
 /// \section platforms Platforms Supported:
-/// - <i> Windows 7 to come October 2016 </i>
 /// - Linux (32, 64)
 /// - Mac OS X
 /// \section docs Documentation:
@@ -29,7 +28,7 @@
 /// \author \n &copy; Maurizio Ungaro
 /// \author e-mail: ungaro@jlab.org\n\n\n
 
-const char *GEMC_VERSION = "gemc 2.8";
+const char *GEMC_VERSION = "gemc 2.9";
 
 // G4 headers
 #include "G4RunManager.hh"
@@ -109,7 +108,6 @@ int main( int argc, char **argv )
 {
 	clock_t startTime = clock();
 	cout << endl;
-	
 	
 	goptions gemcOpt;
 	gemcOpt.setGoptions();

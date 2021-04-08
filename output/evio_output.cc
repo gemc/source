@@ -29,9 +29,9 @@ const int evio_output::fadc_mode1_banktag = 0xe101;
 vector<int> evio_output::detector_crates = {1, 7, 13, 19, 25, 31,     // EC
 	3, 9, 15, 21, 26, 33,     // PCal
 	59,                       // HTCC, CTOF
-        70, 71,                   // FTCalo
-        72,                       // FT Hodo
-        5, 11, 17, 23, 29, 35,     // FTOF        
+	70, 71,                   // FTCalo
+	72,                       // FT Hodo
+	5, 11, 17, 23, 29, 35,     // FTOF
 };
 
 // record the simulation conditions
@@ -87,7 +87,7 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 
 		// storing event number in memory
 		if(it->first == "evn")
-		evn = it->second;
+			evn = it->second;
 
 	}
 	*event << headerBank;
@@ -141,11 +141,11 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 {
 	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
 	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
-	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;  
+	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;
 
 	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
- 	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
-	  SAVE_ALL_MOTHERS = 1;
+	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
+		SAVE_ALL_MOTHERS = 1;
 
 	gBank bank  = getBankFromMap("generated", banksMap);
 	gBank sbank = getBankFromMap("psummary", banksMap);
@@ -282,55 +282,54 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 
 void evio_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
 {
-  vector<int> pid;
-  vector<int> tid;
-  vector<int> mtid;
-  vector<double> trackE;
-  vector<double> px;
-  vector<double> py;
-  vector<double> pz;
-  vector<double> vx;
-  vector<double> vy;
-  vector<double> vz;
-  
-  for (unsigned i = 0; i < ainfo.size(); i++)
-    {
-      pid.push_back (ainfo[i].pid);
-      tid.push_back (ainfo[i].tid);
-      mtid.push_back (ainfo[i].mtid);
-      trackE.push_back (ainfo[i].trackE);
-      px.push_back (ainfo[i].p.getX()/MeV);
-      py.push_back (ainfo[i].p.getY()/MeV);
-      pz.push_back (ainfo[i].p.getZ()/MeV);
-      vx.push_back (ainfo[i].vtx.getX()/MeV);
-      vy.push_back (ainfo[i].vtx.getY()/MeV);
-      vz.push_back (ainfo[i].vtx.getZ()/MeV);
-    }
+	vector<int> pid;
+	vector<int> tid;
+	vector<int> mtid;
+	vector<double> trackE;
+	vector<double> px;
+	vector<double> py;
+	vector<double> pz;
+	vector<double> vx;
+	vector<double> vy;
+	vector<double> vz;
 
-  // creating and inserting ancestors bank  
-  evioDOMNodeP ancestorsp = evioDOMNode::createEvioDOMNode(ANCESTORS_BANK_TAG, 0);
-  
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pid"),
-			   bank.getVarType("pid"), pid);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("tid"),
-			   bank.getVarType("tid"), tid);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("mtid"),
-			   bank.getVarType("mtid"), mtid);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("trackE"),
-			   bank.getVarType("trackE"), trackE);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("px"),
-			   bank.getVarType("px"),  px);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("py"),
-			   bank.getVarType("py"),  py);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pz"),
-			   bank.getVarType("pz"),  pz);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vx"),
-			   bank.getVarType("vx"),  vx);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vy"),
-			   bank.getVarType("vy"),  vy);
-  *ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vz"),
-			   bank.getVarType("vz"),  vz);
-  *event << ancestorsp;
+	for (unsigned i = 0; i < ainfo.size(); i++) {
+		pid.push_back (ainfo[i].pid);
+		tid.push_back (ainfo[i].tid);
+		mtid.push_back (ainfo[i].mtid);
+		trackE.push_back (ainfo[i].trackE);
+		px.push_back (ainfo[i].p.getX()/MeV);
+		py.push_back (ainfo[i].p.getY()/MeV);
+		pz.push_back (ainfo[i].p.getZ()/MeV);
+		vx.push_back (ainfo[i].vtx.getX()/MeV);
+		vy.push_back (ainfo[i].vtx.getY()/MeV);
+		vz.push_back (ainfo[i].vtx.getZ()/MeV);
+	}
+
+	// creating and inserting ancestors bank
+	evioDOMNodeP ancestorsp = evioDOMNode::createEvioDOMNode(ANCESTORS_BANK_TAG, 0);
+
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pid"),
+									 bank.getVarType("pid"), pid);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("tid"),
+									 bank.getVarType("tid"), tid);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("mtid"),
+									 bank.getVarType("mtid"), mtid);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("trackE"),
+									 bank.getVarType("trackE"), trackE);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("px"),
+									 bank.getVarType("px"),  px);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("py"),
+									 bank.getVarType("py"),  py);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("pz"),
+									 bank.getVarType("pz"),  pz);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vx"),
+									 bank.getVarType("vx"),  vx);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vy"),
+									 bank.getVarType("vy"),  vy);
+	*ancestorsp << addVector(ANCESTORS_BANK_TAG, bank.getVarId("vz"),
+									 bank.getVarType("vz"),  vz);
+	*event << ancestorsp;
 }
 
 void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int what)
@@ -602,15 +601,15 @@ void evio_output :: writeFADCMode1( map<int,  vector<hitOutput> > HO , int ev_nu
 				hardwareData[hardwareKey] = it_crate->second.at(i_hit).getQuantumS();
 			} else {
 				// ======== It was checked, here we have only empty hits, or hits that way off in time, e.g. hit_t = 1200ns
-//                            cout<<"Warning this hardware is already filled"<<endl;
-//			    cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
-//                            for( int ii = 0; ii < (it_crate->second.at(i_hit).getChargeTime()[3]).size();ii++ ){
-//                            
-//                               cout<<"       time = " <<(it_crate->second.at(i_hit).getChargeTime()[3]).at(ii)<<"     ";
-//                            }
-//                            cout<<endl;
-                            
-		            continue;
+				//                            cout<<"Warning this hardware is already filled"<<endl;
+				//			    cout<<"hardwareKey is "<<hardwareKey<<"      !!!"<<endl;
+				//                            for( int ii = 0; ii < (it_crate->second.at(i_hit).getChargeTime()[3]).size();ii++ ){
+				//
+				//                               cout<<"       time = " <<(it_crate->second.at(i_hit).getChargeTime()[3]).at(ii)<<"     ";
+				//                            }
+				//                            cout<<endl;
+
+				continue;
 			}
 
 			// We should keep track of number of channels in the crate
@@ -1229,7 +1228,7 @@ evioDOMNodeP addVariable(int tag, int num, string type, double value)
 {
 	// return right away if "d"
 	if(type == "d")
-	return evioDOMNode::createEvioDOMNode(tag, num, &value, 1);
+		return evioDOMNode::createEvioDOMNode(tag, num, &value, 1);
 
 	// otherwise check
 	if(type == "i")
@@ -1259,7 +1258,7 @@ evioDOMNodeP addVector(int tag, int num, string type, vector<double> value)
 {
 	// return right away if "d"
 	if(type == "d")
-	return evioDOMNode::createEvioDOMNode(tag, num, value);
+		return evioDOMNode::createEvioDOMNode(tag, num, value);
 
 	// otherwise convert the double into int
 	if(type == "i")
@@ -1270,7 +1269,7 @@ evioDOMNodeP addVector(int tag, int num, string type, vector<double> value)
 
 		return evioDOMNode::createEvioDOMNode(tag, num, VI);
 	}
-
+	
 	return evioDOMNode::createEvioDOMNode(tag, num, value);
 }
 

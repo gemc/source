@@ -160,10 +160,8 @@ void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 	hipo::bank runRFBank(output->hipoSchema->runRFSchema,  ids.size());
 
 	for(unsigned i=0; i < ids.size(); i++) {
-
 		runRFBank.putShort("id",   i, (short) ids[i]);
 		runRFBank.putFloat("time", i, (float) times[i]);
-
 	}
 
 	if(verbosity > 2) {
@@ -171,21 +169,12 @@ void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 	}
 
 	outEvent->addStructure(runRFBank);
-
 }
 
 void hipo_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo)
 {
-	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
-	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
-	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;
-
-	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
-	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
-		SAVE_ALL_MOTHERS = 1;
-
-	gBank bank  = getBankFromMap("generated", banksMap);
-	gBank sbank = getBankFromMap("psummary", banksMap);
+	double MAXP    = output->gemcOpt.optMap["NGENP"].arg;
+	int verbosity  = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
 	vector<int> pid;
 	vector<double> px;
@@ -195,7 +184,6 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> vy;
 	vector<double> vz;
 	vector<double> btime;
-	vector<double> multiplicity;
 
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
 		pid.push_back(MGP[i].PID);
@@ -206,58 +194,28 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vy.push_back(MGP[i].vertex.getY()/mm);
 		vz.push_back(MGP[i].vertex.getZ()/mm);
 		btime.push_back(MGP[i].time);
-		multiplicity.push_back(MGP[i].multiplicity);
 	}
 
+	hipo::bank mcParticle(output->hipoSchema->geantParticle,  pid.size());
 
-	if(SAVE_ALL_MOTHERS) {
-		vector<string> dname;
-		vector<int>    stat;
-		vector<double> etot;
-		vector<double> nphe;
-		vector<double> time;
+	for(unsigned i=0; i < pid.size(); i++) {
 
-		// fast MC mode, smeared and unsmeared
-		vector<double> ufpx;
-		vector<double> ufpy;
-		vector<double> ufpz;
-		vector<double> sfpx;
-		vector<double> sfpy;
-		vector<double> sfpz;
-
-		int writeFastMC = 0;
-
-		for(unsigned int i=0; i<MAXP && i<MGP.size(); i++) {
-			if(MGP[i].fastMC.size() > 0) {
-				if(MGP[i].pSum.size() != MGP[i].fastMC.size()) {
-					cout << " !!! Warning: pSum and fastMC info do not match" << endl;
-				} else {
-					writeFastMC = 1;
-				}
-			}
-
-			for(unsigned d=0; d<MGP[i].pSum.size(); d++)
-			{
-				dname.push_back(MGP[i].pSum[d].dname);
-				stat.push_back(MGP[i].pSum[d].stat);
-				etot.push_back(MGP[i].pSum[d].etot);
-				nphe.push_back(MGP[i].pSum[d].nphe);
-				time.push_back(MGP[i].pSum[d].t);
-
-
-				if(writeFastMC) {
-					ufpx.push_back(MGP[i].fastMC[d].pOrig.getX()/MeV);
-					ufpy.push_back(MGP[i].fastMC[d].pOrig.getY()/MeV);
-					ufpz.push_back(MGP[i].fastMC[d].pOrig.getZ()/MeV);
-					sfpx.push_back(MGP[i].fastMC[d].pSmear.getX()/MeV);
-					sfpy.push_back(MGP[i].fastMC[d].pSmear.getY()/MeV);
-					sfpz.push_back(MGP[i].fastMC[d].pSmear.getZ()/MeV);
-				}
-				
-			}
-		}
+		mcParticle.putInt("pid",    i,  pid[i]);
+		mcParticle.putFloat("px", i, (float) px[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("py", i, (float) py[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("pz", i, (float) pz[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("vx", i, (float) vx[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vy", i, (float) vy[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vz", i, (float) vz[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vt", i, (float) btime[i]);
 
 	}
+
+	if(verbosity > 2) {
+		mcParticle.show();
+	}
+
+	outEvent->addStructure(mcParticle);
 }
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
