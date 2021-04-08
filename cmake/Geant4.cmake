@@ -6,6 +6,9 @@
 #
 message(STATUS "Checking for Geant4")
 find_package(Geant4 QUIET COMPONENTS vis_all ui_all qt gdml)
+if(XercesC_LIBRARY AND NOT XercesC_LIBRARY_RELEASE)            # An issue with some XercesC installs that do not set the _RELEAST and _DEBUG
+    set(XercesC_LIBRARY_RELEASE ${XercesC_LIBRARY})
+endif()
 if(NOT Geant4_FOUND)
 
     set(XercesC_VERSION 3.2.3 CACHE STRING "XercesC version" FORCE)
