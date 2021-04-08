@@ -22,13 +22,11 @@ if(NOT Geant4_FOUND)
                 XercesC
                 URL                  "https://downloads.apache.org/xerces/c/3/sources/xerces-c-${XercesC_VERSION}.tar.gz"
                 SOURCE_DIR           ${CMAKE_BINARY_DIR}/XercesC
-                CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${Geant4_INSTALL_DIR}
+                CMAKE_ARGS       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
                                  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                                  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM} -j4
         )
-        set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX} CACHE FILEPATH "XercesC libraries" FORCE)
-        set(XercesC_INCLUDE_DIR ${XercesC_INSTALL_DIR}/include CACHE PATH "XercesC include dir" FORCE)
     else()
         add_custom_target(XercesC) # dummy target
         message(STATUS "XercesC library was found at: ${XercesC_LIBRARY}")
