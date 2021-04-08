@@ -74,7 +74,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 add_custom_target(dependencies)
 
 include(Geant4)
-include(qt5)
+include(Qt5)
 # include(XercesC)
 include(ccdb)
 include(eviocxx)
