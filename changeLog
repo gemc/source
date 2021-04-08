@@ -2,6 +2,126 @@ Changelog for GEMC
 ==================
 
 
+4/7/2021
+
+ - phi-segmented field routine fix
+ - hipo event buffer increased
+
+4/1/2021
+
+ - writing true information in hipo format
+
+3/31/2021
+
+ - renaming utils and options filenames to gemcUtils and gemcOption
+
+3/29/2021
+
+ - introducing exit codes for gemc
+
+
+3/25/2021
+
+ - removing unecessary logs on stepping action. return 0 not 1 from gemc.cc
+
+
+3/24/2021
+
+ - correct conversion factor to time for ctof and cnd
+ - SKIPNGEN now completely skips all events before its value, previsouly header and generated particles were written
+
+3/23/2021
+
+ - Make CHECK_OVERLAPS=1 work again.
+
+
+3/18/2021
+
+ - addressing issue 190, gemc will quit if argument is unknown / not found
+ - addressing repeating log
+ - addressing issue 191, density of vacuumOpt
+
+
+3/17/2021
+
+ - strict check on scan_number
+
+
+3/16/2021
+
+ - exit if pid in input file is wrong
+
+2/16/2021
+
+ - solenoid and torus field in hipo RUN::config
+
+2/5/2021
+
+ - addressing gcc warnings
+
+
+1/28/2021
+
+ - ec and pcal hit process are merged
+
+
+12/8/2020
+
+ - CLAS12 detectors hipo output
+
+
+10/13/2020
+
+ - starting hipo4 output: definind schemas
+
+
+10/6/2020
+
+ - writing RUN::config bank
+
+
+8/31/2020
+
+- ALERT digitization improvements
+
+
+8/7/2020
+
+- added muMinusCaptureAtRest
+
+
+7/29/2020
+
+- detail on error for each coordinate. fix typo on coordinate 3. add tesla units on log
+
+
+7/28/2020
+
+ - HARDWARESTATUS implementation for CLAS12 detectors
+
+7/13/2020
+
+ - fixed ROTATE_FIELDMAP option
+
+7/10/2020
+
+ - added RECORD_MIRRORS to control mirror type recording
+
+7/7/2020
+
+ - added hydrogen gas material
+
+7/6/2020
+
+ - added options.html to repository
+
+
+7/2/2020
+
+ - added alert hit processes
+ - improving CLAS12 dc smearing and inefficiency
+
+
 .. Note::
    6/23/20 gemc 2.8 released.
 
