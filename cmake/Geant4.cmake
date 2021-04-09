@@ -89,6 +89,8 @@ if(NOT Geant4_FOUND)
                          -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                          -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                          -DGEANT4_USE_GDML=ON
+                         -DXercesC_LIBRARY=${XercesC_LIBRARY}
+                         -DXercesC_INCLUDE_DIR=${XercesC_INCLUDE_DIR}
                          -DGEANT4_USE_QT=ON
                          -DGEANT4_INSTALL_DATA=ON
                          -DGEANT4_USE_SYSTEM_EXPAT=OFF
