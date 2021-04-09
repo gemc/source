@@ -50,13 +50,13 @@ if(NOT ccdb_FOUND)
 
     set_property(TARGET ccdb_sqlite APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(ccdb_sqlite PROPERTIES
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libccdb_sqlite.dylib"
-                          IMPORTED_SONAME_RELEASE "@rpath/libccdb_sqlite.dylib"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libccdb_sqlite${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                          IMPORTED_SONAME_RELEASE "@rpath/libccdb_sqlite${CMAKE_SHARED_LIBRARY_SUFFIX}"
                           )
     set_property(TARGET ccdb APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(ccdb PROPERTIES
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libccdb.dylib"
-                          IMPORTED_SONAME_RELEASE "@rpath/libccdb.dylib"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libccdb${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                          IMPORTED_SONAME_RELEASE "@rpath/libccdb${CMAKE_SHARED_LIBRARY_SUFFIX}"
                           )
 
     add_library(ccdb_sqlite_static SHARED IMPORTED)

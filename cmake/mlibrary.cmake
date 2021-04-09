@@ -38,8 +38,8 @@ else()
                               )
         set_property(TARGET mlibrary APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
         set_target_properties(mlibrary PROPERTIES
-                              IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libmlibrary.dylib"
-                              IMPORTED_SONAME_RELEASE "@rpath/libmlibrary.dylib"
+                              IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libmlibrary${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                              IMPORTED_SONAME_RELEASE "@rpath/libmlibrary${CMAKE_SHARED_LIBRARY_SUFFIX}"
                               )
 
         add_library(mlibrary_static STATIC IMPORTED)

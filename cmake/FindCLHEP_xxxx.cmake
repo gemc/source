@@ -1,3 +1,4 @@
+# From: https://github.com/HSF/cmaketools/blob/master/modules/FindCLHEP.cmake
 # - Try to find CLHEP
 # Defines:
 #

@@ -48,14 +48,14 @@ if(NOT eviocxx_FOUND)   # We did not find it, so we will build it ourselves.
 
     set_property(TARGET evio APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(evio PROPERTIES
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libevio.dylib"
-                          IMPORTED_SONAME_RELEASE "@rpath/libevio.dylib"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libevio${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                          IMPORTED_SONAME_RELEASE "@rpath/libevio${CMAKE_SHARED_LIBRARY_SUFFIX}"
                           )
 
     set_property(TARGET eviocxx APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(eviocxx PROPERTIES
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libeviocxx.dylib"
-                          IMPORTED_SONAME_RELEASE "@rpath/libeviocxx.dylib"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libeviocxx${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                          IMPORTED_SONAME_RELEASE "@rpath/libeviocxx${CMAKE_SHARED_LIBRARY_SUFFIX}"
                           )
 
     add_library(eviocxx_static STATIC IMPORTED)

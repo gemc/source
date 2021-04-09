@@ -35,7 +35,7 @@ if(NOT hipo4_FOUND)
         set(LZ4_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
         set(LZ4_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/liblz4.a)
         set(LZ4_LIBRARIES_STATIC ${CMAKE_INSTALL_PREFIX}/lib/liblz4.a)
-        set(LZ4_LIBRARIES_SHARED ${CMAKE_INSTALL_PREFIX}/lib/liblz4.dylib)
+        set(LZ4_LIBRARIES_SHARED ${CMAKE_INSTALL_PREFIX}/lib/liblz4${CMAKE_SHARED_LIBRARY_SUFFIX})
         file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib)
         file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/include)
     endif(NOT LZ4_FOUND)
@@ -50,8 +50,8 @@ if(NOT hipo4_FOUND)
                           )
     set_property(TARGET hipo4 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(hipo4 PROPERTIES
-                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libhipo4.dylib"
-                          IMPORTED_SONAME_RELEASE "@rpath/libhipo4.dylib"
+                          IMPORTED_LOCATION_RELEASE "${CMAKE_INSTALL_PREFIX}/lib/libhipo4${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                          IMPORTED_SONAME_RELEASE "@rpath/libhipo4${CMAKE_SHARED_LIBRARY_SUFFIX}"
                           )
 
     # Everything again for _static

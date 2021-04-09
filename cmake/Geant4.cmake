@@ -61,11 +61,8 @@ if(NOT Geant4_FOUND)
                                  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM}
         )
-        if(APPLE)
-            set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c.dylib)
-        else()
-            set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib64/libxerces-c.so)
-        endif()
+
+        set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX})
         set(XercesC_INCLUDE_DIR	${XercesC_INSTALL_DIR}/include)
 
     else()
