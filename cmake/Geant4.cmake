@@ -61,13 +61,17 @@ if(NOT Geant4_FOUND)
                                  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM}
         )
-
-        set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX})
+        # Somewhat troublesome, XercesC insists on installing in lib64 on Linux.
+        if(APPLE)
+            set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX})
+        else()
+            set(XercesC_LIBRARY ${XercesC_INSTALL_DIR}/lib64/libxerces-c${CMAKE_SHARED_LIBRARY_SUFFIX})
+        endif()
         set(XercesC_INCLUDE_DIR	${XercesC_INSTALL_DIR}/include)
 
     else()
         add_custom_target(XercesC) # dummy target
-        message(STATUS "XercesC library was found at: ${XercesC_LIBRARY}")
+        message(STATUS "XercesC library was found at: ${XercesC_LIBRARY} and ${XercesC_INCLUDE_DIR}")
     endif()
 
     message(STATUS "**********************************************************************")
