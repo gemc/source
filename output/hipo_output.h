@@ -26,7 +26,15 @@ private:
 	static map<string, double> fieldScales;
 
 public:
-	~hipo_output(){;}  ///< event is deleted in WriteEvent routine
+	~hipo_output(){
+		if(outEvent) {
+			delete outEvent;
+		}
+		if(trueInfoBank) {
+			delete trueInfoBank;
+		}
+
+	}  ///< event is deleted in WriteEvent routine
 	static outputFactory *createOutput() {return new hipo_output;}
 	
 	// prepare event
@@ -80,7 +88,7 @@ public:
 	void writeEvent(outputContainer*) ;
 
 	hipo::event *outEvent = nullptr;
-	hipo::bank *trueInfoBank;
+	hipo::bank *trueInfoBank = nullptr;
 
 	// needed to correctly index
 	int lastHipoTrueInfoBankIndex  = 0;

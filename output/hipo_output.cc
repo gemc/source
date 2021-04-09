@@ -594,5 +594,6 @@ void hipo_output :: writeEvent(outputContainer* output)
 	outEvent->addStructure(*trueInfoBank);
 
 	output->hipoWriter->addEvent(*outEvent);
+
 }
 
