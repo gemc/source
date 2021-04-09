@@ -27,7 +27,9 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-message(STATUS "COMPILERS: ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}")
+message(STATUS "COMPILERSn Used")
+message(STATUS "CC = ${CMAKE_C_COMPILER}")
+message(STATUS "CXX= ${CMAKE_CXX_COMPILER}")
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(STATUS  "GEMC requires an out-of-source build.")
@@ -58,9 +60,7 @@ if(APPLE)
     list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" isSystemDir)
     IF("${isSystemDir}" STREQUAL "-1")
         set(CMAKE_INSTALL_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-        message("CMAKE_INSTALL_RPATH set to ${CMAKE_INSTALL_RPATH} ")
-
-    ENDIF("${isSystemDir}" STREQUAL "-1")
+	ENDIF("${isSystemDir}" STREQUAL "-1")
 endif(APPLE)
 
 # include CMake macros
