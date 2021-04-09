@@ -36,9 +36,11 @@ if(NOT Geant4_FOUND)
                            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 BUILD_COMMAND    ${CMAKE_MAKE_PROGRAM}
         )
+        set(CLHEP_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
     else()
         add_custom_target(CLHEP) # dummy target
-        message(STATUS "CLHEP library was found at: ${CLHEP_INCLUDE_DIRS}, ${CLHEP_LIBRARY}")
+        message(STATUS "CLHEP library was found at: ${CLHEP_INCLUDE_DIRS}, ${CLHEP_LIBRARIES}")
+        get_filename_component(CLHEP_ROOT_DIR ${CLHEP_DIR} DIRECTORY)
     endif()
     #
     # The GDML component of GEANT4 depends on XercesC. Look for it, and if not found, build it.
@@ -91,6 +93,7 @@ if(NOT Geant4_FOUND)
                          -DGEANT4_USE_GDML=ON
                          -DXercesC_LIBRARY=${XercesC_LIBRARY}
                          -DXercesC_INCLUDE_DIR=${XercesC_INCLUDE_DIR}
+                         -DCLHEP_ROOT_DIR=${CLHEP_ROOT_DIR}
                          -DGEANT4_USE_QT=ON
                          -DGEANT4_INSTALL_DATA=ON
                          -DGEANT4_USE_SYSTEM_EXPAT=OFF
