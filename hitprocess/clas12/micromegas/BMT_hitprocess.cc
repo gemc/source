@@ -47,12 +47,8 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 		bmtc.RADIUS[row] = data[row][3];
 		bmtc.ZMIN[row]   = data[row][4];
 		bmtc.ZMAX[row] = data[row][5];
-		bmtc.EDGE1[row][0] = (data[row][6]+120.)*degree;
-		bmtc.EDGE2[row][0] = (data[row][7]+120.)*degree;
-		bmtc.EDGE1[row][1] = (data[row][6])*degree;
-		bmtc.EDGE2[row][1] = (data[row][7])*degree;
-		bmtc.EDGE1[row][2] = (data[row][6]+240.)*degree;
-		bmtc.EDGE2[row][2] = (data[row][7]-120.)*degree;
+		bmtc.EDGE1[row] = (data[row][6]-30)*degree;
+		bmtc.EDGE2[row] = (data[row][7]-30)*degree;
 		bmtc.NSTRIPS[row] = data[row][8];
 		bmtc.hDrift =  data[row][9];
 	}
@@ -76,17 +72,9 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 				bmtc.PITCH[layer][row] = bmtc.PITCH[layer][row]/bmtc.RADIUS[layer]; //Get an angular pitch
 				for (int j = 0; j <bmtc.NSECTORS ; ++j)
 				{
-					if (bmtc.EDGE2[layer][j]>bmtc.EDGE1[layer][j]) {
-						double middle=(bmtc.EDGE1[layer][j]+bmtc.EDGE2[layer][j])/2.;
-						bmtc.EDGE1[layer][j] = middle-bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
-						bmtc.EDGE2[layer][j] = middle+bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
-					}
-					if (bmtc.EDGE2[layer][j]<bmtc.EDGE1[layer][j]) {
-						double middle=(bmtc.EDGE1[layer][j]+bmtc.EDGE2[layer][j]+2*pi)/2.;
-						bmtc.EDGE1[layer][j] = middle-bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
-						bmtc.EDGE2[layer][j] = middle+bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
-						bmtc.EDGE2[layer][j] -=2*pi;
-					}
+					double middle=(bmtc.EDGE1[layer]+bmtc.EDGE2[layer])/2.;
+					bmtc.EDGE1[layer] = middle-bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
+					bmtc.EDGE2[layer] = middle+bmtc.GROUP[layer][row]*bmtc.PITCH[layer][row]/2.;
 				}
 			}
 		}
@@ -187,13 +175,15 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
-	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();
-	
+	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();  ///< Global Coordinates of interaction
+        G4ThreeVector  lxyz  = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); ///< Local Coordinates of interaction
+       	double dz = bmtc.Z + aStep->GetPreStepPoint()->GetPhysicalVolume()->GetTranslation().z();
+	lxyz.setZ(lxyz.z()+dz);
 	// if the scale is not set, then use fieldmanager to get the value
 	// if fieldmanager is not found, the field is zero
 	/*	if(bmtc.fieldScale == -1)
 	 {*/
-	const double point[4] = {xyz.x(), xyz.y(), xyz.z() - bmtc.targetZPos, 10};
+	const double point[4] = {xyz.x(), xyz.y(), xyz.z(), 10};
 	double fieldValue[3] = {0, 0, 0};
 	double phi_p=atan2(xyz.y(),xyz.x());
 
@@ -233,7 +223,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 	
-	vector<double> multi_hit = bmts.FindStrip(layer, sector, xyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization
+	vector<double> multi_hit = bmts.FindStrip(layer, sector, lxyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization
 	
 	int n_multi_hits = multi_hit.size()/2;
 	

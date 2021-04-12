@@ -19,31 +19,32 @@
 // Added target position 
 
 // the routine to find the strip
-vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, double Edep, bmtConstants bmtc)
+vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, double Edep, bmtConstants bmtc)
 {
-	double x = xyz.x()/mm;
-	double y = xyz.y()/mm;
-	double z = xyz.z()/mm - bmtc.targetZPos / mm;
-
+	double lx = lxyz.x()/mm;
+	double ly = lxyz.y()/mm;
+	double lz = lxyz.z()/mm;
+	 
 	int Nel = (int) (1e6*Edep/bmtc.w_i);
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	if (bmtc.HV_DRIFT[layer-1][sector-1]==0||bmtc.HV_STRIPS[layer-1][sector-1]==0) Nel=0;
 	vector<double> strip_id;
 
-	double Delta_drift = sqrt( x*x+y*y) - bmtc.RADIUS[layer-1];
+	double Delta_drift = sqrt( lx*lx+ly*ly) - bmtc.RADIUS[layer-1];
 
-	double phi = atan2(y,x) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
-	z=z + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); //Not sure useful, but take into account LorentzAngle deviation if
-	int sector_bis=isInSector(layer,atan2(y,x),bmtc);
-	int strip_num = getClosestStrip(layer, sector_bis, phi, z, bmtc);
-	sigma = getSigma(layer, x, y, bmtc);
+	double phi = atan2(ly,lx) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
+	lz=lz + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); //Not sure useful, but take into account LorentzAngle deviation if
+	  
+	int sector_bis=isInSector(layer,atan2(ly,lx),bmtc); if(sector_bis!=0) cout << "WARNING: BMT hit outside active area" << endl;
+	int strip_num = getClosestStrip(layer, sector_bis, phi, lz, bmtc);
+	sigma = getSigma(layer, lx, ly, bmtc);
 	sigma_phi = sigma/bmtc.RADIUS[layer-1];
 	int cluster_size=0;
 	if (bmtc.AXIS[layer-1]==0) cluster_size=bmtc.nb_sigma*sigma/bmtc.PITCH[layer-1][5]+1; //Compare to smallest pitch in C
 	if (bmtc.AXIS[layer-1]==1) cluster_size=bmtc.nb_sigma*sigma_phi/bmtc.PITCH[layer-1][0]+1;
 
 	double weight=0;
-	if (strip_num>=1&&strip_num<=bmtc.NSTRIPS[layer-1]) weight=Weight_td(layer, sector_bis, strip_num, phi, z, bmtc);
+	if (strip_num>=1&&strip_num<=bmtc.NSTRIPS[layer-1]) weight=Weight_td(layer, strip_num, phi, lz, bmtc);
 
 	if(Nel>0&&weight>0) // if the track deposited energy is greater than the assumed ionization potential digitize
 	{
@@ -55,7 +56,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 		{
 			//Check the strip after the closest strip
 			if (strip_num+istrip<=bmtc.NSTRIPS[layer-1]) {
-				weight=Weight_td(layer, sector_bis, strip_num+istrip, phi, z, bmtc);
+				weight=Weight_td(layer, strip_num+istrip, phi, lz, bmtc);
 				if (weight>0){
 					strip_id.push_back(strip_num+istrip);
 					strip_id.push_back(weight);
@@ -64,7 +65,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector xyz, do
 			}
 			//Check the strip before the closest strip
 			if (strip_num-istrip>=1) {
-				weight=Weight_td(layer, sector_bis, strip_num-istrip, phi, z, bmtc);
+				weight=Weight_td(layer, strip_num-istrip, phi, lz, bmtc);
 				if (weight>0){
 					strip_id.push_back(strip_num-istrip);
 					strip_id.push_back(weight);
@@ -132,15 +133,10 @@ int bmt_strip::getClosestStrip(int layer, int sector, double angle, double z, bm
 	if(angle<0) angle+=2*pi; // from 0 to 2Pi
 
 	//To deal with the sector covering 0 degree
-	double angle_i = bmtc.EDGE1[layer-1][sector]; // first angular boundary of sector
-	double angle_f = bmtc.EDGE2[layer-1][sector]; // second angular boundary of sector
+	double angle_i = bmtc.EDGE1[layer-1]; // first angular boundary of sector
+	double angle_f = bmtc.EDGE2[layer-1]; // second angular boundary of sector
 
-	if (angle_f<angle_i) { //We are on sector covering 0 degree
-		angle_f+= 2*pi;
-		if (angle<angle_i) angle+=2*pi; //If angle smaller than angle_i, then we have passed 0 degree
-	}
-
-	if (angle>angle_i&&angle<angle_f&&z<bmtc.ZMAX[layer-1]&&z>bmtc.ZMIN[layer-1]){
+	if (sector>=0&&angle>angle_i&&angle<angle_f&&z<bmtc.ZMAX[layer-1]&&z>bmtc.ZMIN[layer-1]){
 		if (bmtc.AXIS[layer-1]==0){//Then it is a C detector
 			var=z;
 			var_min=bmtc.ZMIN[layer-1];
@@ -184,7 +180,7 @@ double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bm
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	double var=0.;
 	if (bmtc.AXIS[layer-1]==0) var=bmtc.ZMIN[layer-1]; //C detector so we look at Z
-	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1][sector]; //Z detector so we look at phi
+	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1]; //Z detector so we look at phi
 
 	int group=0;
 	int limit = bmtc.GROUP[layer-1][group];
@@ -206,40 +202,22 @@ double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bm
 }
 
 
-// not used yet (implemented for alternate algorithm not yet fully developed)
 int bmt_strip::isInSector(int layer, double angle, bmtConstants bmtc)
 {
-	if(angle<0)
-	angle+=2*pi; // from 0 to 2Pi
-	double angle_pr = angle + 2*pi;
-
-	double angle_i = 0; // first angular boundary init
-	double angle_f = 0; // second angular boundary for detector A, B, or C init
 	int num_detector = -1;
 
-	for(int i = 0; i<3; i++) {
-
-		angle_i = bmtc.EDGE1[layer-1][i] ;
-		angle_f = bmtc.EDGE2[layer-1][i] ;
-		if (angle_f<angle_i) angle_f+= 2*pi;
-
-		if((angle>=angle_i && angle<=angle_f)||(angle_pr>=angle_i && angle_pr<=angle_f)) num_detector=i;
-	}
+	if(angle>=bmtc.EDGE1[layer-1] && angle<=bmtc.EDGE2[layer-1]) num_detector=0;
+	
 	return num_detector;
 }
 
-double bmt_strip::Weight_td(int layer, int sector, int strip, double angle, double z, bmtConstants bmtc){
+double bmt_strip::Weight_td(int layer,int strip, double angle, double z, bmtConstants bmtc){
 	double wght=0;
 	int group=getStripGroup(layer, strip, bmtc);
-	if(angle<0) angle+=2*pi; // from 0 to 2Pi
 
 	//To deal with the sector covering 0 degree
-	double angle_i = bmtc.EDGE1[layer-1][sector]; // first angular boundary of sector
-	double angle_f = bmtc.EDGE2[layer-1][sector]; // second angular boundary of sector
-	if (angle_f<angle_i) { //We are on sector covering 0 degree
-		angle_f+= 2*pi;
-		if (angle<angle_i) angle+=2*pi; //If angle smaller than angle_i, then we have passed 0 degree
-	}
+	double angle_i = bmtc.EDGE1[layer-1]; // first angular boundary of sector
+	double angle_f = bmtc.EDGE2[layer-1]; // second angular boundary of sector
 
 	if(bmtc.AXIS[layer-1]==1){ // if it is a Z-detector
 		double strip_phi=angle_i+(strip-0.5)*bmtc.PITCH[layer-1][0];
