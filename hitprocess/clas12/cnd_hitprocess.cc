@@ -209,11 +209,11 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Get info about detector material to eveluate Birks effect
 	double birks_constant=aHit->GetDetector().GetLogical()->GetMaterial()->GetIonisation()->GetBirksConstant();
 	
-	vector<G4ThreeVector> Lpos = aHit->GetLPos();   // local position wrt centre of the detector piece (ie: paddle): in mm
-	vector<double>      Edep = aHit->GetEdep();     // deposited energy in the hit, in MeV
-	vector<int> charge = aHit->GetCharges();        // charge for each step
-	vector<double> times = aHit->GetTime();
-	vector<double> dx = aHit->GetDx();              // step length
+	vector<G4ThreeVector> Lpos   = aHit->GetLPos();   // local position wrt centre of the detector piece (ie: paddle): in mm
+	vector<double>        Edep   = aHit->GetEdep();     // deposited energy in the hit, in MeV
+	vector<int>           charge = aHit->GetCharges();        // charge for each step
+	vector<double>        times  = aHit->GetTime();
+	vector<double>        dx     = aHit->GetDx();              // step length
 	
 	unsigned nsteps = times.size();                 // total number of steps in the hit
 	
@@ -521,8 +521,29 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 vector<identifier>  cnd_HitProcess :: processID(vector<identifier> id, G4Step *step, detector Detector)
 {
-	id[id.size()-1].id_sharing = 1;
-	return id;
+	vector<identifier> yid = id;
+	yid[0].id_sharing = 1; // This shows the paddle
+	yid[1].id_sharing = 1; // This shows the PMT, whether the upstream one, or the downstream
+
+	//    cout<<"Size of id is "<<id.size()<<endl;
+	//    cout<<"id[0].id = "<<id[0].id<<endl;
+	//    cout<<"id[1].id = "<<id[1].id<<endl;
+	// Check if in the geometry the yid[1].id is 0, this should come from the geometry.
+	if (yid[1].id != 0) {
+		cout << "*****WARNING***** in ctof_HitProcess :: processID, identifier PM! of the original hit should be 0 " << endl;
+		cout << "yid[1].id = " << yid[1].id << endl;
+	}
+
+	// Now we want to have similar identifiers, but the only difference be id PMT to be 1, instead of 0
+	identifier this_id = yid[0];
+	yid.push_back(this_id);
+	this_id = yid[1];
+	this_id.id = 1;
+	yid.push_back(this_id);
+
+	// cout<<"In the ctof processID is.size() = "<<id.size()<<endl;
+	// cout<<"In the ctof Id[0] = "<<id[0].id<<endl;
+	return yid;
 }
 
 

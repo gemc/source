@@ -368,9 +368,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	return dgtz;
 }
 
-vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
-	//id[id.size()-1].id_sharing = 1;
-	
+vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {	
 	vector<identifier> yid = id;
 	yid[0].id_sharing = 1; // This shows the paddle
 	yid[1].id_sharing = 1; // This shows the PMT, whether the upstream one, or the downstream

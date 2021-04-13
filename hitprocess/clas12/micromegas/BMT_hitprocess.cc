@@ -37,12 +37,11 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	vector<vector<double> > data;
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bmtc.connection));
 	
-	//Load the geometrical constant for each layer
+	// Load the geometrical constant for each layer
 	sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_layer_noshim:%d:%s%s", bmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bmtc.database);
-	
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+
+	for(unsigned row = 0; row < data.size(); row++) {
 		bmtc.AXIS[row] = data[row][1];
 		bmtc.RADIUS[row] = data[row][3];
 		bmtc.ZMIN[row]   = data[row][4];
@@ -52,22 +51,22 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 		bmtc.NSTRIPS[row] = data[row][8];
 		bmtc.hDrift =  data[row][9];
 	}
-	
-	//Load the strip structure of each layer, compute PITCH
-	bmtc.GROUP.resize(bmtc.NLAYERS); //6 Layers
+
+	// Load the strip structure of each layer, compute PITCH
+	bmtc.GROUP.resize(bmtc.NLAYERS); // 6 Layers
 	bmtc.PITCH.resize(bmtc.NLAYERS);
-	
+
 	for (int layer=0; layer<bmtc.NLAYERS;layer++){
 		sprintf(bmtc.database,"/geometry/cvt/mvt/bmt_strip_L%d:%d:%s%s", layer+1, bmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,bmtc.database);
-		
+
 		bmtc.GROUP[layer].resize(data.size());
 		bmtc.PITCH[layer].resize(data.size());
 		for(unsigned row = 0; row < data.size(); row++)
 		{
 			bmtc.GROUP[layer][row] = data[row][0];
 			bmtc.PITCH[layer][row] = data[row][1];
-			
+
 			if (bmtc.AXIS[layer]==1) {//Compute angular pitch and redefine the phi angular coverage to be consistent with the pitch
 				bmtc.PITCH[layer][row] = bmtc.PITCH[layer][row]/bmtc.RADIUS[layer]; //Get an angular pitch
 				for (int j = 0; j <bmtc.NSECTORS ; ++j)
@@ -78,7 +77,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 				}
 			}
 		}
-		
+
 		for (int j = 0; j <bmtc.NSECTORS ; ++j)
 		{
 			if (bmtc.AXIS[layer]==1) bmtc.HV_DRIFT[layer][j]=1800;
@@ -86,7 +85,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 			bmtc.HV_STRIPS[layer][j]=520;
 		}
 	}
-	
+
 	// all dimensions are in mm
 	bmtc.SigmaDrift = 0.036; //mm-1
 	bmtc.hStrip2Det = bmtc.hDrift/2.;
@@ -176,8 +175,8 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	int layer  = yid[0].id;
 	int sector = yid[2].id;
 	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();  ///< Global Coordinates of interaction
-        G4ThreeVector  lxyz  = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); ///< Local Coordinates of interaction
-       	double dz = bmtc.Z + aStep->GetPreStepPoint()->GetPhysicalVolume()->GetTranslation().z();
+	G4ThreeVector  lxyz  = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); ///< Local Coordinates of interaction
+	double dz = bmtc.Z + aStep->GetPreStepPoint()->GetPhysicalVolume()->GetTranslation().z();
 	lxyz.setZ(lxyz.z()+dz);
 	// if the scale is not set, then use fieldmanager to get the value
 	// if fieldmanager is not found, the field is zero

@@ -24,7 +24,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 	double lx = lxyz.x()/mm;
 	double ly = lxyz.y()/mm;
 	double lz = lxyz.z()/mm;
-	 
+
 	int Nel = (int) (1e6*Edep/bmtc.w_i);
 	// the return vector is always in pairs the first index is the strip number, the second is the Edep on the strip
 	if (bmtc.HV_DRIFT[layer-1][sector-1]==0||bmtc.HV_STRIPS[layer-1][sector-1]==0) Nel=0;
@@ -33,8 +33,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 	double Delta_drift = sqrt( lx*lx+ly*ly) - bmtc.RADIUS[layer-1];
 
 	double phi = atan2(ly,lx) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
-	lz=lz + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); //Not sure useful, but take into account LorentzAngle deviation if
-	  
+	lz=lz + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); // Not sure useful, but take into account LorentzAngle deviation if
+
 	int sector_bis=isInSector(layer,atan2(ly,lx),bmtc); if(sector_bis!=0) cout << "WARNING: BMT hit outside active area" << endl;
 	int strip_num = getClosestStrip(layer, sector_bis, phi, lz, bmtc);
 	sigma = getSigma(layer, lx, ly, bmtc);
@@ -46,14 +46,13 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 	double weight=0;
 	if (strip_num>=1&&strip_num<=bmtc.NSTRIPS[layer-1]) weight=Weight_td(layer, strip_num, phi, lz, bmtc);
 
-	if(Nel>0&&weight>0) // if the track deposited energy is greater than the assumed ionization potential digitize
-	{
+	if(Nel>0&&weight>0) { // if the track deposited energy is greater than the assumed ionization potential digitize
+
 		strip_id.push_back(strip_num);
 		strip_id.push_back(weight);
 
 		// if the strip is found (i.e. the hit is within acceptance
-		for(int istrip=1;istrip< cluster_size+1;istrip++)
-		{
+		for(int istrip=1;istrip< cluster_size+1;istrip++) {
 			//Check the strip after the closest strip
 			if (strip_num+istrip<=bmtc.NSTRIPS[layer-1]) {
 				weight=Weight_td(layer, strip_num+istrip, phi, lz, bmtc);
@@ -63,7 +62,7 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 
 				}
 			}
-			//Check the strip before the closest strip
+			// Check the strip before the closest strip
 			if (strip_num-istrip>=1) {
 				weight=Weight_td(layer, strip_num-istrip, phi, lz, bmtc);
 				if (weight>0){
@@ -71,10 +70,9 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 					strip_id.push_back(weight);
 				}
 			}
-
 		}
 
-		//We have computed the weight with a gaussian distribution. But considering the few electrons, it makes no sense.
+		// We have computed the weight with a gaussian distribution. But considering the few electrons, it makes no sense.
 		int Nel_left=Nel;
 		double renorm=0;
 		double weight_this_strip;
@@ -132,11 +130,11 @@ int bmt_strip::getClosestStrip(int layer, int sector, double angle, double z, bm
 
 	if(angle<0) angle+=2*pi; // from 0 to 2Pi
 
-	//To deal with the sector covering 0 degree
+	// To deal with the sector covering 0 degree
 	double angle_i = bmtc.EDGE1[layer-1]; // first angular boundary of sector
 	double angle_f = bmtc.EDGE2[layer-1]; // second angular boundary of sector
 
-	if (sector>=0&&angle>angle_i&&angle<angle_f&&z<bmtc.ZMAX[layer-1]&&z>bmtc.ZMIN[layer-1]){
+	if (sector>=0&&angle>angle_i&&angle<angle_f&&z<bmtc.ZMAX[layer-1]&&z>bmtc.ZMIN[layer-1]) {
 		if (bmtc.AXIS[layer-1]==0){//Then it is a C detector
 			var=z;
 			var_min=bmtc.ZMIN[layer-1];
@@ -179,8 +177,8 @@ double bmt_strip::GetStripInfo(int layer, int sector, int strip, bmtConstants bm
 {
 	int num_strip = strip - 1;     			// index of the strip (starts at 0)
 	double var=0.;
-	if (bmtc.AXIS[layer-1]==0) var=bmtc.ZMIN[layer-1]; //C detector so we look at Z
-	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1]; //Z detector so we look at phi
+	if (bmtc.AXIS[layer-1]==0) var=bmtc.ZMIN[layer-1];  // C detector so we look at Z
+	if (bmtc.AXIS[layer-1]==1) var=bmtc.EDGE1[layer-1]; // Z detector so we look at phi
 
 	int group=0;
 	int limit = bmtc.GROUP[layer-1][group];
@@ -215,7 +213,7 @@ double bmt_strip::Weight_td(int layer,int strip, double angle, double z, bmtCons
 	double wght=0;
 	int group=getStripGroup(layer, strip, bmtc);
 
-	//To deal with the sector covering 0 degree
+	// To deal with the sector covering 0 degree
 	double angle_i = bmtc.EDGE1[layer-1]; // first angular boundary of sector
 	double angle_f = bmtc.EDGE2[layer-1]; // second angular boundary of sector
 
@@ -244,8 +242,8 @@ double bmt_strip::Weight_td(int layer,int strip, double angle, double z, bmtCons
 double bmt_strip::GetBinomial(double n, double p){
 	double answer;
 	answer=CLHEP::RandBinomial::shoot(n,p);
-	//Very bad method when n=0 or p close to 0 or 1... return easily -1 in these case.
-	//So need to help in the limit condition
+	// Very bad method when n=0 or p close to 0 or 1... return easily -1 in these case.
+	// So need to help in the limit condition
 	if (answer==-1){
 		answer=n;
 		if (p==0) answer=0;
