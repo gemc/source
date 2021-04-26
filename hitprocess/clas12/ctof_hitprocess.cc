@@ -197,12 +197,12 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		int channel = data[row][2];
 		
 		int sector = data[row][3];
-		int panel = data[row][4];
+		int layer = data[row][4];
 		int pmt = data[row][5];
 		int order = data[row][6];
 		
 		// order is important as we could have duplicate entries w/o it
-		ctc.TT.addHardwareItem({sector, panel, pmt, order}, Hardware(crate, slot, channel));
+		ctc.TT.addHardwareItem({sector, layer, pmt, order}, Hardware(crate, slot, channel));
 	}
 	
 	
@@ -224,12 +224,12 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// hit ids
 	vector<identifier> identity = aHit->GetId();
 	int sector = 1;
-	int panel = 1;
+	int layer  = 1;
 	int paddle = identity[0].id;
-	int side = identity[1].id;
+	int side   = identity[1].id;
 	
 	// TDC conversion factors
-	double tdcconv = ctc.tdcconv[sector - 1][panel - 1][side][paddle - 1];
+	double tdcconv = ctc.tdcconv[sector - 1][layer - 1][side][paddle - 1];
 	
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -237,11 +237,11 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
 
-		double adc  = totEdep * ctc.countsForMIP[sector - 1][panel - 1][0][paddle - 1] / ctc.dEMIP ; // no gain as that comes from data already
+		double adc  = totEdep * ctc.countsForMIP[sector - 1][layer - 1][0][paddle - 1] / ctc.dEMIP ; // no gain as that comes from data already
 		double tdc = stepTime/tdcconv;
 
-		dgtz["sector"]    = 1;
-		dgtz["layer"]     = 1;
+		dgtz["sector"]    = sector;
+		dgtz["layer"]     = layer;
 		dgtz["component"] = paddle;
 		dgtz["ADC_order"] = side;
 		dgtz["ADC_ADC"]   = (int) adc;
@@ -254,8 +254,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		return dgtz;
 	}
 	
-	double length = ctc.length[sector - 1][panel - 1].at(paddle - 1);
-	double offset = ctc.zoffset[sector - 1][panel - 1].at(paddle - 1);
+	double length = ctc.length[sector - 1][layer - 1].at(paddle - 1);
+	double offset = ctc.zoffset[sector - 1][layer - 1].at(paddle - 1);
 	
 	
 	trueInfos tInfos(aHit);
@@ -263,14 +263,14 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// Distances from upstream, downstream
 	// ctof paddle center is offsetby ctc.zoffset from the CLAS12 target position,
 	// so need to  z is also the local coordinate
-	//side = 0 or 1,
+	// side = 0 or 1,
 	double d = length + (1. - 2. * side)*(tInfos.z - offset - ctc.targetZPos); // The distance between the hit and PMT?
 	
 	// attenuation length
-	double attlen = ctc.attlen[sector - 1][panel - 1][side][paddle - 1];
+	double attlen = ctc.attlen[sector - 1][layer - 1][side][paddle - 1];
 	
 	
-	double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - side].at(paddle - 1);
+	double attlen_otherside = ctc.attlen[sector - 1][layer - 1][1 - side].at(paddle - 1);
 	
 	
 	// attenuation factor
@@ -300,29 +300,27 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// double adcu = 0.;
 	// double tdcu = 0.;
 	// if (ene > 0)
-	//	adcu = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
+	//	adcu = ene * ctc.countsForMIP[sector - 1][layer - 1][side][paddle - 1] / ctc.dEMIP / gain;
 
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat Up and Dn separately, in case nphe=0
 	
-
-	
 	double nphe = G4Poisson(ene * ctc.pmtPEYld);
 	ene = nphe / ctc.pmtPEYld;
 	
 	if (ene > 0) {
-		adc = ene * ctc.countsForMIP[sector - 1][panel - 1][0][paddle - 1] / ctc.dEMIP / gain;
+		adc = ene * ctc.countsForMIP[sector - 1][layer - 1][0][paddle - 1] / ctc.dEMIP / gain;
 		
-		//double            A = ctc.twlk[sector-1][panel-1][0][paddle-1];
-		//double            B = ctc.twlk[sector-1][panel-1][1][paddle-1];
-		//double            C = ctc.twlk[sector-1][panel-1][2][paddle-1];
+		//double            A = ctc.twlk[sector-1][layer-1][0][paddle-1];
+		//double            B = ctc.twlk[sector-1][layer-1][1][paddle-1];
+		//double            C = ctc.twlk[sector-1][layer-1][2][paddle-1];
 		//double   timeWalkUp = A/(B+C*sqrt(adcu));
 		double timeWalk = 0.;
 		
-		double tU = tInfos.time + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm +  (1. - 2. * side)*ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
-		- ctc.toff_RFpad[sector-1][panel-1][paddle-1]
-		- ctc.toff_P2P[sector-1][panel-1][paddle-1]
+		double tU = tInfos.time + d/ctc.veff[sector-1][layer-1][side][paddle-1]/cm +  (1. - 2. * side)*ctc.toff_UD[sector-1][layer-1][paddle-1]/2.
+		- ctc.toff_RFpad[sector-1][layer-1][paddle-1]
+		- ctc.toff_P2P[sector-1][layer-1][paddle-1]
 		+ timeWalk;
 		
 		double t = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
@@ -333,7 +331,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	if(accountForHardwareStatus) {
 		
 		// Status flags
-		switch (ctc.status[sector - 1][panel - 1][side][paddle - 1]) {
+		switch (ctc.status[sector - 1][layer - 1][side][paddle - 1]) {
 		case 0:
 			break;
 		case 1:
@@ -350,8 +348,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 			break;
 			
 		default:
-			cout << " > Unknown CTOF status: " << ctc.status[sector - 1][panel - 1][side][paddle - 1] << " for sector " << sector <<
-			",  panel " << panel << ", paddle " << paddle << " Side " << side << endl;
+			cout << " > Unknown CTOF status: " << ctc.status[sector - 1][layer - 1][side][paddle - 1] << " for sector " << sector <<
+			",  layer " << layer << ", paddle " << paddle << " Side " << side << endl;
 		}
 	}
 	dgtz["hitn"]      = hitn;
@@ -369,9 +367,11 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 }
 
 vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {	
+
 	vector<identifier> yid = id;
+
 	yid[0].id_sharing = 1; // This shows the paddle
-	yid[1].id_sharing = 1; // This shows the PMT, whether the upstream one, or the downstream
+	yid[1].id_sharing = 1; // Side: This shows the PMT, whether the upstream one, or the downstream. 0 in the geometry by default
 	
 	//    cout<<"Size of id is "<<id.size()<<endl;
 	//    cout<<"id[0].id = "<<id[0].id<<endl;
@@ -385,6 +385,8 @@ vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aSt
 	// Now we want to have similar identifiers, but the only difference be id PMT to be 1, instead of 0
 	identifier this_id = yid[0];
 	yid.push_back(this_id);
+
+	// for the second hit, the energy declared is the same but the side id is 1 instead of 0
 	this_id = yid[1];
 	this_id.id = 1;
 	yid.push_back(this_id);
@@ -449,17 +451,17 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 	vector<identifier> identity = aHit->GetId();
 	
 	int sector = 1;
-	int panel = 1;
+	int layer = 1;
 	int paddle = identity[0].id;
 	int side = identity[1].id;
 	
 	identifiers.push_back(sector);
-	identifiers.push_back(panel);
+	identifiers.push_back(layer);
 	identifiers.push_back(paddle);
 	identifiers.push_back(side);
 	
 	// getting hardware
-	Hardware thisHardware = ctc.TT.getHardware({sector, panel, paddle, side});
+	Hardware thisHardware = ctc.TT.getHardware({sector, layer, paddle, side});
 	hardware.push_back(thisHardware.getCrate());
 	hardware.push_back(thisHardware.getSlot());
 	hardware.push_back(thisHardware.getChannel());
@@ -474,15 +476,15 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 	//        cout<<"identity[0].id = "<<identity[0].id<<endl;
 	//        cout<<"identity[1].id = "<<identity[1].id<<endl;
 	
-	double length = ctc.length[sector - 1][panel - 1].at(paddle - 1);
-	double offset = ctc.zoffset[sector - 1][panel - 1].at(paddle - 1);
+	double length = ctc.length[sector - 1][layer - 1].at(paddle - 1);
+	double offset = ctc.zoffset[sector - 1][layer - 1].at(paddle - 1);
 	
 	trueInfos tInfos(aHit);
 	
 	// attenuation length
-	double attlen = ctc.attlen[sector - 1][panel - 1][side].at(paddle - 1);
+	double attlen = ctc.attlen[sector - 1][layer - 1][side].at(paddle - 1);
 	
-	double attlen_otherside = ctc.attlen[sector - 1][panel - 1][1 - side].at(paddle - 1);
+	double attlen_otherside = ctc.attlen[sector - 1][layer - 1][1 - side].at(paddle - 1);
 	
 	
 	vector<G4ThreeVector> Pos = aHit->GetPos();
@@ -523,16 +525,16 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 		ene = nphe / ctc.pmtPEYld;
 		
 		if (ene > 0) {
-			double adc = ene * ctc.countsForMIP[sector - 1][panel - 1][side][paddle - 1] / ctc.dEMIP / gain;
-			//double            A = ctc.twlk[sector-1][panel-1][0][paddle-1];
-			//double            B = ctc.twlk[sector-1][panel-1][1][paddle-1];
-			//double            C = ctc.twlk[sector-1][panel-1][2][paddle-1];
+			double adc = ene * ctc.countsForMIP[sector - 1][layer - 1][side][paddle - 1] / ctc.dEMIP / gain;
+			//double            A = ctc.twlk[sector-1][layer-1][0][paddle-1];
+			//double            B = ctc.twlk[sector-1][layer-1][1][paddle-1];
+			//double            C = ctc.twlk[sector-1][layer-1][2][paddle-1];
 			//double   timeWalkUp = A/(B+C*sqrt(adcu));
 			double timeWalk = 0.;
 			
-			double tU = time[s] + d/ctc.veff[sector-1][panel-1][side][paddle-1]/cm +  (1. - 2. * side)*ctc.toff_UD[sector-1][panel-1][paddle-1]/2.
-			- ctc.toff_RFpad[sector-1][panel-1][paddle-1]
-			- ctc.toff_P2P[sector-1][panel-1][paddle-1]
+			double tU = time[s] + d/ctc.veff[sector-1][layer-1][side][paddle-1]/cm +  (1. - 2. * side)*ctc.toff_UD[sector-1][layer-1][paddle-1]/2.
+			- ctc.toff_RFpad[sector-1][layer-1][paddle-1]
+			- ctc.toff_P2P[sector-1][layer-1][paddle-1]
 			+ timeWalk;
 			
 			

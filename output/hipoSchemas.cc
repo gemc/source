@@ -80,10 +80,12 @@ HipoSchema :: HipoSchema()
 
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
+	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 
 	// todo later
 	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
@@ -137,6 +139,8 @@ HipoSchema :: HipoSchema()
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
 	schemasToLoad["BST::adc"]     = bstADCSchema;
+	schemasToLoad["CND::adc"]     = cndADCSchema;
+	schemasToLoad["CND::tdc"]     = cndTDCSchema;
 	schemasToLoad["CTOF::adc"]    = ctofADCSchema;
 	schemasToLoad["CTOF::tdc"]    = ctofTDCSchema;
 	schemasToLoad["DC::tdc"]      = dcTDCSchema;
