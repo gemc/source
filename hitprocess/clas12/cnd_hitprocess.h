@@ -41,13 +41,21 @@ public:
 	 double ecalN[24][3][2];
 	 */
 	
-	int status_L[24][3][2];                                                                       int status_R[24][3][2];             
-	double slope_L[24][3][2];                                                                     double slope_R[24][3][2];               
-	double veff_L[24][3][2];                                                                      double veff_R[24][3][2]; 
-	double attlen_L[24][3][2]; 
-	double attlen_R[24][3][2];                                                            
-	double time_offset_LR[24][3][1];                                                              double time_offset_layer[24][3][1];                                                           double uturn_tloss[24][3][1];                                                                 double uturn_e[24][3][1];                                                                     double mip_dir_L[24][3][2];                                                                   double mip_dir_R[24][3][2];          
-	double mip_indir_L[24][3][2];                                                         
+	int status_L[24][3][2];
+	int status_R[24][3][2];
+	double slope_L[24][3][2];
+	double slope_R[24][3][2];
+	double veff_L[24][3][2];
+	double veff_R[24][3][2];
+	double attlen_L[24][3][2];
+	double attlen_R[24][3][2];
+	double time_offset_LR[24][3][1];
+	double time_offset_layer[24][3][1];
+	double uturn_tloss[24][3][1];
+	double uturn_e[24][3][1];
+	double mip_dir_L[24][3][2];
+	double mip_dir_R[24][3][2];
+	double mip_indir_L[24][3][2];
 	double mip_indir_R[24][3][2];
 	
 };
