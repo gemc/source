@@ -128,8 +128,9 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 
 map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
-	string hd_msg = " > cnd hit process";
-	
+
+	map<string, double> dgtz;
+
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material
 	double thickness = 3;           // thickness of each CND paddle
 
@@ -137,7 +138,6 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double sigmaTD = 0.24;          // direct signal
 	double sigma   = 0.24;          // direct signal
 	
-	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
 	int sector = identity[0].id; // paddle number
@@ -147,8 +147,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int direct = identity[3].id; // direct = 0, indirect = 1
 
 
-
 	if(aHit->isBackgroundHit == 1) {
+
+		cout << "ASD ASD" << endl;
 
 		return dgtz;
 	}
@@ -442,8 +443,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		timeN = timeN + t_offset_layer;
 
 
-		cout << " side: " << side << ", direct: " << direct << ", etotUp: " << etotUp << ", etotDown: " << etotDown << ", eTotal: " << eTotal;
-		cout << ", timeD: " << timeD << ", timeN: " << timeN << ", eTime: " << eTime << endl;
+//		cout << " side: " << side << ", direct: " << direct << ", etotUp: " << etotUp << ", etotDown: " << etotDown << ", eTotal: " << eTotal;
+//		cout << ", timeD: " << timeD << ", timeN: " << timeN << ", eTime: " << eTime << endl;
 
 
 		/******** end timing determination ***********/
@@ -468,6 +469,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		/**** Actual digitisation happens here! *****/
 		
+		// MARK: TO delete later
 		if (etotUp > 0.) {
 			TDCD = (int) ( (G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp)) ) / slope_D);
 			double npheD = G4Poisson(etotUp*pmtPEYldD);
@@ -489,6 +491,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 
+		// MARK: TO delete later
 		if (TDCD < 0) TDCD = 0;
 		else if (TDCD > TDCmax) TDCD = TDCmax;
 		if (TDCN < 0) TDCN = 0;
@@ -496,6 +499,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		if (ADCD < 0) ADCD = 0;
 		if (ADCN < 0) ADCN = 0;
+
+
 
 		if (TDC < 0) {
 			TDC = 0;
@@ -510,10 +515,10 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	if(verbosity>4) {
-		cout <<  hd_msg << " layer: " << layer    << ", paddle: " << paddle  << " x=" << tInfos.x/cm << "cm, y=" << tInfos.y/cm << "cm, z=" << tInfos.z/cm << "cm" << endl;
-		cout <<  hd_msg << " Etot=" << tInfos.eTot/MeV     << "MeV, average time=" << tInfos.time  << "ns"  << endl;
-		cout <<  hd_msg << " timeD=" << timeD     << ",   offset=" << t_offset_layer  << "ns"  << endl;
-		cout <<  hd_msg << " TDCD= " << TDCD     << ", TDCN= " << TDCN    << ", ADCD= " << ADCD << ", ADCN= " << ADCN << endl;
+		cout << " layer: " << layer    << ", paddle: " << paddle  << " x=" << tInfos.x/cm << "cm, y=" << tInfos.y/cm << "cm, z=" << tInfos.z/cm << "cm" << endl;
+		cout << " Etot=" << tInfos.eTot/MeV     << "MeV, average time=" << tInfos.time  << "ns"  << endl;
+		cout << " timeD=" << timeD     << ",   offset=" << t_offset_layer  << "ns"  << endl;
+		cout << " TDCD= " << TDCD     << ", TDCN= " << TDCN    << ", ADCD= " << ADCD << ", ADCN= " << ADCN << endl;
 	}
 	
 	// Status flags
@@ -571,21 +576,25 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		TDCR = (int) TDCD;
 	}
 
-	cout << " side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
+	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
 	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
 
 	
 	// Apply global offsets for each paddle-pair (a.k.a. component):
 
-	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = sector;
-	dgtz["layer"]  = layer;
+
+	dgtz["hitn"]      = hitn;
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = layer;
 	dgtz["component"] = 1;
-	dgtz["ADCL"]   = (int) ADCL;
-	dgtz["ADCR"]   = (int) ADCR;
-	dgtz["TDCL"]   = (int) TDCL;
-	dgtz["TDCR"]   = (int) TDCR;
-	
+	dgtz["ADC_order"] = direct;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = TDC;   // no conversion
+	dgtz["ADC_ped"]   = 0;
+	dgtz["TDC_order"] = direct + 2;
+	dgtz["TDC_TDC"]   = TDC;
+
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

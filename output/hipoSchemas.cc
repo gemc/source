@@ -87,10 +87,6 @@ HipoSchema :: HipoSchema()
 	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 
-	// todo later
-	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
-
 	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
 
 	// need to add pcal to this
