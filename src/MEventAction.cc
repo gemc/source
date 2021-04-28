@@ -94,6 +94,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
 	FILTER_HADRONS   = (int) gemcOpt.optMap["FILTER_HADRONS"].arg;
 	FILTER_HIGHMOM   = (int) gemcOpt.optMap["FILTER_HIGHMOM"].arg;
+	SKIPREJECTEDHITS = (int) gemcOpt.optMap["SKIPREJECTEDHITS"].arg;
 	rw               = runWeights(opts);
 	
 	WRITE_ALLRAW     = replaceCharInStringWithChars(gemcOpt.optMap["ALLRAWS"].args, ",", "  ");
@@ -442,9 +443,10 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			{
 				int daughter = bgtIDs[i];
 				int momCheck = 0;
-				if(momDaughter.find(daughter) != momDaughter.end())
+				if(momDaughter.find(daughter) != momDaughter.end()) {
 					momCheck = momDaughter[daughter];
-				
+				}
+
 				while(momCheck != 0)
 				{
 					// mom has a hit
@@ -589,16 +591,30 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		MPrimaries.push_back(Mparticle)  ;
 	}
 	
-	if(SAVE_ALL_MOTHERS>1)
+	if(SAVE_ALL_MOTHERS>1) {
 		saveBGPartsToLund();
-	
-	
+	}
+
+	if(VERB > 4) {
+		for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
+			cout << " Particle " << pi + 1 << " has " << MPrimaries[pi].pSum.size() << " particle summaries:" << endl;
+			for(unsigned ss =0; ss<MPrimaries[pi].pSum.size(); ss++)
+			{
+				cout << " \t det: " << MPrimaries[pi].pSum[ss].dname <<
+				"  Etot: "  <<  MPrimaries[pi].pSum[ss].etot <<
+				"  time: "  <<  MPrimaries[pi].pSum[ss].t << endl;
+			}
+			cout << endl;
+		}
+	}
+
 	
 	map<int, vector<hitOutput> > hit_outputs_from_AllSD;
 	
 	// loop over sensitive detectors
 	// if there are hits, process them and/or write true infos out
 	for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
+
 		MHC = it->second->GetMHitCollection();
 		
 		// adding background if existing
@@ -616,13 +632,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		
 		// The same ProcessHit Routine must apply to all the hits  in this HitCollection.
 		// Instantiating the ProcessHitRoutine only once for the first hit.
+		// this conditions applies to digitization and true information processing
 		if(nhits) {
-			//  the bank idtag is the one that corresponds to the hitType
-			//MHit* aHit = (*MHC)[0];
 
-			//	string vname = (*MHC)[0]->GetDetector().name;
-			//	string hitType = it->second->GetDetectorHitType(vname);
-			
 			string hitType = it->first;
 			
 			HitProcess *hitProcessRoutine = getHitProcess(hitProcessMap, hitType);
@@ -632,146 +644,23 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			if(fastMCMode == 0 || fastMCMode > 9) {
 				hitProcessRoutine->init(hitType, gemcOpt, gPars);
 			}
-			bool WRITE_TRUE_INTEGRATED = 0;
-			bool WRITE_TRUE_ALL = 0;
-			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
-			if(WRITE_ALLRAW.find(hitType) != string::npos || WRITE_ALLRAW == "*") WRITE_TRUE_ALL = 1;
-			
-			vector<hitOutput> allRawOutput;
-			vector<hitOutput> allDgtOutput;
-			
-			// creating summary information for each generated particle
-			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
-				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
-				if(fastMCMode > 0)
-					MPrimaries[pi].fastMC.push_back(fastMCForParticle("na"));
-			}
-			
-			for(int h=0; h<nhits; h++) {
-				MHit* aHit = (*MHC)[h];
-				
-				// electronic noise hits disable? Why? TODO
-				if(aHit->isElectronicNoise)
-					continue;
-				
-				hitOutput thisHitOutput;
-				
-				// mother particle infos
-				if(SAVE_ALL_MOTHERS) {
-					// setting track infos before processing the hit
-					vector<int> tids = aHit->GetTIds();
-					vector<int> otids = vector_otids(tids);
-					aHit->SetmTrackIds(vector_mtids(tinfos, tids));
-					aHit->SetoTrackIds(otids);
-					aHit->SetmPIDs(    vector_mpids(tinfos, tids));
-					aHit->SetmVerts(   vector_mvert(tinfos, tids));
-					
-					// for every particle initializing a vector
-					// the index is the primary particle index
-					// the int will increase for each step
-					// if the int > 0
-					// then we count it as ONE hit by the track
-					vector<int> hitByPrimary;
-					for(unsigned pi = 0; pi<MPrimaries.size(); pi++)
-					hitByPrimary.push_back(0);
-					
-					// all these vector have the same length.
-					for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
-						vector<double> edeps = aHit->GetEdep();
-						vector<double> times = aHit->GetTime();
-						MPrimaries[pi].pSum.back().nphe = aHit->GetTIds().size();
-						if(fastMCMode > 0) {
-							MPrimaries[pi].fastMC.back().pOrig  = aHit->GetMom();
-							MPrimaries[pi].fastMC.back().pSmear = hitProcessRoutine->psmear(aHit->GetMom());
-						}
-						for(unsigned ss =0; ss<edeps.size(); ss++) {
-							if(otids[ss] == (int) pi+1) {
-								MPrimaries[pi].pSum.back().etot += edeps[ss];
-								hitByPrimary[pi]++;
-								// getting fastest time - should we put threshold here?
-								if(MPrimaries[pi].pSum.back().t < 0 || MPrimaries[pi].pSum.back().t > times[ss])
-									MPrimaries[pi].pSum.back().t = times[ss];
-								
-							}
-						}
-						
-						if(hitByPrimary[pi]) MPrimaries[pi].pSum.back().stat++;
-						
-						if(MPrimaries[pi].pSum.back().etot > 0 || MPrimaries[pi].pSum.back().nphe > 0)
-							MPrimaries[pi].pSum.back().dname = hitType;
-					}
-				} else {
-					// filling mother infos with zeros
-					int thisHitSize = aHit->GetId().size();
-					vector<int>           zint  = vector_zint(thisHitSize);
-					vector<G4ThreeVector> zthre = vector_zthre(thisHitSize);
-					aHit->SetoTrackIds(zint);
-					aHit->SetmTrackIds(zint);
-					aHit->SetmPIDs(    zint);
-					aHit->SetmVerts(   zthre);
-				}
-				
-				if(fastMCMode == 0 || fastMCMode > 9)
-					thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
-				
-				if(WRITE_TRUE_ALL && (fastMCMode == 0 || fastMCMode > 9))
-					thisHitOutput.setAllRaws(hitProcessRoutine->allRaws(aHit, h+1));
-				
-				
-				allRawOutput.push_back(thisHitOutput);
-				
-				string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-				if(VERB > 4 || vname.find(catch_v) != string::npos) {
-					cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
-					cout << aHit->GetId();
-					double Etot = 0;
-					for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
-					cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
-				}
-			}
-			
-			// geant4 integrated raw information
-			// by default they are all DISABLED
-			// user can enable them one by one
-			// using the INTEGRATEDRAW option
-			if(WRITE_TRUE_INTEGRATED) {
-				processOutputFactory->writeG4RawIntegrated(outContainer, allRawOutput, hitType, banksMap);
-			}
 
-			// geant4 all raw information
-			// by default they are all DISABLED
-			// user can enable them one by one
-			// using the ALLRAWS option
-			if(WRITE_TRUE_ALL) {
-				processOutputFactory->writeG4RawAll(outContainer, allRawOutput, hitType, banksMap);
-			}
-			
-			
-			if(VERB > 4)
-				for(unsigned pi = 0; pi<MPrimaries.size(); pi++)
-			{
-				cout << " Particle " << pi + 1 << " has " << MPrimaries[pi].pSum.size() << " particle summaries:" << endl;
-				for(unsigned ss =0; ss<MPrimaries[pi].pSum.size(); ss++)
-				{
-					cout << " \t det: " << MPrimaries[pi].pSum[ss].dname <<
-					"  Etot: "  <<  MPrimaries[pi].pSum[ss].etot <<
-					"  time: "  <<  MPrimaries[pi].pSum[ss].t << endl;
-				}
-				cout << endl;
-				
-			}
-			
 			// geant4 integrated digitized information
 			// by default they are all ENABLED
 			// user can disable them one by one
 			// using the INTEGRATEDDGT option
 			// for FASTMC mode, do not digitize the info
-			if(WRITE_INTDGT.find(hitType) == string::npos && (fastMCMode == 0 ||fastMCMode > 9))
-			{
+			vector<hitOutput> allDgtOutput;
+
+			// the digitization routine may decide to skip writing events.
+			// keeping the hit number in a vector so we can skip the event writing for the true information as well
+			vector<int> hitsToSkip;
+
+			if(WRITE_INTDGT.find(hitType) == string::npos && (fastMCMode == 0 ||fastMCMode > 9)) {
+
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
 				
-				for(int h=0; h<nhits; h++)
-				{
+				for(int h=0; h<nhits; h++) {
 					
 					hitOutput thisHitOutput;
 					MHit* aHit = (*MHC)[h];
@@ -783,6 +672,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					// the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
 					if(hitProcessRoutine->writeHit) {
 						allDgtOutput.push_back(thisHitOutput);
+					} else {
+						if(VERB > 4 ) {
+							cout << " Event Action: hit " << h + 1 << " was rejected in " << hitType << " digitization routine." << endl;
+						}
+						hitsToSkip.push_back(h);
 					}
 					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
@@ -799,7 +693,139 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				
 			} // end of geant4 integrated digitized information
 			
-			
+			// geant4 integrated raw information
+			// by default they are all DISABLED
+			// user can enable them one by one
+			// using the INTEGRATEDRAW option
+
+			bool WRITE_TRUE_INTEGRATED = 0;
+			bool WRITE_TRUE_ALL = 0;
+
+			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
+			if(WRITE_ALLRAW.find(hitType) != string::npos || WRITE_ALLRAW == "*") WRITE_TRUE_ALL = 1;
+
+			vector<hitOutput> allRawOutput;
+
+			// creating summary information for each generated particle
+			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
+				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
+				if(fastMCMode > 0) {
+					MPrimaries[pi].fastMC.push_back(fastMCForParticle("na"));
+				}
+			}
+
+			for(int h=0; h<nhits; h++) {
+				MHit* aHit = (*MHC)[h];
+
+				// electronic noise hits disable? Why? TODO
+				if(aHit->isElectronicNoise) {
+					continue;
+				}
+
+				hitOutput thisHitOutput;
+
+				// mother particle infos
+				if(SAVE_ALL_MOTHERS) {
+					// setting track infos before processing the hit
+					vector<int> tids = aHit->GetTIds();
+					vector<int> otids = vector_otids(tids);
+					aHit->SetmTrackIds(vector_mtids(tinfos, tids));
+					aHit->SetoTrackIds(otids);
+					aHit->SetmPIDs(    vector_mpids(tinfos, tids));
+					aHit->SetmVerts(   vector_mvert(tinfos, tids));
+
+					// for every particle initializing a vector
+					// the index is the primary particle index
+					// the int will increase for each step
+					// if the int > 0
+					// then we count it as ONE hit by the track
+					vector<int> hitByPrimary;
+					for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
+						hitByPrimary.push_back(0);
+					}
+
+					// all these vector have the same length.
+					for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
+						vector<double> edeps = aHit->GetEdep();
+						vector<double> times = aHit->GetTime();
+						MPrimaries[pi].pSum.back().nphe = aHit->GetTIds().size();
+						if(fastMCMode > 0) {
+							MPrimaries[pi].fastMC.back().pOrig  = aHit->GetMom();
+							MPrimaries[pi].fastMC.back().pSmear = hitProcessRoutine->psmear(aHit->GetMom());
+						}
+						for(unsigned ss =0; ss<edeps.size(); ss++) {
+							if(otids[ss] == (int) pi+1) {
+								MPrimaries[pi].pSum.back().etot += edeps[ss];
+								hitByPrimary[pi]++;
+								// getting fastest time - should we put threshold here?
+								if(MPrimaries[pi].pSum.back().t < 0 || MPrimaries[pi].pSum.back().t > times[ss])
+									MPrimaries[pi].pSum.back().t = times[ss];
+
+							}
+						}
+
+						if(hitByPrimary[pi]) MPrimaries[pi].pSum.back().stat++;
+
+						if(MPrimaries[pi].pSum.back().etot > 0 || MPrimaries[pi].pSum.back().nphe > 0)
+							MPrimaries[pi].pSum.back().dname = hitType;
+					}
+				} else {
+					// filling mother infos with zeros
+					int thisHitSize = aHit->GetId().size();
+					vector<int>           zint  = vector_zint(thisHitSize);
+					vector<G4ThreeVector> zthre = vector_zthre(thisHitSize);
+					aHit->SetoTrackIds(zint);
+					aHit->SetmTrackIds(zint);
+					aHit->SetmPIDs(    zint);
+					aHit->SetmVerts(   zthre);
+				}
+
+				if(fastMCMode == 0 || fastMCMode > 9) {
+					thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
+				}
+
+				if(WRITE_TRUE_ALL && (fastMCMode == 0 || fastMCMode > 9)) {
+					thisHitOutput.setAllRaws(hitProcessRoutine->allRaws(aHit, h+1));
+				}
+
+				if (SKIPREJECTEDHITS == 0) {
+					allRawOutput.push_back(thisHitOutput);
+				} else {
+					if ( find(hitsToSkip.begin(), hitsToSkip.end(), h) == hitsToSkip.end() ) {
+						allRawOutput.push_back(thisHitOutput);
+					} else {
+						if(VERB > 4) {
+							cout << " hit number " << h + 1 << " is rejected in " << hitType << endl;
+						}
+					}
+				}
+
+
+				string vname = aHit->GetId()[aHit->GetId().size()-1].name;
+				if(VERB > 4 || vname.find(catch_v) != string::npos) {
+					cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
+					cout << aHit->GetId();
+					double Etot = 0;
+					for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
+					cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
+				}
+			}
+
+
+
+
+			if(WRITE_TRUE_INTEGRATED) {
+				processOutputFactory->writeG4RawIntegrated(outContainer, allRawOutput, hitType, banksMap);
+			}
+
+			// geant4 all raw information
+			// by default they are all DISABLED
+			// user can enable them one by one
+			// using the ALLRAWS option
+			if(WRITE_TRUE_ALL) {
+				processOutputFactory->writeG4RawAll(outContainer, allRawOutput, hitType, banksMap);
+			}
+
 			// geant4 voltage versus time
 			// by default they are all DISABLED
 			// user can enable them one by one

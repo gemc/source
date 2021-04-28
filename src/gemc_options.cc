@@ -733,7 +733,13 @@ void goptions::setGoptions()
 	optMap["INTEGRATEDDGT"].name = "De-activates integrated digitized output for system(s). ";
 	optMap["INTEGRATEDDGT"].type = 1;
 	optMap["INTEGRATEDDGT"].ctgr = "output";
-	
+
+	optMap["SKIPREJECTEDHITS"].arg  = 1;
+	optMap["SKIPREJECTEDHITS"].help = "Skips hits that are rejected by digitization. Default: yes (1)";
+	optMap["SKIPREJECTEDHITS"].name = "Skips hits that are rejected by digitization. Default: yes";
+	optMap["SKIPREJECTEDHITS"].type = 0;
+	optMap["SKIPREJECTEDHITS"].ctgr = "output";
+
 	optMap["ALLRAWS"].args = "no";
 	optMap["ALLRAWS"].help = "Activates step-by-step output for system(s). Example: -ALLRAWS=\"DC, TOF\"";
 	optMap["ALLRAWS"].name = "Activates step-by-step output for system(s). ";

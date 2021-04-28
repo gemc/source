@@ -576,8 +576,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		TDCR = (int) TDCD;
 	}
 
-	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
-	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
+//	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
+//	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
 
 	
 	// Apply global offsets for each paddle-pair (a.k.a. component):
@@ -593,7 +593,6 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = direct + 2;
 	dgtz["TDC_TDC"]   = TDC;
-
 
 	// decide if write an hit or not
 	writeHit = true;
