@@ -142,10 +142,10 @@ else()
 
 	set(utilities_sources
 		utilities/string_utilities.cc
-		utilities/utils.cc
+		utilities/gemcUtils.cc
 		utilities/lStdHep.cc
 		utilities/lXDR.cc
-		utilities/options.cc)
+		utilities/gemcOptions.cc)
 	include_directories(utilities)
 	list(APPEND GEMC_ALL_SOURCES ${utilities_sources})
 
