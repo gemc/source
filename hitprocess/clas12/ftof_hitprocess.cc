@@ -380,7 +380,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["component"] = paddle;
 	dgtz["ADC_order"] = pmt;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (tdc*24.0/1000);
+	dgtz["ADC_time"]  = (tdc*tdcconv);
 	dgtz["ADC_ped"]   = 0;
 
 	dgtz["TDC_order"] = pmt + 2;
@@ -397,9 +397,13 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	return dgtz;
 }
 
+
+// sector = identity[0].id;
+// panel  = identity[1].id; // 1-1A, 2-1B, 3-2B
+// paddle = identity[2].id;
+// pmt    = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
+
 vector<identifier> ftof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
-	
-	id[id.size() - 1].id_sharing = 1;
 	
 	vector<identifier> yid = id;
 	yid[0].id_sharing = 1; // sector

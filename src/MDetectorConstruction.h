@@ -20,7 +20,7 @@
 #include "G4Region.hh"
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "mirrors_factory.h"
 #include "detector.h"
 #include "field.h"

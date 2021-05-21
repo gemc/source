@@ -1,5 +1,58 @@
 GEMC Future Development
 
+Exit Codes:
+
+0: exited normally
+1: gcard not found
+2: xml format error gcard
+3: option unknown
+4: unknown char in number
+5: unit not recognized
+
+
+11-20:  plugins
+
+11: can't open clara plugin
+12: clara plugin does not have get_volume_maps
+
+
+21-40: detector factories
+21: detector data size mismatch
+
+51: color attribute wrong
+
+100-120: electromagnetic fields
+
+101: wrong multiple field rotation
+
+
+200-230: generators
+201: Can't open LUND input file
+202: Can't open BEAGLE input file
+203: Can't open StdHEP input file
+203: Can't open background LUND  file
+
+
+301: can't open run weights txt file
+
+401: can't connect to DB
+
+500s: solids
+
+501: number of dimensions mismatch with geant4 constructor
+502: solid operand not found
+503: Pgon nsides error
+504: solid operation not recognized
+505: solid not recognized
+506: G4Replicas G4Replicas
+
+511: material not defined
+512: DEFAULT_MATERIAL is not found
+
+
+600s: output
+
+601: hittype not in hipo map
 
 
 Wanted features, coming with gemc3

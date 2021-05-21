@@ -2,7 +2,7 @@
 #include "fieldFactory.h"
 #include "asciiField.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"

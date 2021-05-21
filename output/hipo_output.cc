@@ -1,6 +1,6 @@
 // gemc headers
 #include "hipo_output.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // C++ headers
 #include <fstream>
@@ -30,7 +30,6 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 
 			for(auto &fieldName: fieldNames) {
 
-
 				double scaleFactor = 1;
 
 				vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
@@ -50,7 +49,31 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 			}
 		}
 	}
+
 }
+
+// returns detectorID from map, given hitType
+int hipo_output :: getDetectorID(string hitType) {
+
+	if(detectorID.find(hitType) != detectorID.end() ) {
+		return detectorID[hitType];
+	} else {
+		cout << " Error: " << hitType << " has no detector id. Exiting. " << endl;
+		exit(601);
+	}
+}
+
+// returns hipo name from true info var name
+string hipo_output :: getHipoVariableName(string trueInfoVar) {
+	if(trueInfoNamesMap.find(trueInfoVar) != trueInfoNamesMap.end() ) {
+		return trueInfoNamesMap[trueInfoVar];
+	} else {
+		return trueInfoVar;
+	}
+
+}
+
+
 
 // instantiates hipo event
 // write run::config bank
@@ -58,14 +81,17 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 {
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
-//	for(auto &fieldScale: fieldScales) {
-//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
-//	}
+	//	for(auto &fieldScale: fieldScales) {
+	//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
+	//	}
 
+	// this will never enter the second condition because hipo_output is instantiated every event
 	if(outEvent == nullptr) {
-		outEvent = new hipo::event();
+		outEvent = new hipo::event(1024*1024*2);
+	//	cout << " Event Size before reset: " << outEvent->getSize() << endl;
 	} else {
 		outEvent->reset();
+	//	cout << " Event Size after reset: " << outEvent->getSize() << endl;
 	}
 
 	// Create runConfigBank with 1 row based on schema
@@ -104,7 +130,11 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	}
 
 	outEvent->addStructure(runConfigBank);
+
 }
+
+
+
 
 // write user infos header
 void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
@@ -130,10 +160,8 @@ void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 	hipo::bank runRFBank(output->hipoSchema->runRFSchema,  ids.size());
 
 	for(unsigned i=0; i < ids.size(); i++) {
-
 		runRFBank.putShort("id",   i, (short) ids[i]);
 		runRFBank.putFloat("time", i, (float) times[i]);
-
 	}
 
 	if(verbosity > 2) {
@@ -141,21 +169,12 @@ void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal r
 	}
 
 	outEvent->addStructure(runRFBank);
-
 }
 
 void hipo_output :: writeGenerated(outputContainer* output, vector<generatedParticle> MGP, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo)
 {
-	double MAXP             = output->gemcOpt.optMap["NGENP"].arg;
-	double SAVE_ALL_MOTHERS = output->gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
-	int fastMCMode          = output->gemcOpt.optMap["FASTMCMODE"].arg;
-
-	if(fastMCMode>0) SAVE_ALL_MOTHERS = 1;
-	if (output->gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg && (SAVE_ALL_MOTHERS == 0))
-		SAVE_ALL_MOTHERS = 1;
-
-	gBank bank  = getBankFromMap("generated", banksMap);
-	gBank sbank = getBankFromMap("psummary", banksMap);
+	double MAXP    = output->gemcOpt.optMap["NGENP"].arg;
+	int verbosity  = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
 	vector<int> pid;
 	vector<double> px;
@@ -165,7 +184,6 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> vy;
 	vector<double> vz;
 	vector<double> btime;
-	vector<double> multiplicity;
 
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
 		pid.push_back(MGP[i].PID);
@@ -176,58 +194,28 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vy.push_back(MGP[i].vertex.getY()/mm);
 		vz.push_back(MGP[i].vertex.getZ()/mm);
 		btime.push_back(MGP[i].time);
-		multiplicity.push_back(MGP[i].multiplicity);
 	}
 
+	hipo::bank mcParticle(output->hipoSchema->geantParticle,  pid.size());
 
-	if(SAVE_ALL_MOTHERS) {
-		vector<string> dname;
-		vector<int>    stat;
-		vector<double> etot;
-		vector<double> nphe;
-		vector<double> time;
+	for(unsigned i=0; i < pid.size(); i++) {
 
-		// fast MC mode, smeared and unsmeared
-		vector<double> ufpx;
-		vector<double> ufpy;
-		vector<double> ufpz;
-		vector<double> sfpx;
-		vector<double> sfpy;
-		vector<double> sfpz;
-
-		int writeFastMC = 0;
-
-		for(unsigned int i=0; i<MAXP && i<MGP.size(); i++) {
-			if(MGP[i].fastMC.size() > 0) {
-				if(MGP[i].pSum.size() != MGP[i].fastMC.size()) {
-					cout << " !!! Warning: pSum and fastMC info do not match" << endl;
-				} else {
-					writeFastMC = 1;
-				}
-			}
-
-			for(unsigned d=0; d<MGP[i].pSum.size(); d++)
-			{
-				dname.push_back(MGP[i].pSum[d].dname);
-				stat.push_back(MGP[i].pSum[d].stat);
-				etot.push_back(MGP[i].pSum[d].etot);
-				nphe.push_back(MGP[i].pSum[d].nphe);
-				time.push_back(MGP[i].pSum[d].t);
-
-
-				if(writeFastMC) {
-					ufpx.push_back(MGP[i].fastMC[d].pOrig.getX()/MeV);
-					ufpy.push_back(MGP[i].fastMC[d].pOrig.getY()/MeV);
-					ufpz.push_back(MGP[i].fastMC[d].pOrig.getZ()/MeV);
-					sfpx.push_back(MGP[i].fastMC[d].pSmear.getX()/MeV);
-					sfpy.push_back(MGP[i].fastMC[d].pSmear.getY()/MeV);
-					sfpz.push_back(MGP[i].fastMC[d].pSmear.getZ()/MeV);
-				}
-				
-			}
-		}
+		mcParticle.putInt("pid",    i,  pid[i]);
+		mcParticle.putFloat("px", i, (float) px[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("py", i, (float) py[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("pz", i, (float) pz[i]/1000.0);  // in hipo the units are GeV
+		mcParticle.putFloat("vx", i, (float) vx[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vy", i, (float) vy[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vz", i, (float) vz[i]/10.0);    // in hipo the units are cm
+		mcParticle.putFloat("vt", i, (float) btime[i]);
 
 	}
+
+	if(verbosity > 2) {
+		mcParticle.show();
+	}
+
+	outEvent->addStructure(mcParticle);
 }
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
@@ -264,28 +252,92 @@ void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 }
 
 void hipo_output::prepareEvent(outputContainer* output, map<string, double> *configuration){
-	//int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
+	int nBankEntries = 0;
+	lastHipoTrueInfoBankIndex = 0;
 
-	//	for(auto &conf: *configuration) {
-	//		cout << " Hipo prepare" << conf.first << " " << conf.second << endl;
-	//	}
+	for(auto &conf: *configuration) {
+
+		if(verbosity > 1) {
+			cout << " Hipo preparing " << conf.first << "  with " << conf.second << " hits " << endl;
+		}
+		nBankEntries = nBankEntries + conf.second ;
+	}
+
+	if(verbosity > 1) {
+		cout << " Total true info bank entries: " << nBankEntries << endl;
+	}
+
 	hipo::schema trueInfoSchema = output->hipoSchema->trueInfoSchema;
-	trueInfoBank = new hipo::bank(trueInfoSchema, configuration->size());
+
+	trueInfoBank = new hipo::bank(trueInfoSchema, nBankEntries);
 
 }
 
 void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	if(HO.size() == 0) return;
+	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
-	gBank rawBank = getBankFromMap("raws", banksMap);
+	gBank rawBank     = getBankFromMap("raws", banksMap);
 
 	// perform initializations if necessary
 	initBank(output, thisHitBank, RAWINT_ID);
 
-	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++)
-	{
+	// we only need the first hit to get the definitions
+	map<string, double> raws = HO[0].getRaws();
+
+	int detectorID = getDetectorID(hitType);
+
+	// looping over the loaded banknames (this to make sure we only publish the ones declared
+	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
+	for(auto &bankName : rawBank.orderedNames ) {
+
+		string bname   = bankName.second;
+		int bankId     = rawBank.getVarId(bname);       // bankId is num
+		int bankType   = rawBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
+
+		if(raws.find(bname) != raws.end() && bankId > 0 && bankType == RAWINT_ID) {
+
+			// looping over the hits
+			for(unsigned int nh=0; nh<HO.size(); nh++) {
+
+				int hipoBankIndex = lastHipoTrueInfoBankIndex + nh;
+
+				map<string, double> theseRaws = HO[nh].getRaws();
+
+				trueInfoBank->putByte("detector", hipoBankIndex, detectorID);
+
+				for(auto &thisVar: theseRaws) {
+
+					// found data match to bank definition
+					if(thisVar.first == bname) {
+
+						string varType = rawBank.getVarType(thisVar.first);
+
+						string hipoName = getHipoVariableName(bname);
+						if(varType == "i") {
+							trueInfoBank->putInt(hipoName.c_str(), hipoBankIndex, thisVar.second);
+						} else if(varType == "d") {
+							trueInfoBank->putFloat(hipoName.c_str(), hipoBankIndex, thisVar.second);
+						}
+
+						if(verbosity > 2) {
+							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", bank hit index " << hipoBankIndex << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
+						}
+					}
+				}
+			}
+
+		}
+	}
+	lastHipoTrueInfoBankIndex = lastHipoTrueInfoBankIndex + HO.size();
+
+
+	// loop over variable names
+	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++) {
+
 		int bankId   = rawBank.getVarId(it->second);
 		int bankType = rawBank.getVarBankType(it->second);
 
@@ -373,6 +425,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 
 				// looping over the hits
 				for(unsigned int nh=0; nh<HO.size(); nh++) {
+
 					map<string, double> theseDgts = HO[nh].getDgtz();
 					for(auto &thisVar: theseDgts) {
 
@@ -405,6 +458,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 						}
 					}
 				}
+
 			}
 
 			if(hasTDCBank) {
@@ -537,6 +591,9 @@ void hipo_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 
 void hipo_output :: writeEvent(outputContainer* output)
 {
+	outEvent->addStructure(*trueInfoBank);
+
 	output->hipoWriter->addEvent(*outEvent);
+
 }
 

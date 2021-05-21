@@ -2,7 +2,7 @@
 #include "material_factory.h"
 #include "text_materials.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"

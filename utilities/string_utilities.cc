@@ -54,16 +54,21 @@ vector<string> get_strings_except(string input, string ignore)
 double scan_number(const char *str)
 {
 
-	// Scan the c_string str for numbers only, then return the value as a float.
-	// The str is not allowed to have spaces or alphanumerics, only 0-9 and .
-	int i=0;
-	while(char c=str[i++]) if(isalpha(c) && !(c=='-' || c=='+' || c=='e' || c=='E') )
-	{
-		cout << "WARNING: Unexpected Alphanumberic character found in number string:" << str << endl;
+	if(!strcmp(str, "none")) {
+		return 0;
 	}
 
-	return( stringToDouble(str));
+	// Scan the c_string str for numbers only, then return the value as a float.
+	// The str is not allowed to have spaces or alphanumerics, only 0-9 and . but not comma
+	int i=0;
 
+	// checking if the number is a valid digit, w/o commas (for example 1,000 is not valid). Exiting if something is wrong, except if the string is "none"
+	while(char c=str[i++]) if(!(isdigit(c) || c=='.' || c=='-' || c=='+' || c=='e' || c=='E')) {
+		cout << "WARNING: Unexpected alphanumberic character found in number string:" << str << endl;
+		cout << "Exiting " << endl; exit(4);
+	}
+
+	return(stringToDouble(str));
 }
 
 
@@ -75,7 +80,7 @@ double scan_number(const char *str)
 /// contain units
 /// \param v input string. Ex: 10.2*cm
 /// \return value with correct G4 unit.
-double get_number(string v,int warn_no_unit)
+double get_number(string v, int warn_no_unit)
 {
 	string value = trimSpacesFromString(v);
 	
@@ -83,8 +88,8 @@ double get_number(string v,int warn_no_unit)
 		// no * found, this should be a number
 		// No unit is still ok if the number is 0
 		if(value.length()>0 && warn_no_unit && stringToDouble(value) != 0) cout << "Warning: All numbers should be paired with a unit: " << v << endl;
-// 		return stringToDouble(value);
-		return scan_number(value.c_str());		
+
+		return scan_number(value.c_str());
 		
 	} else {
 		double answer = scan_number(value.substr(0, value.find("*")).c_str());
@@ -113,7 +118,9 @@ double get_number(string v,int warn_no_unit)
 		else if(  units == "ns")        answer *= ns;
 		else if(  units == "na")        answer *= 1;
 		else if(  units == "counts")    answer *= 1;
-		else {cout << ">" << units << "<: unit not recognized for string <" << v << ">. Exiting" <<  endl; exit(1);}
+		else {cout << ">" << units << "<: unit not recognized for string <" << v << ">. Exiting" <<  endl; exit(5);
+			
+		}
 		return answer;
 	}
 	

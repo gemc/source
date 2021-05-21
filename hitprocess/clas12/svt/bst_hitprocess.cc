@@ -55,6 +55,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		int adc     = floor(   7*(totEdep - minHit)/deltaADC);		
 
+		// this assumes the hits have these ID in the LUND file
 		dgtz["sector"]    = identity[0].id;
 		dgtz["layer"]     = identity[1].id;
 		dgtz["component"] = identity[2].id;  // strip number
@@ -82,7 +83,15 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if( diffLen > 1E-3 || diffWid > 1E-3 )
 			cout << "  Warning: dimensions mismatch between sensor reconstruction dimensions and gemc card dimensions." << endl << endl;
 	}
-	
+
+	// 0. region (1 to 3)
+	// 1. module (bottom = 1, top = 2)
+	// 2. sector (variables depending on sector, starts at 1)
+	// 3. sensor (1 to 3)
+	// 4. strip id
+	// layer:
+	// 2 * region + module - 2
+	// example for region 2 top (2): layer = 4 + 2 - 2 = 4
 	int layer  = 2*identity[0].id + identity[1].id - 2 ;
 	int sector = identity[2].id;
 	int card   = identity[3].id;
@@ -97,16 +106,13 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// I.e. there are 7 bins plus an overflow bin.
 	
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
-//	int adchd   = floor(8196*(tInfos.eTot - minHit)/deltaADC);
-	
+
 	if(tInfos.eTot>maxHit) {
 		adc   = 7;
-//		adchd = 8196;
 	}
 
 	if(tInfos.eTot<minHit) {
 		adc   = -5;
-//		adchd = -5000;
 	}
 	
 	if(verbosity>4) {
@@ -139,13 +145,13 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 {
 	// yid is the current strip identifier.
 	// it has 5 dimensions:
-	// 0. superlayer
-	// 1. region
-	// 2. sector
-	// 3. sensor
+	// 0. region (0 to 3)
+	// 1. module (bottom, top)
+	// 2. sector (variables depending on sector)
+	// 3. sensor (0 to 2)
 	// 4. strip id
 	// the first 4 are set in the identifer:
-	// superlayer manual 1 type manual 1 segment manual 3 module manual 1 strip manual 1
+	// region manual $r module manual $m sector manual $s sensor manual $sp
 	// the strip id is set by this routine
 	//
 	// this routine ALSO identifies contiguos strips and their energy sharing
@@ -164,7 +170,6 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	bsts.fill_infos();
 	
 	int layer   = 2*yid[0].id + yid[1].id - 2 ;
-	int sector  = yid[2].id;
 	int isensor = yid[3].id;
 	
 	// FindStrip returns the strips index that are hit
@@ -172,7 +177,7 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	// for bst there can be:
 	// - no energy sharing
 	// - energy sharing to ONE contiguos (left OR right) strip
-	vector<double> multi_hit = bsts.FindStrip(layer-1, sector-1, isensor, Lxyz);
+	vector<double> multi_hit = bsts.FindStrip(layer-1, isensor, Lxyz);
 	
 	// n_multi_hits: number of contiguous strips
 	// it is either single strip (n_multi_hits = 1) or both strips are hit (n_multi_hits=2)
@@ -194,10 +199,11 @@ vector<identifier> bst_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	// additional strip
 	if(n_multi_hits == 2) {
 		// the first four identifiers are
-		// 0. superlayer
-		// 1. region
-		// 2. sector
-		// 3. sensor
+		// 0. region (0 to 3)
+		// 1. module (bottom, top)
+		// 2. sector (variables depending on sector)
+		// 3. sensor (0 to 2)
+		// 4. strip id
 		// if n_multi_hits has size two:
 		// creating ONE additional identifier vector.
 		// the first 4 identifier are the same as the original strip, so copying them

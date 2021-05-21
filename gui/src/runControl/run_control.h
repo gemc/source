@@ -9,7 +9,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "primaryTab.h"
 
 // G4 headers

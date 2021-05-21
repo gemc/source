@@ -47,7 +47,7 @@ void bst_strip::fill_infos()
 }
 
 
-vector<double> bst_strip::FindStrip(int layer, int sector, int isens, G4ThreeVector Lxyz)
+vector<double> bst_strip::FindStrip(int layer,  int isens, G4ThreeVector Lxyz)
 {
 	
 	// the return vector is always in pairs.

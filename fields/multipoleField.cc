@@ -16,10 +16,9 @@ multipoleField::multipoleField(int Npole, G4double scale, G4double x,
 	rotation   = rot;
 	rotaxis    = ROTaxis;
 
-	if (rotaxis != "X" && rotaxis != "Y" && rotaxis != "Z")
-	{
-		cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while you have axis "
-				<< rotaxis << endl; exit(-1);
+	if (rotaxis != "X" && rotaxis != "Y" && rotaxis != "Z") {
+		cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while there is axis: " << rotaxis << endl;
+		exit(101);
 	}
 
 }
@@ -52,23 +51,19 @@ void multipoleField::GetFieldValue(const G4double pos[4], G4double *B) const
 	}
 	else
 	{
-		cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while you have axis: "
-				<< rotaxis << endl;
-		exit(-1);
+		cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while there is axis: " << rotaxis << endl;
+		exit(101);
 	}
 
 	G4double r = (x2 - x1).cross(x1 - x0).mag() / (x2 - x1).mag(); //distance from x0 to line x1-x2
 	G4double phi = atan2(x0_local.y(), x0_local.x());
 
 	G4ThreeVector B_local;
-	if (polenumber == 2)
-	{
+	if (polenumber == 2) {
 		B_local.setX(0);
 		B_local.setY(strength);
 		B_local.setZ(0);
-	}
-	else
-	{
+	} else {
 		int a = polenumber / 2 - 1;
 		B_local.setX(strength * pow(r/m, a) * sin(a * phi));
 		B_local.setY(strength * pow(r/m, a) * cos(a * phi));
@@ -79,8 +74,10 @@ void multipoleField::GetFieldValue(const G4double pos[4], G4double *B) const
 	if (rotaxis=="X")		{B_lab.rotateX(rotation);}
 	else if (rotaxis=="Y")	{B_lab.rotateY(rotation);}
 	else if (rotaxis=="Z")	{B_lab.rotateZ(rotation);}
-	else {cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while you have axis "
-				<< rotaxis << endl; exit(-1);
+
+	else {
+		cout	<< "!!! Error: multipole field has rot axis along X or Y or Z, while there is axis: " << rotaxis << endl;
+		exit(101);
 	}
 
 	B[0]=B_lab.x();

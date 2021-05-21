@@ -4,7 +4,7 @@
 #include <QtWidgets>
 
 // gemc headers
-#include "utils.h"
+#include "gemcUtils.h"
 #include "string_utilities.h"
 #include "splash.h"
 
@@ -239,10 +239,9 @@ QSqlDatabase openGdb(goptions gemcOpt)
 	
 	bool ok = db.open();
 	
-	if(!ok)
-	{
+	if(!ok) {
 		cout  << "   Error! Cannot connect to database " << database << ". Exiting." << endl;
-		exit(-1);
+		exit(401);
 	}
 	
 	else

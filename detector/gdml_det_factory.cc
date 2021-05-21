@@ -1,7 +1,7 @@
 
 // gemc headers
 #include "gdml_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // geant4
 #include "G4GDMLParser.hh"

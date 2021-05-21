@@ -16,7 +16,6 @@
 /// - Banks Format.
 /// - Materials.
 /// \section platforms Platforms Supported:
-/// - <i> Windows 7 to come October 2016 </i>
 /// - Linux (32, 64)
 /// - Mac OS X
 /// \section docs Documentation:
@@ -29,7 +28,7 @@
 /// \author \n &copy; Maurizio Ungaro
 /// \author e-mail: ungaro@jlab.org\n\n\n
 
-const char *GEMC_VERSION = "gemc 2.8";
+const char *GEMC_VERSION = "gemc 2.9";
 
 // G4 headers
 #include "G4RunManager.hh"
@@ -55,7 +54,7 @@ const char *GEMC_VERSION = "gemc 2.8";
 #include "outputFactory.h"
 #include "HitProcess.h"
 #include "PhysicsList.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "dmesg_init.h"
 #include "run_conditions.h"
 #include "fieldFactory.h"
@@ -63,7 +62,7 @@ const char *GEMC_VERSION = "gemc 2.8";
 #include "mirrors_factory.h"
 #include "parameter_factory.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 #include "ActionInitialization.h"
 
 // c++ headers
@@ -109,7 +108,6 @@ int main( int argc, char **argv )
 {
 	clock_t startTime = clock();
 	cout << endl;
-	
 	
 	goptions gemcOpt;
 	gemcOpt.setGoptions();
@@ -416,7 +414,7 @@ int main( int argc, char **argv )
 
 	
 	delete runManager;
-	return 1;
+	return 0;
 }
 
 

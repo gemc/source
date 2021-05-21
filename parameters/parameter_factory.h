@@ -8,8 +8,8 @@ using namespace std;
 
 // gemc headers
 #include "run_conditions.h"
-#include "options.h"
-#include "utils.h"
+#include "gemcOptions.h"
+#include "gemcUtils.h"
 
 
 class parametersFactory

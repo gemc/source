@@ -27,7 +27,7 @@
 
 // gemc headers
 #include "detector.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // mlibrary
 #include "gstring.h"
@@ -81,7 +81,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Box. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		// checking BOX dimensions
@@ -108,7 +108,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Para. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Para(name,            ///< name
@@ -134,7 +134,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Sphere. Exiting." << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Sphere(name,            ///< name
@@ -160,7 +160,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Ellipsoid. Exiting." << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Ellipsoid(name,            ///< name
@@ -184,7 +184,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Paraboloid. Exiting." << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Paraboloid(name,            ///< name
@@ -207,7 +207,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Hype. Exiting." << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Hype(name,            ///< name
@@ -233,7 +233,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Tubs. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Tubs(name,        ///< name
@@ -257,7 +257,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4CutTubs. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 
 		SolidV = new G4CutTubs(name,  ///< name
@@ -283,7 +283,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4ElipticalTube. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4EllipticalTube(name,
@@ -307,7 +307,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Cons. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		SolidV = new G4Cons(name,            ///< name
@@ -333,7 +333,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Torus. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		SolidV = new G4Torus(name,           ///< name
 							 dimensions[0],   ///< Inner radius
@@ -358,7 +358,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Trd. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		SolidV = new G4Trd(name,             ///< name
 						   dimensions[0],    ///< Half-length along x at the surface positioned at -dz
@@ -381,7 +381,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a ITrd. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		double alph_xz = dimensions[5];
@@ -431,7 +431,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Trd. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		SolidV = new G4Trap(name,            ///< name
 							dimensions[0],    ///< Half z length
@@ -478,7 +478,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Trd. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		
 		G4ThreeVector points[8];
@@ -512,7 +512,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Polyhedra. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		int nsides  = (int) dimensions[2];  ///< number of sides
 		int zplanes = (int) dimensions[3];  ///< number of planes in z directions
@@ -520,7 +520,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		{
 			cout << hd_msg << " Fatal Error: no sides for " << name
 			<< "... should be a G4Polyhedra. Exiting" << endl << endl;
-			exit(0);
+			exit(503);
 		}
 		double* zPlane = new double[zplanes];
 		double* rInner = new double[zplanes];
@@ -556,7 +556,7 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 			<< " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++) cout << "      dimension " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Polycone. Exiting" << endl << endl;
-			exit(0);
+			exit(501);
 		}
 		int zplanes = (int) dimensions[2];  ///< number of planes in z directions
 		
@@ -595,15 +595,11 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		
 		// Look for original
 		map<string, detector>::iterator it = (*Map).find(trimSpacesFromString(original));
-		if(it == (*Map).end())
-		{
+		if(it == (*Map).end()) {
 			cout <<  hd_msg << " <" << original << "> not found. Exiting." << endl << endl;
-			exit(0);
-		}
-		else
-		{
-			if(VERB>4 || name.find(catch_v) != string::npos)
-			{
+			exit(501);
+		} else {
+			if(VERB>4 || name.find(catch_v) != string::npos) {
 				cout << hd_msg << " " << name << " is a copy of <" << trimSpacesFromString(original) << ">. Pointing to its logical volume." << endl;
 			}
 			SetLogical(it->second.GetLogical());
@@ -655,10 +651,9 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		if     (posp != string::npos) pos = posp;
 		else if(posm != string::npos) pos = posm;
 		else if(post != string::npos) pos = post;
-		if(!posp && !posm && !post)
-		{
+		if(!posp && !posm && !post) {
 			cout << hd_msg << " Operation " << operation << " for " << name << " not recognized. Exiting." << endl;
-			exit(0);
+			exit(504);
 		}
 		
 		// Locating solids
@@ -672,15 +667,13 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 		// Locating second solid transformation
 		map<string, detector>::iterator it1 = (*Map).find(tsolid1);
 		map<string, detector>::iterator it2 = (*Map).find(tsolid2);
-		if(it1 == (*Map).end())
-		{
+		if(it1 == (*Map).end()) {
 			cout <<  hd_msg << " " << tsolid1 << " Not found. Exiting." << endl << endl;
-			exit(0);
+			exit(502);
 		}
-		if(it2 == (*Map).end())
-		{
+		if(it2 == (*Map).end()) {
 			cout <<  hd_msg << " " << tsolid2 << " Not found. Exiting." << endl << endl;
-			exit(0);
+			exit(502);
 		}
 		
 		// Define rotational and translational transformations then combine them
@@ -753,10 +746,9 @@ int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)
 	}
 	
 	
-	if(built==0)
-	{
+	if(built==0) {
 		cout << hd_msg << " " << name << " solid >" << type << "< not recognized. Exiting." << endl;
-		exit(0);
+		exit(505);
 	}
 	return 1;
 }
@@ -808,20 +800,15 @@ int detector::create_logical_volume(map<string, G4Material*> *MMats, goptions ge
 	// if material is still not defined, use DEFAULT_MATERIAL
 	if(i == MMats->end() && LogicV == 0)
 	{
-		if(defmat == "none")
-		{
+		if(defmat == "none") {
 			cout << hd_msg << " Warning: material >" << material << "< is not defined for volume >" << name <<"<. Exiting" << endl;
 			cout << hd_msg << " You can set the DEFAULT_MATERIAL flag to replace an undefined material. " << endl;
-			exit(0);
-		}
-		else
-		{
+			exit(511);
+		} else {
 			material = defmat;
-			if(MMats->find(material)== MMats->end())
-			{
+			if(MMats->find(material)== MMats->end()) {
 				cout << hd_msg << " Warning: " << defmat << " set with DEFAULT_MATERIAL is not found. Exiting" << endl;
-				exit(0);
-				
+				exit(512);
 			}
 		}
 	}
@@ -909,16 +896,14 @@ int detector::create_replicas(goptions gemcOpt, G4LogicalVolume *mamma, detector
 	if(PhysicalV) delete PhysicalV;
 	
 	
-	if(type.find("ReplicaOf:") == 0)
-	{
-		if(dimensions.size() != 4)
-		{
+	if(type.find("ReplicaOf:") == 0) {
+		if(dimensions.size() != 4) {
 			cout << hd_msg << " Fatal Error: the number of parameters for " << name
 				  << " is " << dimensions.size() <<  ":" << endl;
 			for(unsigned int i=0; i<dimensions.size(); i++)
 				cout << "      parameter " << i + 1 << ": " <<  dimensions[i] << endl;
 			cout << "      This does not match a G4Replicas (4). Exiting" << endl << endl;
-			exit(0);
+			exit(506);
 		}
 		
 		EAxis pAxis;

@@ -1,6 +1,6 @@
 // gemc
 #include "cad_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // c++
 #include <dirent.h>

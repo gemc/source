@@ -23,7 +23,7 @@
 #include "detector.h"
 #include "Hit.h"
 #include "outputFactory.h"
-#include "options.h"
+#include "gemcOptions.h"
 
 // translationTable framework
 #include "translationTable.h"

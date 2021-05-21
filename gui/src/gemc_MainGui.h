@@ -8,7 +8,7 @@
 #include "G4RunManager.hh"
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 #include "runControl/run_control.h"
 #include "camera_control.h"
 #include "detector_tree.h"

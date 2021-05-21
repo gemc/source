@@ -78,7 +78,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	}
 
 	G4Track *trk = aStep->GetTrack();
-	cout << "   >  track is " << trk->GetDefinition()->GetParticleName() << endl ;
+	// cout << "   >  track is " << trk->GetDefinition()->GetParticleName() << endl ;
 
 	// do not record G4OpticalPhoton unless RECORD_OPTICALPHOTONS is set to 1
 	if(trk->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && RECORD_OPTICALPHOTONS == 0) {

@@ -208,11 +208,11 @@ void detectorFactory::initFactory(goptions go, runConditions rc, string ft)
 // returns detector from a gtable
 detector get_detector(gtable gt, goptions go, runConditions RC)
 {
-	if(gt.data.size() < 18)
-	{
+	if(gt.data.size() < 18) {
 		cout << " !!! ERROR: Detector data size should be at least 18. There are " << gt.data.size() << " items on the line for " << gt.data[0] << endl;
-		exit(0);
-	}	
+		exit(21);
+	}
+	
 	string hd_msg     = " >> GTABLE Factory: ";
 	double verbosity  = go.optMap["GEO_VERBOSITY"].arg;
 	
@@ -260,11 +260,10 @@ detector get_detector(gtable gt, goptions go, runConditions RC)
 				
 				
 	// 5: Color, opacity
-	if(gt.data[5].size() != 6 && gt.data[5].size() != 7)
-	{
+	if(gt.data[5].size() != 6 && gt.data[5].size() != 7) {
 		cout << hd_msg << " Color Attributes for " << det.name << "<" << gt.data[5] << ">  have wrong size: " << gt.data[5].size()
 		<< ". It should be 6 or 7 digits  rrggbb[t]  (red, green, blue hexadecimals + optional transparency)." << endl;
-		exit(9);
+		exit(51);
 	}
 
 	G4Colour thisCol = gcol(gt.data[5]);

@@ -2,7 +2,7 @@
 #define PHYSICS_LIST_H 1
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 // geant4 headers
 #include "G4VModularPhysicsList.hh"

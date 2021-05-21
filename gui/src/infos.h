@@ -7,7 +7,7 @@
 #include <QComboBox>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 // C++ headers
 #include <string>

@@ -28,15 +28,15 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 	   fabs(pos.y()) > max_y_pos ||
 		fabs(pos.z()) > max_z_pos ) {
 
-		cout << " Out of limits reached for track " << track->GetDefinition()->GetParticleName() ;
-		cout << " Track killed" << endl;
+//		cout << " Out of limits reached for track " << track->GetDefinition()->GetParticleName() ;
+//		cout << " Track killed" << endl;
 
 		track->SetTrackStatus(fStopAndKill);   ///< Killing track if outside of interest region
 	}
 
 	if(track->GetKineticEnergy() < energyCut) {
-		cout << " Below energy " << energyCut << " for track " << track->GetDefinition()->GetParticleName()  ;
-		cout << " Track killed" << endl;
+//		cout << " Below energy " << energyCut << " for track " << track->GetDefinition()->GetParticleName()  ;
+//		cout << " Track killed" << endl;
 
 		track->SetTrackStatus(fStopAndKill);
 	}

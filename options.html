@@ -66,8 +66,6 @@ pre{font-family:Helvetica;font-size:12pt
 <tr><th scope="col" >Category</th>
     <th scope="col" >Option</th>
     <th scope="col" >Help</th></tr>
-<tr><th scope="row"></th> <td>INTEGRATEDDGT</td><td><pre>
-De-activates integrated digitized output for system(s). Example: -INTEGRATEDDGT="DC, TOF"</pre></td></tr>
 <tr><th scope="row">control</th> <td>CHECK_OVERLAPS</td><td><pre>
 Checks Overlapping Volumes:
       1.  Check Overlaps at Construction Time
@@ -90,6 +88,10 @@ Initial Event Number.</pre></td></tr>
 Executes commands in macro file.</pre></td></tr>
 <tr><th scope="row">control</th> <td>GUIPOS</td><td><pre>
 Specify the position of the QT display window. Default is at 50, 50 </pre></td></tr>
+<tr><th scope="row">control</th> <td>HARDWARESTATUS</td><td><pre>
+Accounts for hardware status
+This flag can be used by the digitization routines to account for hardware status
+</pre></td></tr>
 <tr><th scope="row">control</th> <td>HIGH_RES</td><td><pre>
 Use High Resolution Graphics
 </pre></td></tr>
@@ -114,8 +116,11 @@ Sets the GUI Style. Available options:
       - QMotifStyle</pre></td></tr>
 <tr><th scope="row">control</th> <td>RANDOM</td><td><pre>
 Random Engine Initialization. The argument (seed) can be an integer or the string TIME.</pre></td></tr>
-<tr><th scope="row">control</th> <td>RECORD_OPTICALPHOTONS</td><td><pre>
+<tr><th scope="row">control</th> <td>RECORD_MIRRORS</td><td><pre>
 Set to one if you want to save mirror hits in the output. Default is 0.
+</pre></td></tr>
+<tr><th scope="row">control</th> <td>RECORD_OPTICALPHOTONS</td><td><pre>
+Set to one if you want the optical photons to produce hits. Default is 0.
 </pre></td></tr>
 <tr><th scope="row">control</th> <td>RECORD_PASSBY</td><td><pre>
 Set to one if you want to save zero energy hits in the output. Default is 0.
@@ -399,8 +404,10 @@ nonzero write only events having a hit with mom > FILTER_HIGHMOM. For example
 If set to 1, do not write output if there are no hits in the detectors</pre></td></tr>
 <tr><th scope="row">output</th> <td>FILTER_NULL_VARIABLES</td><td><pre>
 If set to 1, filters out variables with no valuable info in the output.</pre></td></tr>
+<tr><th scope="row">output</th> <td>INTEGRATEDDGT</td><td><pre>
+De-activates integrated digitized output for system(s). Example: -INTEGRATEDDGT="DC, TOF"</pre></td></tr>
 <tr><th scope="row">output</th> <td>INTEGRATEDRAW</td><td><pre>
-Activates integrated geant4 raw output for system(s). Example: -INTEGRATEDRAW="DC, TOF"</pre></td></tr>
+To acticate the true info for all sensitive detectors:  -INTEGRATEDRAW="*"</pre></td></tr>
 <tr><th scope="row">output</th> <td>OUTPUT</td><td><pre>
 Type of output, output filename. Supported output: evio, txt. Example: -OUTPUT="evio, out.ev"</pre></td></tr>
 <tr><th scope="row">output</th> <td>SAVE_SELECTED</td><td><pre>

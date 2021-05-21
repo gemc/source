@@ -7,7 +7,7 @@
 #include "detector_tree.h"
 #include "MDetectorConstruction.h"
 #include "MPrimaryGeneratorAction.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "string_utilities.h"
 #include "detector_editor.h"
 

@@ -1,6 +1,6 @@
 // gemc headers
 #include "outputFactory.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "string_utilities.h"
 #include "evio_output.h"
 #include "hipo_output.h"
