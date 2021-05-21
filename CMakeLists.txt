@@ -27,7 +27,7 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-message(STATUS "COMPILERSn Used")
+message(STATUS "COMPILERS Used:")
 message(STATUS "CC = ${CMAKE_C_COMPILER}")
 message(STATUS "CXX= ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_SHARED_LIBRARY_SUFFIX=${CMAKE_SHARED_LIBRARY_SUFFIX}")
@@ -96,7 +96,7 @@ else()
 	set(CMAKE_AUTOUIC ON)
 
 	add_definitions(${Geant4_DEFINITIONS})
-
+	
 	include_directories(
 			${Qt5Xml_INCLUDE_DIRS}
 			${Qt5Widgets_INCLUDE_DIRS}
