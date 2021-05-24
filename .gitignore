@@ -17,3 +17,4 @@ utilities/moc_graph.cc
 lib/
 gemc
 .DS_Store
+build*
