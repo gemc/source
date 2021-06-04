@@ -24,6 +24,9 @@ void MSteppingAction::UserSteppingAction(const G4Step* aStep)
 	G4ThreeVector   pos   = aStep->GetPostStepPoint()->GetPosition();      ///< Global Coordinates of interaction
 	G4Track*        track = aStep->GetTrack();
 
+	cout << "x: " << pos.x() << ", y: " << pos.y() << ", z: " << pos.z() <<  endl;
+
+
 	if(fabs(pos.x()) > max_x_pos ||
 	   fabs(pos.y()) > max_y_pos ||
 		fabs(pos.z()) > max_z_pos ) {

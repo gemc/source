@@ -259,13 +259,10 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			// if( aStep->GetPreStepPoint()->GetTouchable()->GetVolume(0) == aStep->GetPostStepPoint()->GetTouchable()->GetVolume(0))
 			{
 				MHit *thisHit = find_existing_hit(mhPID);
-				if(!thisHit)
-				{
+				if(!thisHit) {
 					cout << " Hit not found in collection but found in PID. This should never happen. Exiting." << endl;
 					exit(0);
-				}
-				else
-				{
+				} else {
 					thisHit->SetPos(xyz);
 					thisHit->SetLPos(Lxyz);
 					thisHit->SetVert(vert);

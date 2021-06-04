@@ -61,11 +61,9 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		fmtc.Z0[row]=data[row][1];
 		fmtc.alpha[row]=data[row][2]*degree;
-
 	}
 	// Number of strips and pixels
 	fmtc.N_sidestr = (fmtc.N_str-2*fmtc.N_halfstr)/2; //number of strips one side
@@ -151,13 +149,12 @@ map<string, double>FMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
-	double x, y, z;
 	G4ThreeVector   xyz    = aStep->GetPostStepPoint()->GetPosition();
-	x = xyz.x();
-	y = xyz.y();
-	z = xyz.z();
+	G4ThreeVector  lxyz    = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); ///< Local Coordinates of interaction
+
 	double point[4] = {xyz.x(), xyz.y(), xyz.z(),10};
 	double fieldValue[6] = {0, 0, 0, 0, 0, 0};
+
 
 	vector<identifier> yid = id;
 	class fmt_strip fmts;
@@ -168,8 +165,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4FieldManager *fmanager = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetFieldManager();
 
 	// if no field manager, the field is zero
-	if(fmanager)
-	{
+	if(fmanager) {
 		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
 
 		G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
@@ -184,9 +180,7 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 			fmtc.ThetaL=fmtc.Lor_Angle.GetAngle(fmtc.HV_DRIFT[layer-1]/fmtc.hDrift*10,BField.perp(qEField)/gauss/1000.)*degree;
 			fmtc.Theta_Ls=atan2(Fdir.y(),Fdir.x());
 		}
-	}
-	else
-	{
+	} else {
 		fmtc.ThetaL=0;
 		fmtc.Theta_Ls=0;
 		if(fmtc.runNo == 0) cout << " > FMT: No field found. Lorentz angle set to zero." << endl;
@@ -195,8 +189,8 @@ vector<identifier>  FMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	//yid[3].id = fmts.FindStrip(layer-1, sector-1, x, y, z);
 	double depe = aStep->GetTotalEnergyDeposit();
 	//cout << "resolMM " << layer << " " << x << " " << y << " " << z << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	vector<double> multi_hit = fmts.FindStrip(layer-1, sector-1, x, y, z, depe, fmtc);
-	
+	vector<double> multi_hit = fmts.FindStrip(layer-1, sector-1, lxyz.x(), lxyz.y(), lxyz.z(), depe, fmtc);
+
 	int n_multi_hits = multi_hit.size()/2;
 	
 	// closest strip

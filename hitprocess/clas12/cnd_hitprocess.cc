@@ -620,7 +620,7 @@ vector<identifier>  cnd_HitProcess :: processID(vector<identifier> id, G4Step *s
 	yid[3].id_sharing = 1; // direct = 0, indirect = 1  << what we need to duplcate to 1 here
 
 	if (yid[3].id != 0) {
-		cout << "*****WARNING***** in cnd_HitProcess :: processID, identifier \"direct\" of the original hit should be 0 " << endl;
+		cout << "*****WARNING***** in cnd_HitProcess :: processID, identifier \"direct\" of the original hit should be 0 but is " << yid[3].id << endl;
 		cout << "yid[3].id = " << yid[3].id << endl;
 	}
 
@@ -648,8 +648,7 @@ double cnd_HitProcess::BirksAttenuation(double destep, double stepl, int charge,
 	// Taken from GEANT4 examples advanced/amsEcal and extended/electromagnetic/TestEm3
 	//
 	double response = destep;
-	if (birks*destep*stepl*charge != 0.)
-	{
+	if (birks*destep*stepl*charge != 0.) {
 		response = destep/(1. + birks*destep/stepl);
 	}
 	return response;
