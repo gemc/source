@@ -12,7 +12,7 @@ using namespace UTIL;
 
 
 // gemc
-#include "options.h"
+#include "gemcOptions.h"
 
 // C++
 #include <fstream>

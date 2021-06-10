@@ -7,7 +7,7 @@
 #define gbank_H 1
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 // C++ headers
 #include <sstream>
@@ -114,8 +114,7 @@ class gBank
 {
 public:
 	gBank(){;}
-	gBank(int i, string bname, string d)
-	{
+	gBank(int i, string bname, string d) {
 		idtag        = i;
 		bdescription = d;
 		bankName = bname;
@@ -134,7 +133,7 @@ public:
 	vector<int>     gid;           ///< Output variable identifier
 	// variable type is 2 chars. The first char represent the type of bank:
 	// N is for no level banks, the rest are defined above (N, R, D, S, M, V).
-	// "i"nt , "d"ouble, "s"tring
+	// "i"nt , "f"loat, "d"ouble, "s"tring
 	vector<string>  type;         ///< Variable type
 	vector<string>  description;  ///< Variable description
 

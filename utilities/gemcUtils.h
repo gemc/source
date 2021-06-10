@@ -22,7 +22,7 @@ using namespace std;
 
 // gemc headers
 #include "string_utilities.h"
-#include "options.h"
+#include "gemcOptions.h"
 
 // mlibrary
 #include "gstring.h"

@@ -21,6 +21,10 @@ HipoSchema :: HipoSchema()
 	runRFSchema     = hipo::schema("RUN::rf",     10000, 12);
 	trueInfoSchema  = hipo::schema("MC::True",       40, 4);
 
+	// generators
+	geantParticle = hipo::schema("MC::Particle",  40, 2);
+	lundParticle  = hipo::schema("MC::Lund",      40, 3);
+
 	// detectors
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
 	bstADCSchema    = hipo::schema("BST::adc",    20200, 11);
@@ -67,18 +71,21 @@ HipoSchema :: HipoSchema()
 
 	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B,mode/B, torus/F, solenoid/F");
 	runRFSchema.parse("id/S, time/F");
-	trueInfoSchema.parse("detector/B, pid/I, mpid/I, tid/I, mtid/I, mtid/I, trackE/F, totEdep/F, avgX/F, avgY/F, avgZ/F, avgLx/F, avgLy/F, avgLz/F, px/F, py/F, pz/F, vx/F, vy/F, vz/F, mvx/F, mvy/F, mvz/F, avgT/F, nsteps/I, procID/I, hitn/I");
+	trueInfoSchema.parse("detector/B, pid/I, mpid/I, tid/I, mtid/I, otid/I, trackE/F, totEdep/F, avgX/F, avgY/F, avgZ/F, avgLx/F, avgLy/F, avgLz/F, px/F, py/F, pz/F, vx/F, vy/F, vz/F, mvx/F, mvy/F, mvz/F, avgT/F, nsteps/I, procID/I, hitn/I");
+
+	// generators
+	geantParticle.parse("pid/I, px/F, py/F, pz/F, vx/F, vy/F, vz/F, vt/F");
+	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
+
 
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
-	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-
-	// todo later
+	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
 	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 
 	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
 
@@ -119,19 +126,26 @@ HipoSchema :: HipoSchema()
 
 	schemasToLoad["RUN::config"] = runConfigSchema;
 	schemasToLoad["RUN::rf"]     = runRFSchema;
+	schemasToLoad["MC::True"]    = trueInfoSchema;
+
+	// generators
+	schemasToLoad["MC::Particle"] = geantParticle;
+	schemasToLoad["MC::Lund"]     = lundParticle;
 
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
 	schemasToLoad["BST::adc"]     = bstADCSchema;
+	schemasToLoad["CND::adc"]     = cndADCSchema;
+	schemasToLoad["CND::tdc"]     = cndTDCSchema;
 	schemasToLoad["CTOF::adc"]    = ctofADCSchema;
 	schemasToLoad["CTOF::tdc"]    = ctofTDCSchema;
 	schemasToLoad["DC::tdc"]      = dcTDCSchema;
 	schemasToLoad["ECAL::adc"]    = ecalADCSchema;
 	schemasToLoad["ECAL::tdc"]    = ecalTDCSchema;
 	schemasToLoad["FMT::adc"]     = fmtADCSchema;
-	schemasToLoad["FT_CAL::adc"]  = ftcalADCSchema;
-	schemasToLoad["FT_HODO::adc"] = fthodoADCSchema;
-	schemasToLoad["FT_TRK::adc"]  = ftrkTDCSchema;
+	schemasToLoad["FTCAL::adc"]   = ftcalADCSchema;
+	schemasToLoad["FTHODO::adc"]  = fthodoADCSchema;
+	schemasToLoad["FTTRK::adc"]   = ftrkTDCSchema;
 	schemasToLoad["FTOF::adc"]    = ftofADCSchema;
 	schemasToLoad["FTOF::tdc"]    = ftofTDCSchema;
 	schemasToLoad["HTCC::adc"]    = htccADCSchema;
@@ -140,51 +154,6 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
-
-	// defined here: https://github.com/JeffersonLab/clas12-offline-software/blob/8ed53986f8b1a2e6f3c5a63b1e6f6d7fd88020c9/common-tools/clas-detector/src/main/java/org/jlab/detector/base/DetectorType.java
-	detectorID["BMT"]    = 1;
-	detectorID["BST"]    = 2;
-	detectorID["CND"]    = 3;
-	detectorID["CTOF"]   = 4;
-	detectorID["DC"]     = 6;
-	detectorID["ECAL"]   = 7;
-	detectorID["FMT"]    = 8;
-	detectorID["FTCAL"]  = 10;
-	detectorID["FTHODO"] = 11;
-	detectorID["FTTRK"]  = 13;
-	detectorID["FTOF"]   = 12;
-	detectorID["HTCC"]   = 15;
-	detectorID["LTCC"]   = 16;
-	detectorID["RICH"]   = 18;
-	detectorID["RTPC"]   = 19;
-	detectorID["BAND"]   = 21;
-
-	trueInfoNamesMap["pid"]     = "pid";
-	trueInfoNamesMap["mpid"]    = "mpid";
-	trueInfoNamesMap["tid"]     = "tid";
-	trueInfoNamesMap["mtid"]    = "mtid";
-	trueInfoNamesMap["otid"]    = "otid";
-	trueInfoNamesMap["trackE"]  = "trackE";
-	trueInfoNamesMap["totEdep"] = "totEdep";
-	trueInfoNamesMap["avg_x"]   = "avgX";
-	trueInfoNamesMap["avg_y"]   = "avgY";
-	trueInfoNamesMap["avg_z"]   = "avgZ";
-	trueInfoNamesMap["avg_lx"]  = "avgLx";
-	trueInfoNamesMap["avg_ly"]  = "avgLy";
-	trueInfoNamesMap["avg_lz"]  = "avgLz";
-	trueInfoNamesMap["px"]      = "px";
-	trueInfoNamesMap["py"]      = "py";
-	trueInfoNamesMap["pz"]      = "pz";
-	trueInfoNamesMap["vx"]      = "vx";
-	trueInfoNamesMap["vy"]      = "vy";
-	trueInfoNamesMap["vz"]      = "vz";
-	trueInfoNamesMap["mvx"]     = "mvx";
-	trueInfoNamesMap["mvy"]     = "mvy";
-	trueInfoNamesMap["mvz"]     = "mvz";
-	trueInfoNamesMap["avg_t"]   = "avgT";
-	trueInfoNamesMap["nsteps"]  = "nsteps";
-	trueInfoNamesMap["procID"]  = "procID";
-	trueInfoNamesMap["hitn"]    = "hitn";
 
 }
 
@@ -200,21 +169,17 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 
 	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
 		return schemasToLoad[thisSchema];
+	} else if(schemaName == "ft_cal") {
+		return ftcalADCSchema;
+	} else if(schemaName == "ft_hodo") {
+		return fthodoADCSchema;
+	} else if(schemaName == "ft_trk") {
+		return ftrkTDCSchema;
 	} else {
+		if( !(schemaName == "dc" && type == 0) && !(schemaName == "bmt" && type == 1)  && !(schemaName == "bst" && type == 1) &&  !(schemaName == "flux") ) {
+			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
+		}
 		return emptySchema;
-	}
-}
-
-// returns detectorID from map, given hitType
-int HipoSchema :: getDetectorID(string hitType) {
-
-	string toUpperS = hitType;
-	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
-
-	if(detectorID.find(toUpperS) != detectorID.end() ) {
-		return detectorID[toUpperS];
-	} else {
-		return 0;
 	}
 }
 
@@ -233,7 +198,7 @@ void outputContainer::initializeHipo(string outputFile) {
 	for (auto &schema: hipoSchema->schemasToLoad) {
 		hipoWriter->getDictionary().addSchema(schema.second);
 	}
-	
+
 	hipoWriter->open(outputFile.c_str());
 
 }

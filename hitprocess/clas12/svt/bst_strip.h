@@ -22,6 +22,6 @@ public:
 
 	void fill_infos();
 
-	vector<double> FindStrip( int layer, int sector, int isens, G4ThreeVector Lxyz);   // Strip Finding Routine
+	vector<double> FindStrip( int layer, int isens, G4ThreeVector Lxyz);   // Strip Finding Routine
 
 };

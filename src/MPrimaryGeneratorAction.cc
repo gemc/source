@@ -678,7 +678,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					{
 						cout << hd_msg << " Particle id " << stdhep_reader->pid(p) << " not found in G4 table." << endl << endl;
 
-						return;
+						cout << "Exiting !" << endl; exit(1);				
 					}
 
 					particleGun->SetParticleDefinition(Particle);
@@ -1115,7 +1115,7 @@ void MPrimaryGeneratorAction::setBeam()
 		gif.open(trimSpacesFromString(gfilename).c_str());
 		if(!gif) {
 			cerr << hd_msg << " Can't open LUND input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
-			exit(1);
+			exit(201);
 		}
 	} else if( input_gen.compare(0,6,"BEAGLE")==0 || input_gen.compare(0,6,"beagle")==0 ) {
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
@@ -1125,7 +1125,7 @@ void MPrimaryGeneratorAction::setBeam()
 		if(!gif)
 		{
 			cerr << hd_msg << " Can't open BEAGLE input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
-			exit(1);
+			exit(202);
 		}
 		beagleHeader = 0;
 	}
@@ -1139,10 +1139,9 @@ void MPrimaryGeneratorAction::setBeam()
 		cout << hd_msg << "StdHEP: Opening  " << gformat << " file: " << trimSpacesFromString(gfilename).c_str() << endl;
 		stdhep_reader = new lStdHep(trimSpacesFromString(gfilename).c_str());
 
-		if(!stdhep_reader)
-		{
+		if(!stdhep_reader) {
 			cerr << hd_msg << " Can't open input file " << trimSpacesFromString(gfilename).c_str() << ". Exiting. " << endl;
-			exit(1);
+			exit(203);
 		}
 
 		// For the STEER_BEAM option, we need to have the angles and vertex of the GCARD in BEAM_P and BEAM_V, SPREAD_V
@@ -1179,7 +1178,7 @@ void MPrimaryGeneratorAction::setBeam()
 			if(!bgif)
 			{
 				cerr << hd_msg << " Can't open background input file >" << trimSpacesFromString(background_gen).c_str() << "<. Exiting. " << endl;
-				exit(1);
+				exit(204);
 			}
 		}
 	}
@@ -1342,7 +1341,7 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			{
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				return;
+				cout << "Exiting !" << endl; exit(0);				
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
@@ -1410,7 +1409,7 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 			{
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				return;
+				cout << "Exiting !" << endl; exit(0);				
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);

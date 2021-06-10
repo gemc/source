@@ -21,7 +21,7 @@
 #include "gbank.h"
 #include "HitProcess.h"
 #include "sensitiveDetector.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "MPrimaryGeneratorAction.h"
 
 
@@ -149,12 +149,13 @@ public:
 	int    Modulo;          ///< Print Log Event every Modulo
 	double VERB;            ///< Event Verbosity
 	string catch_v;         ///< Print Log for volume
-	int   SAVE_ALL_MOTHERS; ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
+	int SAVE_ALL_MOTHERS;   ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
 	int SAVE_ALL_ANCESTORS; ///< Outputs info on all ancestors of tracks with hits
-	int   MAXP;             ///< Max number of generated particles to save on output stream
-	int   FILTER_HITS;      ///< If set to 1, do not write any output unless there is a hit somewhere
-	int   FILTER_HADRONS;   ///< If set to 1, do not write any output unless there is a hadron somewhere
-	int   FILTER_HIGHMOM;   ///< If set to non-0, do not write any output unless there is high mom hit		
+	int MAXP;               ///< Max number of generated particles to save on output stream
+	int FILTER_HITS;        ///< If set to 1, do not write any output unless there is a hit somewhere
+	int FILTER_HADRONS;     ///< If set to 1, do not write any output unless there is a hadron somewhere
+	int FILTER_HIGHMOM;     ///< If set to non-0, do not write any output unless there is high mom hit
+	int SKIPREJECTEDHITS;   ///< Skips hits that are rejected by digitization. Default: yes
 	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
 	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
 	string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
@@ -163,6 +164,7 @@ public:
 	string RFSTART;         ///< Parameters of RF model
 	int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
 	long int requestedNevents;
+	int ntoskip;                      ///< Number of events to skip
 
 	// sampling time of electronics (typically FADC)
 	// and number of samplings

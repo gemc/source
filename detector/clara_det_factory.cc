@@ -1,7 +1,7 @@
 
 // gemc headers
 #include "clara_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 #include <dlfcn.h>
 
@@ -10,16 +10,16 @@ typedef map<string, map<string,string> > volmap_t;
 map<string, detector> clara_det_factory::loadDetectors()
 {
 	string hd_msg     = gemcOpt.optMap["LOG_MSG"].args + " CLARA Factory: >> ";
-	// double verbosity  = gemcOpt.optMap["GEO_VERBOSITY"].arg;
 
 	map<string, detector> dets;
+
 	// first check if there's at least one detector with CLARA factory
-	if(!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType))
+	if(!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType)) {
 		return dets;
-	
+	}
+
 	// checking if the plugin directory exist 
-	if(getenv ("GEMC_PLUGINS") == NULL)
-	{
+	if(getenv ("GEMC_PLUGINS") == NULL) {
 		cout << "  !!! Warning: the GEMC_PLUGINS env variable, needed for the CLARA plugin, is not set. " << endl;		
 		cout << "  !!! Warning: for CLAS12, this is typically /group/clas12/lib " << endl;
 		cout << "  !!! Warning: CLARA detectors won't be loaded. " << endl << endl;
@@ -31,10 +31,9 @@ map<string, detector> clara_det_factory::loadDetectors()
 	cout << "  > Opening geometry plugin..." << endl;
 	void* handle = dlopen(clasraPlugin.c_str(), RTLD_NOW);
 
-	if (!handle)
-	{
+	if (!handle) {
 		cerr << "  !!! Error: Cannot open library: " << dlerror() << '\n';
-		exit(0);
+		exit(11);
 	}
 	
 	// reset errors
@@ -45,11 +44,10 @@ map<string, detector> clara_det_factory::loadDetectors()
 	get_volume_maps_t get_volume_maps = (get_volume_maps_t) dlsym(handle, "get_volume_maps");
 
 	const char *dlsym_error = dlerror();
- 	if (dlsym_error)
-	{
+ 	if (dlsym_error) {
 		cerr << "  !!! Error: Cannot load symbol 'get_volume_maps': " << dlerror() << endl;
 		dlclose(handle);
-		exit(0);
+		exit(12);
 	}
 
 	

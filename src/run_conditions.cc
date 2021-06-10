@@ -1,7 +1,7 @@
 // gemc headers
 #include "run_conditions.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -234,10 +234,9 @@ runWeights::runWeights(goptions opts)
 	
 	ifstream in(fname.c_str());
 	
-	if(!in)
-	{
+	if(!in) {
 		cerr << " !!! Can't open input file " << fname.c_str() << ". Exiting. " << endl;
-		exit(1);
+		exit(301);
 	}
 	
 	// filling weight map

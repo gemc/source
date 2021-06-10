@@ -3,7 +3,7 @@
 
 // gemc headers
 #include "mysql_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 map<string, detector> mysql_det_factory::loadDetectors()
 {

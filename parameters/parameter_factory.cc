@@ -3,7 +3,7 @@
 #include "mysql_parameters.h"
 #include "text_parameters.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 
 parametersFactory *getParameterFactory(map<string, parameterFactoryInMap> *parametersFactoryMap, string parametersMethod)

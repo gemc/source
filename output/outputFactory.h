@@ -11,7 +11,7 @@
 
 // gemc
 #include "gbank.h"
-#include "options.h"
+#include "gemcOptions.h"
 #include "MPrimaryGeneratorAction.h"
 
 // mlibrary

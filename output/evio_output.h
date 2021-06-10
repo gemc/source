@@ -16,57 +16,57 @@
 // Class definition
 class evio_output : public outputFactory
 {
-	public:
-		~evio_output(){;}  ///< event is deleted in WriteEvent routine
-		static outputFactory *createOutput() {return new evio_output;}
-  
+public:
+	~evio_output(){;}  ///< event is deleted in WriteEvent routine
+	static outputFactory *createOutput() {return new evio_output;}
+	
 	// record the simulation conditions on the file
 	void recordSimConditions(outputContainer*, map<string, string>);
-
+	
 	// write header
 	void writeHeader(outputContainer*, map<string, double>, gBank);
-
+	
 	// write user infos header
- 	void writeUserInfoseHeader(outputContainer*, map<string, double>);
-
+	void writeUserInfoseHeader(outputContainer*, map<string, double>);
+	
 	// format output and set insideBank
 	void initBank(outputContainer*, gBank, int what);
- 
+	
 	// write generated particles
 	void writeGenerated(outputContainer*, vector<generatedParticle>, map<string, gBank> *banksMap, vector<userInforForParticle> userInfo);
-
+	
 	// write ancestors
 	virtual void writeAncestors (outputContainer*, vector<ancestorInfo>, gBank);
-
+	
 	// write RF Signal
 	virtual void writeRFSignal(outputContainer*, FrequencySyncSignal, gBank);
-
+	
 	// write geant4 raw integrated info
 	void writeG4RawIntegrated(outputContainer*, vector<hitOutput>,  string, map<string, gBank>*);
-
+	
 	// write geant4 digitized integrated info
 	void writeG4DgtIntegrated(outputContainer*, vector<hitOutput>,  string, map<string, gBank>*);
-
+	
 	// write geant4 charge / time (as seen by electronic) info
 	virtual void writeChargeTime(outputContainer*, vector<hitOutput>, string, map<string, gBank>*);
-
+	
 	// write geant4 true info for every step
 	virtual void writeG4RawAll(outputContainer*, vector<hitOutput>, string, map<string, gBank>*);
-
+	
 	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode1(outputContainer*, vector<hitOutput>, int);
-
-        // write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
-        // This method should be called once at the end of event action, and the 1st argument 
-        // is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
+	
+	// write fadc mode 1 (full signal shape) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
+	// This method should be called once at the end of event action, and the 1st argument 
+	// is a map<int crate_id, vector<hitoutput> (vector of all hits from that crate) >
 	virtual void writeFADCMode1( map<int, vector<hitOutput> >, int);
-
+	
 	// write fadc mode 7 (integrated mode) - jlab hybrid banks. This uses the translation table to write the crate/slot/channel
 	virtual void writeFADCMode7(outputContainer*, vector<hitOutput>, int);
-
+	
 	// write event and close stream if necessary
 	void writeEvent(outputContainer*) ;
-
+	
 	
 	evioDOMTree *event;
 	evioDOMNodeP detectorBank;
@@ -74,23 +74,23 @@ class evio_output : public outputFactory
 	map<string, evioDOMNodeP> detectorDgtIntBank;
 	map<string, evioDOMNodeP> detectorRawAllBank;
 	map<string, evioDOMNodeP> detectorChargeTimeBank;
-
+	
 	map<string, bool> insideBank;
 	map<string, bool> insideRawIntBank;
 	map<string, bool> insideDgtIntBank;
 	map<string, bool> insideRawAllBank;
 	map<string, bool> insideChargeTimeBank;
-
+	
 	int evn;
-
-
-//	static bool is_conf_written;
+	
+	
+	//	static bool is_conf_written;
 	static vector<int> detector_crates;
 	
-        private:
-            
-        static const int fadc_mode1_banktag;
-        
+private:
+	
+	static const int fadc_mode1_banktag;
+	
 };
 
 // returns a evioDOMNodeP based on the type specified by the string

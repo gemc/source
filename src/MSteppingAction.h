@@ -11,7 +11,7 @@
 #include "G4Step.hh"
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 class MSteppingAction : public G4UserSteppingAction
 {

@@ -3,7 +3,7 @@
 
 // gemc headers
 #include "text_det_factory.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 map<string, detector> text_det_factory::loadDetectors()
 {

@@ -1,7 +1,7 @@
 // gemc headers
 #include "fieldFactory.h"
 #include "asciiField.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 
 fieldFactory *getFieldFactory(map<string, fieldFactoryInMap> *fieldsFactoryMap, string fieldsMethod)

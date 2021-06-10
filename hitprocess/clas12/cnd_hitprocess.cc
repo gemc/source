@@ -128,52 +128,29 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 
 map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
-	string hd_msg = " > cnd hit process";
-	
+
+	map<string, double> dgtz;
+
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material
 	double thickness = 3;           // thickness of each CND paddle
-	double sigmaTD = 0.24;                          // direct signal
+
+	// MARK TO DELETE LATER
+	double sigmaTD = 0.24;          // direct signal
+	double sigma   = 0.24;          // direct signal
 	
-	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
 	
-	int sector = identity[0].id;
-	int layer  = identity[1].id;
-	int paddle = identity[2].id;
-	
+	int sector = identity[0].id; // paddle number
+	int layer  = identity[1].id; // layer
+	int paddle = identity[2].id; // side: 1 = left, 2 = right
+	int side   = identity[2].id; // side: 1 = left, 2 = right
+	int direct = identity[3].id; // direct = 0, indirect = 1
+
+
 	if(aHit->isBackgroundHit == 1) {
-		
-		double totEdep = aHit->GetEdep()[0];
-		double stepTime = aHit->GetTime()[0];
-		
-		dgtz["hitn"]   = hitn;
-		dgtz["sector"] = sector;
-		dgtz["layer"]  = layer;
-		dgtz["component"] = 1;
-		
-		int paddle = identity[2].id;
-		double adc_mip = 0.;
-		int ADC = 0;
-		int TDC = 0;
-		double slope = 0;
-		
-		if(paddle == 1) {
-			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
-			ADC = (int) (totEdep*adc_mip*2./(dEdxMIP*thickness));
-			TDC = (int) ((G4RandGauss::shoot(stepTime,sigmaTD/sqrt(totEdep)))/slope);
-			slope = cndc.slope_L[sector-1][layer-1][0];
-		} else if(paddle == 2) {
-			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
-			ADC = (int) (totEdep*adc_mip*2./(dEdxMIP*thickness));
-			slope = cndc.slope_R[sector-1][layer-1][0];
-			TDC = (int) ((G4RandGauss::shoot(stepTime,sigmaTD/sqrt(totEdep)))/slope);
-		}
-		
-		dgtz["ADCL"]   = (int) ADC;
-		dgtz["ADCR"]   = (int) ADC;
-		dgtz["TDCL"]   = (int) TDC;
-		dgtz["TDCR"]   = (int) TDC;
-		
+
+		cout << "ASD ASD" << endl;
+
 		return dgtz;
 	}
 	
@@ -193,53 +170,79 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	uturn_scale[2] = 0.5;
 	double neigh_scale = uturn_scale[layer-1] * exp(-2*length/cm/150.);   // energy scaling due to nominal propagation in neighbour
 	
+	// MARK TO DELETE LATER
 	double sigmaTN = sigmaTD / sqrt(neigh_scale);   // indirect signal in neighbour
-	
+	if ( direct == 1) {
+		sigma = sigmaTD / sqrt(neigh_scale);   // indirect signal in neighbour
+	}
 	
 	// To calculate ADC values:
-	
-	
+
 	// estimated yield of photoelectrons at the photocathode of PMT:
 	// assumes 10,000 photons/MeV, LG length 1.4m with attenuation length 9.5m, 30% losses at junctions and PMT QE = 0.2
 	
+	// MARK TO DELETE LATER
 	double pmtPEYldD = 1210;                      // for the direct signal
 	double pmtPEYldN = pmtPEYldD * neigh_scale;   // for the indirect signal, additional loss in u-turn and attenuation in neighbour
-	
+
+
+	double pmtPEYld = 1210;  // for the direct signal
+	if(direct == 1) {
+		pmtPEYld = pmtPEYld * neigh_scale; // for the indirect signal, additional loss in u-turn and attenuation in neighbour
+	}
+
 	
 	// Get info about detector material to eveluate Birks effect
 	double birks_constant=aHit->GetDetector().GetLogical()->GetMaterial()->GetIonisation()->GetBirksConstant();
 	
-	vector<G4ThreeVector> Lpos = aHit->GetLPos();   // local position wrt centre of the detector piece (ie: paddle): in mm
-	vector<double>      Edep = aHit->GetEdep();     // deposited energy in the hit, in MeV
-	vector<int> charge = aHit->GetCharges();        // charge for each step
-	vector<double> times = aHit->GetTime();
-	vector<double> dx = aHit->GetDx();              // step length
+	vector<G4ThreeVector> Lpos   = aHit->GetLPos();   // local position wrt centre of the detector piece (ie: paddle): in mm
+	vector<double>        Edep   = aHit->GetEdep();     // deposited energy in the hit, in MeV
+	vector<int>           charge = aHit->GetCharges();        // charge for each step
+	vector<double>        times  = aHit->GetTime();
+	vector<double>        dx     = aHit->GetDx();              // step length
 	
 	unsigned nsteps = times.size();                 // total number of steps in the hit
-	
-	
+
 	// variables for each step:
-	double dUp = 0.;       // distance travelled by the light along the paddle UPSTREAM (direct light)
-	double dDown = 0.;     // distance travelled by the light along the paddle DOWNSTREAM (it will then go through the u-turn and along the neighbouring paddle)
-	double Edep_B = 0.;    // Energy deposit, scaled in accordance with Birk's effect
-	
-	double e_up = 0.;      // attenuated energy as it arrives at the upstream edge of the hit paddle
+
+	double distanceTravelled = 0; // distance travelled by the light along the paddle. For indirect, it will then go through the u-turn and along the neighbouring paddle
+	double attenuatedEnergy  = 0;  // attenuated energy as it arrives at the edge of the hit paddle
+
+	// MARK TO DELETE LATER
+	double dUp    = 0.;       // distance travelled by the light along the paddle UPSTREAM (direct light)
+	double dDown  = 0.;     // distance travelled by the light along the paddle DOWNSTREAM (it will then go through the u-turn and along the neighbouring paddle)
+	double e_up   = 0.;      // attenuated energy as it arrives at the upstream edge of the hit paddle
 	double e_down = 0.;    // attenuated energy as it arrives at the downstream edge of the hit paddle
-	
+
+
+	double Edep_B = 0.;    // Energy deposit, scaled in accordance with Birk's effect
+
 	
 	// Variables for each hit:
-	//  int flag_counted = 0;   // Flag to specify that the time of hit has already been determined for this hit (1: yes, 0: no)
-	
+
+	double eTotalTime = 0;    // total energy*time for each hit propagated to end paddle (direct = upstream, indirect = downstream)
+
+	// MARK TO DELETE LATER
 	double et_D = 0.;         // total energy*time for each hit propagated to upstream end of hit paddle
 	double et_N = 0.;         // total energy*time for each hit propagated to upstream end of the neighbour paddle
 	
+
+	double eTotal = 0;   // total energy of hit propagated to end paddle (direct = upstream, indirect = downstream)
+	double eTime  = 0;   // hit times measured at the upstream edges of the two paddles
+
+	// MARK TO DELETE LATER
+
 	double etotUp = 0.;       // total energy of hit propagated to the upstream end of paddle
 	double etotDown = 0.;     // total energy of hit propagated to the downstream end of the paddle
 	double timeD = 0.;        // hit times measured at the upstream edges of the two paddles
 	double timeN = 0.;
 	
 	int TDCmax = 16384;       // max value of the ADC readout
-	
+
+	int ADC = 0;
+	int TDC = TDCmax;
+
+	// MARK TO DELETE LATER
 	int ADCD = 0;
 	int ADCN = 0;
 	int TDCD = TDCmax;
@@ -251,89 +254,125 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int TDCR = TDCmax;
 	
 	
-	// Variables from the database:
-	
-	double attlength_D = 0.;
-	//	double attlength_N = 0.;
-	double v_eff_D = 0.;
-	double v_eff_N = 0.;
-	double slope_D = 0.;
-	double slope_N = 0.;
+	double attlength = 0.;
+	double slope     = 0.;
+	int status       = 0;
+	double v_eff     = 0.;
+	double adc_mip   = 0.;
+
+
+	// MARK TO DELETE LATER
+	double attlength_D = 0.;  // attlength_N was not needed
+ 	//	double attlength_N = 0.;
+	double slope_D   = 0.;
+	double slope_N   = 0.;
+	int status_D     = 0;
+	int status_N     = 0;
+	double v_eff_D   = 0.;
+	double v_eff_N   = 0.;
 	double adc_mip_D = 0.;
 	double adc_mip_N = 0.;
-	int status_D = 0;
-	int status_N = 0;
-	
-	double t_u = cndc.uturn_tloss[sector-1][layer-1][0];
-	double t_offset_LR = cndc.time_offset_LR[sector-1][layer-1][0];
+
+	double t_u            = cndc.uturn_tloss[sector-1][layer-1][0];
+	double t_offset_LR    = cndc.time_offset_LR[sector-1][layer-1][0];
 	double t_offset_layer = cndc.time_offset_layer[sector-1][layer-1][0];
-	
-	if (paddle == 1){   // hit is in paddle L
+
+
+	if ( side == 1 ){   // hit is in paddle L
 		
+		attlength = cndc.attlen_L[sector-1][layer-1][0];
+
+		if ( direct == 0 ) {
+			slope   = cndc.slope_L[sector-1][layer-1][0];
+			status  = cndc.status_L[sector-1][layer-1][0];
+			v_eff   = cndc.veff_L[sector-1][layer-1][0];
+			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
+		} else {
+			slope   = cndc.slope_R[sector-1][layer-1][0];
+			status  = cndc.status_R[sector-1][layer-1][0];
+			v_eff   = cndc.veff_R[sector-1][layer-1][0];
+			adc_mip = cndc.mip_indir_L[sector-1][layer-1][0];
+		}
+
+
 		attlength_D = cndc.attlen_L[sector-1][layer-1][0];
-		//		attlength_N = cndc.attlen_R[sector-1][layer-1][0];
-		
-		v_eff_D = cndc.veff_L[sector-1][layer-1][0];
-		v_eff_N = cndc.veff_R[sector-1][layer-1][0];
-		
+
 		slope_D = cndc.slope_L[sector-1][layer-1][0];
 		slope_N = cndc.slope_R[sector-1][layer-1][0];
-		
+
+		status_D = cndc.status_L[sector-1][layer-1][0];
+		status_N = cndc.status_R[sector-1][layer-1][0];
+
+		v_eff_D = cndc.veff_L[sector-1][layer-1][0];
+		v_eff_N = cndc.veff_R[sector-1][layer-1][0];
+
 		adc_mip_D = cndc.mip_dir_L[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_L[sector-1][layer-1][0];
-		if(accountForHardwareStatus) {
-
-			status_D = cndc.status_L[sector-1][layer-1][0];
-			status_N = cndc.status_R[sector-1][layer-1][0];
-		}
 	}
 	
-	else if (paddle == 2) {   // hit is in paddle R
+	else if ( side == 2 ) {   // hit is in paddle R
 		
+		attlength = cndc.attlen_R[sector-1][layer-1][0];
+
+		if ( direct == 0 ) {
+			slope   = cndc.slope_R[sector-1][layer-1][0];
+			status  = cndc.status_R[sector-1][layer-1][0];
+			v_eff   = cndc.veff_R[sector-1][layer-1][0];
+			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
+		} else {
+			slope   = cndc.slope_L[sector-1][layer-1][0];
+			status  = cndc.status_L[sector-1][layer-1][0];
+			v_eff   = cndc.veff_L[sector-1][layer-1][0];
+			adc_mip = cndc.mip_indir_R[sector-1][layer-1][0];
+		}
+
 		attlength_D = cndc.attlen_R[sector-1][layer-1][0];
-		//		attlength_N = cndc.attlen_L[sector-1][layer-1][0];
-		
-		v_eff_D = cndc.veff_R[sector-1][layer-1][0];
-		v_eff_N = cndc.veff_L[sector-1][layer-1][0];
-		
+
 		slope_D = cndc.slope_R[sector-1][layer-1][0];
 		slope_N = cndc.slope_L[sector-1][layer-1][0];
-		
+
+		status_D = cndc.status_R[sector-1][layer-1][0];
+		status_N = cndc.status_L[sector-1][layer-1][0];
+
+		v_eff_D = cndc.veff_R[sector-1][layer-1][0];
+		v_eff_N = cndc.veff_L[sector-1][layer-1][0];
+
 		adc_mip_D = cndc.mip_dir_R[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_R[sector-1][layer-1][0];
-		
-		if(accountForHardwareStatus) {
-			status_D = cndc.status_R[sector-1][layer-1][0];
-			status_N = cndc.status_L[sector-1][layer-1][0];
-		}
 	}
-	else cout <<"/n Help, do not recognise paddle number " << paddle << "!!!" << endl;
-	
-	
-	if(tInfos.eTot>0)
-	{
-		for(unsigned int s=0; s<nsteps; s++)
-		{
-			// Distances travelled through the paddles to the upstream (dDir) and downstream (dNeigh) edges:
+	else {
+		cout <<"/n Help, do not recognise paddle number " << paddle << "!!!" << endl;
+	}
+
+
+	if(tInfos.eTot>0) {
+		for(unsigned int s=0; s<nsteps; s++) {
+
+			// apply Birks effect to Edep this step
+			Edep_B = BirksAttenuation(Edep[s], dx[s], charge[s], birks_constant);
+
+			// Distances travelled through the paddles to the upstream (direct) or downstream (indirect) edges
+			if ( direct == 0 ) {
+				distanceTravelled = (length + Lpos[s].z());
+			} else {
+				distanceTravelled = (length - Lpos[s].z());
+			}
+
 			dUp   = (length + Lpos[s].z());
 			dDown = (length - Lpos[s].z());
-			//cout<<"Lpos "<<Lpos[s].z()/cm<<endl;
-			//cout<<"dUp "<<dUp/cm<<endl;
-			//cout<<"dDown "<<dDown/cm<<endl;
-			
-			// apply Birks effect:
-			Edep_B = BirksAttenuation(Edep[s],dx[s],charge[s],birks_constant);
-			
+
+
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
+			attenuatedEnergy = Edep_B * 0.5 * exp(-distanceTravelled/cm/attlength);
 			e_up   = Edep_B * 0.5 * exp(-dUp/cm/attlength_D);
 			e_down = Edep_B * 0.5 * exp(-dDown/cm/attlength_D);
-			
+
 			// Integrate energy over entire hit. These values are used for time-smearing:
-			etotUp = etotUp + e_up;
+			eTotal = eTotal + attenuatedEnergy;
+
+			etotUp   = etotUp + e_up;
 			etotDown = etotDown + e_down;
-			
-			//cout << "step: " << s << " etotUp, etotDown: " << etotUp << ", " << etotDown << endl;
-			
+
 			
 			/****** Time of hit calculation *******/
 			// In all the methods below, the assumption is that the time taken to travel along the light-guides,
@@ -357,13 +396,22 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			// will be used to get the energy-weighted average times (should correspond roughly to the peak energy deposit):
 			
 			// cout<<"times[s] (ns) "<<times[s]/ns<<endl;
-			
+
+
+			if ( direct == 0 ) {
+				eTotalTime = eTotalTime + ((times[s] + distanceTravelled/cm/v_eff) * attenuatedEnergy);
+			} else {
+				eTotalTime = eTotalTime + ((times[s] + distanceTravelled/cm/v_eff + t_u + 2*length/cm/v_eff) * attenuatedEnergy);
+			}
+
 			et_D = et_D + ((times[s] + dUp/cm/v_eff_D) * e_up);
 			et_N = et_N + ((times[s] + dDown/cm/v_eff_D + t_u + 2*length/cm/v_eff_N) * e_down);
+
 		}   // close loop over steps s
 		
 		/**** The following calculates the time based on energy-weighted average of all step times ****/
-		
+
+		eTime = eTotalTime / eTotal;
 		timeD = et_D / etotUp;      // sum(energy*time) /  sum(energy)
 		timeN = et_N / etotDown;
 		
@@ -378,12 +426,26 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		//	cout<<"timeD-timeN "<<timeD-timeN<<endl;
 		
 		// Apply offsets between left and right paddles (these are only applied on paddle 2, which is R):
-		
-		if (paddle == 2) timeD = timeD + t_offset_LR;
-		else if (paddle == 1) timeN = timeN + t_offset_LR;
-		
+
+		if ( (direct == 0 && side == 2) || (direct == 1 && side == 1) ) {
+			eTime = eTime + t_offset_LR;
+		}
+
+		if (paddle == 2) {
+			timeD = timeD + t_offset_LR;
+		} else if (paddle == 1) {
+			timeN = timeN + t_offset_LR;
+		}
+
+		eTime = eTime + t_offset_layer;
+
 		timeD = timeD + t_offset_layer;
 		timeN = timeN + t_offset_layer;
+
+
+//		cout << " side: " << side << ", direct: " << direct << ", etotUp: " << etotUp << ", etotDown: " << etotDown << ", eTotal: " << eTotal;
+//		cout << ", timeD: " << timeD << ", timeN: " << timeN << ", eTime: " << eTime << endl;
+
 
 		/******** end timing determination ***********/
 		
@@ -407,21 +469,29 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		/**** Actual digitisation happens here! *****/
 		
-		if (etotUp > 0.)
-		{
-			TDCD = (int) ((G4RandGauss::shoot(timeD,sigmaTD/sqrt(etotUp)))/slope_D);
+		// MARK: TO delete later
+		if (etotUp > 0.) {
+			TDCD = (int) ( (G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp)) ) / slope_D);
 			double npheD = G4Poisson(etotUp*pmtPEYldD);
 			double eneD = npheD/pmtPEYldD;
 			ADCD = (int) (eneD*adc_mip_D*2./(dEdxMIP*thickness));
 		}
-		if (etotDown > 0.)
-		{
-			TDCN = (int) ((G4RandGauss::shoot(timeN,sigmaTN/sqrt(etotDown)))/slope_N);
+		if (etotDown > 0.) {
+			TDCN = (int) ( (G4RandGauss::shoot(timeN, sigmaTN/sqrt(etotDown)) ) / slope_N);
 			double npheN = G4Poisson(etotDown*pmtPEYldN);
 			double eneN = npheN/pmtPEYldN;
 			ADCN = (int) (eneN*adc_mip_N*2./(dEdxMIP*thickness));
 		}
-		
+
+
+		TDC = (int) ((G4RandGauss::shoot(eTime, sigma/sqrt(eTotal)))/slope);
+		double nphe = G4Poisson(eTotal*pmtPEYld);
+		double ene  = nphe/pmtPEYld;
+		ADC = (int) (ene*adc_mip*2./(dEdxMIP*thickness));
+
+
+
+		// MARK: TO delete later
 		if (TDCD < 0) TDCD = 0;
 		else if (TDCD > TDCmax) TDCD = TDCmax;
 		if (TDCN < 0) TDCN = 0;
@@ -429,57 +499,67 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		if (ADCD < 0) ADCD = 0;
 		if (ADCN < 0) ADCN = 0;
-		
+
+
+
+		if (TDC < 0) {
+			TDC = 0;
+		} else if (TDC > TDCmax) {
+			TDC = TDCmax;
+		}
+
+		if (ADC < 0) ADC = 0;
+
+
 	}  // closes tInfos.eTot>0
 	
 	
-	if(verbosity>4)
-	{
-		cout <<  hd_msg << " layer: " << layer    << ", paddle: " << paddle  << " x=" << tInfos.x/cm << "cm, y=" << tInfos.y/cm << "cm, z=" << tInfos.z/cm << "cm" << endl;
-		cout <<  hd_msg << " Etot=" << tInfos.eTot/MeV     << "MeV, average time=" << tInfos.time  << "ns"  << endl;
-		cout <<  hd_msg << " timeD=" << timeD     << ",   offset=" << t_offset_layer  << "ns"  << endl;
-		cout <<  hd_msg << " TDCD= " << TDCD     << ", TDCN= " << TDCN    << ", ADCD= " << ADCD << ", ADCN= " << ADCN << endl;
+	if(verbosity>4) {
+		cout << " layer: " << layer    << ", paddle: " << paddle  << " x=" << tInfos.x/cm << "cm, y=" << tInfos.y/cm << "cm, z=" << tInfos.z/cm << "cm" << endl;
+		cout << " Etot=" << tInfos.eTot/MeV     << "MeV, average time=" << tInfos.time  << "ns"  << endl;
+		cout << " timeD=" << timeD     << ",   offset=" << t_offset_layer  << "ns"  << endl;
+		cout << " TDCD= " << TDCD     << ", TDCN= " << TDCN    << ", ADCD= " << ADCD << ", ADCN= " << ADCN << endl;
 	}
 	
 	// Status flags
 	if(accountForHardwareStatus) {
 		switch (status_D)
 		{
-		case 0:
-			break;
-		case 1:
-			ADCD = 0;
-			break;
-		case 2:
-			TDCD = 0;
-			break;
-		case 3:
-			ADCD = TDCD = 0;
-			break;
-		case 5:
-			break;
+			case 0:
+				break;
+			case 1:
+				ADCD = 0;
+				break;
+			case 2:
+				TDCD = 0;
+				break;
+			case 3:
+				ADCD = TDCD = 0;
+				break;
+			case 5:
+				break;
 
-		default:
-			cout << " > Unknown CND status: " << status_D << " for sector " << sector << ",  layer " << layer << ", paddle " << paddle << endl;
+			default:
+				cout << " > Unknown CND status: " << status_D << " for sector " << sector << ",  layer " << layer << ", paddle " << paddle << endl;
 		}
 		switch (status_N)
 		{
-		case 0:
-			break;
-		case 1:
-			ADCN = 0;
-			break;
-		case 2:
-			TDCN = 0;
-			break;
-		case 3:
-			ADCN = TDCN = 0;
-			break;
-		case 5:
-			break;
+			case 0:
+				break;
+			case 1:
+				ADCN = 0;
+				break;
+			case 2:
+				TDCN = 0;
+				break;
+			case 3:
+				ADCN = TDCN = 0;
+				break;
+			case 5:
+				break;
 
-		default:
-			cout << " > Unknown CND status: " << status_N << " for sector " << sector << ",  layer " << layer << ", paddle " << 3 - paddle << endl;
+			default:
+				cout << " > Unknown CND status: " << status_N << " for sector " << sector << ",  layer " << layer << ", paddle " << 3 - paddle << endl;
 		}
 	}
 
@@ -495,19 +575,25 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		TDCL = (int) TDCN;
 		TDCR = (int) TDCD;
 	}
-	
+
+//	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
+//	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
+
 	
 	// Apply global offsets for each paddle-pair (a.k.a. component):
 
-	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = sector;
-	dgtz["layer"]  = layer;
+
+	dgtz["hitn"]      = hitn;
+	dgtz["sector"]    = sector;
+	dgtz["layer"]     = layer;
 	dgtz["component"] = 1;
-	dgtz["ADCL"]   = (int) ADCL;
-	dgtz["ADCR"]   = (int) ADCR;
-	dgtz["TDCL"]   = (int) TDCL;
-	dgtz["TDCR"]   = (int) TDCR;
-	
+	dgtz["ADC_order"] = direct;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = TDC;   // no conversion
+	dgtz["ADC_ped"]   = 0;
+	dgtz["TDC_order"] = direct + 2;
+	dgtz["TDC_TDC"]   = TDC;
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
@@ -519,10 +605,38 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 }
 
 
+// vector<identifier> identity = aHit->GetId();
+// sector = identity[0].id; // sector (paddle number)
+// layer  = identity[1].id; // layer
+// side   = identity[2].id; // side: 1 = left, 2 = right
+// direct = identity[3].id; // direct = 0, indirect = 1  << what we need to duplcate to 1 here
+
 vector<identifier>  cnd_HitProcess :: processID(vector<identifier> id, G4Step *step, detector Detector)
 {
-	id[id.size()-1].id_sharing = 1;
-	return id;
+	vector<identifier> yid = id;
+	yid[0].id_sharing = 1; // sector (paddle number)
+	yid[1].id_sharing = 1; // layer
+	yid[2].id_sharing = 1; // side: 1 = left, 2 = right
+	yid[3].id_sharing = 1; // direct = 0, indirect = 1  << what we need to duplcate to 1 here
+
+	if (yid[3].id != 0) {
+		cout << "*****WARNING***** in cnd_HitProcess :: processID, identifier \"direct\" of the original hit should be 0 but is " << yid[3].id << endl;
+		cout << "yid[3].id = " << yid[3].id << endl;
+	}
+
+	// Now we want to have similar identifiers, but the only difference be id direct to be 1, instead of 0
+	identifier this_id = yid[0];
+	yid.push_back(this_id);
+	this_id = yid[1];
+	yid.push_back(this_id);
+	this_id = yid[2];
+	yid.push_back(this_id);
+	this_id = yid[3];
+	this_id.id = 1;
+	yid.push_back(this_id);
+
+	return yid;
+
 }
 
 
@@ -534,8 +648,7 @@ double cnd_HitProcess::BirksAttenuation(double destep, double stepl, int charge,
 	// Taken from GEANT4 examples advanced/amsEcal and extended/electromagnetic/TestEm3
 	//
 	double response = destep;
-	if (birks*destep*stepl*charge != 0.)
-	{
+	if (birks*destep*stepl*charge != 0.) {
 		response = destep/(1. + birks*destep/stepl);
 	}
 	return response;

@@ -18,7 +18,7 @@
 #include "images/g4Copy_xpm.h"
 #include "images/g4Operation_xpm.h"
 #include "string_utilities.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // C++ headers
 #include <iostream>

@@ -3,7 +3,7 @@
 
 // gemc headers
 #include "sensitiveID.h"
-#include "utils.h"
+#include "gemcUtils.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"

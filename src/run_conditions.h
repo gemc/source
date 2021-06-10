@@ -21,7 +21,7 @@
 #include <QDomDocument>
 
 // gemc headers
-#include "options.h"
+#include "gemcOptions.h"
 
 // C++ headers
 #include <iostream>

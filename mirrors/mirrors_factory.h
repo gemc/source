@@ -8,7 +8,7 @@ using namespace std;
 
 // gemc headers
 #include "run_conditions.h"
-#include "options.h"
+#include "gemcOptions.h"
 
 class mirror
 {
