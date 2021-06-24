@@ -35,7 +35,8 @@ vector<double> bmt_strip::FindStrip(int layer, int sector, G4ThreeVector lxyz, d
 	double phi = atan2(ly,lx) + Delta_drift*tan(bmtc.ThetaL)*cos(bmtc.Theta_Ls_Z)/bmtc.RADIUS[layer-1]; // Already apply the Lorentz Angle to find the ClosestStrip
 	lz=lz + Delta_drift * tan(bmtc.ThetaL) * cos(bmtc.Theta_Ls_C); // Not sure useful, but take into account LorentzAngle deviation if
 
-	int sector_bis=isInSector(layer,atan2(ly,lx),bmtc); if(sector_bis!=0) cout << "WARNING: BMT hit outside active area" << endl;
+	int sector_bis=isInSector(layer,atan2(ly,lx),bmtc);
+	// if(sector_bis!=0) cout << "WARNING: BMT hit outside active area" << endl;
 	int strip_num = getClosestStrip(layer, sector_bis, phi, lz, bmtc);
 	sigma = getSigma(layer, lx, ly, bmtc);
 	sigma_phi = sigma/bmtc.RADIUS[layer-1];
