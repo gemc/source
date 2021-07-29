@@ -23,8 +23,9 @@ HipoSchema :: HipoSchema()
 
 	// generators
 	geantParticle = hipo::schema("MC::Particle",  40, 2);
-	lundParticle  = hipo::schema("MC::Lund",      40, 3);
+	mcEventHeader = hipo::schema("MC::Event",     40, 1);
 	userLund      = hipo::schema("MC::User",      40, 5);
+	lundParticle  = hipo::schema("MC::Lund",      40, 3);
 
 	// detectors
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
@@ -76,8 +77,9 @@ HipoSchema :: HipoSchema()
 
 	// generators
 	geantParticle.parse("pid/I, px/F, py/F, pz/F, vx/F, vy/F, vz/F, vt/F");
-	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
+	mcEventHeader.parse("npart/S, atarget/S, ztarget/S, ptarget/F, pbeam/F, btype/S, ebeam/F, targetid/S, processid/S, weight/F");
 	userLund.parse("userVar/F");
+	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
 
 	// detectors
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
@@ -131,8 +133,9 @@ HipoSchema :: HipoSchema()
 
 	// generators
 	schemasToLoad["MC::Particle"] = geantParticle;
-	schemasToLoad["MC::Lund"]     = lundParticle;
+	schemasToLoad["MC::Event"]    = mcEventHeader;
 	schemasToLoad["MC::User"]     = userLund;
+	schemasToLoad["MC::Lund"]     = lundParticle;
 
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;

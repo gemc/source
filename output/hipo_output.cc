@@ -141,6 +141,62 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
 {
 
+	int lundStandardSize = 10;
+	int userBankSize = data.size() - lundStandardSize;
+
+	hipo::bank mcEventHeaderBank(output->hipoSchema->mcEventHeader,  1);
+	hipo::bank userLundBank(output->hipoSchema->userLund, userBankSize);
+
+	int index = -1;
+	for (auto it = data.begin(); it != data.end(); it++) {
+		index += 1;
+		if ( index < lundStandardSize ) {
+			switch (index) {
+				case 0:
+					mcEventHeaderBank.putShort("npart", 0, (short) it->second);
+					break;
+				case 1:
+					mcEventHeaderBank.putShort("atarget", 0, (short) it->second);
+					break;
+				case 2:
+					mcEventHeaderBank.putShort("ztarget", 0, (short) it->second);
+					break;
+				case 3:
+					mcEventHeaderBank.putFloat("ptarget", 0, (float) it->second);
+					break;
+				case 4:
+					mcEventHeaderBank.putFloat("pbeam", 0, (float) it->second);
+					break;
+				case 5:
+					mcEventHeaderBank.putShort("btype", 0, (short) it->second);
+					break;
+				case 6:
+					mcEventHeaderBank.putFloat("ebeam", 0, (float) it->second);
+					break;
+				case 7:
+					mcEventHeaderBank.putShort("targetid", 0, (short) it->second);
+					break;
+				case 8:
+					mcEventHeaderBank.putShort("processid", 0, (short) it->second);
+					break;
+				case 9:
+					mcEventHeaderBank.putFloat("weight", 0, (float) it->second);
+					break;
+
+				default:
+					break;
+			}
+
+		} else {
+			string userVar = "MC::UserVar" + to_string(index - lundStandardSize);
+			userLundBank.putFloat("weight", index - lundStandardSize, (float) it->second);
+		}
+	}
+
+	outEvent->addStructure(mcEventHeaderBank);
+	if(userBankSize > 0) {
+		outEvent->addStructure(userLundBank);
+	}
 
 }
 
