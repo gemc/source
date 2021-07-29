@@ -13,7 +13,7 @@ public:
 	// generators
 	hipo::schema geantParticle;
 	hipo::schema lundParticle;
-
+	hipo::schema userLund;
 
 	// detectors
 	hipo::schema bmtADCSchema;

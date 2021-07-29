@@ -137,8 +137,10 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 
 
 // write user infos header
+// this include the LUND file header entries (10) plus user entries if present
 void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
 {
+
 
 }
 
@@ -196,26 +198,30 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		btime.push_back(MGP[i].time);
 	}
 
-	hipo::bank mcParticle(output->hipoSchema->geantParticle,  pid.size());
+	hipo::bank geantParticleBank(output->hipoSchema->geantParticle,  pid.size());
 
 	for(unsigned i=0; i < pid.size(); i++) {
 
-		mcParticle.putInt("pid",    i,  pid[i]);
-		mcParticle.putFloat("px", i, (float) px[i]/1000.0);  // in hipo the units are GeV
-		mcParticle.putFloat("py", i, (float) py[i]/1000.0);  // in hipo the units are GeV
-		mcParticle.putFloat("pz", i, (float) pz[i]/1000.0);  // in hipo the units are GeV
-		mcParticle.putFloat("vx", i, (float) vx[i]/10.0);    // in hipo the units are cm
-		mcParticle.putFloat("vy", i, (float) vy[i]/10.0);    // in hipo the units are cm
-		mcParticle.putFloat("vz", i, (float) vz[i]/10.0);    // in hipo the units are cm
-		mcParticle.putFloat("vt", i, (float) btime[i]);
+		geantParticleBank.putInt("pid",    i,  pid[i]);
+		geantParticleBank.putFloat("px", i, (float) px[i]/1000.0);  // in hipo the units are GeV
+		geantParticleBank.putFloat("py", i, (float) py[i]/1000.0);  // in hipo the units are GeV
+		geantParticleBank.putFloat("pz", i, (float) pz[i]/1000.0);  // in hipo the units are GeV
+		geantParticleBank.putFloat("vx", i, (float) vx[i]/10.0);    // in hipo the units are cm
+		geantParticleBank.putFloat("vy", i, (float) vy[i]/10.0);    // in hipo the units are cm
+		geantParticleBank.putFloat("vz", i, (float) vz[i]/10.0);    // in hipo the units are cm
+		geantParticleBank.putFloat("vt", i, (float) btime[i]);
 
 	}
 
 	if(verbosity > 2) {
-		mcParticle.show();
+		geantParticleBank.show();
 	}
 
-	outEvent->addStructure(mcParticle);
+	outEvent->addStructure(geantParticleBank);
+
+
+
+
 }
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
