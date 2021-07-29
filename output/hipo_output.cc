@@ -188,8 +188,7 @@ void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 			}
 
 		} else {
-			string userVar = "MC::UserVar" + to_string(index - lundStandardSize);
-			userLundBank.putFloat("weight", index - lundStandardSize, (float) it->second);
+			userLundBank.putFloat("userVar", index - lundStandardSize, (float) it->second);
 		}
 	}
 
@@ -276,6 +275,62 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	outEvent->addStructure(geantParticleBank);
 
 
+	hipo::bank lundParticleBank(output->hipoSchema->lundParticle,  userInfo.size());
+
+	// p is particle index
+	for(unsigned p=0; p<userInfo.size(); p++) {
+		for(unsigned u=0; u<userInfo[p].infos.size(); u++) {
+			switch (u) {
+				case 0:
+					lundParticleBank.putByte("index", p,             userInfo[p].infos[u]);
+					break;
+				case 1:
+					lundParticleBank.putFloat("lifetime", p, (float) userInfo[p].infos[u]);
+					break;
+				case 2:
+					lundParticleBank.putByte("type", p,             userInfo[p].infos[u]);
+					break;
+				case 3:
+					lundParticleBank.putInt("pid", p, (int)         userInfo[p].infos[u]);
+					break;
+				case 4:
+					lundParticleBank.putByte("parent", p,           userInfo[p].infos[u]);
+					break;
+				case 5:
+					lundParticleBank.putByte("daughter", p,         userInfo[p].infos[u]);
+					break;
+				case 6:
+					lundParticleBank.putFloat("px", p, (float) userInfo[p].infos[u]);
+					break;
+				case 7:
+					lundParticleBank.putFloat("py", p, (float) userInfo[p].infos[u]);
+					break;
+				case 8:
+					lundParticleBank.putFloat("pz", p, (float) userInfo[p].infos[u]);
+					break;
+				case 9:
+					lundParticleBank.putFloat("energy", p, (float) userInfo[p].infos[u]);
+					break;
+				case 10:
+					lundParticleBank.putFloat("mass", p, (float) userInfo[p].infos[u]);
+					break;
+				case 11:
+					lundParticleBank.putFloat("vx", p, (float) userInfo[p].infos[u]);
+					break;
+				case 12:
+					lundParticleBank.putFloat("vy", p, (float) userInfo[p].infos[u]);
+					break;
+				case 13:
+					lundParticleBank.putFloat("vz", p, (float) userInfo[p].infos[u]);
+					break;
+
+				default:
+					break;
+			}
+
+		}
+	}
+	outEvent->addStructure(lundParticleBank);
 
 
 }
