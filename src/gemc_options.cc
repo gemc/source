@@ -776,6 +776,12 @@ void goptions::setGoptions()
 	optMap["FILTER_HITS"].type = 0;
 	optMap["FILTER_HITS"].ctgr = "output";
 
+	optMap["FILTER_BEAM"].arg = 0;
+	optMap["FILTER_BEAM"].help = "If set to non-0, but as beam Mom in MeV, do not write output if there are only 1 hit from the beam";
+	optMap["FILTER_BEAM"].name = "If set to non-0, but as beam Mom in MeV, do not write output if there are only 1 hit from the beam";
+	optMap["FILTER_BEAM"].type = 0;
+	optMap["FILTER_BEAM"].ctgr = "output";
+	
 	optMap["FILTER_HADRONS"].arg = 0;
 	optMap["FILTER_HADRONS"].help = "If set to 1, do not write events if there are no hadrons. Otherwise if \n";
 	optMap["FILTER_HADRONS"].help += "nonzero write only events having a hadron with matching ID. For example\n";

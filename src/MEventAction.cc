@@ -92,6 +92,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	gPars            = gpars;
 	MAXP             = (int) gemcOpt.optMap["NGENP"].arg;
 	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
+	FILTER_BEAM      = (int) gemcOpt.optMap["FILTER_BEAM"].arg;	
 	FILTER_HADRONS   = (int) gemcOpt.optMap["FILTER_HADRONS"].arg;
 	FILTER_HIGHMOM   = (int) gemcOpt.optMap["FILTER_HIGHMOM"].arg;
 	SKIPREJECTEDHITS = (int) gemcOpt.optMap["SKIPREJECTEDHITS"].arg;
@@ -260,6 +261,38 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if(anyHit==0) return;
 	}
 	
+	if(FILTER_BEAM) {
+		int foundBeam = 0;
+// 		cout << SeDe_Map.size() << " SeDe_Map.size() " << endl; // always 1
+		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
+			MHC = it->second->GetMHitCollection();
+			if (MHC) nhits = MHC->GetSize();
+			else nhits = 0;
+			if (nhits==1){
+			for (int h=0; h<nhits; h++)
+			{
+				vector<int>           tids = (*MHC)[h]->GetTIds();
+				vector<G4ThreeVector> mmts = (*MHC)[h]->GetMoms();				
+				int thiscounter=0;
+				for (vector<int>::const_iterator tit = tids.begin(); tit != tids.end(); tit++) {
+
+// 					cout << nhits << " " << tids.size() << " " << mmts.size() << " " << *tit << " " << mmts[thiscounter].z() << endl;				  
+					if (*tit ==1 && mmts[thiscounter].z()==FILTER_BEAM) {
+						foundBeam = 1;
+						break;
+					}
+					
+					thiscounter++;					
+				}				
+
+			}
+			}
+			
+		}
+		
+		// stop here if there are no hits and FILTER_HITS is set
+		if(foundBeam) return;
+	}
 	
 	// if FILTER_HADRONS is set, checking if there are any (matching) hadrons
 	if (FILTER_HADRONS == 1 || abs(FILTER_HADRONS) > 99) {
