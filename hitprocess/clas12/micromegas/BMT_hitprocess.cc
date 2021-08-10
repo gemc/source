@@ -176,8 +176,8 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	int sector = yid[2].id;
 	G4ThreeVector   xyz  = aStep->GetPostStepPoint()->GetPosition();  ///< Global Coordinates of interaction
 	G4ThreeVector  lxyz  = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(xyz); ///< Local Coordinates of interaction
-	double dz = bmtc.Z + aStep->GetPreStepPoint()->GetPhysicalVolume()->GetTranslation().z();
-	lxyz.setZ(lxyz.z()+dz);
+	double z0 = bmtc.ZMIN[layer-1]+Detector.dimensions[2];
+	lxyz.setZ(lxyz.z()+z0);
 	// if the scale is not set, then use fieldmanager to get the value
 	// if fieldmanager is not found, the field is zero
 	/*	if(bmtc.fieldScale == -1)
