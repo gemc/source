@@ -44,7 +44,6 @@ public:
 	const static int NSECTORS = 3  ;	// 3 tiles per layer of MM
 
 	// Detector geometrical characteristics
-	double Z=-94.7;                // matches ideal position of BMT mother volume
 	double RADIUS[NLAYERS] ; 	// the radius of the Z detector in mm
 	int AXIS[NLAYERS] ;             // 0 if C-detector, 1 if Z detector
 	int NSTRIPS[NLAYERS] ; 	       // the number of strips
