@@ -14,6 +14,8 @@
 #include "G4RegionStore.hh"
 #include "G4GDMLParser.hh"
 #include "G4NistManager.hh"
+#include "G4LogicalSkinSurface.hh"
+#include "G4LogicalBorderSurface.hh"
 
 // cadmesh
 #include "CADMesh.hh"
