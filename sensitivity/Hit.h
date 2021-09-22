@@ -61,7 +61,7 @@ private:
 	vector<int>        otrackID;    ///< Original G4Track ID in each step
 	vector<G4ThreeVector> mvert;    ///< Primary Vertex of the track's mother
 	vector<string> materialName;    ///< Material name
-	vector<int>       processID;    ///< Process that originated this step
+	vector<string>       processID;    ///< Process that originated this step
     vector<double>         mgnf;    ///< magnetic field
 
 	vector<detector>  Detectors;    ///< Detectors Hit. It might be a vector if multiple detectors have the same identifier
@@ -156,10 +156,10 @@ public:
 	inline string GetMatName()                     { return  materialName[0]; }
 	inline vector<string> GetMatNames()            { return  materialName; }
 
-	inline void SetProcID(int procID)          { processID.push_back(procID); }
-	inline void SetProcID(vector<int> procIDs) { processID = procIDs; }
-	inline int GetProcID()                     { return  processID[0]; }
-	inline vector<int> GetProcIDs()            { return  processID; }
+	inline void SetProcID(string procID)          { processID.push_back(procID); }
+	inline void SetProcID(vector<string> procIDs) { processID = procIDs; }
+	inline string GetProcID()                     { return  processID[0]; }
+	inline vector<string> GetProcIDs()            { return  processID; }
 
 	inline void SetSDID(sensitiveID s)   { SID = s; }
 	inline sensitiveID GetSDID()         { return SID; }

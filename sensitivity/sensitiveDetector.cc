@@ -371,62 +371,65 @@ MHit*  sensitiveDetector::find_existing_hit(vector<identifier> PID)  ///< return
 // to check process name go to $G4ROOT/$GEANT4_VERSION/source/geant$GEANT4_VERSION/source/processes/
 // mgrep "const G4String&" | grep process
 // notice: this map should be written out in the output stream
-int sensitiveDetector::processID(string procName)
+string sensitiveDetector::processID(string procName)
 {
-	if(procName == "eIoni")                 return 1;
-	if(procName == "compt")                 return 2;
-	if(procName == "eBrem")                 return 3;
-	if(procName == "phot")                  return 4;
-	if(procName == "conv")                  return 5;
-	if(procName == "annihil")               return 6;
-	if(procName == "photonNuclear")         return 7;
-	if(procName == "electronNuclear")       return 8;
-	if(procName == "positronNuclear")       return 9;
-	if(procName == "CoulombScat")           return 10;
-	if(procName == "Cerenkov")              return 11;
-	if(procName == "Scintillation")			return 12;
-	if(procName == "SynRad")           		return 13;
-	if(procName == "SynchrotronRadiation")	return 14;
-	if(procName == "hadElastic")            return 20;
-	if(procName == "hBrems")                return 21;
-	if(procName == "hIoni")                 return 22;
-	if(procName == "hPairProd")             return 23;
-	if(procName == "protonInelastic")       return 30;
-	if(procName == "neutronInelastic")      return 31;
-	if(procName == "nCapture")              return 32;
-	if(procName == "anti_neutronInelastic") return 33;
-	if(procName == "anti_protonInelastic")  return 34;
-	if(procName == "hBertiniCaptureAtRest") return 35;
-	if(procName == "pi-Inelastic")          return 40;
-	if(procName == "pi+Inelastic")          return 41;
-	if(procName == "Decay")                 return 50;
-	if(procName == "DecayWithSpin")         return 51;
-	if(procName == "muIoni")                return 60;
-	if(procName == "muPairProd")            return 61;
-	if(procName == "muBrems")               return 62;
-	if(procName == "muonNuclear")           return 63;
-	if(procName == "muMinusCaptureAtRest")  return 64;
-	if(procName == "kaon-Inelastic")        return 70;
-	if(procName == "kaon+Inelastic")        return 71;
-	if(procName == "kaon0Inelastic")        return 72;
-	if(procName == "kaon0LInelastic")       return 73;
-	if(procName == "kaon0SInelastic")       return 74;
-	if(procName == "alphaInelastic")        return 80;
-	if(procName == "lambdaInelastic")       return 90;
-	if(procName == "sigma-Inelastic")       return 100;
-	if(procName == "dInelastic")            return 110;
-	if(procName == "ionIoni")               return 120;
-	if(procName == "ionInelastic")          return 121;
-	if(procName == "tInelastic")            return 130;
-	if(procName == "xi0Inelastic")          return 140;
-	if(procName == "omega-Inelastic")       return 150;
-
-	if(procName == "na")                    return 999;
-	
-	if(verbosity > 0)
-		cout << " Warning: process name " << procName << " not catalogued." << endl;
-	
-	return 999;
+//   	cout << " Warning: process name " << procName << " alllll." << endl;
+// 	if(procName == "eIoni")                 return 1;
+// 	if(procName == "compt")                 return 2;
+// 	if(procName == "eBrem")                 return 3;
+// 	if(procName == "phot")                  return 4;
+// 	if(procName == "conv")                  return 5;
+// 	if(procName == "annihil")               return 6;
+// 	if(procName == "photonNuclear")         return 7;
+// 	if(procName == "electronNuclear")       return 8;
+// 	if(procName == "positronNuclear")       return 9;
+// 	if(procName == "CoulombScat")           return 10;
+// 	if(procName == "Cerenkov")              return 11;
+// 	if(procName == "Scintillation")			return 12;
+// 	if(procName == "SynRad")           		return 13;
+// 	if(procName == "SynchrotronRadiation")	return 14;
+// 	if(procName == "hadElastic")            return 20;
+// 	if(procName == "hBrems")                return 21;
+// 	if(procName == "hIoni")                 return 22;
+// 	if(procName == "hPairProd")             return 23;
+// 	if(procName == "protonInelastic")       return 30;
+// 	if(procName == "neutronInelastic")      return 31;
+// 	if(procName == "nCapture")              return 32;
+// 	if(procName == "anti_neutronInelastic") return 33;
+// 	if(procName == "anti_protonInelastic")  return 34;
+// 	if(procName == "hBertiniCaptureAtRest") return 35;
+// 	if(procName == "pi-Inelastic")          return 40;
+// 	if(procName == "pi+Inelastic")          return 41;
+// 	if(procName == "Decay")                 return 50;
+// 	if(procName == "DecayWithSpin")         return 51;
+// 	if(procName == "muIoni")                return 60;
+// 	if(procName == "muPairProd")            return 61;
+// 	if(procName == "muBrems")               return 62;
+// 	if(procName == "muonNuclear")           return 63;
+// 	if(procName == "muMinusCaptureAtRest")  return 64;
+// 	if(procName == "kaon-Inelastic")        return 70;
+// 	if(procName == "kaon+Inelastic")        return 71;
+// 	if(procName == "kaon0Inelastic")        return 72;
+// 	if(procName == "kaon0LInelastic")       return 73;
+// 	if(procName == "kaon0SInelastic")       return 74;
+// 	if(procName == "alphaInelastic")        return 80;
+// 	if(procName == "lambdaInelastic")       return 90;
+// 	if(procName == "sigma-Inelastic")       return 100;
+// 	if(procName == "dInelastic")            return 110;
+// 	if(procName == "ionIoni")               return 120;
+// 	if(procName == "ionInelastic")          return 121;
+// 	if(procName == "tInelastic")            return 130;
+// 	if(procName == "xi0Inelastic")          return 140;
+// 	if(procName == "omega-Inelastic")       return 150;
+// 
+// // 	if(procName == "na")                    return 999;
+// 	cout << " Warning: process name " << procName << " not catalogued." << endl;
+// 	if(verbosity > 0)
+// 		cout << " Warning: process name " << procName << " not catalogued." << endl;
+// 	
+// 	return 999;
+  
+	return	procName;
 }
 
 

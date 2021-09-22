@@ -119,7 +119,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	abank.load_variable("mvz",    22,   "Rd", "z component of point of origin of the mother of the particle entering the sensitive volume");
 	abank.load_variable("avg_t",  23,   "Rd", "Average time");
 	abank.load_variable("nsteps", 24,   "Ri", "Number of geant4 steps");
-	abank.load_variable("procID", 25,   "Ri", "Process that created the particle. It's an integer described at gemc.jlab.org");
+	abank.load_variable("procID", 25,   "Rs", "Process that created the particle. It's an integer described at gemc.jlab.org");
 	abank.load_variable("hitn",   99,   "Ri", "Hit Number");
 	abank.orderNames();
 	banks["raws"] = abank;

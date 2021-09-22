@@ -94,7 +94,8 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	FILTER_HITS      = (int) gemcOpt.optMap["FILTER_HITS"].arg;
 	FILTER_BEAM      = (int) gemcOpt.optMap["FILTER_BEAM"].arg;	
 	FILTER_HADRONS   = (int) gemcOpt.optMap["FILTER_HADRONS"].arg;
-	FILTER_HIGHMOM   = (int) gemcOpt.optMap["FILTER_HIGHMOM"].arg;
+	FILTER_HIGHMOM   = (int) gemcOpt.optMap["FILTER_HIGHMOM"].arg;	
+	FILTER_HIGHTHETA = (int) gemcOpt.optMap["FILTER_HIGHTHETA"].arg;
 	SKIPREJECTEDHITS = (int) gemcOpt.optMap["SKIPREJECTEDHITS"].arg;
 	rw               = runWeights(opts);
 	
@@ -348,6 +349,34 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if (not foundHighmom) return;
 	}
 
+	// if FILTER_HIGHTHETA is set, checking if there is  any high mom hits
+	if (FILTER_HIGHTHETA != 0)
+	{
+		int foundHightheta = 0;
+		for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
+		{
+			MHC = it->second->GetMHitCollection();
+			if (MHC) nhits = MHC->GetSize();
+			else nhits = 0;
+			for (int h=0; h<nhits; h++)
+			{
+				vector<G4ThreeVector>           mmts = (*MHC)[h]->GetMoms();
+				for(unsigned int t=0; t<mmts.size(); t++){
+					cout << "theta " << mmts[t].theta() << " mom " << mmts[t].mag() << endl;	
+					if (mmts[t].theta()/3.1416*180. > FILTER_HIGHTHETA)
+					{
+						foundHightheta = 1;
+						break;
+					}
+				}
+
+			}
+		}
+
+		// stop here if there are no  any high mom hits
+		if (not foundHightheta) return;
+	}
+	
 	if(evtN%Modulo == 0 )
 		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
 	

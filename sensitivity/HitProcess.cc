@@ -42,7 +42,7 @@ map<string, double> HitProcess::integrateRaw(MHit* aHit, int hitn, bool WRITEBAN
 			raws["hitn"]    = hitn;
 			raws["totEdep"] = aHit->GetEdep().front();
 			raws["avg_t"]   = aHit->GetTime().front();
-			raws["procID"]  = -1;
+			raws["procID"]  = "-1";
 			raws["nsteps"]  = 1;
 
 			if(filterDummyBanks == false) {

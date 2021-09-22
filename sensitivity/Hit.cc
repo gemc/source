@@ -82,7 +82,7 @@ MHit::MHit(double energy, double tim, vector<identifier> vid, int pid)
 	otrackID.push_back(-1);
 	mvert.push_back(G4ThreeVector(0,0,0));
 	materialName.push_back("noise");
-	processID.push_back(999);
+	processID.push_back("999");
 	mgnf.push_back(0);
 
 	identity = vid;
@@ -111,7 +111,7 @@ MHit::MHit(double energy, double tim, int nphe, vector<identifier> vid)
 	otrackID.push_back(-1);
 	mvert.push_back(G4ThreeVector(0,0,0));
 	materialName.push_back("backgroundHit");
-	processID.push_back(999);
+	processID.push_back("999");
 	mgnf.push_back(0);
 
 	identity = vid;

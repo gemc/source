@@ -156,6 +156,7 @@ public:
 	int FILTER_BEAM;        ///< If set to non-0, do not write any output when there is only a hit from beam
 	int FILTER_HADRONS;     ///< If set to non-0, do not write any output unless there is a hadron somewhere
 	int FILTER_HIGHMOM;     ///< If set to non-0, do not write any output unless there is high mom hit
+	int FILTER_HIGHTHETA;     ///< If set to non-0, do not write any output unless there is high theta angle hit	
 	int SKIPREJECTEDHITS;   ///< Skips hits that are rejected by digitization. Default: yes
 	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
 	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved

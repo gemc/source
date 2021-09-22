@@ -77,7 +77,7 @@ public:
 	MHitCollection* GetMHitCollection()                   {if(hitCollection) return hitCollection; else return NULL;}              ///< returns hit collection
 	MHit* find_existing_hit(vector<identifier>);                                               ///< returns hit collection hit inside identifer
 
-	int processID(string procName);   // return an ID from a process name.
+	string processID(string procName);   // return an ID from a process name.
 };
 
 
