@@ -21,17 +21,17 @@ map<string, double> hipo_output::fieldScales = {};
 void hipo_output :: recordSimConditions(outputContainer* output, map<string, string> sims)
 {
 	vector<string> data;
-
+	
 	// writing both key and argument as one string
 	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
 		if(it->first == "option ACTIVEFIELDS") {
-
+			
 			vector<string> fieldNames = getStringVectorFromString(it->second);
-
+			
 			for(auto &fieldName: fieldNames) {
-
+				
 				double scaleFactor = 1;
-
+				
 				vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
 				for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
 					vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
@@ -41,20 +41,20 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 							// cout << " ASD " << fieldName << " " << scaleFactor << endl;
 							// scale to 1 unless set below
 							fieldScales[trimSpacesFromString(fieldName)] = scaleFactor;
-
+							
 						}
 					}
 				}
-
+				
 			}
 		}
 	}
-
+	
 }
 
 // returns detectorID from map, given hitType
 int hipo_output :: getDetectorID(string hitType) {
-
+	
 	if(detectorID.find(hitType) != detectorID.end() ) {
 		return detectorID[hitType];
 	} else {
@@ -70,7 +70,7 @@ string hipo_output :: getHipoVariableName(string trueInfoVar) {
 	} else {
 		return trueInfoVar;
 	}
-
+	
 }
 
 
@@ -80,37 +80,37 @@ string hipo_output :: getHipoVariableName(string trueInfoVar) {
 void hipo_output :: writeHeader(outputContainer* output, map<string, double> data, gBank bank)
 {
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	
 	//	for(auto &fieldScale: fieldScales) {
 	//		cout << ">" << fieldScale.first << "<" << " scaled by: " << fieldScale.second << endl;
 	//	}
-
+	
 	// this will never enter the second condition because hipo_output is instantiated every event
 	if(outEvent == nullptr) {
 		outEvent = new hipo::event(1024*1024*2);
-	//	cout << " Event Size before reset: " << outEvent->getSize() << endl;
+		//	cout << " Event Size before reset: " << outEvent->getSize() << endl;
 	} else {
 		outEvent->reset();
-	//	cout << " Event Size after reset: " << outEvent->getSize() << endl;
+		//	cout << " Event Size after reset: " << outEvent->getSize() << endl;
 	}
-
+	
 	// Create runConfigBank with 1 row based on schema
 	// second argument is number of hits
 	hipo::bank runConfigBank(output->hipoSchema->runConfigSchema, 1);
-
+	
 	runConfigBank.putInt("run",   0, data["runNo"]);
 	runConfigBank.putInt("event", 0, data["evn"]);
-
+	
 	// time in seconds
 	time_t t = std::time(0);
 	int now = static_cast<int> (t);
 	runConfigBank.putInt("unixtime",  0, now);
-
+	
 	// other infos
 	runConfigBank.putInt("trigger",   0, 0);
 	runConfigBank.putFloat("timestamp", 0, 0);
 	runConfigBank.putInt("type",      0, 0);
-
+	
 	// solenoid and torus scales, if present
 	if(fieldScales.find("TorusSymmetric") != fieldScales.end()) {
 		runConfigBank.putFloat("torus",      0, fieldScales["TorusSymmetric"]);
@@ -123,14 +123,14 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	} else {
 		runConfigBank.putFloat("solenoid",      0, 0);
 	}
-
-
+	
+	
 	if(verbosity > 2) {
 		runConfigBank.show();
 	}
-
+	
 	outEvent->addStructure(runConfigBank);
-
+	
 }
 
 
@@ -140,91 +140,94 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 // this include the LUND file header entries (10) plus user entries if present
 void hipo_output :: writeUserInfoseHeader(outputContainer* output, map<string, double> data)
 {
-
-	int lundStandardSize = 10;
-	int userBankSize = data.size() - lundStandardSize;
-
-	hipo::bank mcEventHeaderBank(output->hipoSchema->mcEventHeader,  1);
-	hipo::bank userLundBank(output->hipoSchema->userLund, userBankSize);
-
-	int index = -1;
-	for (auto it = data.begin(); it != data.end(); it++) {
-		index += 1;
-		if ( index < lundStandardSize ) {
-			switch (index) {
-				case 0:
-					mcEventHeaderBank.putShort("npart", 0, (short) it->second);
-					break;
-				case 1:
-					mcEventHeaderBank.putShort("atarget", 0, (short) it->second);
-					break;
-				case 2:
-					mcEventHeaderBank.putShort("ztarget", 0, (short) it->second);
-					break;
-				case 3:
-					mcEventHeaderBank.putFloat("ptarget", 0, (float) it->second);
-					break;
-				case 4:
-					mcEventHeaderBank.putFloat("pbeam", 0, (float) it->second);
-					break;
-				case 5:
-					mcEventHeaderBank.putShort("btype", 0, (short) it->second);
-					break;
-				case 6:
-					mcEventHeaderBank.putFloat("ebeam", 0, (float) it->second);
-					break;
-				case 7:
-					mcEventHeaderBank.putShort("targetid", 0, (short) it->second);
-					break;
-				case 8:
-					mcEventHeaderBank.putShort("processid", 0, (short) it->second);
-					break;
-				case 9:
-					mcEventHeaderBank.putFloat("weight", 0, (float) it->second);
-					break;
-
-				default:
-					break;
+	
+	if (data.size() > 0) {
+		
+		int lundStandardSize = 10;
+		
+		int userBankSize = data.size() - lundStandardSize;
+		
+		hipo::bank mcEventHeaderBank(output->hipoSchema->mcEventHeader,  1);
+		hipo::bank userLundBank(output->hipoSchema->userLund, userBankSize);
+		
+		int index = -1;
+		for (auto it = data.begin(); it != data.end(); it++) {
+			index += 1;
+			if ( index < lundStandardSize ) {
+				switch (index) {
+					case 0:
+						mcEventHeaderBank.putShort("npart", 0, (short) it->second);
+						break;
+					case 1:
+						mcEventHeaderBank.putShort("atarget", 0, (short) it->second);
+						break;
+					case 2:
+						mcEventHeaderBank.putShort("ztarget", 0, (short) it->second);
+						break;
+					case 3:
+						mcEventHeaderBank.putFloat("ptarget", 0, (float) it->second);
+						break;
+					case 4:
+						mcEventHeaderBank.putFloat("pbeam", 0, (float) it->second);
+						break;
+					case 5:
+						mcEventHeaderBank.putShort("btype", 0, (short) it->second);
+						break;
+					case 6:
+						mcEventHeaderBank.putFloat("ebeam", 0, (float) it->second);
+						break;
+					case 7:
+						mcEventHeaderBank.putShort("targetid", 0, (short) it->second);
+						break;
+					case 8:
+						mcEventHeaderBank.putShort("processid", 0, (short) it->second);
+						break;
+					case 9:
+						mcEventHeaderBank.putFloat("weight", 0, (float) it->second);
+						break;
+						
+					default:
+						break;
+				}
+				
+			} else {
+				userLundBank.putFloat("userVar", index - lundStandardSize, (float) it->second);
 			}
-
-		} else {
-			userLundBank.putFloat("userVar", index - lundStandardSize, (float) it->second);
+		}
+		
+		outEvent->addStructure(mcEventHeaderBank);
+		if(userBankSize > 0) {
+			outEvent->addStructure(userLundBank);
 		}
 	}
-
-	outEvent->addStructure(mcEventHeaderBank);
-	if(userBankSize > 0) {
-		outEvent->addStructure(userLundBank);
-	}
-
 }
 
 
 void hipo_output :: writeRFSignal(outputContainer* output, FrequencySyncSignal rfsignals, gBank bank)
 {
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	
 	// Create runRFBank with 1 row based on schema
 	// second argument is number of hits
-
+	
 	vector<oneRFOutput> rfs = rfsignals.getOutput();
-
+	
 	// only the first rf output is written
 	// beware: in gemc there are 2 rf outputs
 	vector<int>    ids   = rfs.front().getIDs();
 	vector<double> times = rfs.front().getValues();
-
+	
 	hipo::bank runRFBank(output->hipoSchema->runRFSchema,  ids.size());
-
+	
 	for(unsigned i=0; i < ids.size(); i++) {
 		runRFBank.putShort("id",   i, (short) ids[i]);
 		runRFBank.putFloat("time", i, (float) times[i]);
 	}
-
+	
 	if(verbosity > 2) {
 		runRFBank.show();
 	}
-
+	
 	outEvent->addStructure(runRFBank);
 }
 
@@ -232,7 +235,7 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 {
 	double MAXP    = output->gemcOpt.optMap["NGENP"].arg;
 	int verbosity  = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	
 	vector<int> pid;
 	vector<double> px;
 	vector<double> py;
@@ -241,7 +244,7 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> vy;
 	vector<double> vz;
 	vector<double> btime;
-
+	
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
 		pid.push_back(MGP[i].PID);
 		px.push_back(MGP[i].momentum.getX()/MeV);
@@ -252,11 +255,11 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		vz.push_back(MGP[i].vertex.getZ()/mm);
 		btime.push_back(MGP[i].time);
 	}
-
+	
 	hipo::bank geantParticleBank(output->hipoSchema->geantParticle,  pid.size());
-
+	
 	for(unsigned i=0; i < pid.size(); i++) {
-
+		
 		geantParticleBank.putInt("pid",    i,  pid[i]);
 		geantParticleBank.putFloat("px", i, (float) px[i]/1000.0);  // in hipo the units are GeV
 		geantParticleBank.putFloat("py", i, (float) py[i]/1000.0);  // in hipo the units are GeV
@@ -265,18 +268,18 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		geantParticleBank.putFloat("vy", i, (float) vy[i]/10.0);    // in hipo the units are cm
 		geantParticleBank.putFloat("vz", i, (float) vz[i]/10.0);    // in hipo the units are cm
 		geantParticleBank.putFloat("vt", i, (float) btime[i]);
-
+		
 	}
-
+	
 	if(verbosity > 2) {
 		geantParticleBank.show();
 	}
-
+	
 	outEvent->addStructure(geantParticleBank);
-
-
+	
+	
 	hipo::bank lundParticleBank(output->hipoSchema->lundParticle,  userInfo.size());
-
+	
 	// p is particle index
 	for(unsigned p=0; p<userInfo.size(); p++) {
 		for(unsigned u=0; u<userInfo[p].infos.size(); u++) {
@@ -323,16 +326,16 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 				case 13:
 					lundParticleBank.putFloat("vz", p, (float) userInfo[p].infos[u]);
 					break;
-
+					
 				default:
 					break;
 			}
-
+			
 		}
 	}
 	outEvent->addStructure(lundParticleBank);
-
-
+	
+	
 }
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)
@@ -347,7 +350,7 @@ void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo
 	vector<double> vx;
 	vector<double> vy;
 	vector<double> vz;
-
+	
 	for (unsigned i = 0; i < ainfo.size(); i++) {
 		pid.push_back (ainfo[i].pid);
 		tid.push_back (ainfo[i].tid);
@@ -360,107 +363,107 @@ void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo
 		vy.push_back (ainfo[i].vtx.getY()/MeV);
 		vz.push_back (ainfo[i].vtx.getZ()/MeV);
 	}
-
-
+	
+	
 }
 
 void hipo_output :: initBank(outputContainer* output, gBank thisHitBank, int what) {
-
+	
 }
 
 void hipo_output::prepareEvent(outputContainer* output, map<string, double> *configuration){
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
 	int nBankEntries = 0;
 	lastHipoTrueInfoBankIndex = 0;
-
+	
 	for(auto &conf: *configuration) {
-
+		
 		if(verbosity > 1) {
 			cout << " Hipo preparing " << conf.first << "  with " << conf.second << " hits " << endl;
 		}
 		nBankEntries = nBankEntries + conf.second ;
 	}
-
+	
 	if(verbosity > 1) {
 		cout << " Total true info bank entries: " << nBankEntries << endl;
 	}
-
+	
 	hipo::schema trueInfoSchema = output->hipoSchema->trueInfoSchema;
-
+	
 	trueInfoBank = new hipo::bank(trueInfoSchema, nBankEntries);
-
+	
 }
 
 void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	if(HO.size() == 0) return;
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank rawBank     = getBankFromMap("raws", banksMap);
-
+	
 	// perform initializations if necessary
 	initBank(output, thisHitBank, RAWINT_ID);
-
+	
 	// we only need the first hit to get the definitions
 	map<string, double> raws = HO[0].getRaws();
-
+	
 	int detectorID = getDetectorID(hitType);
-
+	
 	// looping over the loaded banknames (this to make sure we only publish the ones declared
 	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
 	for(auto &bankName : rawBank.orderedNames ) {
-
+		
 		string bname   = bankName.second;
 		int bankId     = rawBank.getVarId(bname);       // bankId is num
 		int bankType   = rawBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
-
+		
 		if(raws.find(bname) != raws.end() && bankId > 0 && bankType == RAWINT_ID) {
-
+			
 			// looping over the hits
 			for(unsigned int nh=0; nh<HO.size(); nh++) {
-
+				
 				int hipoBankIndex = lastHipoTrueInfoBankIndex + nh;
-
+				
 				map<string, double> theseRaws = HO[nh].getRaws();
-
+				
 				trueInfoBank->putByte("detector", hipoBankIndex, detectorID);
-
+				
 				for(auto &thisVar: theseRaws) {
-
+					
 					// found data match to bank definition
 					if(thisVar.first == bname) {
-
+						
 						string varType = rawBank.getVarType(thisVar.first);
-
+						
 						string hipoName = getHipoVariableName(bname);
 						if(varType == "i") {
 							trueInfoBank->putInt(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						} else if(varType == "d") {
 							trueInfoBank->putFloat(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						}
-
+						
 						if(verbosity > 2) {
 							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", bank hit index " << hipoBankIndex << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
 						}
 					}
 				}
 			}
-
+			
 		}
 	}
 	lastHipoTrueInfoBankIndex = lastHipoTrueInfoBankIndex + HO.size();
-
-
+	
+	
 	// loop over variable names
 	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++) {
-
+		
 		int bankId   = rawBank.getVarId(it->second);
 		int bankType = rawBank.getVarBankType(it->second);
-
+		
 		// we only need the first hit to get the definitions
 		map<string, double> raws = HO[0].getRaws();
-
+		
 		if(raws.find(it->second) != raws.end() && bankId > 0 && bankType == RAWINT_ID)
 		{
 			vector<double> thisVar;
@@ -480,44 +483,44 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 {
 	if(HO.size() == 0) return;
 	int verbosity = int(output->gemcOpt.optMap["BANK_VERBOSITY"].arg);
-
+	
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank dgtBank     = getDgtBankFromMap(hitType, banksMap);
-
+	
 	// perform initializations if necessary
 	initBank(output, thisHitBank, DGTINT_ID);
-
+	
 	// we only need the first hit to get the definitions
 	map<string, double> dgts = HO[0].getDgtz();
-
+	
 	bool hasADCBank = false;
 	bool hasTDCBank = false;
-
+	
 	hipo::schema detectorADCSchema = output->hipoSchema->getSchema(hitType, 0);
 	hipo::schema detectorTDCSchema = output->hipoSchema->getSchema(hitType, 1);
 	hipo::bank detectorADCBank(detectorADCSchema, HO.size());
 	hipo::bank detectorTDCBank(detectorTDCSchema, HO.size());
-
+	
 	// check if there is at least one adc or tdc var
 	// and if the schema is valid
 	for(auto &bankName : dgtBank.orderedNames ) {
-
+		
 		// flag ADC content if any variable has ADC_ prefix AND detectorADCSchema exists
 		if(bankName.second.find("ADC_") != string::npos ) {
 			if(detectorADCSchema.getEntryName(0) != "empty") {
 				hasADCBank = true;
 			}
 		}
-
+		
 		// flag TDC content if any variable has TDC_ prefix detectorTDCSchema schema exists
 		if(bankName.second.find("TDC_") != string::npos ) {
-
+			
 			if(detectorTDCSchema.getEntryName(0) != "empty") {
 				hasTDCBank = true;
 			}
 		}
 	}
-
+	
 	if(verbosity > 2) {
 		if(hasADCBank) {
 			cout << hitType << " has ADC bank." << endl;
@@ -526,31 +529,31 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 			cout << hitType << " has TDC bank." << endl;
 		}
 	}
-
-
+	
+	
 	// looping over the loaded banknames (this to make sure we only publish the ones declared
 	// we actually never used this steps and it's actually cumbersome. To be removed in gemc3
 	for(auto &bankName : dgtBank.orderedNames ) {
-
+		
 		string bname = bankName.second;
 		int bankId   = dgtBank.getVarId(bname);       // bankId is num
 		int bankType = dgtBank.getVarBankType(bname); // bankType: 1 = raw 2 = dgt
-
+		
 		if(dgts.find(bname) != dgts.end() && bankId > 0 && bankType == DGTINT_ID) {
-
+			
 			if(hasADCBank) {
-
+				
 				// looping over the hits
 				for(unsigned int nh=0; nh<HO.size(); nh++) {
-
+					
 					map<string, double> theseDgts = HO[nh].getDgtz();
 					for(auto &thisVar: theseDgts) {
-
+						
 						// found data match to bank definition
 						if(thisVar.first == bname) {
-
+							
 							string varType = dgtBank.getVarType(thisVar.first);
-
+							
 							// sector, layer, component are common in adc/tdc so their names are w/o prefix
 							// sector, layers are "Bytes"
 							if(bname == "sector" || bname == "layer") {
@@ -568,28 +571,28 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 									}
 								}
 							}
-
+							
 							if(verbosity > 2) {
 								cout << "hit index " << nh << ", name " << bname << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
 							}
 						}
 					}
 				}
-
+				
 			}
-
+			
 			if(hasTDCBank) {
-
+				
 				// looping over the hits
 				for(unsigned int nh=0; nh<HO.size(); nh++) {
 					map<string, double> theseDgts = HO[nh].getDgtz();
 					for(auto &thisVar: theseDgts) {
-
+						
 						// found data match to bank definition
 						if(thisVar.first == bname) {
-
+							
 							string varType = dgtBank.getVarType(thisVar.first);
-
+							
 							// sector, layer, component are common in adc/tdc so their names are w/o prefix
 							// sector, layers are "Bytes"
 							if(bname == "sector" || bname == "layer") {
@@ -606,9 +609,9 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 										detectorTDCBank.putFloat(adcName.c_str(), nh, thisVar.second);
 									}
 								}
-
+								
 							}
-
+							
 							// do not repeat message logged above if hasADCBank was true
 							if(verbosity > 2 && !hasADCBank) {
 								cout << "hit index " << nh << ", name " << thisVar.first << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
@@ -617,11 +620,11 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 					}
 				}
 			}
-
+			
 		}
-
+		
 	}
-
+	
 	if(hasADCBank) {
 		if(verbosity > 2) {
 			detectorADCBank.show();
@@ -634,7 +637,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 		}
 		outEvent->addStructure(detectorTDCBank);
 	}
-
+	
 }
 
 
@@ -646,44 +649,44 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 void hipo_output :: writeChargeTime(outputContainer* output, vector<hitOutput> HO, string hitType, map<string, gBank> *banksMap)
 {
 	if(HO.size() == 0) return;
-
+	
 	gBank thisHitBank    = getBankFromMap(hitType, banksMap);
 	gBank chargeTimeBank = getBankFromMap("chargeTime", banksMap);
-
+	
 	initBank(output, thisHitBank, CHARGE_TIME_ID );
-
+	
 	// collecting vectors from each hit into one big array
 	vector<double> allHitN;
 	vector<double> allStep;
 	vector<double> allCharge;
 	vector<double> allTime;
 	vector<double> allID;
-
+	
 	for(unsigned int nh=0; nh<HO.size(); nh++) {
-
+		
 		map<int, vector<double> > thisChargeTime = HO[nh].getChargeTime();
-
+		
 		vector<double> thisHitN   = thisChargeTime[0];
 		vector<double> thisStep   = thisChargeTime[1];
 		vector<double> thisCharge = thisChargeTime[2];
 		vector<double> thisTime   = thisChargeTime[3];
 		vector<double> thisID     = thisChargeTime[4];
-
-
+		
+		
 		// hit number
 		if(thisHitN.size() != 1 ) {
 			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
 			exit(0);
 		}
-
+		
 		for(auto h: thisHitN)   allHitN.push_back(h);
 		for(auto h: thisStep)   allStep.push_back(h);
 		for(auto h: thisCharge) allCharge.push_back(h);
 		for(auto h: thisTime)   allTime.push_back(h);
 		for(auto h: thisID)     allID.push_back(h);
 	}
-
-
+	
+	
 }
 
 
@@ -709,8 +712,8 @@ void hipo_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 void hipo_output :: writeEvent(outputContainer* output)
 {
 	outEvent->addStructure(*trueInfoBank);
-
+	
 	output->hipoWriter->addEvent(*outEvent);
-
+	
 }
 
