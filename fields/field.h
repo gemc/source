@@ -89,7 +89,7 @@ public:
 	
 	// mapped Field. We need to factory to load the map
 	gMappedField *map;                   ///< Mapped Field
-	c *bc12map;   ///< Binary CLAS12 Map
+	gclas12BinaryMappedField *bc12map;   ///< Binary CLAS12 Map
 	fieldFactory *fFactory;              ///< fieldFactory that created the field
 	
 private:
