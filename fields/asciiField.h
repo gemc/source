@@ -20,10 +20,9 @@ class asciiField : public fieldFactory
 	void loadFieldMap_Dipole(gMappedField*, double);       // load dipole field map
 	void loadFieldMap_Cylindrical(gMappedField*, double);  // load cylindrical field map
 	void loadFieldMap_phiSegmented(gMappedField*, double); // load phiSegmented field map
-	void loadFieldMap_cartesian3d(gMappedField*, double); // load cartesian3d field map	
+	void loadFieldMap_cartesian3d(gMappedField*, double);  // load cartesian3d field map	
 	
-	static fieldFactory *createFieldFactory()
-	{
+	static fieldFactory *createFieldFactory() {
 		return new asciiField;
 	}
 	

@@ -16,9 +16,6 @@
 
 using namespace std;
 
-// CLHEP units
-#include "CLHEP/Units/PhysicalConstants.h"
-using namespace CLHEP;
 
 // defines one dimension of the field
 // number of points, range and units
@@ -43,24 +40,7 @@ public:
 	string       unit;
 	int          speed;     // 0 is the slowest varying coordinate
 	
-	friend ostream &operator<<(ostream &stream, gcoord gc)
-	{
-		cout << gc.name  << ": np="    << gc.np ;
-		
-		if(gc.unit == "mm" || gc.unit == "m" ||  gc.unit == "cm")
-		{
-			cout << ", min="   << gc.min/cm << " cm"
-			<< ", max="   << gc.max/cm << " cm";
-		}
-		if(gc.unit == "deg" || gc.unit == "rad" )
-		{
-			cout << ", min="   << gc.min/degree << " deg"
-			<< ", max="   << gc.max/degree << " deg";
-		}
-		
-		cout << ", index speed=" << gc.speed << endl;
-		return stream;
-	}
+	friend ostream &operator<<(ostream &stream, gcoord gc);
 };
 
 
@@ -69,8 +49,8 @@ public:
 /// \class gMappedField
 /// <b>gMappedField </b>\n\n
 /// This class defines gemc Mapped Electro-Magnetic Fields.\n
-/// The function G4MagneticField function GetFieldValue
-/// returns a magnetic field value at a point in space
+/// It implements G4MagneticField::GetFieldValue
+/// that returns a magnetic field value at a point in space
 class gMappedField : public G4MagneticField
 {
 public:
@@ -91,16 +71,12 @@ public:
 	string identifier;          ///< Pointer to map in factory (for example, hostname / filename with path / date)
 	string symmetry;            ///< map symmetry
 	vector<gcoord> coordinates; ///< Vector size depend on the symmetry
-	
+
+	// set by gfield::initialize
 	double mapOrigin[3];        ///< Displacement of map. This is used in GetFieldValue
 	double mapRotation[3];      ///< Rotation of map. This is used in GetFieldValue
-	
-	double sinAlpha, cosAlhpa;
-	double sinBeta, cosBeta;
-	double sinGamma, cosGamma;
-
-	
 	double scaleFactor;         ///< copy of the gfield scaleFactor
+
 	string unit;                ///< field unit in the map
 	string interpolation;       ///< map interpolation technique. Choices are "none", "linear", "quadratic"
 	int verbosity;              ///< map verbosity
@@ -135,20 +111,22 @@ public:
 	void GetFieldValue_phiSegmented( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	void GetFieldValue_cartesian3d( const double x[3], double *Bfield, int FIRST_ONLY) const;
 	
-
+	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
+	double sinAlpha, cosAlhpa;
+	double sinBeta, cosBeta;
+	double sinGamma, cosGamma;
 	void RotateField( double *Bfield) const;
-
 
 	// we want to rotate the field (axes), not the point
 	// so each rotation is the inverse of the point rotation
-	double yRotX(double p[3]) const {return  p[1]*cosAlhpa + p[2]*sinAlpha;}
-	double zRotX(double p[3]) const {return -p[1]*sinAlpha + p[2]*cosAlhpa;}
+	inline const double yRotX(double p[3]) const {return  p[1]*cosAlhpa + p[2]*sinAlpha;}
+	inline const double zRotX(double p[3]) const {return -p[1]*sinAlpha + p[2]*cosAlhpa;}
 
-	double xRotY(double p[3]) const {return p[0]*cosBeta - p[2]*sinBeta;}
-	double zRotY(double p[3]) const {return p[0]*sinBeta + p[2]*cosBeta;}
+	inline const double xRotY(double p[3]) const {return p[0]*cosBeta - p[2]*sinBeta;}
+	inline const double zRotY(double p[3]) const {return p[0]*sinBeta + p[2]*cosBeta;}
 
-	double xRotZ(double p[3]) const {return  p[0]*cosGamma + p[1]*sinGamma;}
-	double yRotZ(double p[3]) const {return -p[0]*sinGamma + p[1]*cosGamma;}
+	inline const double xRotZ(double p[3]) const {return  p[0]*cosGamma + p[1]*sinGamma;}
+	inline const double yRotZ(double p[3]) const {return -p[0]*sinGamma + p[1]*cosGamma;}
 
 };
 

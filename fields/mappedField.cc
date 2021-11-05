@@ -1,7 +1,28 @@
 // gemc include
 #include "mappedField.h"
 
+// CLHEP units
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
 
+ostream &operator<<(ostream &stream, gcoord gc)
+{
+	cout << gc.name  << ": np="    << gc.np ;
+
+	if(gc.unit == "mm" || gc.unit == "m" ||  gc.unit == "cm")
+	{
+		cout << ", min="   << gc.min/cm << " cm"
+		<< ", max="   << gc.max/cm << " cm";
+	}
+	if(gc.unit == "deg" || gc.unit == "rad" )
+	{
+		cout << ", min="   << gc.min/degree << " deg"
+		<< ", max="   << gc.max/degree << " deg";
+	}
+
+	cout << ", index speed=" << gc.speed << endl;
+	return stream;
+}
 
 void gMappedField::GetFieldValue(const double point[3], double *bField) const
 {
