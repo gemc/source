@@ -32,15 +32,12 @@ void gfield::create_MFM()
 {
 
 	// fields can be uniform, mapped
-	if(format == "simple" && symmetry == "uniform")
+	if(format == "simple" && symmetry == "uniform") {
 		create_simple_MFM();
-
-	// fields can be multipole, mapped
-	if(format == "simple" && symmetry == "multipole")
+	} else if(format == "simple" && symmetry == "multipole") {
+		// fields can be multipole, mapped
 		create_simple_multipole_MFM();
-
-	if(format == "map")
-	{
+	} else if(format == "map") {
 		fFactory->loadFieldMap(map, verbosity);
 
 		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);
@@ -59,6 +56,26 @@ void gfield::create_MFM()
 		MFM->SetMaximumEpsilonStep( maxEps );
  		MFM->SetDeltaOneStep(0.01 * mm);
 		MFM->SetDeltaIntersection(0.01 * mm);
+	} else if(format == "bc12map") {
+		fFactory->loadFieldMap(bc12map, verbosity);
+
+		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);
+		G4MagIntegratorStepper* iStepper     = createStepper(integration, 	iEquation);
+		G4ChordFinder*          iChordFinder = new G4ChordFinder(bc12map, minStep, iStepper);
+
+		// caching does not seem to help for dipole-y
+		// will it help for other field maps?
+		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, g4fieldCacheSize);
+		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
+
+		G4double minEps = 0.1;  //   Minimum & value for smallest steps
+		G4double maxEps = 1.0;  //   Maximum & value for largest steps
+
+		MFM->SetMinimumEpsilonStep( minEps );
+		MFM->SetMaximumEpsilonStep( maxEps );
+		MFM->SetDeltaOneStep(0.01 * mm);
+		MFM->SetDeltaIntersection(0.01 * mm);
+
 	}
 
 }

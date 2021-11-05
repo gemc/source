@@ -28,6 +28,8 @@
 // gemc headers
 #include "gemcOptions.h"
 #include "mappedField.h"
+#include "bclas12MappedField.h"
+
 // forward declaration of fieldFactory
 class fieldFactory;
 
@@ -86,8 +88,9 @@ public:
 	void create_simple_multipole_MFM();
 	
 	// mapped Field. We need to factory to load the map
-	gMappedField *map;       ///< Mapped Field
-	fieldFactory *fFactory;  ///< fieldFactory that created the field
+	gMappedField *map;          ///< Mapped Field
+	bclas12MappedField *bmap;   ///< Binary CLAS12 Map
+	fieldFactory *fFactory;    ///< fieldFactory that created the field
 	
 private:
 	G4FieldManager *MFM;             	///< G4 Magnetic Field Manager
