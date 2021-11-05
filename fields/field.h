@@ -88,9 +88,9 @@ public:
 	void create_simple_multipole_MFM();
 	
 	// mapped Field. We need to factory to load the map
-	gMappedField *map;          ///< Mapped Field
-	bclas12MappedField *bmap;   ///< Binary CLAS12 Map
-	fieldFactory *fFactory;    ///< fieldFactory that created the field
+	gMappedField *map;                   ///< Mapped Field
+	c *bc12map;   ///< Binary CLAS12 Map
+	fieldFactory *fFactory;              ///< fieldFactory that created the field
 	
 private:
 	G4FieldManager *MFM;             	///< G4 Magnetic Field Manager

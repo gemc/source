@@ -22,7 +22,10 @@ class fieldFactory
 		virtual void loadFieldMap_Cylindrical(gMappedField*, double)  = 0; // load cylindrical field depending on 2 coordinates (transverse and longitudinal)
 		virtual void loadFieldMap_phiSegmented(gMappedField*, double) = 0; // load phi-symmetric field depending on 3 coordinates (azimuthal,transverse and longitudinal)
 		virtual void loadFieldMap_cartesian3d(gMappedField*, double)  = 0; // load cartesian_3D field depending on 3 coordinates (XX,YY,ZZ)
-		
+
+		// clas12 specific
+		virtual void loadFieldMap(gclas12BinaryMappedField*, double)  = 0; // load clas12 binary field map. 
+
 		string factoryType;
 
 		void initFactory(string ft) {

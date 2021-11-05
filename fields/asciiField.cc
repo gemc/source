@@ -209,6 +209,9 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 }
 
 
+void asciiField::loadFieldMap(gclas12BinaryMappedField*, double) {
+	
+}
 
 
 
