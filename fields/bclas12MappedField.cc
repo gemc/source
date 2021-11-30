@@ -20,6 +20,14 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// Uses David's routine to return the BX BY BZ components
 
 
+        FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
+	getCompositeFieldValue(combinedValuePtr, x[0], x[1], x[2], torus, solenoid);//torus and solenoid were declared in the header file
+	bField[0] = combinedValuePtr->b1;
+        bField[1] = combinedValuePtr->b2;
+        bField[2] = combinedValuePtr->b3;
+
+
+
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well
@@ -80,6 +88,9 @@ void gclas12BinaryMappedField::initializeMap()
 	sinGamma = sin(mapRotation[2]);
 	cosGamma = cos(mapRotation[2]);	
 }
+
+
+
 
 
 
