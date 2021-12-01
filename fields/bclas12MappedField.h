@@ -7,7 +7,10 @@
 
 // G4 headers
 #include "G4MagneticField.hh"
-
+#include "magfield.h"
+#include "magfieldio.h"
+#include "munittest.h"
+#include "magfieldutil.h"
 
 // c++ headers
 #include <vector>
@@ -57,6 +60,7 @@ public:
 
 	FieldValuePtr torusValuePtr;
 	FieldValuePtr solenoidValuePtr;
+	FieldValuePtr combinedValuePtr;
 
 	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
 	double sinAlpha, cosAlhpa;
@@ -81,6 +85,12 @@ public:
 };
 
 #endif
+
+
+
+
+
+
 
 
 
