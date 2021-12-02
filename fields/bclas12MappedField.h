@@ -7,7 +7,10 @@
 
 // G4 headers
 #include "G4MagneticField.hh"
-
+#include "magfield.h"
+#include "magfieldio.h"
+#include "munittest.h"
+#include "magfieldutil.h"
 
 // c++ headers
 #include <vector>
@@ -51,7 +54,14 @@ public:
 
 	// returns the field at point x. This is a dispatcher for the various symmetries below
 	void GetFieldValue( const double x[3], double *Bfield) const;
-	
+
+	static MagneticFieldPtr torus;
+	static MagneticFieldPtr solenoid;
+
+	FieldValuePtr torusValuePtr;
+	FieldValuePtr solenoidValuePtr;
+	FieldValuePtr combinedValuePtr;
+
 	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
 	double sinAlpha, cosAlhpa;
 	double sinBeta, cosBeta;
@@ -75,6 +85,13 @@ public:
 };
 
 #endif
+
+
+
+
+
+
+
 
 
 
