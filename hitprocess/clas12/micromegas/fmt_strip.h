@@ -29,6 +29,9 @@ public:
 	double ThetaL;		    // Lorentz angle
 	double Theta_Ls;         //Angle of the Lorentz drift in xy plane 
 	double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
+	double Twindow;          // readout window
+	double Tmean;            // average hit time
+	double Tsigma;           // sigma of the hit time distribution
 
 	// THE GEOMETRY CONSTANTS
 	const static int NLAYERS = 6  ;	// 6 DISKS
