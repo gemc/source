@@ -38,6 +38,9 @@ public:
 	double Theta_Ls_Z;         //Angle between the Lorentz deviation and the strip.
 	double Theta_Ls_C;         //Angle between the Lorentz deviation and the strip.
 	//double fieldScale; 	 // Scaling of the field - 1 means a 5 Tesla field along z
+	double Twindow;          // readout window
+	double Tmean;            // average hit time
+	double Tsigma;           // sigma of the hit time distribution
 
 	// THE GEOMETRY CONSTANTS
 	const static int NLAYERS = 6  ;	// 6 layers of MM
