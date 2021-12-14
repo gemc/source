@@ -149,8 +149,6 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	if(aHit->isBackgroundHit == 1) {
 
-		cout << "ASD ASD" << endl;
-
 		return dgtz;
 	}
 	
