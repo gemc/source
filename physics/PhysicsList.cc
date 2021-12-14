@@ -378,12 +378,17 @@ void PhysicsList::cookPhysics()
 
 
 	// optical physics
-	// taken from example: optical/LXe
+	// taken from example: extended/optical/LXe
 	if(opticalPhys == "yes") {
 		// verbosity is set to zero at the constructor level by default
 		// see G4OpticalPhysics.hh
+
 		G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-		opticalPhysics->SetWLSTimeProfile("delta");
+
+		// this was deprecated?
+		// Method G4OpticalPhysics::SetWLSTimeProfile is deprecated.
+		// Use G4OpticalParameters::SetWLSTimeProfile(G4String) instead.
+		//opticalPhysics->SetWLSTimeProfile("delta");
 
 		g4HadronicPhysics.push_back(opticalPhysics);
 	}
