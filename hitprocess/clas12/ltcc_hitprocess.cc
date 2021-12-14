@@ -115,7 +115,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// and identifiers are negative
 	// this should be changed, what if we still have a photon later?
 	// if the particle is not an opticalphoton return bank filled with negative identifiers
-	if(thisPid != 0) {
+	if(thisPid != MHit::OPTICALPHOTONPID) {
 
 		dgtz["sector"]    = -idsector;
 		dgtz["layer"]     = -idside;
