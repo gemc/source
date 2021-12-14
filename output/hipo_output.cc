@@ -38,7 +38,6 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 					if(scales.size() == 2) {
 						if (scales[0].find(fieldName) != string::npos) {
 							scaleFactor = get_number(scales[1]);
-							// cout << " ASD " << fieldName << " " << scaleFactor << endl;
 							// scale to 1 unless set below
 							fieldScales[trimSpacesFromString(fieldName)] = scaleFactor;
 							
@@ -437,12 +436,19 @@ void hipo_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 						string varType = rawBank.getVarType(thisVar.first);
 						
 						string hipoName = getHipoVariableName(bname);
+
+						if (hipoName == "hitn" ) {
+							thisVar.second = nh+1;
+						}
+
 						if(varType == "i") {
 							trueInfoBank->putInt(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						} else if(varType == "d") {
 							trueInfoBank->putFloat(hipoName.c_str(), hipoBankIndex, thisVar.second);
 						}
-						
+
+
+
 						if(verbosity > 2) {
 							cout << " Hit Type: " << hitType << ", detector id: " << detectorID << ", hit index " << nh << ", bank hit index " << hipoBankIndex << ", name " << bname << ", hname " << hipoName << ", value: " << thisVar.second << ", raw/dgt: " << bankType << ", type: " << varType << endl;
 						}
