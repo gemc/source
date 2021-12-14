@@ -661,7 +661,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				hitProcessRoutine->initWithRunNumber(rw.runNo);
 				
 				for(int h=0; h<nhits; h++) {
-					
+
 					hitOutput thisHitOutput;
 					MHit* aHit = (*MHC)[h];
 					
@@ -680,7 +680,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					}
 					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-					if(VERB > 4 || vname.find(catch_v) != string::npos)
+					if(VERB > 6 || vname.find(catch_v) != string::npos)
 					{
 						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
 						cout << aHit->GetId();
@@ -802,7 +802,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 
 
 				string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-				if(VERB > 4 || vname.find(catch_v) != string::npos) {
+				if(VERB > 6 || vname.find(catch_v) != string::npos) {
 					cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
 					cout << aHit->GetId();
 					double Etot = 0;
@@ -900,7 +900,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					
 					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
 					
-					if(VERB > 4 || vname.find(catch_v) != string::npos)
+					if(VERB > 6 || vname.find(catch_v) != string::npos)
 					{
 						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
 						cout << aHit->GetId();
