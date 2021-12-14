@@ -39,7 +39,7 @@ vector<int> vector_zint(int size)
 {
 	vector<int> zints;
 	for(int t=0; t<size; t++)
-	zints.push_back(0);
+		zints.push_back(0);
 	
 	return zints;
 }
@@ -48,7 +48,7 @@ vector<G4ThreeVector> vector_zthre(int size)
 {
 	vector<G4ThreeVector> zthre;
 	for(int t=0; t<size; t++)
-	zthre.push_back(G4ThreeVector(0,0,0));
+		zthre.push_back(G4ThreeVector(0,0,0));
 	
 	return zthre;
 }
@@ -57,7 +57,7 @@ vector<int> vector_mtids(map<int, TInfos> tinfos, vector<int> tids)
 {
 	vector<int> mtids;
 	for(unsigned int t=0; t<tids.size(); t++)
-	mtids.push_back(tinfos[tids[t]].mtid);
+		mtids.push_back(tinfos[tids[t]].mtid);
 	
 	return mtids;
 }
@@ -66,7 +66,7 @@ vector<int> vector_mpids(map<int, TInfos> tinfos, vector<int> tids)
 {
 	vector<int> mpids;
 	for(unsigned int t=0; t<tids.size(); t++)
-	mpids.push_back(tinfos[tids[t]].mpid);
+		mpids.push_back(tinfos[tids[t]].mpid);
 	
 	return mpids;
 }
@@ -75,7 +75,7 @@ vector<G4ThreeVector> vector_mvert(map<int, TInfos> tinfos, vector<int> tids)
 {
 	vector<G4ThreeVector> mvert;
 	for(unsigned int t=0; t<tids.size(); t++)
-	mvert.push_back(tinfos[tids[t]].mv);
+		mvert.push_back(tinfos[tids[t]].mv);
 	
 	return mvert;
 }
@@ -348,8 +348,8 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					// only put the first step of a particular track
 					// (don't fill if track exist already)
 					for(unsigned int t=0; t<tids.size(); t++)
-					if(bgMap.find(tids[t]) == bgMap.end())
-						bgMap[tids[t]] = BGParts(pids[t], tims[t], vtxs[t], mmts[t]);
+						if(bgMap.find(tids[t]) == bgMap.end())
+							bgMap[tids[t]] = BGParts(pids[t], tims[t], vtxs[t], mmts[t]);
 				}
 			}
 		}
@@ -437,7 +437,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		{
 			vector<int> bgtIDs;
 			for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
-			bgtIDs.push_back(it->first);
+				bgtIDs.push_back(it->first);
 			
 			for(unsigned i=0; i<bgtIDs.size(); i++)
 			{
@@ -559,7 +559,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		
 		
 		for(unsigned i=0; i<rfvalues.size(); i++)
-		rfsetup += rfvalues[i] + " " ;
+			rfsetup += rfvalues[i] + " " ;
 		
 		FrequencySyncSignal rfs(rfsetup);
 		processOutputFactory->writeRFSignal(outContainer, rfs, getBankFromMap("rf", banksMap));
@@ -572,16 +572,14 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// Getting Generated Particles info
 	// Are these loops necessary, revisit later1
 	vector<generatedParticle> MPrimaries;
-	for(int pv=0; pv<evt->GetNumberOfPrimaryVertex() && pv<MAXP; pv++)
-	{
+	for(int pv=0; pv<evt->GetNumberOfPrimaryVertex() && pv<MAXP; pv++) {
 		generatedParticle Mparticle;
 		G4PrimaryVertex* MPV = evt->GetPrimaryVertex(pv);
 		Mparticle.vertex = MPV->GetPosition();
 		double thisTime = MPV->GetT0();
 		int thisMult    = MPV->GetNumberOfParticle();
 		
-		for(int pp = 0; pp<MPV->GetNumberOfParticle() && pv<MAXP; pp++)
-		{
+		for(int pp = 0; pp<MPV->GetNumberOfParticle() && pv<MAXP; pp++) {
 			G4PrimaryParticle *PP  = MPV->GetPrimary(pp);
 			Mparticle.momentum     = PP->GetMomentum();
 			Mparticle.PID          = PP->GetPDGcode();
@@ -656,56 +654,6 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// keeping the hit number in a vector so we can skip the event writing for the true information as well
 			vector<int> hitsToSkip;
 
-			if(WRITE_INTDGT.find(hitType) == string::npos && (fastMCMode == 0 ||fastMCMode > 9)) {
-
-				hitProcessRoutine->initWithRunNumber(rw.runNo);
-				
-				for(int h=0; h<nhits; h++) {
-
-					hitOutput thisHitOutput;
-					MHit* aHit = (*MHC)[h];
-					
-					// calling integrateDgt will also set writeHit
-					thisHitOutput.setDgtz(hitProcessRoutine->integrateDgt(aHit, h+1));
-					
-					// include this hit. Users can set writeHit to false to avoid writing the hit
-					// the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
-					if(hitProcessRoutine->writeHit) {
-						allDgtOutput.push_back(thisHitOutput);
-					} else {
-						if(VERB > 4 ) {
-							cout << " Event Action: hit " << h + 1 << " was rejected in " << hitType << " digitization routine." << endl;
-						}
-						hitsToSkip.push_back(h);
-					}
-					
-					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-					if(VERB > 6 || vname.find(catch_v) != string::npos)
-					{
-						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
-						cout << aHit->GetId();
-						double Etot = 0;
-						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
-						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
-					}
-				}
-				processOutputFactory->writeG4DgtIntegrated(outContainer, allDgtOutput, hitType, banksMap);
-				
-			} // end of geant4 integrated digitized information
-			
-			// geant4 integrated raw information
-			// by default they are all DISABLED
-			// user can enable them one by one
-			// using the INTEGRATEDRAW option
-
-			bool WRITE_TRUE_INTEGRATED = 0;
-			bool WRITE_TRUE_ALL = 0;
-
-			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
-			if(WRITE_ALLRAW.find(hitType) != string::npos || WRITE_ALLRAW == "*") WRITE_TRUE_ALL = 1;
-
-			vector<hitOutput> allRawOutput;
-
 			// creating summary information for each generated particle
 			for(unsigned pi = 0; pi<MPrimaries.size(); pi++) {
 				MPrimaries[pi].pSum.push_back(summaryForParticle("na"));
@@ -714,18 +662,14 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				}
 			}
 
+			
 			for(int h=0; h<nhits; h++) {
 				MHit* aHit = (*MHC)[h];
 
-				// electronic noise hits disable? Why? TODO
-				if(aHit->isElectronicNoise) {
-					continue;
-				}
-
-				hitOutput thisHitOutput;
-
 				// mother particle infos
 				if(SAVE_ALL_MOTHERS) {
+
+
 					// setting track infos before processing the hit
 					vector<int> tids = aHit->GetTIds();
 					vector<int> otids = vector_otids(tids);
@@ -779,6 +723,69 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 					aHit->SetmPIDs(    zint);
 					aHit->SetmVerts(   zthre);
 				}
+			}
+
+			if(WRITE_INTDGT.find(hitType) == string::npos && (fastMCMode == 0 ||fastMCMode > 9)) {
+
+				hitProcessRoutine->initWithRunNumber(rw.runNo);
+				
+				for(int h=0; h<nhits; h++) {
+
+					hitOutput thisHitOutput;
+					MHit* aHit = (*MHC)[h];
+					
+					// calling integrateDgt will also set writeHit
+					thisHitOutput.setDgtz(hitProcessRoutine->integrateDgt(aHit, h+1));
+					
+					// include this hit. Users can set writeHit to false to avoid writing the hit
+					// the hitProcessRoutine variable detectorThreshold could be used in integrateDgt
+					if(hitProcessRoutine->writeHit) {
+						allDgtOutput.push_back(thisHitOutput);
+					} else {
+						if(VERB > 4 ) {
+							cout << " Event Action: hit " << h + 1 << " was rejected in " << hitType << " digitization routine." << endl;
+						}
+						hitsToSkip.push_back(h);
+					}
+					
+					string vname = aHit->GetId()[aHit->GetId().size()-1].name;
+					if(VERB > 6 || vname.find(catch_v) != string::npos)
+					{
+						cout << hd_msg << " Hit " << h + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
+						cout << aHit->GetId();
+						double Etot = 0;
+						for(unsigned int e=0; e<aHit->GetPos().size(); e++) Etot = Etot + aHit->GetEdep()[e];
+						cout << "   Total energy deposited: " << Etot/MeV << " MeV" << endl;
+					}
+				}
+				processOutputFactory->writeG4DgtIntegrated(outContainer, allDgtOutput, hitType, banksMap);
+				
+			} // end of geant4 integrated digitized information
+			
+			// geant4 integrated raw information
+			// by default they are all DISABLED
+			// user can enable them one by one
+			// using the INTEGRATEDRAW option
+
+			bool WRITE_TRUE_INTEGRATED = 0;
+			bool WRITE_TRUE_ALL = 0;
+
+			if(WRITE_INTRAW.find(hitType) != string::npos || WRITE_INTRAW == "*") WRITE_TRUE_INTEGRATED = 1;
+			if(WRITE_ALLRAW.find(hitType) != string::npos || WRITE_ALLRAW == "*") WRITE_TRUE_ALL = 1;
+
+			vector<hitOutput> allRawOutput;
+
+
+			for(int h=0; h<nhits; h++) {
+				MHit* aHit = (*MHC)[h];
+
+				// electronic noise hits disable? Why? TODO
+				if(aHit->isElectronicNoise) {
+					continue;
+				}
+
+				hitOutput thisHitOutput;
+
 
 				if(fastMCMode == 0 || fastMCMode > 9) {
 					thisHitOutput.setRaws(hitProcessRoutine->integrateRaw(aHit, h+1, WRITE_TRUE_INTEGRATED));
@@ -920,42 +927,42 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 			// Check whether to save RNG
 			if (ssp.enabled && ssp.decision == false)
 				for (int h = 0; h < nhits; ++h)
-			{
-				// Check if masked ID matches targetId
-				int id = allDgtOutput[h].getIntDgtVar ("id");
-				int id2 = id;
-				int j = ssp.tIdsize-1;
-				
-				for (; j >= 0; --j)
 				{
-					if (ssp.targetId[j] != 'x' && id2 % 10 != atoi (ssp.targetId.substr(j,1).c_str()))
+					// Check if masked ID matches targetId
+					int id = allDgtOutput[h].getIntDgtVar ("id");
+					int id2 = id;
+					int j = ssp.tIdsize-1;
+
+					for (; j >= 0; --j)
+					{
+						if (ssp.targetId[j] != 'x' && id2 % 10 != atoi (ssp.targetId.substr(j,1).c_str()))
+							break;
+						id2 /= 10;
+					}
+					if (j >= 0)
+						continue;
+
+					// Check pid
+					int pid = allRawOutput[h].getIntRawVar ("pid");
+					if (pid != ssp.targetPid)
+						continue;
+
+					// Check given variable
+					double varval = allRawOutput[h].getIntRawVar (ssp.variable);
+					if (varval == -99)
+						varval = allDgtOutput[h].getIntDgtVar (ssp.variable);
+					if (varval == -99)
+					{
+						cout << "Unknown variable " << ssp.variable << " for SAVE_SELECTED, exiting" << endl;
+						exit (0);
+					}
+
+					if (varval >= ssp.lowLim && varval <= ssp.hiLim)
+					{
+						ssp.decision = true;
 						break;
-					id2 /= 10;
+					}
 				}
-				if (j >= 0)
-					continue;
-				
-				// Check pid
-				int pid = allRawOutput[h].getIntRawVar ("pid");
-				if (pid != ssp.targetPid)
-					continue;
-				
-				// Check given variable
-				double varval = allRawOutput[h].getIntRawVar (ssp.variable);
-				if (varval == -99)
-					varval = allDgtOutput[h].getIntDgtVar (ssp.variable);
-				if (varval == -99)
-				{
-					cout << "Unknown variable " << ssp.variable << " for SAVE_SELECTED, exiting" << endl;
-					exit (0);
-				}
-				
-				if (varval >= ssp.lowLim && varval <= ssp.hiLim)
-				{
-					ssp.decision = true;
-					break;
-				}
-			}
 			
 			delete hitProcessRoutine;
 		}
@@ -1057,9 +1064,9 @@ void MEventAction::saveBGPartsToLund()
 	
 	int i = 1;
 	for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
-	*lundOutput << i++ << "\t0\t1\t" << it->second.pid << "\t0\t" << it->first << "\t"
-	<< it->second.p.x()/GeV << "\t" << it->second.p.y()/GeV << "\t" << it->second.p.z()/GeV << "\t" << it->second.time << "\t0\t"
-	<< it->second.v.x()/cm  << "\t" << it->second.v.y()/cm  << "\t" << it->second.v.z()/cm << endl;
+		*lundOutput << i++ << "\t0\t1\t" << it->second.pid << "\t0\t" << it->first << "\t"
+		<< it->second.p.x()/GeV << "\t" << it->second.p.y()/GeV << "\t" << it->second.p.z()/GeV << "\t" << it->second.time << "\t0\t"
+		<< it->second.v.x()/cm  << "\t" << it->second.v.y()/cm  << "\t" << it->second.v.z()/cm << endl;
 }
 
 

@@ -191,13 +191,6 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<double> photon_energies;
 	
 	vector<double> Energies = aHit->GetEs();
-
-
-
-//	int testmpid = aHit->GetmPID(); // particle ID at EACH STEP
-//
-//	cout << "ASD " << testmpid << endl;
-
 	
 	// this needs to be optimized
 	// uaing the return value of insert is unnecessary
