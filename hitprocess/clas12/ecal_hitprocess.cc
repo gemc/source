@@ -175,18 +175,24 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// pcal
 	int view   = layer;
 
+	bool isPCAL = layer < 4 ;
+
+	// layer = 1, 2 stays the same
+	// subtract 3 from ec inner
+	// subtract 6 from ec outer
+
 	if (layer > 3 && layer <7) {
 		// ec inner (stack 1)
 		view = layer - 3;
 	} else if (layer >= 7) {
-		// ec inner (stack 2)
+		// ec outer (stack 2)
 		view = layer - 6;
 	}
 
 	// Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	// Different for EC and PCAL
 	double pmtPEYld = 3.5 ;
-	if (layer < 4) {
+	if (isPCAL) {
 		// pcal
 		pmtPEYld  = 11.5 ;
 	}
@@ -246,10 +252,10 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if(view==2) latt = pDx2 + xlocal;
 			if(view==3) {
 				if(layer > 3) {
-					// for ecal, it's a minus sign
+					// for ec, it's a minus sign
 					latt = pDx2-xlocal;
 				} else {
-					// for ecal, it's a plus sign
+					// for pcal, it's a plus sign
 					latt = pDx2+xlocal;
 				}
 			}
@@ -264,7 +270,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// initialize ADC and TDC
 	double ADC = 0;
 	double TDC = 0;
-	
+
 	// simulate the adc value.
 	if (Etota > 0) {
 		double EC_npe = G4Poisson(Etota*pmtPEYld); //number of photoelectrons
