@@ -6,6 +6,8 @@
 #include "G4Field.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "Randomize.hh"
+#include "G4Geantino.hh"
+#include "G4Poisson.hh"
 
 #include <CCDB/Calibration.h>
 #include <CCDB/Model/Assignment.h>
@@ -199,8 +201,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector dm_C(0,0,1); //Unit vector indicating the direction of measurement
 	
 	// if no field manager, the field is zero
-	if(fmanager)
-	{
+	if(fmanager) {
 		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
 		G4ThreeVector BField(fieldValue[0],fieldValue[1],fieldValue[2]);
 		G4ThreeVector qEField(cos(phi_p),sin(phi_p),0); //Product qE
@@ -215,9 +216,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 			bmtc.Theta_Ls_Z=Fdir.angle(dm_Z);
 			bmtc.Theta_Ls_C=dm_C.angle(Fdir);
 		}
-	}
-	else
-	{
+	} else {
 		bmtc.ThetaL=0;
 		bmtc.Theta_Ls_Z=0;
 		bmtc.Theta_Ls_C=0;
@@ -226,7 +225,15 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	}
 	
 	double depe = aStep->GetTotalEnergyDeposit();
-	
+
+	// resetting depe for geantinos
+	if (aStep->GetTrack()->GetDefinition() == G4Geantino::GeantinoDefinition() ){
+		int np=G4Poisson( (aStep->GetStepLength()/cm) *10); // Warning... StepLength must be in cm... because it is 10 e- per cm for MIP
+		int nsec=0;
+		for (int n=0;n<np;n++) nsec+=G4Poisson(2); // For each primary ionization, there are 2 secondary ionization on average.
+		depe=(np+nsec)*bmtc.w_i/1e6; // So that we recover np+nsec in bmt_strip.cc line 28
+	}
+
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
 	
 	vector<double> multi_hit = bmts.FindStrip(layer, sector, lxyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization

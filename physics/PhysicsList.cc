@@ -388,6 +388,7 @@ void PhysicsList::cookPhysics()
 		// this was deprecated?
 		// Method G4OpticalPhysics::SetWLSTimeProfile is deprecated.
 		// Use G4OpticalParameters::SetWLSTimeProfile(G4String) instead.
+		// but we did try it? Maybe a bug?
 		//opticalPhysics->SetWLSTimeProfile("delta");
 
 		g4HadronicPhysics.push_back(opticalPhysics);
