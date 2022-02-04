@@ -6,7 +6,7 @@
 #include "G4Field.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "Randomize.hh"
-#include "G4Geantino.hh"
+#include "G4ChargedGeantino.hh"
 #include "G4Poisson.hh"
 
 #include <CCDB/Calibration.h>
@@ -227,7 +227,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	double depe = aStep->GetTotalEnergyDeposit();
 
 	// resetting depe for geantinos
-	if (aStep->GetTrack()->GetDefinition() == G4Geantino::ChargedGeantinoDefinition() ){
+	if (aStep->GetTrack()->GetDefinition() == G4ChargedGeantino::ChargedGeantinoDefinition() ){
 		int np=G4Poisson( (aStep->GetStepLength()/cm) *10); // Warning... StepLength must be in cm... because it is 10 e- per cm for MIP
 		int nsec=0;
 		for (int n=0;n<np;n++) nsec+=G4Poisson(2); // For each primary ionization, there are 2 secondary ionization on average.
@@ -337,7 +337,7 @@ void BMT_HitProcess::initWithRunNumber(int runno)
 
 
 // this static function will be loaded first thing by the executable
-bmtConstants BMT_HitProcess::bmtc = initializeBMTConstants(-1);
+bmtConstants BMT_HitProcess::bmtc = initializeBMTConstants(1);
 
 
 
