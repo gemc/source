@@ -129,6 +129,12 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_time"]  = (int) 255*G4UniformRand();
 	dgtz["ADC_ped"]   = 0;
 
+	// for geantinos, assigning ADC = 1
+	// notice for geant4 < 10.7, the pid of 0 conflicts with the optical photon
+	if (aHit->GetPID() == 0) {
+		dgtz["ADC_ADC"]   = 1.0;
+	}
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit

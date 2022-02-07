@@ -169,9 +169,7 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 
 
-
 	if (strip==-1) {
-//		cout << " ASD ASD ASD ASD " << strip << endl;
 		dgtz["ADC_ADC"]   = 0;
 	}
 	
