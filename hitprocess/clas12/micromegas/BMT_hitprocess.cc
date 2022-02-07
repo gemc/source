@@ -145,22 +145,33 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[3].id;
 	trueInfos tInfos(aHit);
 	
-	if(verbosity>4)
-	{
+	if(verbosity>4) {
 		trueInfos tInfos(aHit);
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Strip: " << strip
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
+
+
 
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;  // strip number
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = int(1e6*tInfos.eTot/bmtc.w_i);
+
+	// for geantinos, assigning ADC = 1
+	// notice for geant4 < 10.7, the pid of 0 conflicts with the optical photon
+	if (aHit->GetPID() == 0) {
+		dgtz["ADC_ADC"]   = 1.0;
+	}
+
 	dgtz["ADC_time"]  = bmtc.Tmean+bmtc.Tsigma*G4RandGauss::shoot(0., 1.0);
 	dgtz["ADC_ped"]   = 0;
 
+
+
 	if (strip==-1) {
+//		cout << " ASD ASD ASD ASD " << strip << endl;
 		dgtz["ADC_ADC"]   = 0;
 	}
 	
