@@ -456,10 +456,10 @@ void PhysicsList::ConstructProcess()
 			string                pname    = particle->GetParticleName();
 
 			// Adding Step Limiter
-			if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0) && (pname != "chargedgeantino"))
-			{
-				if(verbosity > 2)
-				cout << "   >  Adding Step Limiter for " << pname << endl;
+			if ((!particle->IsShortLived()) && (particle->GetPDGCharge() != 0.0)) {
+				if(verbosity > 2) {
+					cout << "   >  Adding Step Limiter for " << pname << endl;
+				}
 
 				pmanager->AddProcess(new G4StepLimiter,       -1,-1, 3);
 			}
