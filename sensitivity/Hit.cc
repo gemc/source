@@ -32,6 +32,7 @@ void MHit::Draw()
 	{
 		G4Circle circle(pos[0]);
 		circle.SetFillStyle(G4Circle::filled);
+		circle.SetScreenSize(10);
 
 
 		// summing all energies
@@ -39,25 +40,18 @@ void MHit::Draw()
 		for(unsigned int i=0; i<edep.size(); i++)
 			Etot += edep[i];
 
-		if(Etot > SID.signalThreshold)
-		{
+		if(Etot > SID.signalThreshold) {
 			circle.SetVisAttributes(G4VisAttributes(colour_hit));
-			circle.SetScreenSize(10);
-		}
-		else if(Etot > 0 && Etot <= SID.signalThreshold)
-		{
+		} else if(Etot > 0 && Etot <= SID.signalThreshold) {
 			circle.SetVisAttributes(G4VisAttributes(colour_touch));
-			circle.SetScreenSize(4);
-		}
-		else if(Etot == 0)
-		{
+		} else if(Etot == 0) {
 			circle.SetVisAttributes(G4VisAttributes(colour_passby));
-			circle.SetScreenSize(3);
 		}
 
-		if(PID[0] != 0) {
-			pVVisManager->Draw(circle);
+		if(PID[0] == 0) {
+			circle.SetFillStyle(G4Circle::hashed);
 		}
+		pVVisManager->Draw(circle);
 	}
 }
 
