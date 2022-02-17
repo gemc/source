@@ -1,9 +1,8 @@
 // gemc headers
 #include "fieldFactory.h"
 
-extern "C" {
 #include "asciiField.h"
-}
+
 
 #include "string_utilities.h"
 #include "gemcUtils.h"
@@ -284,7 +283,6 @@ Example of uniform field:
  <dimension bx="10" by="0" bz="0" units="T"/>
 </mfield>
 */
-
 
 
 
