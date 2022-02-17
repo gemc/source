@@ -3,11 +3,12 @@
 
 #include "fieldFactory.h"
 
-
+extern "C" {
 #include "magfield.h"
 #include "magfieldio.h"
 #include "munittest.h"
 #include "magfieldutil.h"
+}
 
 // c++ headers                                                                                                                                                                                                                      
 #include <vector>
@@ -56,4 +57,5 @@ class asciiField : public fieldFactory
 
 
 #endif
+
 
