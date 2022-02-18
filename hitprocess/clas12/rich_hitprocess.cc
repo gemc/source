@@ -47,6 +47,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	dgtz["hitn"]   = hitn;
 	
+	writeHit = false;
 	return dgtz;
 }
 
