@@ -12,7 +12,7 @@ extern "C" {
 
 class asciiField : public fieldFactory
 {
-	public:
+public:
 	~asciiField(){}
 	
 	// check if field object contains a gfield XML header
@@ -29,7 +29,7 @@ class asciiField : public fieldFactory
 	void loadFieldMap_Dipole(gMappedField*, double);       // load dipole field map
 	void loadFieldMap_Cylindrical(gMappedField*, double);  // load cylindrical field map
 	void loadFieldMap_phiSegmented(gMappedField*, double); // load phiSegmented field map
-	void loadFieldMap_cartesian3d(gMappedField*, double);  // load cartesian3d field map	
+	void loadFieldMap_cartesian3d(gMappedField*, double);  // load cartesian3d field map
 
 	// clas12 specific. Notice: this should be in a dedicated binary factory
 	// however:
@@ -37,9 +37,9 @@ class asciiField : public fieldFactory
 	// - gemc is moving to gemc3 with a better (plugin) mechanism to load fields
 	virtual void loadFieldMap(gclas12BinaryMappedField*, double); // load clas12 binary field map.
 	
-        MagneticFieldPtr symmetricTorus;
-        MagneticFieldPtr solenoid;
-        MagneticFieldPtr fullTorus;
+	MagneticFieldPtr symmetricTorus;
+	MagneticFieldPtr solenoid;
+	MagneticFieldPtr fullTorus;
 	
 	static fieldFactory *createFieldFactory() {
 		return new asciiField;

@@ -45,7 +45,7 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 		bhc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
 
-	auto_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bhc.connection));
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bhc.connection));
 
 
 	vector<vector<double> > data;
@@ -123,7 +123,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector    = identity[0].id;
 	int layer     = identity[1].id;
 	int component = identity[2].id;
-	int barID = sector*100 + layer*10 + component;
+	// int barID = sector*100 + layer*10 + component;
 
 	// You can either loop over all the steps of the hit, or just take the
 	// Edep averaged quantities from the trueInfos object:

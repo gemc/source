@@ -7,11 +7,13 @@
 
 // G4 headers
 #include "G4MagneticField.hh"
+
+extern "C" {
 #include "magfield.h"
 #include "magfieldio.h"
 #include "munittest.h"
 #include "magfieldutil.h"
-
+}
 // c++ headers
 #include <vector>
 #include <string>
