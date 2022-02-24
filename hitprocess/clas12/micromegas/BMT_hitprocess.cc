@@ -244,27 +244,35 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 	}
 
 	//cout << "resolMM " << layer << " " << xyz.x() << " " << xyz.y() << " " << xyz.z() << " " << depe << " " << aStep->GetTrack()->GetTrackID() << endl;
-	
+
+	// pairs [strip ID / fraction of energy ]
 	vector<double> multi_hit = bmts.FindStrip(layer, sector, lxyz, depe, bmtc); //return strip=-1 and signal -1 if depe<ionization
 	
 	int n_multi_hits = multi_hit.size()/2;
 	
-	// closest strip
-	//yid[4].id = (int) multi_hit[0];
+
+	// sector = identity[0].id;
+	// layer  = identity[1].id;
+	// strip  = identity[2].id;
+
+	// multi_hit[0] = id
+	// multi_hit[1] = sharing
+
+	// setting strip id to the one returned by the first entry in FindStrip
 	yid[3].id = (int) multi_hit[0];
-	
+
+	// setting geantinoDepe
+	yid[0].geantinoDepe = depe;
+
 	yid[0].id_sharing = multi_hit[1];
 	yid[1].id_sharing = multi_hit[1];
 	yid[2].id_sharing = multi_hit[1];
 	yid[3].id_sharing = multi_hit[1];
 	if (multi_hit[1]!=-1) yid[3].id_sharing = multi_hit[1]/(1.0*(int) (1e6*depe/bmtc.w_i));
-	// yid[4].id_sharing = multi_hit[1];
-	
-	// additional strip
-	for(int h=1; h<n_multi_hits; h++)
-	{
-		for(int j=0; j<3; j++)
-		{
+
+	// adding the additional identifiers
+	for(int h=1; h<n_multi_hits; h++) {
+		for(int j=0; j<3; j++) {
 			identifier this_id;
 			this_id.name       = yid[j].name;
 			this_id.rule       = yid[j].rule;

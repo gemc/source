@@ -172,13 +172,19 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	vector<identifier> PID = ProcessHitRoutine->processID(VID, aStep, (*hallMap)[name]);
 	int singl_hit_size = VID.size();
 	int multi_hit_size = PID.size()/singl_hit_size;
+
+	// assign depe in case of geantino. this can be set in the digitization routines
+	// default is zero
+	if ( trk->GetDefinition() == G4ChargedGeantino::ChargedGeantinoDefinition() ) {
+		depe = PID[0].geantinoDepe;
+	}
 	
 	// splitting PIDs into an array
 	for(int mh = 0; mh<multi_hit_size; mh++) {
+
 		vector<identifier> mhPID;
 		
-		for(int this_id = 0; this_id<singl_hit_size; this_id++)
-		{
+		for(int this_id = 0; this_id<singl_hit_size; this_id++) {
 			identifier this_shit; // adding this single hit
 			identifier thisPID = PID[this_id + mh*singl_hit_size];
 			this_shit.name       = thisPID.name;
@@ -204,8 +210,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		set<vector<identifier> > :: iterator itid;
 		int hit_found = 0;
 		
-		for(itid = Id_Set.begin(); itid!= Id_Set.end() && !hit_found; itid++)
-		{
+		for(itid = Id_Set.begin(); itid!= Id_Set.end() && !hit_found; itid++) {
 			if(*itid == mhPID)  hit_found=1;
 			if(verbosity > 9 )
 				cout << "   >> Current Step:  " << mhPID
@@ -217,8 +222,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 		
 		
 		// New Hit
-		if(!hit_found)
-		{
+		if(!hit_found) {
 			MHit *thisHit = new MHit();
 			thisHit->SetPos(xyz);
 			thisHit->SetLPos(Lxyz);
@@ -240,8 +244,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			hitCollection->insert(thisHit);
 			Id_Set.insert(mhPID);
 			
-			if(verbosity > 6 || name.find(catch_v) != string::npos)
-			{
+			if(verbosity > 6 || name.find(catch_v) != string::npos) {
 				string pid    = aStep->GetTrack()->GetDefinition()->GetParticleName();
 				cout << endl << hd_msg1 << endl
 				<< "  > This element was not hit yet in this event. Identity:" << endl << thisHit->GetId()
@@ -252,16 +255,14 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 				<< "  > Position of this step:   " << xyz/cm  << " cm"  << endl
 				<< "  > Local Position in volume: " << Lxyz/cm  << " cm" << endl;
 			}
-		}
-		else
-		{
+		} else {
 			// Adding hit info only if the poststeppint remains in the volume?
 			// if( aStep->GetPreStepPoint()->GetTouchable()->GetVolume(0) == aStep->GetPostStepPoint()->GetTouchable()->GetVolume(0))
 			{
 				MHit *thisHit = find_existing_hit(mhPID);
 				if(!thisHit) {
 					cout << " Hit not found in collection but found in PID. This should never happen. Exiting." << endl;
-					exit(0);
+					exit(1);
 				} else {
 					thisHit->SetPos(xyz);
 					thisHit->SetLPos(Lxyz);
@@ -279,8 +280,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 					thisHit->SetDetector((*hallMap)[name]);
 					thisHit->SetMgnf(hitFieldValue);
 					
-					if(verbosity > 6 || name.find(catch_v) != string::npos)
-					{
+					if(verbosity > 6 || name.find(catch_v) != string::npos) {
 						string pid    = aStep->GetTrack()->GetDefinition()->GetParticleName();
 						cout << hd_msg2 << " Step Number " << thisHit->GetPos().size()
 						<< " inside Identity: "  << endl << thisHit->GetId()
@@ -335,17 +335,14 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 	
 	MHit *aHit;
 	double Etot;
-	if(verbosity > 2 && nhitC)
-	{
+	if(verbosity > 2 && nhitC) {
 		cout << endl;
 		cout << hd_msg3 << " Hit Collections <" << HCname << ">: " << nhitC << " hits." << endl;
 		
-		for (int i=0; i<nhitC; i++)
-		{
+		for (int i=0; i<nhitC; i++) {
 			aHit = (*hitCollection)[i];
 			string vname = aHit->GetId()[aHit->GetId().size()-1].name;
-			if(verbosity > 5 || vname.find(catch_v) != string::npos)
-			{
+			if(verbosity > 5 || vname.find(catch_v) != string::npos) {
 				cout << hd_msg3 << " Hit " << i + 1 << " --  total number of steps this hit: " << aHit->GetPos().size() << endl;
 				cout << aHit->GetId();
 				Etot = 0;

@@ -25,12 +25,12 @@ using namespace std;
 class identifier
 {
 public:
-	identifier()
-	{
+	identifier() {
 		time       = 0;
 		TimeWindow = 0;
 		id_sharing = 1;
-		userInfos = {0};
+		userInfos = {-99};
+		geantinoDepe = 0;
 	}
 
 	~identifier(){;}
@@ -42,6 +42,7 @@ public:
 	double TimeWindow;   ///< Time Window. If abs(steptime - time) is smaller than TimeWindow, it's the same hit
 	int       TrackId;   ///< If Time Window is 0, it's a "flux" detector: if it's the same track, it's the same hit. Different track, different hit.
 	double id_sharing;   ///< A single step can generate multiple identifiers. This variable represent the percentage sharing of the current identifier.
+	double geantinoDepe; ///<  Geantinos do not deposit energy. The digitization could override this with an artificial value. RECORD_PASSBY needs to be set to 1 for this to work.
 	// there is no check on the total energy shared, so one could have energy created this way
 
 	// user information so they can pass variables from processID to the digitization routines
