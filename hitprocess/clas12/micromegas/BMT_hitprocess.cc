@@ -237,7 +237,7 @@ vector<identifier>  BMT_HitProcess :: processID(vector<identifier> id, G4Step* a
 
 	// resetting depe for geantinos
 	if (aStep->GetTrack()->GetDefinition() == G4ChargedGeantino::ChargedGeantinoDefinition() ){
-		int np=G4Poisson( (aStep->GetStepLength()/cm) *10); // Warning... StepLength must be in cm... because it is 10 e- per cm for MIP
+		int np=G4Poisson( (aStep->GetStepLength()/cm) *1e4); // Warning... StepLength must be in cm... because it is 10 e- per cm for MIP
 		int nsec=0;
 		for (int n=0;n<np;n++) nsec+=G4Poisson(2); // For each primary ionization, there are 2 secondary ionization on average.
 		depe=(np+nsec)*bmtc.w_i/1e6; // So that we recover np+nsec in bmt_strip.cc line 28
