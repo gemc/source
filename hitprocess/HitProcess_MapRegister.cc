@@ -9,6 +9,7 @@
 //#include "clas12/atof_hitprocess.h"           ///< Alert TOF
 #include "clas12/alert/myatof_hitprocess.h"     ///< Alert TOF
 #include "clas12/alert/ahdc_hitprocess.h"       ///< Alert Drift Chamber
+#include "clas12/band_hitprocess.h"		         ///< BAND
 #include "clas12/svt/bst_hitprocess.h"          ///< Barrel Silicon Tracker (bst)
 #include "clas12/cnd_hitprocess.h"              ///< Central Neutron Detector
 #include "clas12/ctof_hitprocess.h"             ///< Central TOF
@@ -24,7 +25,6 @@
 #include "clas12/micromegas/BMT_hitprocess.h"   ///< barrel micromegas
 #include "clas12/rich_hitprocess.h"             ///< Pre-shower calorimeter
 #include "clas12/rtpc_hitprocess.h"             ///< Radial Time Projection Chamber (RTPC)
-#include "clas12/band_hitprocess.h"		///< BAND
 
 // Beam Dump eXperiment
 #include "bdx/cormo_hitprocess.h"               ///< Cormorino detector
@@ -69,6 +69,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		if(EXP == "clas12") {
 			hitMap["myatof"]   = &myatof_HitProcess::createHitClass;
 			hitMap["ahdc"]     = &ahdc_HitProcess::createHitClass;
+			hitMap["band"]	    = &band_HitProcess::createHitClass;
 			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
 			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
 			hitMap["ftm"]      = &ftm_HitProcess::createHitClass;
@@ -85,7 +86,6 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
 			hitMap["rich"]     = &rich_HitProcess::createHitClass;
 			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
-			hitMap["band"]	   = &band_HitProcess::createHitClass;
 		} else if(EXP == "HPS") {
 			// Aprime
 			hitMap["SVT"]        = &SVT_HitProcess::createHitClass;

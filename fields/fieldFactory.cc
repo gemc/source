@@ -7,8 +7,7 @@
 fieldFactory *getFieldFactory(map<string, fieldFactoryInMap> *fieldsFactoryMap, string fieldsMethod)
 {
 
-	if(fieldsFactoryMap->find(fieldsMethod) == fieldsFactoryMap->end())
-	{
+	if(fieldsFactoryMap->find(fieldsMethod) == fieldsFactoryMap->end()) {
 		cout << endl << endl << "  >>> WARNING: " << fieldsMethod << " NOT FOUND IN Field Factory Map." << endl;
 		return NULL;
 	}
@@ -22,7 +21,11 @@ map<string, fieldFactoryInMap> registerFieldFactories()
 	
 	// ASCII factory
 	fieldFactoryMap["ASCII"] = &asciiField::createFieldFactory;
-		
+
+//	// CLAS12BinaryMap factory
+//	fieldFactoryMap["CLAS12BIN"] = &clas12Bin::createFieldFactory;
+
+
 	return fieldFactoryMap;
 }
 
@@ -47,22 +50,26 @@ map<string, gfield> loadAllFields(map<string, fieldFactoryInMap> fieldFactoryMap
 	// checking eligibility of each file
 	// if eligible, load field definitions
 	map<string, gfield> gfields;
-	
-	for(map<string, string>::iterator	it = filesMap.begin(); it != filesMap.end(); it++)
-	{
+
+
+	for(map<string, string>::iterator	it = filesMap.begin(); it != filesMap.end(); it++) {
+
+		// cout << " ASD " << it->first << " " << it->second << endl;
+
+
 		// if factory exist, calling isEligible
 		fieldFactory *thisFactory = getFieldFactory(&fieldFactoryMap, it->second);
 
-		if(thisFactory != NULL)
-		{
-			if(thisFactory->isEligible(it->first))
-			{
+		// make sure
+
+
+		if(thisFactory != NULL) {
+			if(thisFactory->isEligible(it->first)) {
 				gfield gf = thisFactory->loadField(it->first, opts);
 				gf.fFactory = thisFactory;
 								
 				// if symmetry is set, it's probably a good field
-				if(gf.symmetry != "na")
-				{
+				if(gf.symmetry != "na") {
 					gfields[gf.name] = gf;			
 					if(verbosity > 0) cout << gfields[gf.name] << endl;
 				}

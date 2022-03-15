@@ -265,25 +265,30 @@ map<string, string> getFilesInDirectory(string directory)
 	DIR *dir;
 	struct dirent *ent;
 	dir = opendir(directory.c_str());
-	if (dir != NULL)
-	{
+	if (dir != NULL) {
 		int len;
 		while ((ent = readdir (dir)) != NULL)
 		{
 			len = strlen(ent->d_name);
 			
 			// checking various extensions
-			if(strcmp(".dat", &(ent->d_name[len - 4])) == 0)
+			if(strcmp(".dat", &(ent->d_name[len - 4])) == 0) {
 				filesMap[directory + "/" + ent->d_name] = "ASCII" ;
-			
-			if(strcmp(".txt", &(ent->d_name[len - 4])) == 0)
+
+				// check if the name is one of David's name return
+
+			}
+			if(strcmp(".txt", &(ent->d_name[len - 4])) == 0) {
 				filesMap[directory + "/" + ent->d_name] = "ASCII" ;
-			
+			}
 		}
 		closedir (dir);
-	}
-	else
-	{
+
+		// ugly: hardcode the filesMap keys for the clas12binary maps
+		filesMap["c12BinaryTorusSymmSolenoid2018"]  = "CLAS12BIN" ;
+		filesMap["c12BinaryTorusASymmSolenoid2018"] = "CLAS12BIN" ;
+
+	} else {
 		cout << "    Error: directory " << directory << " could not be opened." << endl;
 	}
 	

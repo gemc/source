@@ -221,28 +221,6 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 
 void asciiField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 
-
-	char *solenoidPath = (char*) malloc(255);
-	char *torusSymmetricPath = (char*) malloc(255);
-	char *torusFullPath = (char*) malloc(255);
-
-	const char *dataDir;
-
-	dataDir = "/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps";
-
-	sprintf(solenoidPath, "%s/Symm_solenoid_r601_phi1_z1201_13June2018.dat", dataDir);
-
-	if(isSymmetric==true)  {
-		sprintf(torusSymmetricPath, "%s/Symm_torus_r2501_phi16_z251_24Apr2018.dat",dataDir);//Absolute Path To Symmetric Torus
-		symmetricTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Symm_torus_r2501_phi16_z251_24Apr2018.dat");
-	}
-
-	else  {
-		sprintf(torusFullPath, "%s/Full_torus_r251_phi181_z251_03March2020.dat",dataDir);//Absolute Path To Full Torus
-		fullTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Full_torus_r251_phi181_z251_03March2020.dat");
-	}
-
-
 }
 
 

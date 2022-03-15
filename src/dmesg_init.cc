@@ -157,10 +157,10 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 	gemcColorIDModel->Set("pi+",     "magenta");
 	gemcColorIDModel->Set("pi-",     "yellow");
 	gemcColorIDModel->Set("proton",  G4Colour(0.95, 0.6, 0.3));  // orange
-	
+	gemcColorIDModel->Set("opticalphoton", "white");
+
 	G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
-	for(int i=0; i<particleTable->entries(); i++)
-	{
+	for(int i=0; i<particleTable->entries(); i++) {
 		string pname  = particleTable->GetParticleName(i);
 		double charge = particleTable->FindParticle(pname)->GetPDGCharge();
 		string pcolor ;
@@ -169,14 +169,14 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		   pname !=  "e-"      &&
 		   pname !=  "pi+"     &&
 		   pname !=  "pi-"     &&
-		   pname !=  "proton"    )
-		{
-			if(charge>0)
+		   pname !=  "proton"    ) {
+			if(charge > 0) {
 				gemcColorIDModel->Set(pname,  "red");
-			if(charge==0)
+			} else if(charge == 0) {
 				gemcColorIDModel->Set(pname,  "blue");
-			if(charge<0)
+			} else if(charge < 0) {
 				gemcColorIDModel->Set(pname,  "green");
+			}
 		}
 	}
 	
