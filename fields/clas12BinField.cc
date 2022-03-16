@@ -25,6 +25,20 @@ bool clas12BinField::isEligible(string file)
 	// check that file name is one of the items in the list
 	// loop over map check that file is one of the keys of the map.
 
+	
+	  //Check if file name is consistent with any of the symmetric Torus files in FIELD_DIR                                                                                                                                                     
+  	  for(vector<string>::iterator it = validC12MapNames["c12BinaryTorusSymmSolenoid2018"].begin();
+          it != validC12MapNames["c12BinaryTorusSymmSolenoid2018"].end();
+          it++)   {
+                          if(strcmp(file,*it)!=0) return 0;
+               }
+
+          //Check if file name is consistent with any of the asymmetric Torus files in FIELD_DIR                                                                                                                                                    
+          for(vector<string>::iterator it = validC12MapNames["c12BinaryTorusASymmSolenoid2018"].begin();
+          it != validC12MapNames["c12BinaryTorusASymmSolenoid2018"].end();
+          it++) {
+                          if(strcmp(file,*it)!=0) return 0;
+               }
 
 	return 1;
 }
