@@ -20,8 +20,10 @@ public:
 
 	// constructor:  create map list with hardcoded names
 	clas12BinField() {
-		validC12MapNames["c12BinaryTorusSymmSolenoid2018"]  = {"Symm_Solenoid_r601...", "Symm_torus_r2501..."};
-		validC12MapNames["c12BinaryTorusASymmSolenoid2018"] = {"Symm_Solenoid_r601...", "Full_torus_r251..."};
+                validC12MapNames["c12BinaryTorusSymmSolenoid2018"]  = {"/work/clas12/jnewton/binary/data/fieldmaps/Symm_Solenoid_r601_phi1_z1201_13June2018.dat",
+                                                                       "/work/clas12/jnewton/binary/data/fieldmaps/Symm_torus_r2501_phi16_z251_24Apr2018.dat"};
+                validC12MapNames["c12BinaryTorusASymmSolenoid2018"] = {"/work/clas12/jnewton/binary/data/fieldmaps/Symm_Solenoid_r601_phi1_z1201_13June2018.dat",
+                                                                       "/work/clas12/jnewton/binary/data/fieldmaps/Full_torus_r251_phi181_z251_03March2020.dat"};
 	}
 
 	// check if the binary map filename is a match for a pre-defined list
