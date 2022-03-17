@@ -92,6 +92,7 @@ field_sources = Split("""
 	fields/asciiField.cc
 	fields/mappedField.cc
 	fields/bclas12MappedField.cc
+	fields/clas12BinField.cc
 	fields/multipoleField.cc
 	fields/symmetries/dipole.cc
 	fields/symmetries/cylindrical.cc
