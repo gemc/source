@@ -27,17 +27,17 @@ bool clas12BinField::isEligible(string file)
 
 	
 	  //Check if file name is consistent with any of the symmetric Torus files in FIELD_DIR                                                                                                                                                     
-  	  for(vector<string>::iterator it = validC12MapNames["c12BinaryTorusSymmSolenoid2018"].begin();
-          it != validC12MapNames["c12BinaryTorusSymmSolenoid2018"].end();
-          it++)  {
-                  if(strcmp(file,*it)!=0) return 0;
+  	  for(int i = 0; i < validC12MapNames["c12BinaryTorusSymmSolenoid2018"].size();i++)  {
+		  vector<string> c12vec = validC12MapNames["c12BinaryTorusSymmSolenoid2018];
+		  string c12string = c12vec[i];
+                  if(file == c12sgring) return 0;
           }
 
           //Check if file name is consistent with any of the asymmetric Torus files in FIELD_DIR                                                                                                                                                    
-          for(vector<string>::iterator it = validC12MapNames["c12BinaryTorusASymmSolenoid2018"].begin();
-          it != validC12MapNames["c12BinaryTorusASymmSolenoid2018"].end();
-          it++) {
-                  if(strcmp(file,*it)!=0) return 0;
+          for(int i = 0; i < validC12MapNames["c12BinaryTorusASymSolenoid2018"].size(); i++) {
+		  vector<string> c12vec = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
+		  string c12string = c12vec[i];
+                  if(file == c12string) return 0;
           }
 
 	return 1;
@@ -55,6 +55,7 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.symmetry    = assignAttribute(e, "type",   "na");
 	gf.format      = assignAttribute(e, "format", "bc12map");
 	gf.factory     = assignAttribute(e, "factory", "CLAS12BIN");
+	gf.unit        = assignAttribute(e, "unit", "kG");
 
 	// fill all these properties according to David's definitions
 
@@ -86,28 +87,23 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 
 	// use validC12MapNames instead of solenoidPath and torusSymmetricPath
 
-
-	char *solenoidPath = (char*) malloc(255);
-	char *torusSymmetricPath = (char*) malloc(255);
-	char *torusFullPath = (char*) malloc(255);
-
 	const char *dataDir;
+	
+	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018];
+ 	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
 
-	dataDir = "/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps";
-
-	sprintf(solenoidPath, "%s/Symm_solenoid_r601_phi1_z1201_13June2018.dat", dataDir);
-
-	if(isSymmetric==true)  {
-		sprintf(torusSymmetricPath, "%s/Symm_torus_r2501_phi16_z251_24Apr2018.dat",dataDir);//Absolute Path To Symmetric Torus
-		symmetricTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Symm_torus_r2501_phi16_z251_24Apr2018.dat");
-	}
-
-	else  {
-		sprintf(torusFullPath, "%s/Full_torus_r251_phi181_z251_03March2020.dat",dataDir);//Absolute Path To Full Torus
-		fullTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Full_torus_r251_phi181_z251_03March2020.dat");
-	}
-
-
+	string a = c12symm[1];
+	string b = c12asymm[2];
+	string c = c12symm[2];
+						  
+	const char *dir1 = a.c_str();
+	const char *dir2 = b.c_str();					  
+	const char *dir3 = c.c_str();
+	
+	solenoid = initializeSolenoid(dir1);
+        symmetricTorus = initializeTorus(dir2);
+	fullTorus = initializeTorus(dir3);
+						  
 }
 
 
