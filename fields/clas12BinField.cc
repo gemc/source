@@ -49,6 +49,11 @@ gfield clas12BinField::loadField(string file, goptions opts)
 {
 	gfield gf(opts);
 
+	QDomDocument domDocument;
+        QDomElement docElem = domDocument.documentElement();
+        QDomNode n = docElem.firstChild();
+        QDomElement e = n.toElement();
+	
 	gf.name        = assignAttribute(e, "name", "na");
 	gf.factory     = assignAttribute(e, "factory", "na");
 	gf.description = assignAttribute(e, "comment", "no comment");
