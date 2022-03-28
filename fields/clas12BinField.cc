@@ -78,7 +78,8 @@ void clas12BinField::loadFieldMap(gMappedField* map, double v)
 	cout << "  > Loading field map from " << map->identifier << " with symmetry: " << map->symmetry << endl;
 
 	// actual load of map: call function below
-
+	loadFieldMap(map, v);
+	
 }
 
 
