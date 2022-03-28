@@ -90,7 +90,7 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 
 	const char *dataDir;
 	
-	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018];
+	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
  	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
 
 	string a = c12symm[1];
