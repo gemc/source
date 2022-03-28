@@ -30,7 +30,7 @@ bool clas12BinField::isEligible(string file)
   	  for(int i = 0; i < validC12MapNames["c12BinaryTorusSymmSolenoid2018"].size();i++)  {
 		  vector<string> c12vec = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
 		  string c12string = c12vec[i];
-                  if(file == c12sgring) return 0;
+                  if(file == c12string) return 0;
           }
 
           //Check if file name is consistent with any of the asymmetric Torus files in FIELD_DIR                                                                                                                                                    
