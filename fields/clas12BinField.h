@@ -2,6 +2,7 @@
 #define C12BIN_FIELDS_H
 
 #include "fieldFactory.h"
+#include "asciiField.h"
 
 extern "C" {
 #include "magfield.h"	
