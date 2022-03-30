@@ -60,8 +60,16 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.symmetry    = assignAttribute(e, "type",   "na");
 	gf.format      = assignAttribute(e, "format", "bc12map");
 	gf.factory     = assignAttribute(e, "factory", "CLAS12BIN");
-	gf.unit        = assignAttribute(e, "unit", "kG");
 
+	string units = "*" + assignAttribute(e, "units", "kilogauss");
+        gf.dimensions  = assignAttribute(e, "bx", "0") + units + " ";
+        gf.dimensions += assignAttribute(e, "by", "0") + units + " " ;
+	gf.dimensions += assignAttribute(e, "bz", "0") + units ;
+
+	gf.integration = assignAttribute(e, "integration method", "G4ClassicalRK4");
+	gf.minStep     = assignAttribute(e, "minimum step", 1);
+        gf.verbosity   = assignAttribute(e, "verbosity",opts.optMap["FIELD_VERBOSITY"].arg);
+	
 	// fill all these properties according to David's definitions
 
 	//	string integration;     ///< Integration Method
@@ -92,8 +100,6 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 
 
 	// use validC12MapNames instead of solenoidPath and torusSymmetricPath
-
-	const char *dataDir;
 	
 	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
  	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
