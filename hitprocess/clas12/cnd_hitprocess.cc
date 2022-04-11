@@ -246,15 +246,15 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int TDCD = TDCmax;
 	int TDCN = TDCmax;
 	
-	int ADCL = 0;
-	int ADCR = 0;
-	int TDCL = TDCmax;
-	int TDCR = TDCmax;
+//	int ADCL = 0;
+//	int ADCR = 0;
+//	int TDCL = TDCmax;
+//	int TDCR = TDCmax;
 	
 	
 	double attlength = 0.;
 	double slope     = 0.;
-	int status       = 0;
+	// int status       = 0;
 	double v_eff     = 0.;
 	double adc_mip   = 0.;
 
@@ -282,12 +282,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_L[sector-1][layer-1][0];
 		}
@@ -314,12 +314,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_R[sector-1][layer-1][0];
 		}
@@ -562,17 +562,17 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 
 	
-	if (paddle == 1) {
-		ADCL = (int) ADCD;
-		ADCR = (int) ADCN;
-		TDCL = (int) TDCD;
-		TDCR = (int) TDCN;
-	} else if (paddle == 2) {
-		ADCL = (int) ADCN;
-		ADCR = (int) ADCD;
-		TDCL = (int) TDCN;
-		TDCR = (int) TDCD;
-	}
+//	if (paddle == 1) {
+//		ADCL = (int) ADCD;
+//		ADCR = (int) ADCN;
+//		TDCL = (int) TDCD;
+//		TDCR = (int) TDCN;
+//	} else if (paddle == 2) {
+//		ADCL = (int) ADCN;
+//		ADCR = (int) ADCD;
+//		TDCL = (int) TDCN;
+//		TDCR = (int) TDCD;
+//	}
 
 //	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
 //	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;

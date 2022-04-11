@@ -191,7 +191,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double tL_fadc = 0;
 	double tR_fadc = 0;
 	double xHit = 0;
-	double yHit = 0;
+	// double yHit = 0;
 	double zHit = 0;
 	double rawEtot = 0;
 	if( tInfos.eTot > 0 ){
@@ -244,7 +244,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		tR_fadc = et_R_fadc / eTotR;
 		
 		xHit = et_X / sqrt(eTotL*eTotR);
-		yHit = et_Y / sqrt(eTotL*eTotR);
+		// yHit = et_Y / sqrt(eTotL*eTotR);
 		zHit = et_Z / sqrt(eTotL*eTotR);
 	}
 	
