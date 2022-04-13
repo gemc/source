@@ -222,11 +222,10 @@ int main( int argc, char **argv )
 	// This solution allowed to avoid setting MAX_FIELD_STEP to a value that would slow down the
 	// simulation by a factor of 5
 	
-	
 	double max_step = gemcOpt.optMap["MAX_FIELD_STEP"].arg;
-	if(max_step != 0)
+	if(max_step != 0) {
 		G4TransportationManager::GetTransportationManager()->GetPropagatorInField()->SetLargestAcceptableStep(max_step);
-	
+	}
 	
 	// User action initialization
 	gemc_splash.message(" Initializing User Actions...");
@@ -237,20 +236,17 @@ int main( int argc, char **argv )
 	gemc_splash.message(" Initializing User Interface...");
 
 	///< Vis Manager
-	G4VisManager *visManager = NULL;
-	if(use_gui)
-	{
-		// G4VisManager* visManager = new G4VisExecutive;
+	G4VisManager *visManager = nullptr;
+	if(use_gui) {
   		// G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-
 		visManager = new G4VisExecutive("Quiet");
 		visManager->Initialize();
 	}
 
-	G4UIsession *session = NULL;
-	if(use_gui)
+	G4UIsession *session = nullptr;
+	if(use_gui) {
 		session = new G4UIQt(1, argv);
-
+	}
 	
 	
 	// Output File: registering output type, output process factory,

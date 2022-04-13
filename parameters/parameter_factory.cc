@@ -9,10 +9,9 @@
 parametersFactory *getParameterFactory(map<string, parameterFactoryInMap> *parametersFactoryMap, string parametersMethod)
 {
 	
-	if(parametersFactoryMap->find(parametersMethod) == parametersFactoryMap->end())
-	{
+	if(parametersFactoryMap->find(parametersMethod) == parametersFactoryMap->end()) {
 		cout << "  ** WARNING: " << parametersMethod << " NOT FOUND IN parameter Factory Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 	
 	return (*parametersFactoryMap)[parametersMethod]();

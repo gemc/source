@@ -45,7 +45,7 @@ g4dialog::g4dialog(QWidget *parent, goptions *Opts) : QWidget(parent)
 	fHelpTreeWidget = new QTreeWidget();
 	fHelpTreeWidget = CreateHelpTree();
 	if(fHelpTreeWidget)
-    helpLayout->addWidget(fHelpTreeWidget);
+		helpLayout->addWidget(fHelpTreeWidget);
 	
 	
 	// Right: the help on individual commands
@@ -101,7 +101,7 @@ g4dialog::g4dialog(QWidget *parent, goptions *Opts) : QWidget(parent)
 	// all layouts
 	QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(splitter);
-	setLayout(mainLayout);	
+	setLayout(mainLayout);
 }
 
 
@@ -120,20 +120,20 @@ g4dialog::~g4dialog()
 // execute history item
 void g4dialog::CommandHistoryCallback()
 {
-	QListWidgetItem* item =  NULL;
-	if (!fCommandHistoryArea)
-    return ;
-	
-	
+	QListWidgetItem* item =  nullptr;
+	if (!fCommandHistoryArea) {
+		return;
+	}
 	
 	QList<QListWidgetItem *> list = fCommandHistoryArea->selectedItems();
-	if(list.isEmpty())
-    return;
+	if(list.isEmpty()) {
+		return;
+	}
 	
 	item = list.first();
-	if(!item)
-    return;
-	
+	if(!item) {
+		return;
+	}
 	fCommandArea->setText(item->text());
 	
 }
@@ -161,7 +161,7 @@ void g4dialog::CommandEnteredCallback()
 
 QTreeWidget* g4dialog::CreateHelpTree()
 {
-	if(UImanager==NULL) return NULL;
+	if(UImanager==nullptr) return nullptr;
 	G4UIcommandTree *treeTop = UImanager->GetTree();
 	
 	
@@ -229,20 +229,21 @@ void g4dialog::CreateChildTree(QTreeWidgetItem *aParent,G4UIcommandTree *aComman
 // displays help on the right help area
 void g4dialog::HelpTreeClicCallback()
 {
-	QTreeWidgetItem* item =  NULL;
+	QTreeWidgetItem* item =  nullptr;
 	if(!fHelpTreeWidget || !fHelpArea)
-    return;
+		return;
 	
 	QList<QTreeWidgetItem *> list = fHelpTreeWidget->selectedItems();
-	if(list.isEmpty())
-    return;
+	if(list.isEmpty()) {
+		return;
+	}
 	
 	item = list.first();
-	if(!item)
-    return;
+	if(!item) {
+		return;
+	}
 	
-	
-	if(UImanager==NULL) return;
+	if(UImanager==nullptr) return;
 	G4UIcommandTree *treeTop = UImanager->GetTree();
 	
 	string itemText = item->text(0).toStdString();
@@ -272,7 +273,7 @@ QString g4dialog::GetCommandList (const G4UIcommand *aCommand)
 	
 	QString txt ="";
 	if (aCommand == NULL)
-    return txt;
+		return txt;
 	
 	G4String commandPath   = aCommand->GetCommandPath();
 	G4String rangeString   = aCommand->GetRange();
@@ -280,9 +281,9 @@ QString g4dialog::GetCommandList (const G4UIcommand *aCommand)
 	G4int n_parameterEntry = aCommand->GetParameterEntries();
 	
 	if ((commandPath == "") &&
-		(rangeString == "") &&
-		(n_guidanceEntry == 0) &&
-		(n_parameterEntry == 0)) {
+		 (rangeString == "") &&
+		 (n_guidanceEntry == 0) &&
+		 (n_parameterEntry == 0)) {
 		return txt;
 	}
 	
@@ -310,30 +311,25 @@ QString g4dialog::GetCommandList (const G4UIcommand *aCommand)
 			param = aCommand->GetParameter(i_thParameter);
 			txt += "\nParameter : " + QString((char*)(param->GetParameterName()).data()) + "\n";
 			if( ! param->GetParameterGuidance().isNull() )
-			txt += QString((char*)(param->GetParameterGuidance()).data())+ "\n" ;
+				txt += QString((char*)(param->GetParameterGuidance()).data())+ "\n" ;
 			txt += " Parameter type  : " + QString(QChar(param->GetParameterType())) + "\n";
-			if(param->IsOmittable())
-			{
+			if(param->IsOmittable()) {
 				txt += " Omittable       : True\n";
-			}
-			else
-			{
+			} else {
 				txt += " Omittable       : False\n";
 			}
-			if( param->GetCurrentAsDefault() )
-			{
+			
+			if( param->GetCurrentAsDefault() ) {
 				txt += " Default value   : taken from the current value\n";
-			}
-			else if( ! param->GetDefaultValue().isNull() )
-			{
+			} else if( ! param->GetDefaultValue().isNull() ) {
 				txt += " Default value   : " + QString((char*)(param->GetDefaultValue()).data())+ "\n";
 			}
-			if( ! param->GetParameterRange().isNull() )
-			{
+			
+			if( ! param->GetParameterRange().isNull() ) {
 				txt += " Parameter range : " + QString((char*)(param->GetParameterRange()).data())+ "\n";
 			}
-			if( ! param->GetParameterCandidates().isNull() )
-			{
+			
+			if( ! param->GetParameterCandidates().isNull() ) {
 				txt += " Candidates      : " + QString((char*)(param->GetParameterCandidates()).data())+ "\n";
 			}
 		}
@@ -347,19 +343,22 @@ void g4dialog::HelpTreeDoubleClicCallback()
 {
 	HelpTreeClicCallback();
 	
-	QTreeWidgetItem* item =  NULL;
+	QTreeWidgetItem* item =  nullptr;
 	
-	if(!fHelpTreeWidget || !fHelpArea)
-    return ;
+	if(!fHelpTreeWidget || !fHelpArea) {
+		return ;
+	}
 	
 	QList<QTreeWidgetItem *> list = fHelpTreeWidget->selectedItems();
-	if(list.isEmpty())
-    return;
+	if(list.isEmpty()) {
+		return;
+	}
 	
 	item = list.first();
-	if(!item)
-    return;
 	
+	if(!item) {
+		return;
+	}
 	
 	fCommandArea->clear();
 	fCommandArea->setText(item->text(0));

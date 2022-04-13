@@ -170,7 +170,7 @@ map<string, tree_item> detector_tree::read_geometry(QTreeWidget *motherWidget)
 	{
 		item.volume    = i->second.name;
 		item.mother    = i->second.mother;
-		item.treeItem  = NULL;
+		item.treeItem  = nullptr;
 		item.scanned   = 0;
 		item.sensitive = 0;
 		if(i->second.sensitivity != "no")

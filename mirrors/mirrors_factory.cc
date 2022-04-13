@@ -15,10 +15,9 @@ using namespace gstring;
 mirrors *getMirrorFactory(map<string, mirrorFactory> *factory, string mirrorsMethod)
 {
 	
-	if(factory->find(mirrorsMethod) == factory->end())
-	{
+	if(factory->find(mirrorsMethod) == factory->end()) {
 		cout << endl << endl << "  >>> WARNING: " << mirrorsMethod << " NOT FOUND IN Mirror Factory Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 	
 	return (*factory)[mirrorsMethod]();

@@ -216,7 +216,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
 	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
-	G4MaterialPropertyVector* efficiency = NULL;
+	G4MaterialPropertyVector* efficiency = nullptr;
 	ndetected = 0;
 	bool gotefficiency = false;
 	if( MPT != nullptr ) {
@@ -433,7 +433,7 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	
 	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
 	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
-	G4MaterialPropertyVector* efficiency = NULL;
+	G4MaterialPropertyVector* efficiency = nullptr;
 	//	ndetected = 0;
 	bool gotefficiency = false;
 	if( MPT != NULL )

@@ -7,14 +7,13 @@ using namespace CLHEP;
 
 HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string HCname)
 {
-	if(HCname == "no")
-		return NULL;
-
-	if(hitProcessMap->find(HCname) == hitProcessMap->end())
-	{
+	if(HCname == "no") {
+		return nullptr;
+	}
+	
+	if(hitProcessMap->find(HCname) == hitProcessMap->end()) {
 		cout << endl << "  !!! Error: >" << HCname << "< NOT FOUND IN  ProcessHit Map - exiting." << endl;
 		exit(0);
-		return NULL;
 	}
 	return (*hitProcessMap)[HCname]();
 }

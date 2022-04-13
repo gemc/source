@@ -110,8 +110,8 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 	physIngredients = getStringVectorFromStringWithDelimiter(ingredientsList, "+");
 
 	// G4VPhysicsConstructor
-	g4EMPhysics    = NULL;
-	g4DecayPhys = NULL;
+	g4EMPhysics = nullptr;
+	g4DecayPhys = nullptr;
 
 	// validateIngredients will also set hadronicPhys, EMPhys, opticalPhys
 	if(!validateIngredients()) {

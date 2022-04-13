@@ -22,10 +22,9 @@ using namespace CLHEP;
 materials *getMaterialFactory(map<string, materialFactory> *factory, string materialsMethod)
 {
 	
-	if(factory->find(materialsMethod) == factory->end())
-	{
+	if(factory->find(materialsMethod) == factory->end()) {
 		cout << endl << endl << "  >>> WARNING: " << materialsMethod << " NOT FOUND IN Material Factory Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 	
 	return (*factory)[materialsMethod]();
@@ -50,11 +49,9 @@ map<string, materialFactory> registerMaterialFactories()
 
 void printMaterials(map<string, G4Material*> matMap)
 {
-	for(map<string, G4Material*>::iterator it = matMap.begin(); it != matMap.end(); it++)
-	{
+	for(map<string, G4Material*>::iterator it = matMap.begin(); it != matMap.end(); it++) {
 		cout << "    - material: " << it->first << " " << it->second << endl;
-		if(it->second->GetMaterialPropertiesTable())
-		{
+		if(it->second->GetMaterialPropertiesTable()) {
 			cout << "    - Optical Properties for " << it->first << ":" << endl;
 			it->second->GetMaterialPropertiesTable()->DumpTable();
 			cout << endl << endl;
@@ -66,8 +63,7 @@ void material::componentsFromString(string s)
 {
 	stringstream comps(s);
 	
-	for(int e=0; e<ncomponents; e++)
-	{
+	for(int e=0; e<ncomponents; e++) {
 		string thisComp;
 		double thisFrac;
 		comps >> thisComp >> thisFrac;

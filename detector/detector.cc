@@ -44,9 +44,9 @@ using namespace CLHEP;
 
 detector::detector()
 {
-	SolidV    = NULL;
-	LogicV    = NULL;
-	PhysicalV = NULL;
+	SolidV    = nullptr;
+	LogicV    = nullptr;
+	PhysicalV = nullptr;
 }
 
 int detector::create_solid(goptions gemcOpt, map<string, detector> *Map)

@@ -27,7 +27,7 @@ lumiEvent::lumiEvent(goptions *Opts, QWidget *parent, string type)
 	}
 	
 	QLabel *neventLabel      = new QLabel(tr("N. Particles/Event"));
-	QLabel *timewindowLabel = NULL;
+	QLabel *timewindowLabel = nullptr;
 	if( type == "Primary") timewindowLabel = new QLabel(tr("Dummy, not displayed\n"));
 	if( type == "Lumi1")   timewindowLabel = new QLabel(tr("Time Window"));
 	if( type == "Lumi2")   timewindowLabel = new QLabel(tr(""));

@@ -9,7 +9,7 @@ fieldFactory *getFieldFactory(map<string, fieldFactoryInMap> *fieldsFactoryMap, 
 
 	if(fieldsFactoryMap->find(fieldsMethod) == fieldsFactoryMap->end()) {
 		cout << endl << endl << "  >>> WARNING: " << fieldsMethod << " NOT FOUND IN Field Factory Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 	
 	return (*fieldsFactoryMap)[fieldsMethod]();

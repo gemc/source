@@ -143,7 +143,7 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 
 	// if requested is not found return NULL
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;
-	return NULL;
+	return nullptr;
 }
 
 void gfield::initialize(goptions Opt)

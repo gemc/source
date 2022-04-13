@@ -18,7 +18,7 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 {
 	HCname = name;
 	collectionName.insert(HCname);
-	hitCollection = NULL;
+	hitCollection = nullptr;
 	
 	hd_msg1 = gemcOpt.optMap["LOG_MSG"].args + " New Hit: <<< ";
 	hd_msg2 = gemcOpt.optMap["LOG_MSG"].args + " > ";
@@ -59,7 +59,7 @@ void sensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 		HCID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
 	}
 	HCE->AddHitsCollection( HCID, hitCollection );
-	ProcessHitRoutine = NULL;
+	ProcessHitRoutine = nullptr;
 	
 	if(verbosity > 1) {
 		cout << "   > " << collectionName[0] << " initialized." << endl;
@@ -359,10 +359,10 @@ void sensitiveDetector::EndOfEvent(G4HCofThisEvent *HCE)
 
 MHit*  sensitiveDetector::find_existing_hit(vector<identifier> PID)  ///< returns hit collection hit inside identifer
 {
-	for(unsigned int i=0; i<hitCollection->GetSize(); i++)
+	for(unsigned int i=0; i<hitCollection->GetSize(); i++) {
 		if((*hitCollection)[i]->GetId() == PID) return (*hitCollection)[i];
-	
-	return NULL;
+	}
+	return nullptr;
 }
 
 // to check process name go to $G4ROOT/$GEANT4_VERSION/source/geant$GEANT4_VERSION/source/processes/

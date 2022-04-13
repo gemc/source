@@ -173,9 +173,8 @@ void gsignal::createSignalsTree()
 	hitData->setSelectionMode(QAbstractItemView::SingleSelection);
 	hitData->setHeaderLabels(QStringList("Data"));
 	
-	//	QTreeWidgetItem* item =  NULL;
-	if(hitList)
-	{
+	//	QTreeWidgetItem* item =  nullptr;
+	if(hitList) {
 		QList<QTreeWidgetItem *> list = hitList->selectedItems();
 		if(!list.isEmpty())
 		{
@@ -199,15 +198,12 @@ void gsignal::createSignalsTree()
 			
 			string SD;
 			string sDetector;
-			sensitiveDetector *MSD = NULL;
-			if(index==0)
-			{
+			sensitiveDetector *MSD = nullptr;
+			if(index==0) {
 				SD = a;
 				sDetector = SD;
 				MSD = SeDe_Map[SD];
-			}
-			else
-			{
+			} else {
 				stringstream mtext(item->parent()->text(0).toStdString());
 				mtext >> SD;
 				sDetector = SD;
@@ -229,8 +225,7 @@ void gsignal::createSignalsTree()
 					
 					// photo electron tubes are treated differently than
 					// normal sensitive detectors
-					if(MSD->SDID.identifiers.back().find("nphe") != string::npos)
-					{
+					if(MSD->SDID.identifiers.back().find("nphe") != string::npos) {
 						SD += "  nphe: " + stringify(nsteps);
 						
 						newHit->setText(0, QString(SD.c_str()));
@@ -255,8 +250,7 @@ void gsignal::createSignalsTree()
 						EneI->setExpanded(1);
 						
 						QTreeWidgetItem * EneItems;
-						for(int i=0; i<nsteps; i++)
-						{
+						for(int i=0; i<nsteps; i++) {
 							EneItems = new QTreeWidgetItem(EneI);
 							char etext[200];
 							sprintf(etext, "      %4.1f             %d        %5.4f     ", lambda[i], pid[i], time[i]);
@@ -266,9 +260,7 @@ void gsignal::createSignalsTree()
 						}
 						graphView->plots_bg("time [ns]", "Wavelenght [nm]", time, lambda, title);
 						graphView->plot_graph(time, lambda, pid);
-					}
-					else
-					{
+					} else {
 						vector<double> signal;
 						vector<double> time = aHit->GetTime();
 						vector<int>     pid = aHit->GetPIDs();

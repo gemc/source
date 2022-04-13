@@ -74,7 +74,7 @@ private:
 public:
 	vector<identifier> GetDetectorIdentifier(string name) {return (*hallMap)[name].identity;} ///< returns detector identity
 	string GetDetectorHitType(string name)                {return (*hallMap)[name].hitType;}  ///< returns detector hitType
-	MHitCollection* GetMHitCollection()                   {if(hitCollection) return hitCollection; else return NULL;}              ///< returns hit collection
+	MHitCollection* GetMHitCollection()                   {if(hitCollection) return hitCollection; else return nullptr;}              ///< returns hit collection
 	MHit* find_existing_hit(vector<identifier>);                                               ///< returns hit collection hit inside identifer
 
 	int processID(string procName);   // return an ID from a process name.

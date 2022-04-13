@@ -21,10 +21,9 @@ using namespace CLHEP;
 detectorFactory *getDetectorFactory(map<string, detectorFactoryInMap> *detectorFactoryMap, string fname)
 {
 
-	if(detectorFactoryMap->find(fname) == detectorFactoryMap->end())
-	{
+	if(detectorFactoryMap->find(fname) == detectorFactoryMap->end()) {
 		cout << " *** WARNING: " << fname << " NOT FOUND IN  Detector Factory Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 	
 	return (*detectorFactoryMap)[fname]();

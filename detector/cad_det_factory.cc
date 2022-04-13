@@ -273,7 +273,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 //
 //		for(auto &dirs: possibleGXML) {
 //
-//			gxml = NULL;
+//			gxml = nullptr;
 //
 //			string fullName = dirs + fname;
 //			gxml = new QFile(fullName.c_str());

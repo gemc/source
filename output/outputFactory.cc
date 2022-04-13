@@ -21,7 +21,7 @@ outputFactory *getOutputFactory(map<string, outputFactoryInMap> *outputFactoryMa
 {
 	if(outputFactoryMap->find(outputType) == outputFactoryMap->end()) {
 		cout << endl << endl << "  >>> WARNING: Output type <" << outputType << "> NOT FOUND IN  Output Map." << endl;
-		return NULL;
+		return nullptr;
 	}
 
 	return (*outputFactoryMap)[outputType]();

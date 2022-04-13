@@ -144,13 +144,12 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
 	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
-	G4MaterialPropertyVector* efficiency = NULL;
+	G4MaterialPropertyVector* efficiency = nullptr;
 	
 	bool gotefficiency = false;
-	if( MPT != NULL )
-	{
+	if( MPT != nullptr ) {
 		efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
-		if( efficiency != NULL ) gotefficiency = true;
+		if( efficiency != nullptr ) gotefficiency = true;
 	}
 	
 	for( unsigned int iphoton = 0; iphoton<penergy.size(); iphoton++ )
