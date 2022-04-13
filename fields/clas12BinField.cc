@@ -16,26 +16,14 @@
 using namespace gstring;
 
 
-bool clas12BinField::isEligible(string file)
+bool clas12BinField::isEligible(string compositeFieldsName)
 {
 
-	// check that file name is one of the items in the list
-	// loop over map check that file is one of the keys of the map.
-
-	// Check if file name is consistent with any of the symmetric Torus files in FIELD_DIR
-	for(int i = 0; i < validC12MapNames["c12BinaryTorusSymmSolenoid2018"].size();i++)  {
-		vector<string> c12vec = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
-		string c12string = c12vec[i];
-		if(file == c12string) return 0;
+	if (compositeFieldsName ==  TorusSymmSolenoid2018 || compositeFieldsName == TorusASymmSolenoid2018) {
+		return 1;
 	}
 
-	// Check if file name is consistent with any of the asymmetric Torus files in FIELD_DIR
-	for(int i = 0; i < validC12MapNames["c12BinaryTorusASymmSolenoid2018"].size(); i++) {
-		vector<string> c12vec = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
-		string c12string = c12vec[i];
-		if(file == c12string) return 0;
-	}
-	return 1;
+	return 0;
 }
 
 
@@ -51,6 +39,7 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.integration = "G4ClassicalRK4";
 	gf.minStep     = 0.01;
 	gf.unit        = "kilogauss";
+	gf.symmetry    = "cMag";
 
 	// initialize field and field map
 	gf.initialize(opts);
