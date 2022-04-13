@@ -1,6 +1,7 @@
 // gemc headers
 #include "fieldFactory.h"
 #include "asciiField.h"
+#include "clas12BinField.h"
 #include "gemcUtils.h"
 
 
@@ -22,9 +23,8 @@ map<string, fieldFactoryInMap> registerFieldFactories()
 	// ASCII factory
 	fieldFactoryMap["ASCII"] = &asciiField::createFieldFactory;
 
-//	// CLAS12BinaryMap factory
-//	fieldFactoryMap["CLAS12BIN"] = &clas12Bin::createFieldFactory;
-
+	// CLAS12BinaryMap factory
+	fieldFactoryMap["CLAS12BIN"] = &clas12BinField::createFieldFactory;
 
 	return fieldFactoryMap;
 }

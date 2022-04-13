@@ -267,9 +267,9 @@ int main( int argc, char **argv )
 		gemcOpt.optMap["ACTIVEFIELDS"].args = "";
 	}
 	
-	for(set<string>::iterator fit = ExpHall->activeFields.begin(); fit != ExpHall->activeFields.end(); fit++)
+	for(set<string>::iterator fit = ExpHall->activeFields.begin(); fit != ExpHall->activeFields.end(); fit++) {
 		gemcOpt.optMap["ACTIVEFIELDS"].args = gemcOpt.optMap["ACTIVEFIELDS"].args + *fit + " ";
-	
+	}
 
 	// Bank Map, derived from sensitive detector map
 	gemc_splash.message(" Creating gemc Banks Map...");

@@ -1,9 +1,6 @@
 // gemc headers
 #include "fieldFactory.h"
-
 #include "clas12BinField.h"
-
-
 #include "string_utilities.h"
 #include "gemcUtils.h"
 #include "magfieldio.h"
@@ -118,43 +115,6 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 }
 
 
-
-// Examples
-
-/*
- 
- clas12 solenoid:
- <mfield>
- <description name="clas12-solenoid" factory="ASCII" comment="clas12 superconducting solenoid"/>
- <symmetry type="cylindrical-z" format="map"/>
- <map>
- <coordinate>
- <first  name="transverse"    npoints="601"   min="0"  max="3" units="m"/>
- <second name="longitudinal"  npoints="1201"  min="-3" max="3" units="m"/>
- </coordinate>
- <field unit="T"/>
- </map>
- </mfield>
- clas12 torus:
- <mfield>
- <description name="clas12-torus" factory="ASCII" comment="clas12 superconducting torus"/>
- <symmetry type="phi-segmented" format="map""/>
- <map>
- <coordinate>
- <first  name="azimuthal"     npoints="61"   min="0"   max="30"  units="deg"/>
- <second name="transverse"    npoints="126"  min="0"   max="500" units="cm"/>
- <third  name="longitudinal"  npoints="126"  min="100" max="600" units="cm"/>
- </coordinate>
- <field unit="kilogauss"/>
- </map>
- </mfield>
- Example of uniform field:
- <mfield>
- <description name="uniform" factory="ASCII" comment="Uniform 10 T Magnetic Field along x-axis"/>
- <symmetry type="uniform" format="simple"/>
- <dimension bx="10" by="0" bz="0" units="T"/>
- </mfield>
- */
 
 
 

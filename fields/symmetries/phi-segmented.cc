@@ -1,6 +1,9 @@
+// this file should be reorganized to split the asciiField and clas12BinField factories
+
 // gemc headers
-#include "asciiField.h"
 #include "gemcUtils.h"
+#include "asciiField.h"
+#include "clas12BinField.h"
 
 // PRAGMA TODO: can store the various cases in local variables to make routine faster? General interpolation?
 
@@ -9,6 +12,9 @@
 // The values can be loaded from the map in any order as long as their speed is ordered.
 // The values are indexed as B1_3D[transverse][longi]
 // The field is two dimensional, ordered in the class as B1=BT, B2=BL
+
+void clas12BinField::loadFieldMap_phiSegmented(gMappedField* map, double verbosity) {
+}
 
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_phiSegmented(gMappedField* map, double verbosity)

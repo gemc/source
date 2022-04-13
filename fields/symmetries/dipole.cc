@@ -1,6 +1,9 @@
+// this file should be reorganized to split the asciiField and clas12BinField factories
+
 // gemc headers
-#include "asciiField.h"
 #include "gemcUtils.h"
+#include "asciiField.h"
+#include "clas12BinField.h"
 
 // 1D-dipole field
 // Dependent on 2 cartesian coordinates (longitudinal, transverse)
@@ -8,6 +11,9 @@
 // The values can be loaded from the map in any order
 // as long as their speed is ordered.
 // The values are indexed as B1_2D[longi][transverse]
+
+void clas12BinField::loadFieldMap_Dipole(gMappedField* map, double verbosity) {
+}
 
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)

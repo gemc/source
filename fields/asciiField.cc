@@ -26,17 +26,17 @@ using namespace CLHEP;
 bool asciiField::isEligible(string file)
 {
 	ifstream IN(file.c_str());
-
+	
 	if(!IN.is_open())
 		return 0;
-
+	
 	string first;
 	IN >> first;
 	IN.close();
-
+	
 	if(strcmp (first.c_str(), "<mfield>") != 0)
 		return 0;
-
+	
 	return 1;
 }
 
@@ -44,23 +44,23 @@ bool asciiField::isEligible(string file)
 gfield asciiField::loadField(string file, goptions opts)
 {
 	gfield gf(opts);
-
+	
 	ifstream IN(file.c_str());
 	string content = "";
 	string stop    = "";
-
+	
 	while(IN.good() && stop != "</mfield>")
 	{
 		IN >> stop;
 		content += stop + " " ;
 	}
 	IN.close();
-
+	
 	// sucking up all that string into a domdocument
 	QDomDocument domDocument;
 	domDocument.setContent(QString(content.c_str()));
-
-
+	
+	
 	QDomElement docElem = domDocument.documentElement();
 	QDomNode n = docElem.firstChild();
 	while(!n.isNull())
@@ -74,13 +74,13 @@ gfield asciiField::loadField(string file, goptions opts)
 				gf.factory     = assignAttribute(e, "factory", "na");
 				gf.description = assignAttribute(e, "comment", "no comment");
 			}
-
+			
 			if(e.tagName().toStdString() == "symmetry")     ///< selecting "symmetry" nodes
 			{
 				gf.symmetry    = assignAttribute(e, "type",   "na");
 				gf.format      = assignAttribute(e, "format", "na");
 			}
-
+			
 			// simple symmetry, looking for uniform field definition
 			if(gf.format == "simple" && gf.symmetry == "uniform")
 			{
@@ -92,8 +92,8 @@ gfield asciiField::loadField(string file, goptions opts)
 					gf.dimensions += assignAttribute(e, "bz", "0") + units ;
 				}
 			}
-
-
+			
+			
 			// simple symmetry, looking for multipole field definition
 			if(gf.format == "simple" && gf.symmetry == "multipole")
 			{
@@ -108,12 +108,12 @@ gfield asciiField::loadField(string file, goptions opts)
 					gf.dimensions += assignAttribute(e, "ROTaxis", "Y");
 				}
 			}
-
+			
 			// map symmetry, looking for map field definition
 			if(gf.format == "map")
 			{
 				if(!gf.map) gf.map = new gMappedField(file, gf.symmetry);
-
+				
 				// selecting "map" nodes
 				// selecting "coordinate" nodes
 				if(e.tagName().toStdString() == "map")
@@ -128,7 +128,7 @@ gfield asciiField::loadField(string file, goptions opts)
 							while(!nnn.isNull())
 							{
 								QDomElement eee = nnn.toElement();
-
+								
 								if(eee.tagName().toStdString() == "first" || eee.tagName().toStdString() == "second" || eee.tagName().toStdString() == "third")
 								{
 									string name = assignAttribute(eee, "name", "na");
@@ -145,7 +145,7 @@ gfield asciiField::loadField(string file, goptions opts)
 								nnn=nnn.nextSibling();
 							}
 						}
-
+						
 						/// selecting "field" nodes. Default unit is gauss
 						if(ee.tagName().toStdString() == "field")
 						{
@@ -155,13 +155,13 @@ gfield asciiField::loadField(string file, goptions opts)
 					}
 				}
 			}
-
+			
 		}
 		n = n.nextSibling();
 	}
 	// initialize field and field map
 	gf.initialize(opts);
-
+	
 	// rescaling dimensions for uniform field
 	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "uniform")
 	{
@@ -174,7 +174,7 @@ gfield asciiField::loadField(string file, goptions opts)
 		}
 		gf.dimensions = trimSpacesFromString(newdim);
 	}
-
+	
 	// rescaling dimensions for multipole field
 	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "multipole")
 	{
@@ -188,7 +188,7 @@ gfield asciiField::loadField(string file, goptions opts)
 		}
 		gf.dimensions = trimSpacesFromString(newdim);
 	}
-
+	
 	return gf;
 }
 
@@ -198,29 +198,27 @@ gfield asciiField::loadField(string file, goptions opts)
 void asciiField::loadFieldMap(gMappedField* map, double v)
 {
 	cout << "  > Loading field map from " << map->identifier << " with symmetry: " << map->symmetry << endl;
-
+	
 	// dipole field
-	if(map->symmetry == "dipole-x" || map->symmetry == "dipole-y" || map->symmetry == "dipole-z")
+	if(map->symmetry == "dipole-x" || map->symmetry == "dipole-y" || map->symmetry == "dipole-z") {
 		loadFieldMap_Dipole(map, v);
-
-	// cylindrical field
-	else if(map->symmetry == "cylindrical-x" || map->symmetry == "cylindrical-y" || map->symmetry == "cylindrical-z")
+	}	else if(map->symmetry == "cylindrical-x" || map->symmetry == "cylindrical-y" || map->symmetry == "cylindrical-z") {
+		// cylindrical field
 		loadFieldMap_Cylindrical(map, v);
-
-	// phi-segmented field
-
-	else if(map->symmetry == "phi-segmented")
+	}	else if(map->symmetry == "phi-segmented") {
+		// phi-segmented field
 		loadFieldMap_phiSegmented(map, v);
-
-	else if(map->symmetry == "cartesian_3D" || map->symmetry == "cartesian_3D_quadrant")
+	} else if(map->symmetry == "cartesian_3D" || map->symmetry == "cartesian_3D_quadrant") {
+		// cartesian 3d
 		loadFieldMap_cartesian3d(map, v);
-
-	else {cout << "can't recognize the field symmetry "<< map->symmetry << endl; exit(0);}
+	} else {
+		cout << "can't recognize the field symmetry "<< map->symmetry << endl; exit(1);
+	}
 }
 
 
 void asciiField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
-
+	
 }
 
 

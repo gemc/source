@@ -1,7 +1,9 @@
-// gemc headers
-#include "asciiField.h"
-#include "gemcUtils.h"
+// this file should be reorganized to split the asciiField and clas12BinField factories
 
+// gemc headers
+#include "gemcUtils.h"
+#include "asciiField.h"
+#include "clas12BinField.h"
 
 // 3D field in cartesian coordinates. Field itself is in cartesian coordinates.
 // Dependent on 3 cartesian coordinates (Y, X, Z) 
@@ -9,8 +11,12 @@
 // The values are indexed as B1_3D[X][Y][Z],B2_3D[X][Y][Z],B3_3D[X][Y][Z]
 // The field is three dimensional, ordered in the class as B1=Bx, B2=By, B3=Bz
 
-//symmetry "cartesian_3D" is for full 3D map
-//symmetry "cartesian_3D_quadrant" is for 3D map covering only the 1st quadrant where x>=0 && y>=0
+// symmetry "cartesian_3D" is for full 3D map
+// symmetry "cartesian_3D_quadrant" is for 3D map covering only the 1st quadrant where x>=0 && y>=0
+
+void clas12BinField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity) {
+}
+
 
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
@@ -201,7 +207,6 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 // from mappedField:  GetFieldValue
 void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield, int FIRST_ONLY) const
 {
-
 	double xx = x[0];
 	double yy = x[1];
 	double zz = x[2];

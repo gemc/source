@@ -27,7 +27,6 @@ public:
 	// check if the binary map filename is a match for a pre-defined list
 	bool isEligible(string);
 
-
 	// load field definitions
 	gfield loadField(string, goptions);
 	
