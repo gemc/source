@@ -30,7 +30,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	
 	ctc.runNo = runno;
 	ctc.date = "2015-11-29";
-	if (getenv("CCDB_CONNECTION") != NULL)
+	if (getenv("CCDB_CONNECTION") != nullptr)
 		ctc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ctc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

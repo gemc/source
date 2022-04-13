@@ -49,20 +49,17 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 				
 		// executing query - will exit if not successfull.
 		QSqlQuery q;
-		if(!q.exec(dbexecute.c_str()))
-		{
+		if(!q.exec(dbexecute.c_str())) {
 			cout << hd_msg << "  Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;
      		qDebug() << q.lastError();
-			exit(0);
+			exit(1);
 		}
 		// Warning if nothing is found
-		if(q.size() == 0 && verbosity)
-		{
+		if(q.size() == 0 && verbosity) {
 			cout << "  ** WARNING: mirror for system \"" << dname << "\" not found with variation \"" << variation << endl << endl;
 		}
 		
-		while (q.next())
-		{
+		while (q.next()) {
 			mirror *thisMir = new mirror(trimSpacesFromString(qv_tostring( q.value(0))));         // name
 			thisMir->desc          =                 qv_tostring(q.value(1));           // description
 			thisMir->type          =                 qv_tostring(q.value(2));           // type

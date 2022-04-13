@@ -30,30 +30,24 @@ map<string, detector> text_det_factory::loadDetectors()
 		
 		fname += "_" + variation + ".txt";
 		ifstream IN(fname.c_str());
-		if(!IN)
-		{
+		if(!IN) {
 			
 			// if file is not found, maybe it's in the GEMC_DATA_DIR directory
-			if(getenv("GEMC_DATA_DIR")  != NULL)
-			{
+			if(getenv("GEMC_DATA_DIR")  != nullptr) {
 				string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + fname;
 
 				IN.open(maybeHere.c_str());
-				if(!IN)
-				{
-					
+				if(!IN) {
 					cout << hd_msg << "  Failed to open geometry file " << maybeHere << " for system: " << dname
 					     << ". Maybe the filename doesn't exist? Exiting." << endl;
-					exit(0);
+					exit(1);
 				}
 			}
 			
-			if(!IN)
-			{
-				
+			if(!IN) {
 				cout << hd_msg << "  Failed to open geometry file " << fname << " for system: " << dname
 					 << ". Maybe the filename doesn't exist? Exiting." << endl;
-				exit(0);
+				exit(1);
 			}
 		}
 		

@@ -17,7 +17,7 @@ Lorentz::~Lorentz(){
 
 void Lorentz::Initialize(int runno){
 
-  if(getenv ("CCDB_CONNECTION") != NULL) {
+  if(getenv ("CCDB_CONNECTION") != nullptr) {
     connection = (string) getenv("CCDB_CONNECTION");
   } else {
     connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

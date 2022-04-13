@@ -151,7 +151,7 @@ void g4dialog::CommandEnteredCallback()
 		UImanager->ApplyCommand(fCommandArea->text().toStdString().c_str());
 		
 		fCommandHistoryArea->clearSelection();
-		fCommandHistoryArea->setCurrentItem(NULL);
+		fCommandHistoryArea->setCurrentItem(nullptr);
 		fCommandArea->setText("");
 	}
 }
@@ -197,8 +197,8 @@ QTreeWidget* g4dialog::CreateHelpTree()
 
 void g4dialog::CreateChildTree(QTreeWidgetItem *aParent,G4UIcommandTree *aCommandTree)
 {
-	if (aParent == NULL) return;
-	if (aCommandTree == NULL) return;
+	if (aParent == nullptr) return;
+	if (aCommandTree == nullptr) return;
 	
 	
 	// Creating new item
@@ -272,7 +272,7 @@ QString g4dialog::GetCommandList (const G4UIcommand *aCommand)
 {
 	
 	QString txt ="";
-	if (aCommand == NULL)
+	if (aCommand == nullptr)
 		return txt;
 	
 	G4String commandPath   = aCommand->GetCommandPath();

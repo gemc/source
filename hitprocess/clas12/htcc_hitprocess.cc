@@ -33,7 +33,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	// database
 	htccc.runNo = runno;
 	htccc.date       = "2016-03-15";
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		htccc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		htccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
@@ -436,10 +436,10 @@ map< int, vector <double> > htcc_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	G4MaterialPropertyVector* efficiency = nullptr;
 	//	ndetected = 0;
 	bool gotefficiency = false;
-	if( MPT != NULL )
+	if( MPT != nullptr )
 	{
 		efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
-		if( efficiency != NULL ) gotefficiency = true;
+		if( efficiency != nullptr ) gotefficiency = true;
 	}
 	
 	

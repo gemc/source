@@ -300,7 +300,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 						if(it->second.fracs[i] < 1)
 						{
 							cout << " The number of atoms of " << compName << " is " << it->second.fracs[i] << " but it should be an integer. Exiting" << endl;
-							exit(0);
+							exit(1);
 						}
 						mats[it->first]->AddElement(matman->FindOrBuildElement(compName), (int) it->second.fracs[i]);
 					}

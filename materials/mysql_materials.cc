@@ -57,11 +57,10 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 				
 		// executing query - will exit if not successfull.
 		QSqlQuery q;
-		if(!q.exec(dbexecute.c_str()))
-		{
+		if(!q.exec(dbexecute.c_str())) {
 			cout << hd_msg << "  Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;
      		qDebug() << q.lastError();
-			exit(0);
+			exit(1);
 		}
 		// Warning if nothing is found
 		if(q.size() == 0 && verbosity)

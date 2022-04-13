@@ -119,7 +119,7 @@ PhysicsList::PhysicsList(goptions opts) : G4VModularPhysicsList()
 		list();
 
 		cout << " Exiting." << endl;
-		exit(0);
+		exit(1);
 	} else {
 		cookPhysics();
 	}
@@ -309,7 +309,7 @@ void PhysicsList::cookPhysics()
 	else if(EMPhys == "LEM")  g4EMPhysics = new G4EmLowEPPhysics();
 	else if(EMPhys != "none") {
 		cout << " !! Wrong EMPhys " << EMPhys << endl << "Exiting." << endl;
-		exit(0);
+		exit(1);
 	}
 
 	// Hadronic Physics
@@ -373,7 +373,7 @@ void PhysicsList::cookPhysics()
 	else if(hadronicPhys == "NuBeam")         {g4HadronicPhysics.push_back( new G4HadronPhysicsNuBeam(verbosity));}
 	else {
 		cout << " > " << hadronicPhys << " is not supported in this version of GEMC yet. Exiting." << endl;
-		exit(0);
+		exit(1);
 	}
 
 

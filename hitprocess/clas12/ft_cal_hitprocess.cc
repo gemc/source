@@ -33,7 +33,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	// database
 	ftcc.runNo = runno;
 	ftcc.date       = "2016-03-15";
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		ftcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ftcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

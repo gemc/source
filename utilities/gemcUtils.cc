@@ -29,16 +29,16 @@ gui_splash::gui_splash(goptions opts)
 	if(qt)
 	{
 		// setting style if different than defulat "no"
-//		if(guistyle == "QPlastiqueStyle")	 qApp->setStyle(new QPlastiqueStyle);
-//		if(guistyle == "QCleanlooksStyle") qApp->setStyle(new QCleanlooksStyle);
-//		if(guistyle == "QWindowsStyle")	   qApp->setStyle(new QWindowsStyle);
-//		if(guistyle == "QMotifStyle")	     qApp->setStyle(new QMotifStyle);
+		//		if(guistyle == "QPlastiqueStyle")	 qApp->setStyle(new QPlastiqueStyle);
+		//		if(guistyle == "QCleanlooksStyle") qApp->setStyle(new QCleanlooksStyle);
+		//		if(guistyle == "QWindowsStyle")	   qApp->setStyle(new QWindowsStyle);
+		//		if(guistyle == "QMotifStyle")	     qApp->setStyle(new QMotifStyle);
 		
 		// Initializing Splash Screen
 		splash_i = new QPixmap(gsplash);
 		splash   = new QSplashScreen(*splash_i);
 		
- 		QFont sansFont("Helvetica", 10);
+		QFont sansFont("Helvetica", 10);
 		splash->setFont(sansFont);
 		
 		splash->show();
@@ -77,8 +77,7 @@ void gui_splash::message(string msg)
 // The rhs overwrites what's in the lhs
 void mergeMaps(map<string, string>& lhs, const map<string, string>& rhs)
 {
-	for(map<string, string>::const_iterator it = rhs.begin(); it != rhs.end(); it++)
-	{
+	for(map<string, string>::const_iterator it = rhs.begin(); it != rhs.end(); it++) {
 		lhs[it->first] = it->second;
 	}
 }
@@ -96,7 +95,7 @@ G4RotationMatrix calc_rotation(string r, string dname)
 	vars >> var;
 	
 	if(var != "ordered:" && var != "doubleRotation:") {
-		             rot.rotateX(get_number(var, 1));
+		rot.rotateX(get_number(var, 1));
 		vars >> var; rot.rotateY(get_number(var, 1));
 		vars >> var; rot.rotateZ(get_number(var, 1));
 	} else if (var == "doubleRotation:") {
@@ -132,14 +131,14 @@ G4RotationMatrix calc_rotation(string r, string dname)
 		} else {
 			cout << "     >> ERROR: Ordered rotation <" << order << "> for " << dname << " is wrong, it's none of the following:"
 			<< " xzy, yxz, yzx, zxy or zyx. Exiting." << endl;
-			exit(0);
+			exit(1);
 		}
 	} else {
 		cout << "     >> ERROR: rotation type <" << var << "> unknown. Exiting." << endl;
-		exit(0);
+		exit(1);
 
 	}
-
+	
 	
 	return rot;
 	
@@ -169,17 +168,17 @@ G4Colour gcol(string cvar)
 	
 	// if color is 6 digits then it's only rrggbb. Setting transparency to zero
 	if(cvar.size() == 6)
-		thisCol = G4Colour(strtol(cvar.substr(0, 2).c_str(), NULL, 16)/255.0,
-						   strtol(cvar.substr(2, 2).c_str(), NULL, 16)/255.0,
-						   strtol(cvar.substr(4, 2).c_str(), NULL, 16)/255.0,
-						   1);
+		thisCol = G4Colour(strtol(cvar.substr(0, 2).c_str(), nullptr, 16)/255.0,
+								 strtol(cvar.substr(2, 2).c_str(), nullptr, 16)/255.0,
+								 strtol(cvar.substr(4, 2).c_str(), nullptr, 16)/255.0,
+								 1);
 	
 	// Transparency 0 to 5 where 5=max transparency  (default is 0 if nothing is specified)
 	else if(cvar.size() == 7)
-		thisCol = G4Colour(strtol(cvar.substr(0, 2).c_str(), NULL, 16)/255.0,
-						   strtol(cvar.substr(2, 2).c_str(), NULL, 16)/255.0,
-						   strtol(cvar.substr(4, 2).c_str(), NULL, 16)/255.0,
-						   1.0 - stringToDouble(cvar.substr(6, 1))/5.0);
+		thisCol = G4Colour(strtol(cvar.substr(0, 2).c_str(), nullptr, 16)/255.0,
+								 strtol(cvar.substr(2, 2).c_str(), nullptr, 16)/255.0,
+								 strtol(cvar.substr(4, 2).c_str(), nullptr, 16)/255.0,
+								 1.0 - stringToDouble(cvar.substr(6, 1))/5.0);
 	
 	return thisCol;
 }
@@ -193,21 +192,17 @@ int getLastId(QSqlDatabase db, string t, string v, int run)
 	dbexecute += "' and rmin <= " + stringify(run)  + " and rmax >= " + stringify(run)  ;
 	
 	QSqlQuery q;
-	if(!q.exec(dbexecute.c_str()))
-	{
+	if(!q.exec(dbexecute.c_str())) {
 		cout  << " !!! Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;
 		qDebug() << q.lastError();
-		exit(0);
+		exit(1);
 	}
 	// Warning if nothing is found
-	if(q.size() == 0)
-	{
+	if(q.size() == 0) {
 		cout << endl  << "         >> WARNING: nothing found on  \"" << t
 		<< "\" with variation \"" << v << "\" for run number " << run << endl << endl;
 		return 0;
-	}
-	else
-	{
+	} else {
 		q.next();
 		return get_number(qv_tostring(q.value(0)));
 	}
@@ -258,6 +253,8 @@ void closeGdb(QSqlDatabase db)
 }
 
 
+// since David's Heddle field is composite, here we add the two possible combinations names
+// to filesMap, to be later checked with the isEligible method in the clas12BinField factory
 map<string, string> getFilesInDirectory(string directory)
 {
 	map<string, string> filesMap;
@@ -265,29 +262,24 @@ map<string, string> getFilesInDirectory(string directory)
 	DIR *dir;
 	struct dirent *ent;
 	dir = opendir(directory.c_str());
-	if (dir != NULL) {
+	if (dir != nullptr) {
 		int len;
-		while ((ent = readdir (dir)) != NULL)
-		{
+		while ((ent = readdir (dir)) != nullptr) {
 			len = strlen(ent->d_name);
 			
 			// checking various extensions
 			if(strcmp(".dat", &(ent->d_name[len - 4])) == 0) {
 				filesMap[directory + "/" + ent->d_name] = "ASCII" ;
-
-				// check if the name is one of David's name return
-
 			}
 			if(strcmp(".txt", &(ent->d_name[len - 4])) == 0) {
 				filesMap[directory + "/" + ent->d_name] = "ASCII" ;
 			}
 		}
 		closedir (dir);
-
-		// ugly: hardcode the filesMap keys for the clas12binary maps
+		
 		filesMap["c12BinaryTorusSymmSolenoid2018"]  = "CLAS12BIN" ;
 		filesMap["c12BinaryTorusASymmSolenoid2018"] = "CLAS12BIN" ;
-
+		
 	} else {
 		cout << "    Error: directory " << directory << " could not be opened." << endl;
 	}
@@ -298,7 +290,7 @@ map<string, string> getFilesInDirectory(string directory)
 #include "ctime"
 string timeStamp()
 {
-	time_t now = time(NULL);
+	time_t now = time(nullptr);
 	struct tm * ptm = localtime(&now);
 	char buffer[32];
 	// Format: Mo, 15.06.2009 20:20:00

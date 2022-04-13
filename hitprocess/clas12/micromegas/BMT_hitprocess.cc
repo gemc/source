@@ -31,7 +31,7 @@ static bmtConstants initializeBMTConstants(int runno, string digiVariation = "de
 	
 	bmtc.runNo = runno;
 
-	if(getenv ("CCDB_CONNECTION") != NULL) {
+	if(getenv ("CCDB_CONNECTION") != nullptr) {
 		bmtc.connection = (string) getenv("CCDB_CONNECTION");
 	} else {
 		bmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

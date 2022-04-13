@@ -27,7 +27,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	//	// database
 	//	richc.runNo = runno;
 	//	richc.date       = "2016-03-15";
-	//	if(getenv ("CCDB_CONNECTION") != NULL)
+	//	if(getenv ("CCDB_CONNECTION") != nullptr)
 	//		richc.connection = (string) getenv("CCDB_CONNECTION");
 	//	else
 	//		richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

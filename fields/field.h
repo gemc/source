@@ -22,7 +22,7 @@
 // At detector construction time the mfield entry in detector.h, if 
 // different than "no" must be associated to a key of the  map<string, gfield>.
 //
-// At that point the MFM is checked on the gfield. If NULL, the MFM is created. Either way, the MFM will be 
+// At that point the MFM is checked on the gfield. If nullptr, the MFM is created. Either way, the MFM will be
 // associated with the logical volume.
 
 // gemc headers
@@ -57,7 +57,7 @@ public:
 	gfield(){;}
 	gfield(goptions opts) : symmetry("na"), format("na"), dimensions("na"), map(nullptr), MFM(nullptr)
 	{
-		// initialize Magnetic Field Manager and Mapped field to NULL
+		// initialize Magnetic Field Manager and Mapped field to nullptr
 		scaleFactor	     = 1;
 		minStep          = 1*mm;
 		integration      = "G4ClassicalRK4";
@@ -99,11 +99,10 @@ private:
 public:
 	// Returns Magnetic Field Manager Pointer
 	// creates one if it doesn't exist
-	G4FieldManager* get_MFM()
-	{
-		if(MFM == NULL)
+	G4FieldManager* get_MFM() {
+		if(MFM == nullptr) {
 			create_MFM();
-		
+		}
 		return MFM;
 	}
 	

@@ -141,7 +141,7 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 	if (sname == "G4HelixSimpleRunge")	  return new G4HelixSimpleRunge(ie);
 	if (sname == "G4NystromRK4")	      return new G4NystromRK4(ie);
 
-	// if requested is not found return NULL
+	// if requested is not found return nullptr
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;
 	return nullptr;
 }

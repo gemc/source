@@ -28,7 +28,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	ecc.runNo      = runno;
 	ecc.date       = "2015-11-29";
 	
-	if(getenv ("CCDB_CONNECTION") != NULL) {
+	if(getenv ("CCDB_CONNECTION") != nullptr) {
 		ecc.connection = (string) getenv("CCDB_CONNECTION");
 	} else {
 		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

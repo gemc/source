@@ -183,12 +183,10 @@ int goptions::setOptMap(int argc, char **argv)
 	
 	// -help-all
 	cout << endl;
-	for(int i=1; i<argc; i++)
-	{
+	for(int i=1; i<argc; i++) {
 		string arg = argv[i];
 		string com = "-help-all";
-		if(arg == com)
-		{
+		if(arg == com) {
 			cout <<  "    Usage: -Option=<option>" << endl << endl;
 			cout <<  "    Options:" <<  endl << endl ;
 			
@@ -202,13 +200,11 @@ int goptions::setOptMap(int argc, char **argv)
 	
 	
 	// -help
-	for(int i=1; i<argc; i++)
-	{
+	for(int i=1; i<argc; i++) {
 		string arg = argv[i];
 		string com1 = "-help";
 		string com2 = "-h";
-		if(arg == com1 || arg == com2)
-		{
+		if(arg == com1 || arg == com2) {
 			cout <<  endl << endl;
 			cout <<  "    Help Options:" <<  endl << endl ;
 			cout <<  "   >  -help-all:  all available options. "  << endl;
@@ -225,11 +221,9 @@ int goptions::setOptMap(int argc, char **argv)
 	
 	
 	// -help-option
-	for(int i=1; i<argc; i++)
-	{
+	for(int i=1; i<argc; i++) {
 		string arg = argv[i];
-		for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++)
-		{
+		for(set<string>::iterator itcat = category.begin(); itcat != category.end(); itcat++) {
 			string com = "-help-" + *itcat;
 			if(arg == com) {
 				cout << endl << endl <<  "   ## " << *itcat << " ## " << endl << endl;

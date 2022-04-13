@@ -134,12 +134,12 @@ int main( int argc, char **argv )
 	if(gemcOpt.optMap["RANDOM"].args=="TIME")
 	{
 		gemc_splash.message(" Initializing CLHEP Random Engine from local time " \
-							+ stringify((double) time(NULL)) \
+							+ stringify((double) time(nullptr)) \
 							+ ", cpu clock "        \
 							+ stringify((double) clock())    \
 							+ " and process id "    \
 							+ stringify(getpid()) + ".");
-		seed = (G4int) ( (double) time(NULL)- (double) clock()-getpid() );
+		seed = (G4int) ( (double) time(nullptr)- (double) clock()-getpid() );
 	}
 	else
 	{
@@ -277,7 +277,7 @@ int main( int argc, char **argv )
 		
 	// Getting UI manager, restoring G4Out to cout
 	G4UImanager* UImanager = G4UImanager::GetUIpointer();
-	UImanager->SetCoutDestination(NULL);
+	UImanager->SetCoutDestination(nullptr);
 
 	// saving simulation condition in the output file
 	if(outContainer.outType != "no") {
@@ -377,7 +377,7 @@ int main( int argc, char **argv )
 		// deleting runManager is now taken care
 		// in the gemc_quit slot
 		delete visManager;
-		if(session != NULL) delete session;
+		if(session != nullptr) delete session;
 	} else {
 		if(exec_macro != "/control/execute no") UImanager->ApplyCommand(exec_macro.c_str());
 		start_events = clock();

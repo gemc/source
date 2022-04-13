@@ -39,11 +39,11 @@ map<string, gfield> loadAllFields(map<string, fieldFactoryInMap> fieldFactoryMap
 	// - FIELD_DIR gemc option if set other than "env", otherwise FIELD_DIR environment variable if exists
 	map<string, string> filesMap;
 
-	if(getenv("GEMC_DATA_DIR") != NULL) mergeMaps(filesMap, getFilesInDirectory((string) getenv("GEMC_DATA_DIR") ));
+	if(getenv("GEMC_DATA_DIR") != nullptr) mergeMaps(filesMap, getFilesInDirectory((string) getenv("GEMC_DATA_DIR") ));
 	if(opts.optMap["FIELD_DIR"].args != "env") {
 		mergeMaps(filesMap, getFilesInDirectory(opts.optMap["FIELD_DIR"].args));
 	} else {
-		if(getenv("FIELD_DIR") != NULL) mergeMaps(filesMap, getFilesInDirectory((string) getenv("FIELD_DIR") ));
+		if(getenv("FIELD_DIR") != nullptr) mergeMaps(filesMap, getFilesInDirectory((string) getenv("FIELD_DIR") ));
 	}
 
 
@@ -52,18 +52,16 @@ map<string, gfield> loadAllFields(map<string, fieldFactoryInMap> fieldFactoryMap
 	map<string, gfield> gfields;
 
 
-	for(map<string, string>::iterator	it = filesMap.begin(); it != filesMap.end(); it++) {
+	for(map<string, string>::iterator it = filesMap.begin(); it != filesMap.end(); it++) {
 
-		// cout << " ASD " << it->first << " " << it->second << endl;
-
+		if ( verbosity > 3 ) {
+		 cout << " Field Factory: Checking file " << it->first << " in factory: " << it->second << endl;
+		}
 
 		// if factory exist, calling isEligible
 		fieldFactory *thisFactory = getFieldFactory(&fieldFactoryMap, it->second);
 
-		// make sure
-
-
-		if(thisFactory != NULL) {
+		if(thisFactory != nullptr) {
 			if(thisFactory->isEligible(it->first)) {
 				gfield gf = thisFactory->loadField(it->first, opts);
 				gf.fFactory = thisFactory;

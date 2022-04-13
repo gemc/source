@@ -59,7 +59,7 @@ G4VPhysicalVolume* MDetectorConstruction::Construct()
 	// dimensions coming from HALL_DIMENSIONS options
 	(*hallMap)["root"].create_solid(gemcOpt, hallMap);
 	(*hallMap)["root"].create_logical_volume(mats, gemcOpt);
-	(*hallMap)["root"].create_physical_volumes(gemcOpt, NULL);
+	(*hallMap)["root"].create_physical_volumes(gemcOpt, nullptr);
 	hasMagfield((*hallMap)["root"]);
 	(*hallMap)["root"].scanned = 1;
 
@@ -309,7 +309,7 @@ void MDetectorConstruction::buildCADDetector(string dname, string filename, int 
 	string mom = (*hallMap)[dname].mother;
 	if(hallMap->find(mom) == hallMap->end()) {
 		cout << " Error: mom " << mom << " not found for " << dname << endl;
-		exit(0);
+		exit(1);
 	}
 
 	detector thisMom =  (*hallMap)[mom];
@@ -343,15 +343,13 @@ void MDetectorConstruction::hasMagfield(detector detect)
 	
 	string magf   = detect.magfield;
 	
-	if(magf != "no")
-	{
+	if(magf != "no") {
 		map<string, gfield>::iterator itr = fieldsMap->find(magf);
 		
-		if(itr == fieldsMap->end())
-		{
+		if(itr == fieldsMap->end()) {
 			cout << hd_msg << " Electro-Magnetic Field <" << magf
 			<< "> is not defined. Exiting." << endl;
-			exit(0);
+			exit(1);
 		}
 		
 		activeFields.insert(magf);
@@ -481,7 +479,7 @@ void MDetectorConstruction::buildMirrors()
 				if(!(*hallMap)[borderv].GetPhysical() && borderv != "SkinSurface")
 				{
 					cout << hd_msg << " !! Error: border volume >" << borderv << "< is not found for volume " << name << ". Exiting." << endl;
-					exit(0);
+					exit(1);
 				}
 				
 				else if(borderv == "SkinSurface")
@@ -554,12 +552,10 @@ void MDetectorConstruction::buildMirrors()
 							for(unsigned i=0; i<peneSize; i++)var[i] = backscatter[i];
 							mirrorsMPT.back()->AddProperty("BACKSCATTERCONSTANT", pene, var, peneSize);
 						}
-					}
-					else
-					{
+					} else {
 						cout << " !! Fatal error: no optical property material, and no optical properties for mirror "
 						     << itr->second->name << endl;
-						exit(0);
+						exit(1);
 					}
 				}
 				mirrorSurfaces.back()->SetMaterialPropertiesTable(mirrorsMPT.back());
@@ -613,8 +609,7 @@ void MDetectorConstruction::buildMirrors()
 				}
 				
 
-				if(VERB > 3 || name.find(catch_v) != string::npos)
-				{
+				if(VERB > 3 || name.find(catch_v) != string::npos) {
 					cout << hd_msg  << " " <<  name << " is a mirror:" << endl;
 					cout << "                             > Border Volume: "      << borderv << endl;
 					cout << "                             > Surface Type: "       << surfaceType << endl;
@@ -625,11 +620,9 @@ void MDetectorConstruction::buildMirrors()
 					// why it's not dumping all properties?
 					mirrorsMPT.back()->DumpTable();
 				}
-			}
-			else
-			{
+			} else {
 				cout << " !! Fatal error: mirror <" << mirrorString << "> not found for " << it->second.name << "." << endl;
-				exit(0);
+				exit(1);
 
 			}
 		}
@@ -762,16 +755,14 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 
 
 			// Mom doesn't exists in the hallMap. Stopping everything.
-			if(mom.name != "akasha"  && mom.name == "notfound")
-			{
+			if(mom.name != "akasha"  && mom.name == "notfound") {
 				cout << hd_msg << "  Mom was not found for <" << relatives.back() << ">. "
 				<< " We have a No Child Left Behind policy. Exiting. " << endl << endl;
-				exit(0);
+				exit(1);
 			}
 
 			// output the Geneaology
-			if(VERB > 3 || kid.name.find(catch_v) != string::npos)
-			{
+			if(VERB > 3 || kid.name.find(catch_v) != string::npos) {
 				for(unsigned int ir=0; ir<relatives.size()-1; ir++) cout << "\t";
 				cout << hd_msg << " Checking " << kid.name << ", child of " << mom.name
 				<< ", for a living ancestor. "
@@ -982,7 +973,7 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 			if(mom.name != "akasha"  && mom.name == "notfound") {
 				cout << hd_msg << "  Mom was not found for <" << relatives.back() << ">. "
 				<< " We have a No Child Left Behind policy. Exiting. " << endl << endl;
-				exit(0);
+				exit(1);
 			}
 
 			// Mom is built, kid not built yet. Build kid

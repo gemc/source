@@ -30,7 +30,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	// database
 	ltccc.runNo = runno;
 	ltccc.date       = "2016-03-15";
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		ltccc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ltccc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

@@ -143,7 +143,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 
 			DIR* dirp = opendir(rsp.dir.c_str());
 			struct dirent * dp;
-			while ((dp = readdir(dirp)) != NULL) {
+			while ((dp = readdir(dirp)) != nullptr) {
 				string dname (dp->d_name);
 				size_t rpos = dname.find ("run");
 				size_t epos = dname.find ("evt");
@@ -989,7 +989,7 @@ void MPrimaryGeneratorAction::setBeam()
 					// otherwise it's not found. Need to exit here.
 					cout << hd_msg << " Particle " << pname << " not found in G4 table. Exiting" << endl << endl;
 				}
-				exit(0);
+				exit(1);
 			}
 
 
@@ -1221,7 +1221,7 @@ void MPrimaryGeneratorAction::setBeam()
 		else
 			cout << hd_msg << " Particle " << L_pname << " not found in G4 table. Exiting" << endl << endl;
 
-		exit(0);
+		exit(1);
 	}
 
 	// Getting vertex from option value
@@ -1269,19 +1269,15 @@ void MPrimaryGeneratorAction::setBeam()
 
 	// making sure the particle exists
 	L2_Particle = particleTable->FindParticle(L2_pname);
-	if(!L2_Particle)
-	{
+	if(!L2_Particle) {
 		// it may be the "show_all" option. In this case print all available particle names
-		if(L_pname == "show_all")
-		{
+		if(L_pname == "show_all") {
 			for(int i=0; i<particleTable->entries(); i++)
 				cout << hd_msg << " g4 particle: " << particleTable->GetParticleName(i) << endl;
-		}
-		// otherwise it's not found. Need to exit here.
-		else
+		} else
+			// otherwise it's not found. Need to exit here.
 			cout << hd_msg << " Particle " << L2_pname << " not found in G4 table. Exiting" << endl << endl;
-
-		exit(0);
+		exit(1);
 	}
 
 	// Getting vertex from option value
@@ -1341,7 +1337,8 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			{
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				cout << "Exiting !" << endl; exit(0);				
+				cout << "Exiting !" << endl;
+				exit(1);
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
@@ -1405,11 +1402,11 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 	if(type == 1 && pindex == p+1) {
 		if(pdef != 80000) {
 			Particle = particleTable->FindParticle(pdef);
-			if(!Particle)
-			{
+			if(!Particle) {
 				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
 
-				cout << "Exiting !" << endl; exit(0);				
+				cout << "Exiting !" << endl;
+				exit(1);
 			}
 		} else {
 			Particle = G4IonTable::GetIonTable()->GetIon(Z, A, 0);

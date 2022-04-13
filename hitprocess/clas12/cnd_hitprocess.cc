@@ -30,7 +30,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	// database
 	cndc.runNo = runno;
 	cndc.date       = "2017-07-13";
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		cndc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		cndc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

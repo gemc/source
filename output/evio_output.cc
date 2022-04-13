@@ -488,7 +488,7 @@ void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> H
 		// hit number
 		if(thisHitN.size() != 1 ) {
 			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
-			exit(0);
+			exit(1);
 		}
 
 		for(auto h: thisHitN)   allHitN.push_back(h);

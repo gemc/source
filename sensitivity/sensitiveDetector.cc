@@ -142,13 +142,13 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	vector<identifier> VID = SetId(GetDetectorIdentifier(name), TH, ctime, SDID.timeWindow, tid);                              ///< Identifier at the geant4 level, using the G4 hierarchy to set the copies
 	
 	// Get the ProcessHitRoutine to calculate the new vector<identifier>
-	if(ProcessHitRoutine == NULL) {
+	if(ProcessHitRoutine == nullptr) {
 		ProcessHitRoutine = getHitProcess(hitProcessMap, GetDetectorHitType(name));
 	}
 	
 	// if not existing, exit
 	// this should never happen though
-	if(ProcessHitRoutine == NULL) {
+	if(ProcessHitRoutine == nullptr) {
 		cout << endl << "  !!! Error: >" <<  GetDetectorHitType(name) << "< NOT FOUND IN  ProcessHit Map for volume: " << name << " - exiting." << endl;
 		return false;
 	}

@@ -237,7 +237,7 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 			ifstream IN(fname.c_str());
 			if(!IN) {
 				// if file is not found, maybe it's in the GEMC_DATA_DIR directory
-				if(getenv("GEMC_DATA_DIR")  != NULL) {
+				if(getenv("GEMC_DATA_DIR")  != nullptr) {
 					fname = (string) getenv("GEMC_DATA_DIR") + "/" + fname;
 					IN.open(fname.c_str());
 				}
@@ -328,11 +328,10 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 			dbexecute += " where variation ='" + variation + "'";
 			
 			QSqlQuery q;
-			if(!q.exec(dbexecute.c_str()))
-			{
+			if(!q.exec(dbexecute.c_str())) {
 				cout  << " !!! Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;
 				qDebug() << q.lastError();
-				exit(0);
+				exit(1);
 			}
 			
 			// Warning if nothing is found
@@ -477,7 +476,7 @@ void gBank::orderNames()
 gBank getBankFromMap(string name, map<string, gBank>* banksMap) {
 	if(banksMap->find(name) == banksMap->end()) {
 		cout << "   !!! Error: >" << name << "< bank definitions not found. Exiting." << endl;
-		exit(0);
+		exit(1);
 	}
 	
 	return (*banksMap)[name];
@@ -489,7 +488,7 @@ gBank getDgtBankFromMap(string name, map<string, gBank>* banksMap) {
 	gBank thisBank, dgtBank;
 	if(banksMap->find(name) == banksMap->end()) {
 		cout << "   !!! Error: >" << name << "< dgt bank definitions not found. Exiting." << endl;
-		exit(0);
+		exit(1);
 	} else {
 		// thisBank may have definitions other than DGT
 		// so I'm extracting just the DGT variables from it.

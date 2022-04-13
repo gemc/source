@@ -32,11 +32,12 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 	for(map<string, detectorCondition>::iterator it=rc.detectorConditionsMap.begin(); it != rc.detectorConditionsMap.end(); it++)
 	{
 		// building materials belonging to detectors that are tagged with MYSQL factory
-		if(it->second.get_factory() != "TEXT")
+		if(it->second.get_factory() != "TEXT") {
 			continue;
-
-		if(verbosity)
+		}
+		if(verbosity) {
 			cout << hd_msg << " Initializing " << it->second.get_factory() << " for detector " << it->first << endl;
+		}
 		
 		// only add "main" if it's the main variation
 		string dname     = it->first ;
@@ -44,17 +45,14 @@ map<string, G4Material*> text_materials::initMaterials(runConditions rc, goption
 		string filename  =  dname + "__materials_" + variation + ".txt";
 		
 		ifstream IN(filename.c_str());
-		if(!IN)
-		{
+		if(!IN) {
 			// if file is not found, maybe it's in the GEMC_DATA_DIR directory
-			if(getenv("GEMC_DATA_DIR")  != NULL)
-			{
+			if(getenv("GEMC_DATA_DIR")  != nullptr) {
 				
 				string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + filename;
 				
 				IN.open(maybeHere.c_str());
-				if(!IN)
-				{
+				if(!IN) {
 					if(verbosity>1)
 						cout << hd_msg << "Warning: The system >" << dname
 						<< "< does not have a material file associated with it. "

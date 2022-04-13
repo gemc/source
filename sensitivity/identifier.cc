@@ -103,12 +103,11 @@ vector<identifier> SetId(vector<identifier> Iden, G4VTouchable* TH, double time,
 			}
 			
 			// Make sure id is not still zero
-			if(identity[i].id == 0)
-			{
+			if(identity[i].id == 0) {
 				cout << " Something is wrong. Identity " << identity[i].id << " is zero. Full Identity:" << endl;
 				cout << identity;
 				cout << " Exiting. " << endl;
-				exit(0);
+				exit(1);
 			}
 		}
  

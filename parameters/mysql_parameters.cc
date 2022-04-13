@@ -50,20 +50,16 @@ map<string, double> mysql_parameters::loadParameters(goptions opts, runCondition
 		
 		// executing query - will exit if not successfull.
 		QSqlQuery q;
-		if(!q.exec(dbexecute.c_str()))
-		{
+		if(!q.exec(dbexecute.c_str())) {
 			cout << hd_msg << "  Errror! Failed to execute MYSQL query " << dbexecute << endl;
-			exit(0);
+			exit(1);
 		}
 		// Warning if nothing is found
-		if(q.size() == 0 && verbosity)
-		{
+		if(q.size() == 0 && verbosity) {
 			cout << "  ** WARNING: detector \"" << dname << "\" not found with variation \"" << variation << "\" for run number " << run << endl << endl;
 		}
 		
-		while (q.next())
-		{
-			
+		while (q.next()) {
 			gtable gt;
 			gt.add_data(dname + "/" + trimSpacesFromString(qv_tostring(q.value(0))));
 			gt.add_data(q.value(1));

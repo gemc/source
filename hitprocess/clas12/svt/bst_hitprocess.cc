@@ -28,7 +28,7 @@ static bstConstants initializeBSTConstants(int runno, string digiVariation = "de
 	//	// database
 	//	bstc.runNo = runno;
 	//	bstc.date       = "2016-03-15";
-	//	if(getenv ("CCDB_CONNECTION") != NULL)
+	//	if(getenv ("CCDB_CONNECTION") != nullptr)
 	//	bstc.connection = (string) getenv("CCDB_CONNECTION");
 	//	else
 	//	bstc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

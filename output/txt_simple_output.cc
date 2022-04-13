@@ -375,7 +375,7 @@ void txt_simple_output :: writeChargeTime(outputContainer* output, vector<hitOut
 		// hit number
 		if(thisHitN.size() != 1 ) {
 			cout << "  !! Error: hit number should not be a vector. Bank: " << hitType << endl;
-			exit(0);
+			exit(1);
 		}
 		*txtout << indent (2) << "hit " << thisHitN[0] << " {" << endl;
 		*txtout << indent (3) << "steps:\t" << thisStep.size() << endl;

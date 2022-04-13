@@ -34,7 +34,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	// database
 	fmtc.runNo = runno;
 	fmtc.date       = "2016-03-15";
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		fmtc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		fmtc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

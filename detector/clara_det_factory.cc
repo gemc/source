@@ -19,7 +19,7 @@ map<string, detector> clara_det_factory::loadDetectors()
 	}
 
 	// checking if the plugin directory exist 
-	if(getenv ("GEMC_PLUGINS") == NULL) {
+	if(getenv ("GEMC_PLUGINS") == nullptr) {
 		cout << "  !!! Warning: the GEMC_PLUGINS env variable, needed for the CLARA plugin, is not set. " << endl;		
 		cout << "  !!! Warning: for CLAS12, this is typically /group/clas12/lib " << endl;
 		cout << "  !!! Warning: CLARA detectors won't be loaded. " << endl << endl;

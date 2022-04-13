@@ -29,11 +29,10 @@ runConditions::runConditions(goptions gemcOpt)
 	
 	QFile gcard(file.c_str());
 	// reading gcard and checking the consistency
-	if (!domDocument.setContent(&gcard))
-	{
+	if (!domDocument.setContent(&gcard)) {
 		gcard.close();
 		cout << hd_msg << " gcard format is wrong - check XML syntax. Exiting." << endl;
-		exit(0);
+		exit(1);
 	}
 	gcard.close();
 	

@@ -56,7 +56,7 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 		if(!IN)
 		{
 			// if file is not found, maybe it's in the GEMC_DATA_DIR directory
-			if(getenv("GEMC_DATA_DIR")  != NULL)
+			if(getenv("GEMC_DATA_DIR")  != nullptr)
 			{
 				string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + fname;
 				
@@ -179,22 +179,19 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 		dbexecute += " and name = '" + SD  + "'";
 		
 		QSqlQuery q;
-		if(!q.exec(dbexecute.c_str()))
-		{
+		if(!q.exec(dbexecute.c_str())) {
 			cout << " !!! Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;
 			qDebug() << q.lastError();
-			exit(0);
+			exit(1);
 		}
 		// Warning if nothing is found
-		if(q.size() == 0 && verbosity)
-		{
+		if(q.size() == 0 && verbosity) {
 			cout << "  ** WARNING: sensitive detector \"" << SD << "\" not found in factory " << factory
 			 << " for variation " << variation << endl << endl;
 		}
 		
 		// else loading parameters from DB
-		while (q.next())
-		{
+		while (q.next()) {
 			// Reading variables
 			// 0 is system name, by construction is SD
 			

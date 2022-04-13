@@ -36,7 +36,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcc.dcThreshold  = 50;  // eV
 
 	// database
-	if(getenv ("CCDB_CONNECTION") != NULL)
+	if(getenv ("CCDB_CONNECTION") != nullptr)
 		dcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		dcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";

@@ -37,17 +37,17 @@ map<string, detector> cad_det_factory::loadDetectors()
 			string dir(dname.begin(), dname.end()-1);
 			DIR *thisDir = opendir(dir.c_str());
 
-			if(thisDir == NULL) {
-				if(getenv("GEMC_DATA_DIR")  != NULL) {
+			if(thisDir == nullptr) {
+				if(getenv("GEMC_DATA_DIR")  != nullptr) {
 					string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + dir;
 					thisDir = opendir(maybeHere.c_str());
 				}
 			}
 			
-			if(thisDir != NULL) {
+			if(thisDir != nullptr) {
 				possibleGXML.push_back(dname + "cad.gxml");
 				struct dirent *thisDirent = readdir(thisDir);
-				while (thisDirent != NULL){
+				while (thisDirent != nullptr) {
 
 					
 					// removing 4 char from filename. Extension must be 3 letters long + period
@@ -64,7 +64,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 							cadFiles.push_back(thisFileName);
 						} else {
 							// trying GEMC_DATA_DIR
-							if(getenv("GEMC_DATA_DIR")  != NULL) {
+							if(getenv("GEMC_DATA_DIR")  != nullptr) {
 								string envLoc = (string) getenv("GEMC_DATA_DIR") + "/";
 								thisFileName = checkFormat(envLoc + dname + thisRootFileName);
 								if(thisFileName != "na") {
@@ -79,7 +79,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 
 			} else {
 				cout << " !! Error: directory " << dir << " cannot be read. Did you set GEMC_DATA_DIR to point to the location containing the experiments folder? Exiting." << endl;
-				exit(0);
+				exit(1);
 			}
 			closedir(thisDir);
 
@@ -92,7 +92,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 
 		if(cadFiles.size() == 0) {
 			cout << " !! Error: cad system " << it->first << " is not a cad file or a directory containing cad files. Exiting." << endl;
-			exit(0);
+			exit(1);
 		}
 
 		if(verbosity)
@@ -158,7 +158,7 @@ map<string, detector> cad_det_factory::loadDetectors()
 			// opening gcard and filling domDocument
 			if(!domDocument.setContent(gxml)) {
 				cout << " >>  xml format for file <" << possibleGXML[g] << "> is wrong - check XML syntax. Exiting." << endl;
-				exit(0);
+				exit(1);
 			}
 			gxml->close();
 

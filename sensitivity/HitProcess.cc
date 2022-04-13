@@ -13,7 +13,7 @@ HitProcess *getHitProcess(map<string, HitProcess_Factory> *hitProcessMap, string
 	
 	if(hitProcessMap->find(HCname) == hitProcessMap->end()) {
 		cout << endl << "  !!! Error: >" << HCname << "< NOT FOUND IN  ProcessHit Map - exiting." << endl;
-		exit(0);
+		exit(1);
 	}
 	return (*hitProcessMap)[HCname]();
 }

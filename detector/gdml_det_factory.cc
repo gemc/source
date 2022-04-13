@@ -46,7 +46,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 		ifstream fstl(gname.c_str());
 		if(!fstl.good()) {
 			cout << " !! Error: " << gname << " file found. Exiting." << endl;
-			exit(0);
+			exit(1);
 		}
 
 		// parsing G4 volumes
@@ -113,7 +113,7 @@ map<string, detector> gdml_det_factory::loadDetectors()
 			// opening gcard and filling domDocument
 			if(!domDocument.setContent(&gxml)) {
 				cout << " >>  xml format for file <" << fname << "> is wrong - check XML syntax. Exiting." << endl;
-				exit(0);
+				exit(1);
 			}
 			gxml.close();
 
