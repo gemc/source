@@ -24,8 +24,8 @@ using namespace std;
 
 
 // define a mapped field
-/// \class gMappedField
-/// <b>gMappedField </b>\n\n
+/// \class gclas12BinaryMappedField
+/// <b>gclas12BinaryMappedField </b>\n\n
 /// This class defines gemc gclas12BinaryMappedField .\n
 /// It implements G4MagneticField::GetFieldValue
 /// that returns a magnetic field value at a point in space
@@ -33,7 +33,8 @@ class gclas12BinaryMappedField : public G4MagneticField
 {
 public:
 	gclas12BinaryMappedField(string identity): identifier(identity) {
-		// initialize them to zero here, can be set by gfield::initialize
+
+		// initialize them to zero here, can be set by derived gfield::initialize
 		mapOrigin[0]   = 0;
 		mapOrigin[1]   = 0;
 		mapOrigin[2]   = 0;
@@ -52,7 +53,7 @@ public:
 	double mapOrigin[3];        ///< Displacement of map. This is used in GetFieldValue
 	double mapRotation[3];      ///< Rotation of map. This is used in GetFieldValue
 	double scaleFactor;         ///< copy of the gfield scaleFactor
-
+	string unit;                ///< field unit in the map
 
 	// returns the field at point x. This is a dispatcher for the various symmetries below
 	void GetFieldValue( const double x[3], double *Bfield) const;
@@ -68,6 +69,7 @@ public:
 	double sinAlpha, cosAlhpa;
 	double sinBeta, cosBeta;
 	double sinGamma, cosGamma;
+
 	// sets the values above
 	void initializeMap();
 

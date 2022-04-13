@@ -14,9 +14,6 @@
 // The values are indexed as B1_2D[transverse][longi]
 // The field is two dimensional, ordered in the class as B1=BT, B2=BL
 
-void clas12BinField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity) {
-}
- 
 
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)

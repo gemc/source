@@ -33,12 +33,11 @@ public:
 	gfield loadField(string, goptions);
 	
 	// load field map. This is a dispatcher function for the various types of fields below
-	void loadFieldMap(gMappedField*, double);
-	
-	void loadFieldMap_Dipole(gMappedField*, double);       // load dipole field map
-	void loadFieldMap_Cylindrical(gMappedField*, double);  // load cylindrical field map
-	void loadFieldMap_phiSegmented(gMappedField*, double); // load phiSegmented field map
-	void loadFieldMap_cartesian3d(gMappedField*, double);  // load cartesian3d field map
+	void loadFieldMap(gMappedField*, double)              {} // empty implementation
+	void loadFieldMap_Dipole(gMappedField*, double)       {} // empty implementation
+	void loadFieldMap_Cylindrical(gMappedField*, double)  {} // empty implementation
+	void loadFieldMap_phiSegmented(gMappedField*, double) {} // empty implementation
+	void loadFieldMap_cartesian3d(gMappedField*, double)  {} // empty implementation
 
 	// clas12 specific. Notice: this should be in a dedicated binary factory
 	// however:

@@ -14,8 +14,6 @@
 // symmetry "cartesian_3D" is for full 3D map
 // symmetry "cartesian_3D_quadrant" is for 3D map covering only the 1st quadrant where x>=0 && y>=0
 
-void clas12BinField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity) {
-}
 
 
 // from fieldFactory:  load field map

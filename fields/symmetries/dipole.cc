@@ -12,8 +12,6 @@
 // as long as their speed is ordered.
 // The values are indexed as B1_2D[longi][transverse]
 
-void clas12BinField::loadFieldMap_Dipole(gMappedField* map, double verbosity) {
-}
 
 // from fieldFactory:  load field map
 void asciiField::loadFieldMap_Dipole(gMappedField* map, double verbosity)

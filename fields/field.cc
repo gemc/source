@@ -28,9 +28,10 @@ using namespace gstring;
 // availiable formats:
 // - simple (uniform fields)
 // - map
+// - bc12map (binary format map)
+// would be nice to have a MFM verbosity
 void gfield::create_MFM()
 {
-
 	// fields can be uniform, mapped
 	if(format == "simple" && symmetry == "uniform") {
 		create_simple_MFM();
@@ -75,7 +76,6 @@ void gfield::create_MFM()
 		MFM->SetMaximumEpsilonStep( maxEps );
 		MFM->SetDeltaOneStep(0.01 * mm);
 		MFM->SetDeltaIntersection(0.01 * mm);
-
 	}
 
 }
@@ -170,7 +170,9 @@ void gfield::initialize(goptions Opt)
 				map->mapOrigin[0] = get_number(displacement[1]);
 				map->mapOrigin[1] = get_number(displacement[2]);
 				map->mapOrigin[2] = get_number(displacement[3]);
-			}
+				bc12map->mapOrigin[0] = get_number(displacement[1]);
+				bc12map->mapOrigin[1] = get_number(displacement[2]);
+				bc12map->mapOrigin[2] = get_number(displacement[3]);			}
 		}
 	}
 	
@@ -182,7 +184,10 @@ void gfield::initialize(goptions Opt)
 			if (rotations[0].find(name) != string::npos) {
 				map->mapRotation[0] = get_number(rotations[1]);
 				map->mapRotation[1] = get_number(rotations[2]);
-				map->mapRotation[2] = get_number(rotations[3]);				
+				map->mapRotation[2] = get_number(rotations[3]);
+				bc12map->mapRotation[0] = get_number(rotations[1]);
+				bc12map->mapRotation[1] = get_number(rotations[2]);
+				bc12map->mapRotation[2] = get_number(rotations[3]);
 			}
 		}
 	}
@@ -193,8 +198,7 @@ void gfield::initialize(goptions Opt)
 
 	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++) {
 		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
-		if(attributes.size() > 2)
-		{
+		if(attributes.size() > 2) {
 			if(attributes[0].find(name) != string::npos)
 			{
 				minStep = get_number(attributes[1]);
@@ -211,6 +215,7 @@ void gfield::initialize(goptions Opt)
 						map->interpolation = "linear";
 					}
 				}
+				
 			}
 		}
 	}
@@ -219,6 +224,12 @@ void gfield::initialize(goptions Opt)
 		map->scaleFactor = scaleFactor;
 		map->initializeMap();
 		map->verbosity = verbosity;
+	}
+	
+	if(bc12map) {
+		bc12map->scaleFactor = scaleFactor;
+		bc12map->initializeMap();
+		bc12map->verbosity = verbosity;
 	}
 }
 
@@ -233,23 +244,32 @@ ostream &operator<<(ostream &stream, gfield gf)
 	cout << "    - scale factor:       "   << gf.scaleFactor << endl;
 	cout << "    - integration method: "   << gf.integration << endl;
 	cout << "    - minimum Step:       "   << gf.minStep << " mm" << endl;
-	if (gf.dimensions != "na" && gf.format == "simple")
+	if (gf.dimensions != "na" && gf.format == "simple") {
 		cout << "    - dimensions:         " << gf.dimensions << endl;
-
-	if (gf.dimensions == "na" && gf.format == "map")
-	{
+	}
+	if (gf.dimensions == "na" && gf.format == "map") {
 		cout << "    - map identifier:     " << gf.map->identifier << endl;
 
-		for (unsigned int i = 0; i < gf.map->coordinates.size(); i++)
+		for (unsigned int i = 0; i < gf.map->coordinates.size(); i++) {
 			cout << "    - Coordinate:         " << gf.map->coordinates[i];
-		
+		}
+
 		cout << "    - Map Field Unit:     " << gf.map->unit << endl;
 		cout << "    - Map Interpolation:  " << gf.map->interpolation << endl;
-
-		cout << "    - map origin:         x=" << gf.map->mapOrigin[0]
-			 << "mm, y=" << gf.map->mapOrigin[1]
+		cout << "    - Map origin:         x=" << gf.map->mapOrigin[0]
+			  << "mm, y=" << gf.map->mapOrigin[1]
 		     << "mm, z=" << gf.map->mapOrigin[2] << "mm" << endl;
 	}
+	if (gf.dimensions == "na" && gf.format == "bc12map") {
+		cout << "    - bc12map identifier:     " << gf.bc12map->identifier << endl;
+
+		cout << "    - Map Field Unit:     " << gf.bc12map->unit << endl;
+		cout << "    - Map origin:         x=" << gf.bc12map->mapOrigin[0]
+		<< "mm, y=" << gf.bc12map->mapOrigin[1]
+		<< "mm, z=" << gf.bc12map->mapOrigin[2] << "mm" << endl;
+	}
+
+	
 	return stream;
 }
 

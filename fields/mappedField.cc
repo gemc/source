@@ -72,10 +72,6 @@ void gMappedField::GetFieldValue(const double point[3], double *bField) const
 	} else 	if(symmetry == "cartesian_3D" || symmetry == "cartesian_3D_quadrant"){
 		GetFieldValue_cartesian3d(rpoint, bField, FIRST_ONLY);
 	}
-	
-
-
-
 
 	if(verbosity == 99) FIRST_ONLY = 99;
 	

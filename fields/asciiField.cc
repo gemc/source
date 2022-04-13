@@ -110,27 +110,21 @@ gfield asciiField::loadField(string file, goptions opts)
 			}
 			
 			// map symmetry, looking for map field definition
-			if(gf.format == "map")
-			{
+			if(gf.format == "map") {
 				if(!gf.map) gf.map = new gMappedField(file, gf.symmetry);
 				
 				// selecting "map" nodes
 				// selecting "coordinate" nodes
-				if(e.tagName().toStdString() == "map")
-				{
+				if(e.tagName().toStdString() == "map") {
 					QDomNode nn= e.firstChild();
-					while(!nn.isNull())
-					{
+					while(!nn.isNull()) {
 						QDomElement ee = nn.toElement();
-						if(ee.tagName().toStdString() == "coordinate")
-						{
+						if(ee.tagName().toStdString() == "coordinate") {
 							QDomNode nnn= ee.firstChild();
-							while(!nnn.isNull())
-							{
+							while(!nnn.isNull()) {
 								QDomElement eee = nnn.toElement();
 								
-								if(eee.tagName().toStdString() == "first" || eee.tagName().toStdString() == "second" || eee.tagName().toStdString() == "third")
-								{
+								if(eee.tagName().toStdString() == "first" || eee.tagName().toStdString() == "second" || eee.tagName().toStdString() == "third") {
 									string name = assignAttribute(eee, "name", "na");
 									int np      = (int) assignAttribute(eee, "npoints", 0);
 									string unit = assignAttribute(eee, "units", "mm");
@@ -147,8 +141,7 @@ gfield asciiField::loadField(string file, goptions opts)
 						}
 						
 						/// selecting "field" nodes. Default unit is gauss
-						if(ee.tagName().toStdString() == "field")
-						{
+						if(ee.tagName().toStdString() == "field") {
 							gf.map->unit = assignAttribute(ee, "unit", "gauss");
 						}
 						nn = nn.nextSibling();
@@ -159,6 +152,7 @@ gfield asciiField::loadField(string file, goptions opts)
 		}
 		n = n.nextSibling();
 	}
+	
 	// initialize field and field map
 	gf.initialize(opts);
 	
@@ -215,12 +209,6 @@ void asciiField::loadFieldMap(gMappedField* map, double v)
 		cout << "can't recognize the field symmetry "<< map->symmetry << endl; exit(1);
 	}
 }
-
-
-void asciiField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
-	
-}
-
 
 
 // Examples

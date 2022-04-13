@@ -11,22 +11,21 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	static int FIRST_ONLY;
 	
 	// displacement point
-	// double dpoint[3] = {x[0] - mapOrigin[0], x[1] - mapOrigin[1], x[2] - mapOrigin[2]};
+	double rpoint[3] = {x[0] - mapOrigin[0], x[1] - mapOrigin[1], x[2] - mapOrigin[2]};
 	
 
 	bField[0] = bField[1] = bField[2] = 0;
 
 
 	// Uses David's routine to return the BX BY BZ components
+	FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
+	//getCompositeFieldValue(combinedValuePtr, x[0], x[1], x[2], torus, solenoid);//torus and solenoid were declared in the header file
 
-
-        FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
-	getCompositeFieldValue(combinedValuePtr, x[0], x[1], x[2], torus, solenoid);//torus and solenoid were declared in the header file
 	bField[0] = combinedValuePtr->b1;
-        bField[1] = combinedValuePtr->b2;
-        bField[2] = combinedValuePtr->b3;
+	bField[1] = combinedValuePtr->b2;
+	bField[2] = combinedValuePtr->b3;
 
-
+	RotateField(bField);
 
 	// we don't worry about computer speed
 	// if verbosity is set this high
@@ -42,17 +41,13 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 		cout << "B = ("   << bField[0]/gauss << ",  " << bField[1]/gauss << ",  " << bField[2]/gauss << ") gauss " << endl;
 	}
 
-
-
-	RotateField(bField);
-
 	if(verbosity == 99) FIRST_ONLY = 99;
 	
 }
 
 void gclas12BinaryMappedField::RotateField( double *Bfield) const  {
 
-	// rotating the fields 
+	// rotating the fields
 	if(mapRotation[0] != 0) {
 		double yPrime = yRotX(Bfield);
 		double zPrime = zRotX(Bfield);
@@ -86,7 +81,7 @@ void gclas12BinaryMappedField::initializeMap()
 	sinBeta = sin(mapRotation[1]);
 	cosBeta = cos(mapRotation[1]);
 	sinGamma = sin(mapRotation[2]);
-	cosGamma = cos(mapRotation[2]);	
+	cosGamma = cos(mapRotation[2]);
 }
 
 

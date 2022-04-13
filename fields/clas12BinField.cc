@@ -33,7 +33,7 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gfield gf(opts);
 
 	gf.name        = file;
-	gf.description = "Field from David Heddle cMag library";
+	gf.description = "Field from David Heddle cMag library: " + file;
 	gf.format      = "bc12map";
 	gf.factory     = "CLAS12BIN";
 	gf.integration = "G4ClassicalRK4";
@@ -41,22 +41,14 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.unit        = "kilogauss";
 	gf.symmetry    = "cMag";
 
-	// initialize field and field map
+	if(!gf.bc12map) gf.bc12map = new gclas12BinaryMappedField(file);
+
+	// initialize field and bc12map field map
 	gf.initialize(opts);
 
 	return gf;
 }
 
-
-
-// load field map
-void clas12BinField::loadFieldMap(gMappedField* map, double v)
-{
-	cout << "  > Loading field map from " << map->identifier << " with symmetry: " << map->symmetry << endl;
-
-	// actual load of map: call function below
-//	loadFieldMap(map, v);
-}
 
 
 void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
@@ -86,20 +78,20 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
 //	}
 
 
-	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
-	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
-
-	string a = c12symm[1];
-	string b = c12asymm[2];
-	string c = c12symm[2];
-
-	const char *dir1 = a.c_str();
-	const char *dir2 = b.c_str();
-	const char *dir3 = c.c_str();
-
-	solenoid = initializeSolenoid(dir1);
-	symmetricTorus = initializeTorus(dir2);
-	fullTorus = initializeTorus(dir3);
+//	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
+//	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
+//
+//	string a = c12symm[1];
+//	string b = c12asymm[2];
+//	string c = c12symm[2];
+//
+//	const char *dir1 = a.c_str();
+//	const char *dir2 = b.c_str();
+//	const char *dir3 = c.c_str();
+//
+//	solenoid = initializeSolenoid(dir1);
+//	symmetricTorus = initializeTorus(dir2);
+//	fullTorus = initializeTorus(dir3);
 
 }
 
