@@ -1,17 +1,19 @@
-// gemc headers
+// gemc
 #include "fieldFactory.h"
-
 #include "asciiField.h"
-
-
 #include "string_utilities.h"
 #include "gemcUtils.h"
 #include "magfieldio.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>
 
+// c++
+#include <string>
+using namespace std;
+
+// cMag
 #include "magfieldio.h"
 
 // mlibrary
@@ -179,7 +181,7 @@ gfield asciiField::loadField(string file, goptions opts)
 
 
 
-// load field map
+// load field map, called by create_MFM
 void asciiField::loadFieldMap(gMappedField* map, double v)
 {
 	cout << "  > Loading field map from " << map->identifier << " with symmetry: " << map->symmetry << endl;

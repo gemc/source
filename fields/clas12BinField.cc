@@ -5,10 +5,12 @@
 #include "gemcUtils.h"
 #include "magfieldio.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+// c++
+#include <string>
+using namespace std;
 
+
+// cMag
 #include "magfieldio.h"
 
 // mlibrary
@@ -19,11 +21,26 @@ using namespace gstring;
 bool clas12BinField::isEligible(string compositeFieldsName)
 {
 
-	if (compositeFieldsName ==  TorusSymmSolenoid2018 || compositeFieldsName == TorusASymmSolenoid2018) {
-		return 1;
-	}
+	string fileName = getFilenameFromFilenameWithPath(compositeFieldsName);
 
-	return 0;
+	if (compositeFieldsName ==  TorusSymmSolenoid2018 ) {
+		if (fileName == validC12MapNames[TorusSymmSolenoid2018][0]) {
+			solenoidFileName = compositeFieldsName;
+		} else if (fileName == validC12MapNames[TorusSymmSolenoid2018][1]) {
+			symmetricTorusFileName = compositeFieldsName;
+		}
+		return 1;
+	} else if ( compositeFieldsName == TorusASymmSolenoid2018 ) {
+		if (fileName == validC12MapNames[TorusASymmSolenoid2018][0]) {
+			solenoidFileName = compositeFieldsName;
+		} else if (fileName == validC12MapNames[TorusASymmSolenoid2018][1]) {
+			fullTorusFileName = compositeFieldsName;
+		}
+
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 
@@ -50,9 +67,23 @@ gfield clas12BinField::loadField(string file, goptions opts)
 }
 
 
+// called by create_MFM
+void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 
-void clas12BinField::loadFieldMap(gclas12BinaryMappedField* map, double v) {
+	
+	if (v > 0 ) {
+		cout << "  > Loading Binary Field Maps for " << TorusSymmSolenoid2018 << endl;
+	}
 
+	if (b12map->identifier == TorusSymmSolenoid2018 ) {
+	
+		
+		
+		
+	} else if (b12map->identifier == TorusSymmSolenoid2018 ) {
+	
+	
+	}
 
 	// use validC12MapNames instead of solenoidPath and torusSymmetricPath
 

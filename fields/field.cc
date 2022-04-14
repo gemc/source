@@ -222,7 +222,6 @@ void gfield::initialize(goptions Opt)
 						map->interpolation = "linear";
 					}
 				}
-				
 			}
 		}
 	}
@@ -234,6 +233,7 @@ void gfield::initialize(goptions Opt)
 	}
 	
 	if(bc12map) {
+		bc12map->unit = "kilogauss";
 		bc12map->scaleFactor = scaleFactor;
 		bc12map->initializeMap();
 		bc12map->verbosity = verbosity;

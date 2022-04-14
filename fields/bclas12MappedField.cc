@@ -13,9 +13,7 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// displacement point
 	double rpoint[3] = {x[0] - mapOrigin[0], x[1] - mapOrigin[1], x[2] - mapOrigin[2]};
 	
-
 	bField[0] = bField[1] = bField[2] = 0;
-
 
 	// Uses David's routine to return the BX BY BZ components
 	FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
@@ -75,6 +73,11 @@ void gclas12BinaryMappedField::RotateField( double *Bfield) const  {
 
 void gclas12BinaryMappedField::initializeMap()
 {
+	
+	
+	
+	
+	
 	// setting rotation sin and cosines
 	sinAlpha = sin(mapRotation[0]);
 	cosAlhpa = cos(mapRotation[0]);

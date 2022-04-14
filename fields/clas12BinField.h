@@ -18,6 +18,10 @@ public:
 
 	// save map list for loadFieldMap
 	map<string, vector<string> > validC12MapNames;
+	
+	string symmetricTorusFileName;
+	string solenoidFileName;
+	string fullTorusFileName;
 
 	// constructor:  create map list with hardcoded names
 	// hardcoding names here
@@ -27,6 +31,7 @@ public:
 	}
 
 	// check if the binary map filename is a match for a pre-defined list
+	// also set the map filenames
 	bool isEligible(string);
 
 	// load field definitions

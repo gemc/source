@@ -27,33 +27,8 @@ void gMappedField::GetFieldValue(const double point[3], double *bField) const
 	static int FIRST_ONLY;
 	
 	// displacement point
-	double dpoint[3] = {point[0] - mapOrigin[0], point[1] - mapOrigin[1], point[2] - mapOrigin[2]};
+	double rpoint[3] = {point[0] - mapOrigin[0], point[1] - mapOrigin[1], point[2] - mapOrigin[2]};
 	
-	double rpoint[3] = {dpoint[0], dpoint[1], dpoint[2]};
-
-//	// this rotated only the coordinates but we need to rotate the fields not the coordinate
-//	if(mapRotation[0] != 0) {
-//		double yPrime = yRotX(rpoint);
-//		double zPrime = zRotX(rpoint);
-//		rpoint[1] = yPrime;
-//		rpoint[2] = zPrime;
-//	}
-//
-//	if(mapRotation[1] != 0) {
-//		double xPrime = xRotY(rpoint);
-//		double zPrime = zRotY(rpoint);
-//		rpoint[0] = xPrime;
-//		rpoint[2] = zPrime;
-//	}
-//
-//	if(mapRotation[2] != 0) {
-//		double xPrime = xRotZ(rpoint);
-//		double yPrime = yRotZ(rpoint);
-//		rpoint[0] = xPrime;
-//		rpoint[1] = yPrime;
-//	}
-
-
 	bField[0] = bField[1] = bField[2] = 0;
 
 	// dipole field

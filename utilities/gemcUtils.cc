@@ -312,7 +312,6 @@ string bestValueUnits(double value, string unitType)
 }
 
 
-
 ostream &operator<<(ostream &stream, gtable gt)
 {
 	cout  << endl;
@@ -322,10 +321,6 @@ ostream &operator<<(ostream &stream, gtable gt)
 	
 	return stream;
 }
-
-
-
-
 
 
 

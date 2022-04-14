@@ -45,7 +45,6 @@ map<string, gfield> loadAllFields(map<string, fieldFactoryInMap> fieldFactoryMap
 		if(getenv("FIELD_DIR") != nullptr) mergeMaps(filesMap, getFilesInDirectory((string) getenv("FIELD_DIR") ));
 	}
 
-
 	// checking eligibility of each file
 	// if eligible, load field definitions
 	map<string, gfield> gfields;

@@ -36,13 +36,11 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 	map->B1_3D = new double**[map->np[0]];
 	map->B2_3D = new double**[map->np[0]];
 	map->B3_3D = new double**[map->np[0]];
-	for (unsigned i = 0; i < map->np[0]; ++i)
-	{
+	for (unsigned i = 0; i < map->np[0]; ++i) {
 		map->B1_3D[i] = new double*[map->np[1]];
 		map->B2_3D[i] = new double*[map->np[1]];
 		map->B3_3D[i] = new double*[map->np[1]];
-		for (unsigned j = 0; j < map->np[1]; ++j)
-		{
+		for (unsigned j = 0; j < map->np[1]; ++j) {
 			map->B1_3D[i][j] = new double[map->np[2]];
 			map->B2_3D[i][j] = new double[map->np[2]];
 			map->B3_3D[i][j] = new double[map->np[2]];
@@ -67,20 +65,16 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 	FILE *fp = fopen (map->identifier.c_str(), "r");
 
 	// ignoring header
-	while(tmp != "</mfield>")
-	{
+	while(tmp != "</mfield>") {
 		if(fscanf(fp, "%s", ctmp) != 0)
 			tmp = string(ctmp);
 	}
 
 	// now reading map
 	// values as read from map
-	for(int i1 = 0; i1<np_1 ; i1++)
-	{
-		for(int i2 = 0; i2<np_2 ; i2++)
-		{
-			for(int i3 = 0; i3<np_3 ; i3++)
-			{
+	for(int i1 = 0; i1<np_1 ; i1++) {
+		for(int i2 = 0; i2<np_2 ; i2++) {
+			for(int i3 = 0; i3<np_3 ; i3++) {
 				if(fscanf(fp, "%lg %lg %lg %lg %lg %lg", &d1, &d2, &d3, &b1, &b2, &b3) !=0 ) {
 
 					d1 *= unit1;
@@ -113,7 +107,6 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 					unsigned t1 = (unsigned) floor( ( d1 - min1 + cell1/2 ) / ( cell1 ) ) ;
 					unsigned t2 = (unsigned) floor( ( d2 - min2 + cell2/2 ) / ( cell2 ) ) ;
 					unsigned t3 = (unsigned) floor( ( d3 - min3 + cell3/2 ) / ( cell3 ) ) ;
-
 
 					// The values are indexed as B1_3D[X][Y][Z]
 					if(   map->getCoordinateWithSpeed(0).name == "X"
