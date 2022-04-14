@@ -3,12 +3,12 @@
 
 #include "fieldFactory.h"
 
-extern "C" {
-#include "magfield.h"	
-#include "magfieldio.h"
-#include "munittest.h"
-#include "magfieldutil.h"
-}
+//extern "C" {
+//#include "magfield.h"	
+//#include "magfieldio.h"
+//#include "munittest.h"
+//#include "magfieldutil.h"
+//}
 
 
 class clas12BinField : public fieldFactory
@@ -44,11 +44,7 @@ public:
 	// - clas12 would be the only map using it. Not really worth it, also considering that:
 	// - gemc is moving to gemc3 with a better (plugin) mechanism to load fields
 	virtual void loadFieldMap(gclas12BinaryMappedField*, double); // load clas12 binary field map.
-	
-	MagneticFieldPtr symmetricTorus;
-	MagneticFieldPtr solenoid;
-	MagneticFieldPtr fullTorus;
-	
+		
 	static fieldFactory *createFieldFactory() {
 		return new clas12BinField;
 	}

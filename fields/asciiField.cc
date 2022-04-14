@@ -68,24 +68,20 @@ gfield asciiField::loadField(string file, goptions opts)
 		QDomElement e = n.toElement();       // converts the node to an element.
 		if(!e.isNull())                      // check that the node really is an element.
 		{
-			if(e.tagName().toStdString() == "description")  ///< selecting "description" nodes
-			{
+			if(e.tagName().toStdString() == "description") { ///< selecting "description" nodes
 				gf.name        = assignAttribute(e, "name", "na");
 				gf.factory     = assignAttribute(e, "factory", "na");
 				gf.description = assignAttribute(e, "comment", "no comment");
 			}
 			
-			if(e.tagName().toStdString() == "symmetry")     ///< selecting "symmetry" nodes
-			{
+			if(e.tagName().toStdString() == "symmetry") {     ///< selecting "symmetry" nodes
 				gf.symmetry    = assignAttribute(e, "type",   "na");
 				gf.format      = assignAttribute(e, "format", "na");
 			}
 			
 			// simple symmetry, looking for uniform field definition
-			if(gf.format == "simple" && gf.symmetry == "uniform")
-			{
-				if(e.tagName().toStdString() == "dimension")     ///< selecting "dimension" nodes
-				{
+			if(gf.format == "simple" && gf.symmetry == "uniform") {
+				if(e.tagName().toStdString() == "dimension")  {   ///< selecting "dimension" nodes
 					string units = "*" + assignAttribute(e, "units", "gauss");
 					gf.dimensions  = assignAttribute(e, "bx", "0") + units + " ";
 					gf.dimensions += assignAttribute(e, "by", "0") + units + " " ;
@@ -93,12 +89,9 @@ gfield asciiField::loadField(string file, goptions opts)
 				}
 			}
 			
-			
 			// simple symmetry, looking for multipole field definition
-			if(gf.format == "simple" && gf.symmetry == "multipole")
-			{
-				if(e.tagName().toStdString() == "dimension")     ///< selecting "dimension" nodes
-				{
+			if(gf.format == "simple" && gf.symmetry == "multipole") {
+				if(e.tagName().toStdString() == "dimension") {    ///< selecting "dimension" nodes
 					gf.dimensions  = assignAttribute(e, "Npole", "0") + " ";
 					gf.dimensions += assignAttribute(e, "scale", "0") + "*" + assignAttribute(e, "Bunit",   "gauss") + " ";
 					gf.dimensions += assignAttribute(e, "x", "0")     + "*" + assignAttribute(e, "XYZunit", "cm")    + " ";
@@ -157,8 +150,7 @@ gfield asciiField::loadField(string file, goptions opts)
 	gf.initialize(opts);
 	
 	// rescaling dimensions for uniform field
-	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "uniform")
-	{
+	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "uniform") {
 		vector<string> olddim = getStringVectorFromString(gf.dimensions);
 		string newdim;
 		for(unsigned int d=0; d<olddim.size(); d++)
@@ -170,8 +162,7 @@ gfield asciiField::loadField(string file, goptions opts)
 	}
 	
 	// rescaling dimensions for multipole field
-	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "multipole")
-	{
+	if(gf.scaleFactor != 1 && gf.format == "simple" && gf.symmetry == "multipole") {
 		vector<string> olddim = getStringVectorFromString(gf.dimensions);
 		string newdim;
 		for(unsigned int d=0; d<olddim.size(); d++)

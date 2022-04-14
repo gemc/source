@@ -55,8 +55,12 @@ class gfield
 {
 public:
 	gfield(){;}
-	gfield(goptions opts) : symmetry("na"), format("na"), dimensions("na"), map(nullptr), MFM(nullptr)
-	{
+	gfield(goptions opts) : symmetry("na"),
+	format("na"),
+	dimensions("na"),
+	map(nullptr),
+	bc12map(nullptr),
+	MFM(nullptr) {
 		// initialize Magnetic Field Manager and Mapped field to nullptr
 		scaleFactor	     = 1;
 		minStep          = 1*mm;

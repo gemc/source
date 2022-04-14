@@ -41,7 +41,7 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.unit        = "kilogauss";
 	gf.symmetry    = "cMag";
 
-	if(!gf.bc12map) gf.bc12map = new gclas12BinaryMappedField(file);
+	if(gf.bc12map == nullptr) gf.bc12map = new gclas12BinaryMappedField(file);
 
 	// initialize field and bc12map field map
 	gf.initialize(opts);

@@ -14,6 +14,7 @@ extern "C" {
 #include "munittest.h"
 #include "magfieldutil.h"
 }
+
 // c++ headers
 #include <vector>
 #include <string>
@@ -58,8 +59,9 @@ public:
 	// returns the field at point x. This is a dispatcher for the various symmetries below
 	void GetFieldValue( const double x[3], double *Bfield) const;
 
-	static MagneticFieldPtr torus;
-	static MagneticFieldPtr solenoid;
+	MagneticFieldPtr symmetricTorus;
+	MagneticFieldPtr solenoid;
+	MagneticFieldPtr fullTorus;
 
 	FieldValuePtr torusValuePtr;
 	FieldValuePtr solenoidValuePtr;

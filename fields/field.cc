@@ -40,65 +40,65 @@ void gfield::create_MFM()
 		create_simple_multipole_MFM();
 	} else if(format == "map") {
 		fFactory->loadFieldMap(map, verbosity);
-
+		
 		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);
 		G4MagIntegratorStepper* iStepper     = createStepper(integration, 	iEquation);
 		G4ChordFinder*          iChordFinder = new G4ChordFinder(map, minStep, iStepper);
-
+		
 		// caching does not seem to help for dipole-y
 		// will it help for other field maps?
 		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, g4fieldCacheSize);
 		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
-
+		
 		G4double minEps = 0.1;  //   Minimum & value for smallest steps
 		G4double maxEps = 1.0;  //   Maximum & value for largest steps
 		
 		MFM->SetMinimumEpsilonStep( minEps );
 		MFM->SetMaximumEpsilonStep( maxEps );
- 		MFM->SetDeltaOneStep(0.01 * mm);
+		MFM->SetDeltaOneStep(0.01 * mm);
 		MFM->SetDeltaIntersection(0.01 * mm);
 	} else if(format == "bc12map") {
 		fFactory->loadFieldMap(bc12map, verbosity);
-
+		
 		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);
 		G4MagIntegratorStepper* iStepper     = createStepper(integration, 	iEquation);
 		G4ChordFinder*          iChordFinder = new G4ChordFinder(bc12map, minStep, iStepper);
-
+		
 		// caching does not seem to help for dipole-y
 		// will it help for other field maps?
 		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, g4fieldCacheSize);
 		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
-
+		
 		G4double minEps = 0.1;  //   Minimum & value for smallest steps
 		G4double maxEps = 1.0;  //   Maximum & value for largest steps
-
+		
 		MFM->SetMinimumEpsilonStep( minEps );
 		MFM->SetMaximumEpsilonStep( maxEps );
 		MFM->SetDeltaOneStep(0.01 * mm);
 		MFM->SetDeltaIntersection(0.01 * mm);
 	}
-
+	
 }
 
 void gfield::create_simple_MFM()
 {
 	vector < string > dim = getStringVectorFromString(dimensions);
 	
-	if (dim.size() != 3)
+	if (dim.size() != 3) {
 		cout << "   !!! Error: dimension of field " << name << " are wrong: "
-	  		 << dimensions << " has dimension " << dim.size() << endl;
-
+		<< dimensions << " has dimension " << dim.size() << endl;
+	}
+	
 	const G4ThreeVector constField(get_number(dim[0]), get_number(dim[1]), get_number(dim[2]));
 	G4UniformMagField*      magField     = new G4UniformMagField(constField);
-
+	
 	G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(magField);
 	G4MagIntegratorStepper* iStepper     = createStepper(integration, iEquation);
 	G4ChordFinder*          iChordFinder = new G4ChordFinder(magField, minStep,	iStepper);
-
+	
 	MFM = new G4FieldManager(magField, iChordFinder);
-
-	if (verbosity > 1)
-	{
+	
+	if (verbosity > 1) {
 		cout << "  >  <" << name << ">: uniform magnetic field is built." << endl;
 	}
 }
@@ -107,24 +107,24 @@ void gfield::create_simple_multipole_MFM()
 {
 	vector < string > dim = getStringVectorFromString(dimensions);
 	
-	if (dim.size() != 7)
+	if (dim.size() != 7) {
 		cout << "   !!! Error: dimension of field " << name << " are wrong: "
-				<< dimensions << " has dimension " << dim.size() << endl;
-
+		<< dimensions << " has dimension " << dim.size() << endl;
+	}
+	
 	multipoleField* magField = new multipoleField(atoi(dim[0].c_str()), get_number(dim[1]), get_number(dim[2]), get_number(dim[3]),
-			                                     get_number(dim[4]), get_number(dim[5]), dim[6]);
+																 get_number(dim[4]), get_number(dim[5]), dim[6]);
 	
 	
 	G4Mag_UsualEqRhs* iEquation      = new G4Mag_UsualEqRhs(magField);
 	G4MagIntegratorStepper* iStepper = createStepper(integration, iEquation);
 	G4ChordFinder* iChordFinder      = new G4ChordFinder(magField, minStep, iStepper);
-
+	
 	MFM = new G4FieldManager(magField, iChordFinder);
-
-	if (verbosity > 1)
-	{
+	
+	if (verbosity > 1) {
 		cout << "  >  <" << name << ">: multipole magnetic field is built with "
-			 << dimensions << endl;
+		<< dimensions << endl;
 	}
 }
 
@@ -140,7 +140,7 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 	if (sname == "G4HelixExplicitEuler")  return new G4HelixExplicitEuler(ie);
 	if (sname == "G4HelixSimpleRunge")	  return new G4HelixSimpleRunge(ie);
 	if (sname == "G4NystromRK4")	      return new G4NystromRK4(ie);
-
+	
 	// if requested is not found return nullptr
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;
 	return nullptr;
@@ -148,8 +148,6 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 
 void gfield::initialize(goptions Opt)
 {
-	string hd_msg = "  >> fields Init: ";
-
 	// scale
 	vector<aopt> FIELD_SCALES_OPTION = Opt.getArgs("SCALE_FIELD");
 	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
@@ -160,19 +158,24 @@ void gfield::initialize(goptions Opt)
 			}
 		}
 	}
-
+	
 	// map displacement
 	vector<aopt> FIELD_DISPLACEMENT_OPTION = Opt.getArgs("DISPLACE_FIELDMAP");
 	for (unsigned int f = 0; f < FIELD_DISPLACEMENT_OPTION.size(); f++) {
 		vector < string > displacement = getStringVectorFromStringWithDelimiter(FIELD_DISPLACEMENT_OPTION[f].args, ",");
 		if(displacement.size() == 4) {
 			if (displacement[0].find(name) != string::npos) {
-				map->mapOrigin[0] = get_number(displacement[1]);
-				map->mapOrigin[1] = get_number(displacement[2]);
-				map->mapOrigin[2] = get_number(displacement[3]);
-				bc12map->mapOrigin[0] = get_number(displacement[1]);
-				bc12map->mapOrigin[1] = get_number(displacement[2]);
-				bc12map->mapOrigin[2] = get_number(displacement[3]);			}
+				if (map) {
+					map->mapOrigin[0] = get_number(displacement[1]);
+					map->mapOrigin[1] = get_number(displacement[2]);
+					map->mapOrigin[2] = get_number(displacement[3]);
+				}
+				if (bc12map) {
+					bc12map->mapOrigin[0] = get_number(displacement[1]);
+					bc12map->mapOrigin[1] = get_number(displacement[2]);
+					bc12map->mapOrigin[2] = get_number(displacement[3]);
+				}
+			}
 		}
 	}
 	
@@ -182,20 +185,24 @@ void gfield::initialize(goptions Opt)
 		vector < string > rotations = getStringVectorFromStringWithDelimiter(FIELD_ROTATION_OPTION[f].args, ",");
 		if(rotations.size() == 4) {
 			if (rotations[0].find(name) != string::npos) {
-				map->mapRotation[0] = get_number(rotations[1]);
-				map->mapRotation[1] = get_number(rotations[2]);
-				map->mapRotation[2] = get_number(rotations[3]);
-				bc12map->mapRotation[0] = get_number(rotations[1]);
-				bc12map->mapRotation[1] = get_number(rotations[2]);
-				bc12map->mapRotation[2] = get_number(rotations[3]);
+				if (map) {
+					map->mapRotation[0] = get_number(rotations[1]);
+					map->mapRotation[1] = get_number(rotations[2]);
+					map->mapRotation[2] = get_number(rotations[3]);
+				}
+				if (bc12map) {
+					bc12map->mapRotation[0] = get_number(rotations[1]);
+					bc12map->mapRotation[1] = get_number(rotations[2]);
+					bc12map->mapRotation[2] = get_number(rotations[3]);
+				}
 			}
 		}
 	}
-
+	
 	// integration method, interpolation
 	vector<aopt> FIELD_PROPERTIES = Opt.getArgs("FIELD_PROPERTIES");
 	int fastMCMode                = Opt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
-
+	
 	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++) {
 		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
 		if(attributes.size() > 2) {
@@ -207,7 +214,7 @@ void gfield::initialize(goptions Opt)
 					integration = "G4SimpleRunge";
 					minStep = 2*mm;
 				}
-
+				
 				if(map) {
 					if(attributes.size() == 4) {
 						map->interpolation = trimSpacesFromString(attributes[3]);
@@ -249,26 +256,25 @@ ostream &operator<<(ostream &stream, gfield gf)
 	}
 	if (gf.dimensions == "na" && gf.format == "map") {
 		cout << "    - map identifier:     " << gf.map->identifier << endl;
-
+		
 		for (unsigned int i = 0; i < gf.map->coordinates.size(); i++) {
 			cout << "    - Coordinate:         " << gf.map->coordinates[i];
 		}
-
+		
 		cout << "    - Map Field Unit:     " << gf.map->unit << endl;
 		cout << "    - Map Interpolation:  " << gf.map->interpolation << endl;
 		cout << "    - Map origin:         x=" << gf.map->mapOrigin[0]
-			  << "mm, y=" << gf.map->mapOrigin[1]
-		     << "mm, z=" << gf.map->mapOrigin[2] << "mm" << endl;
+		<< "mm, y=" << gf.map->mapOrigin[1]
+		<< "mm, z=" << gf.map->mapOrigin[2] << "mm" << endl;
 	}
 	if (gf.dimensions == "na" && gf.format == "bc12map") {
 		cout << "    - bc12map identifier:     " << gf.bc12map->identifier << endl;
-
 		cout << "    - Map Field Unit:     " << gf.bc12map->unit << endl;
 		cout << "    - Map origin:         x=" << gf.bc12map->mapOrigin[0]
 		<< "mm, y=" << gf.bc12map->mapOrigin[1]
 		<< "mm, z=" << gf.bc12map->mapOrigin[2] << "mm" << endl;
 	}
-
+	
 	
 	return stream;
 }
