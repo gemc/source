@@ -58,6 +58,7 @@ void gfield::create_MFM()
 		MFM->SetDeltaOneStep(0.01 * mm);
 		MFM->SetDeltaIntersection(0.01 * mm);
 	} else if(format == "bc12map") {
+		
 		fFactory->loadFieldMap(bc12map, verbosity);
 		
 		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);

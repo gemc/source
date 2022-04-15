@@ -59,14 +59,17 @@ public:
 	// returns the field at point x. This is a dispatcher for the various symmetries below
 	void GetFieldValue( const double x[3], double *Bfield) const;
 
+	// fields filenames
 	string symmetricTorusFileName;
 	string solenoidFileName;
 	string fullTorusFileName;
 
+	// map pointers
 	MagneticFieldPtr symmetricTorus;
 	MagneticFieldPtr solenoid;
 	MagneticFieldPtr fullTorus;
 
+	// field value pointers
 	FieldValuePtr torusValuePtr;
 	FieldValuePtr solenoidValuePtr;
 	FieldValuePtr combinedValuePtr;

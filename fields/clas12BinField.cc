@@ -9,9 +9,12 @@
 #include <string>
 using namespace std;
 
-
-// cMag
+extern "C" {
+#include "magfield.h"
 #include "magfieldio.h"
+#include "munittest.h"
+#include "magfieldutil.h"
+}
 
 // mlibrary
 #include "gstring.h"
@@ -66,57 +69,21 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 
 	
 	if (v > 0 ) {
-		cout << "  > Loading Binary Field Maps for " << TorusSymmSolenoid2018 << endl;
+		cout << endl << "  #### Loading Binary Field Maps for " << b12map->identifier << endl;
 	}
 
 	if (b12map->identifier == TorusSymmSolenoid2018 ) {
 	
+		b12map->solenoid       = initializeSolenoid(b12map->solenoidFileName.c_str());
+		b12map->symmetricTorus = initializeTorus(b12map->symmetricTorusFileName.c_str());
 		
-		
-		
-	} else if (b12map->identifier == TorusSymmSolenoid2018 ) {
+	} else if (b12map->identifier == TorusASymmSolenoid2018 ) {
 	
-	
+		b12map->solenoid  = initializeSolenoid(b12map->solenoidFileName.c_str());
+		b12map->fullTorus = initializeTorus(b12map->fullTorusFileName.c_str());
 	}
 
-	// use validC12MapNames instead of solenoidPath and torusSymmetricPath
-
-
-//	char *solenoidPath = (char*) malloc(255);
-//	char *torusSymmetricPath = (char*) malloc(255);
-//	char *torusFullPath = (char*) malloc(255);
-//
-//	const char *dataDir;
-//
-//	dataDir = "/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps";
-//
-//	sprintf(solenoidPath, "%s/Symm_solenoid_r601_phi1_z1201_13June2018.dat", dataDir);
-
-//	if(isSymmetric==true)  {
-//		sprintf(torusSymmetricPath, "%s/Symm_torus_r2501_phi16_z251_24Apr2018.dat",dataDir);//Absolute Path To Symmetric Torus
-//		symmetricTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Symm_torus_r2501_phi16_z251_24Apr2018.dat");
-//	}
-//
-//	else  {
-//		sprintf(torusFullPath, "%s/Full_torus_r251_phi181_z251_03March2020.dat",dataDir);//Absolute Path To Full Torus
-//		fullTorus = initializeTorus("/w/hallb_scshelf2102/clas12/jnewton/binary/data/fieldmaps/Full_torus_r251_phi181_z251_03March2020.dat");
-//	}
-
-
-//	vector<string> c12symm = validC12MapNames["c12BinaryTorusSymmSolenoid2018"];
-//	vector<string> c12asymm = validC12MapNames["c12BinaryTorusASymmSolenoid2018"];
-//
-//	string a = c12symm[1];
-//	string b = c12asymm[2];
-//	string c = c12symm[2];
-//
-//	const char *dir1 = a.c_str();
-//	const char *dir2 = b.c_str();
-//	const char *dir3 = c.c_str();
-//
-//	solenoid = initializeSolenoid(dir1);
-//	symmetricTorus = initializeTorus(dir2);
-//	fullTorus = initializeTorus(dir3);
+	cout << endl << "  ####  Binary Field Maps for " << b12map->identifier << " loading complete." << endl << endl;
 
 }
 

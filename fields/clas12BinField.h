@@ -19,10 +19,6 @@ public:
 	// save map list for loadFieldMap
 	map<string, vector<string> > validC12MapNames;
 	
-	string symmetricTorusFileName;
-	string solenoidFileName;
-	string fullTorusFileName;
-
 	// constructor:  create map list with hardcoded names
 	// hardcoding names here
 	clas12BinField() {

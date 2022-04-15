@@ -51,8 +51,7 @@ gfield asciiField::loadField(string file, goptions opts)
 	string content = "";
 	string stop    = "";
 	
-	while(IN.good() && stop != "</mfield>")
-	{
+	while(IN.good() && stop != "</mfield>") {
 		IN >> stop;
 		content += stop + " " ;
 	}
