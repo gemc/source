@@ -6,7 +6,6 @@
 #define FIELD_H 1
 
 
-
 // The magnetic fields are self-descriptive, using an XML reader
 // The maps are stored in several format. 
 // Each format corresponds to a gfield factory. Example: ASCII, EVIO.

@@ -61,13 +61,13 @@ void gfield::create_MFM()
 		
 		fFactory->loadFieldMap(bc12map, verbosity);
 		
-		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(map);
+		G4Mag_UsualEqRhs*       iEquation    = new G4Mag_UsualEqRhs(bc12map);
 		G4MagIntegratorStepper* iStepper     = createStepper(integration, 	iEquation);
 		G4ChordFinder*          iChordFinder = new G4ChordFinder(bc12map, minStep, iStepper);
 		
 		// caching does not seem to help for dipole-y
 		// will it help for other field maps?
-		G4MagneticField *pCachedMagField = new G4CachedMagneticField(map, g4fieldCacheSize);
+		G4MagneticField *pCachedMagField = new G4CachedMagneticField(bc12map, g4fieldCacheSize);
 		MFM = new G4FieldManager(pCachedMagField, iChordFinder);
 		
 		G4double minEps = 0.1;  //   Minimum & value for smallest steps

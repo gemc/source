@@ -19,7 +19,6 @@ extern "C" {
 #include <vector>
 #include <string>
 #include <iostream>
-
 using namespace std;
 
 
@@ -68,11 +67,6 @@ public:
 	MagneticFieldPtr symmetricTorus;
 	MagneticFieldPtr solenoid;
 	MagneticFieldPtr fullTorus;
-
-	// field value pointers
-	FieldValuePtr torusValuePtr;
-	FieldValuePtr solenoidValuePtr;
-	FieldValuePtr combinedValuePtr;
 
 	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
 	double sinAlpha, cosAlhpa;

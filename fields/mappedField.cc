@@ -12,8 +12,7 @@ ostream &operator<<(ostream &stream, gcoord gc)
 	if(gc.unit == "mm" || gc.unit == "m" ||  gc.unit == "cm") {
 		cout << ", min="   << gc.min/cm << " cm"
 		<< ", max="   << gc.max/cm << " cm";
-	}
-	else if(gc.unit == "deg" || gc.unit == "rad" ) {
+	} else if(gc.unit == "deg" || gc.unit == "rad" ) {
 		cout << ", min="   << gc.min/degree << " deg"
 		<< ", max="   << gc.max/degree << " deg";
 	}
@@ -25,11 +24,11 @@ ostream &operator<<(ostream &stream, gcoord gc)
 void gMappedField::GetFieldValue(const double point[3], double *bField) const
 {
 	static int FIRST_ONLY;
-	
+		
+	bField[0] = bField[1] = bField[2] = 0;
+
 	// displacement point
 	double rpoint[3] = {point[0] - mapOrigin[0], point[1] - mapOrigin[1], point[2] - mapOrigin[2]};
-	
-	bField[0] = bField[1] = bField[2] = 0;
 
 	// dipole field
 	if(symmetry == "dipole-z" || symmetry == "dipole-y" || symmetry == "dipole-x") {

@@ -3,18 +3,7 @@
 #include "asciiField.h"
 #include "string_utilities.h"
 #include "gemcUtils.h"
-#include "magfieldio.h"
 
-//#include <stdio.h>
-//#include <string.h>
-//#include <stdlib.h>
-
-// c++
-#include <string>
-using namespace std;
-
-// cMag
-#include "magfieldio.h"
 
 // mlibrary
 #include "gstring.h"

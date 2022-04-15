@@ -1,5 +1,6 @@
 // gemc include
 #include "bclas12MappedField.h"
+#include "gemcOptions.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -9,19 +10,26 @@ using namespace CLHEP;
 void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) const
 {
 	static int FIRST_ONLY;
-	
-	// displacement point
-	double rpoint[3] = {x[0] - mapOrigin[0], x[1] - mapOrigin[1], x[2] - mapOrigin[2]};
-	
 	bField[0] = bField[1] = bField[2] = 0;
+
+	// displacement point
+	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
+
 
 	// Uses David's routine to return the BX BY BZ components
 	FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
-	//getCompositeFieldValue(combinedValuePtr, x[0], x[1], x[2], torus, solenoid);//torus and solenoid were declared in the header file
+	
+	if(identifier == TorusSymmSolenoid2018) {
+		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], symmetricTorus, solenoid);
 
-	bField[0] = combinedValuePtr->b1;
-	bField[1] = combinedValuePtr->b2;
-	bField[2] = combinedValuePtr->b3;
+	} else 	if(identifier == TorusASymmSolenoid2018) {
+		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus, solenoid);
+	}
+
+
+	bField[0] = combinedValuePtr->b1*kilogauss;
+	bField[1] = combinedValuePtr->b2*kilogauss;
+	bField[2] = combinedValuePtr->b3*kilogauss;
 
 	RotateField(bField);
 

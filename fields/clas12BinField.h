@@ -3,13 +3,6 @@
 
 #include "fieldFactory.h"
 
-//extern "C" {
-//#include "magfield.h"	
-//#include "magfieldio.h"
-//#include "munittest.h"
-//#include "magfieldutil.h"
-//}
-
 
 class clas12BinField : public fieldFactory
 {

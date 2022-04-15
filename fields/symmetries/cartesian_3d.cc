@@ -295,8 +295,7 @@ void gMappedField::GetFieldValue_cartesian3d( const double x[3], double *Bfield,
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well
-	if(verbosity>3 && FIRST_ONLY != 99)
-	{
+	if(verbosity>3 && FIRST_ONLY != 99) {
 		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm:"
 		<< "("  << x[0]/cm << ", "
 		<< x[1]/cm << ", "

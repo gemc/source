@@ -3,7 +3,6 @@
 #include "clas12BinField.h"
 #include "string_utilities.h"
 #include "gemcUtils.h"
-#include "magfieldio.h"
 
 // c++
 #include <string>
