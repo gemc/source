@@ -20,23 +20,9 @@ using namespace gstring;
 
 bool clas12BinField::isEligible(string compositeFieldsName)
 {
-
-	string fileName = getFilenameFromFilenameWithPath(compositeFieldsName);
-
 	if (compositeFieldsName ==  TorusSymmSolenoid2018 ) {
-		if (fileName == validC12MapNames[TorusSymmSolenoid2018][0]) {
-			solenoidFileName = compositeFieldsName;
-		} else if (fileName == validC12MapNames[TorusSymmSolenoid2018][1]) {
-			symmetricTorusFileName = compositeFieldsName;
-		}
 		return 1;
 	} else if ( compositeFieldsName == TorusASymmSolenoid2018 ) {
-		if (fileName == validC12MapNames[TorusASymmSolenoid2018][0]) {
-			solenoidFileName = compositeFieldsName;
-		} else if (fileName == validC12MapNames[TorusASymmSolenoid2018][1]) {
-			fullTorusFileName = compositeFieldsName;
-		}
-
 		return 1;
 	} else {
 		return 0;
@@ -58,8 +44,16 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	gf.unit        = "kilogauss";
 	gf.symmetry    = "cMag";
 
-	if(gf.bc12map == nullptr) gf.bc12map = new gclas12BinaryMappedField(file);
-
+	if(gf.bc12map == nullptr) {
+		gf.bc12map = new gclas12BinaryMappedField(file);
+		if(getenv("FIELD_DIR") != nullptr) {
+			string fieldDir=getenv("FIELD_DIR");
+			gf.bc12map->symmetricTorusFileName = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][1];
+			gf.bc12map->solenoidFileName       = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][0];
+			gf.bc12map->fullTorusFileName      = fieldDir + "/" + validC12MapNames[TorusASymmSolenoid2018][1];
+		}
+	}
+	
 	// initialize field and bc12map field map
 	gf.initialize(opts);
 

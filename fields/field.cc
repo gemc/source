@@ -268,7 +268,9 @@ ostream &operator<<(ostream &stream, gfield gf)
 		<< "mm, z=" << gf.map->mapOrigin[2] << "mm" << endl;
 	}
 	if (gf.dimensions == "na" && gf.format == "bc12map") {
-		cout << "    - bc12map identifier:     " << gf.bc12map->identifier << endl;
+		cout << "    - bc12map symmetricTorusFileName:     " << gf.bc12map->symmetricTorusFileName << endl;
+		cout << "    - bc12map solenoidFileName:     " << gf.bc12map->solenoidFileName << endl;
+		cout << "    - bc12map fullTorusFileName:     " << gf.bc12map->fullTorusFileName << endl;
 		cout << "    - Map Field Unit:     " << gf.bc12map->unit << endl;
 		cout << "    - Map origin:         x=" << gf.bc12map->mapOrigin[0]
 		<< "mm, y=" << gf.bc12map->mapOrigin[1]
