@@ -42,6 +42,7 @@ public:
 		mapRotation[1] = 0;
 		mapRotation[2] = 0;
 		scaleFactor    = 1;
+		interpolation = "linear";
 		verbosity      = 0;
 	}
 	~gclas12BinaryMappedField(){;}
@@ -53,6 +54,7 @@ public:
 	double mapOrigin[3];        ///< Displacement of map. This is used in GetFieldValue
 	double mapRotation[3];      ///< Rotation of map. This is used in GetFieldValue
 	double scaleFactor;         ///< copy of the gfield scaleFactor
+	string interpolation;       ///< map interpolation technique. Choices are "none", "linear", "quadratic"
 	string unit;                ///< field unit in the map
 
 	// returns the field at point x. This is a dispatcher for the various symmetries below

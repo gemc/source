@@ -59,6 +59,14 @@ gfield clas12BinField::loadField(string file, goptions opts)
 	// initialize field and bc12map field map
 	gf.initialize(opts);
 
+	if(gf.bc12map->interpolation == "none") {
+		setAlgorithm(NEAREST_NEIGHBOR);
+	} else {
+		setAlgorithm(INTERPOLATION);
+	}
+
+	
+	
 	return gf;
 }
 

@@ -207,8 +207,7 @@ void gfield::initialize(goptions Opt)
 	for (unsigned int f = 0; f < FIELD_PROPERTIES.size(); f++) {
 		vector < string > attributes = getStringVectorFromStringWithDelimiter(FIELD_PROPERTIES[f].args, ",");
 		if(attributes.size() > 2) {
-			if(attributes[0].find(name) != string::npos)
-			{
+			if(attributes[0].find(name) != string::npos) {
 				minStep = get_number(attributes[1]);
 				integration = trimSpacesFromString(attributes[2]);
 				if(fastMCMode) {
@@ -223,6 +222,14 @@ void gfield::initialize(goptions Opt)
 						map->interpolation = "linear";
 					}
 				}
+				if(bc12map) {
+					if(attributes.size() == 4) {
+						bc12map->interpolation = trimSpacesFromString(attributes[3]);
+					} else {
+						bc12map->interpolation = "linear";
+					}
+				}
+
 			}
 		}
 	}
@@ -273,6 +280,7 @@ ostream &operator<<(ostream &stream, gfield gf)
 		cout << "    - bc12map solenoidFileName:     " << gf.bc12map->solenoidFileName << endl;
 		cout << "    - bc12map fullTorusFileName:     " << gf.bc12map->fullTorusFileName << endl;
 		cout << "    - Map Field Unit:     " << gf.bc12map->unit << endl;
+		cout << "    - Map Interpolation:  " << gf.bc12map->interpolation << endl;
 		cout << "    - Map origin:         x=" << gf.bc12map->mapOrigin[0]
 		<< "mm, y=" << gf.bc12map->mapOrigin[1]
 		<< "mm, z=" << gf.bc12map->mapOrigin[2] << "mm" << endl;
