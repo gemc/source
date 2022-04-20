@@ -35,6 +35,8 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	bhc.nlayer = 6;
 	bhc.ncomp = 7;
 	
+	cout << "Entering initializeBANDHitConstants" << endl;
+
 	// database
 	bhc.runNo = runno;
 	
@@ -44,47 +46,40 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	else
 		bhc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
-	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bhc.connection));
-	
 	
 	vector<vector<double> > data;
 	int isector, ilayer, icomp;
 	
-	//ADD Statustable in the future, F.H 02/08/2021
+	// TODO: ADD Statustable in the future, F.H 02/08/2021
 	
 	//cout<<"BAND:Getting effective velocities"<<endl;
 	sprintf(bhc.database,"/calibration/band/effective_velocity:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isector    = data[row][0];
 		ilayer     = data[row][1];
 		icomp	   = data[row][2];
 		bhc.eff_vel_tdc [isector-1][ilayer-1][icomp-1] = data[row][3];
 		bhc.eff_vel_fadc[isector-1][ilayer-1][icomp-1] = data[row][4];
 		//printf("%i \t %i \t %i \t %.2f \n", isector, ilayer, icomp, bhc.eff_vel[isector-1][ilayer-1][icomp-1]);
-		
 	}
 	
 	//cout<<"BAND:Getting attenuation lengths"<<endl;
 	sprintf(bhc.database,"/calibration/band/attenuation_lengths:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isector    = data[row][0];
 		ilayer     = data[row][1];
 		icomp	   = data[row][2];
 		bhc.atten_len[isector-1][ilayer-1][icomp-1] = data[row][3];
 		//printf("%i \t %i \t %i \t %.2f \n", isector, ilayer, icomp, bhc.atten_len[isector-1][ilayer-1][icomp-1]);
-		
 	}
 	
 	//cout<<"BAND:Getting TDC offsets and resolutions"<<endl;
 	sprintf(bhc.database,"/calibration/band/paddle_offsets_tdc:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isector    = data[row][0];
 		ilayer     = data[row][1];
 		icomp	   = data[row][2];
@@ -123,7 +118,6 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector    = identity[0].id;
 	int layer     = identity[1].id;
 	int component = identity[2].id;
-	// int barID = sector*100 + layer*10 + component;
 	
 	// You can either loop over all the steps of the hit, or just take the
 	// Edep averaged quantities from the trueInfos object:
@@ -193,8 +187,8 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double xHit = 0;
 	// double yHit = 0;
 	double zHit = 0;
-	double rawEtot = 0;
-	if( tInfos.eTot > 0 ){
+	double rawEtot = tInfos.eTot;
+	if( rawEtot > 0 ){
 		double et_L_tdc = 0.; // energy-weighted timeL
 		double et_R_tdc = 0.; // energy-weighted timeR
 		double et_L_fadc = 0.; // energy-weighted timeL
@@ -207,7 +201,6 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			// apply Birks effect:
 			double Edep_B = BirksAttenuation(Edep[s],dx[s],charge[s],birks_constant);
 			//Edep_B = MeVtoMeVee(pid[s],charge[s],Edep[s]);
-			rawEtot = rawEtot + Edep[s];
 			
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
 			double dL    = (L/2. + Lpos[s].x()/cm);
@@ -235,7 +228,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			et_Z = et_Z + pos[s].z()/cm * sqrt(e_L*e_R);
 			
 		}   // close loop over steps s
-		
+				
 		/**** The following calculates the time based on energy-weighted average of all step times ****/
 		
 		tL_tdc = et_L_tdc / eTotL;      // sum(energy*time) /  sum(energy)
