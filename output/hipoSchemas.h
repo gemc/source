@@ -17,6 +17,8 @@ public:
 	hipo::schema lundParticle;
 
 	// detectors
+	hipo::schema bandADCSchema;
+	hipo::schema bandTDCSchema;
 	hipo::schema bmtADCSchema;
 	hipo::schema bstADCSchema;
 	hipo::schema cndADCSchema;
@@ -42,8 +44,6 @@ public:
 	hipo::schema richTDCSchema;
 	hipo::schema rtpcADCSchema;
 	hipo::schema rtpcPOSSchema;
-	hipo::schema bandADCSchema;
-	hipo::schema bandTDCSchema;
 	hipo::schema helADCSchema;
 	hipo::schema helFLIPSchema;
 	hipo::schema helONLINESchema;

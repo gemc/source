@@ -26,8 +26,10 @@ HipoSchema :: HipoSchema()
 	mcEventHeader = hipo::schema("MC::Event",     40, 1);
 	userLund      = hipo::schema("MC::User",      40, 5);
 	lundParticle  = hipo::schema("MC::Lund",      40, 3);
-
+	
 	// detectors
+	bandADCSchema   = hipo::schema("BAND::adc",   22100, 11);
+	bandTDCSchema   = hipo::schema("BAND::tdc",   22100, 12);
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
 	bstADCSchema    = hipo::schema("BST::adc",    20200, 11);
 	cndADCSchema    = hipo::schema("CND::adc",    20300, 11);
@@ -53,8 +55,6 @@ HipoSchema :: HipoSchema()
 	richTDCSchema   = hipo::schema("RICH::tdc",   21800, 12);
 	rtpcADCSchema   = hipo::schema("RTPC::adc",   21900, 11);
 	rtpcPOSSchema   = hipo::schema("RTPC::pos",   21900, 14);
-	bandADCSchema   = hipo::schema("BAND::adc",   22100, 11);
-	bandTDCSchema   = hipo::schema("BAND::tdc",   22100, 12);
 	helADCSchema    = hipo::schema("HEL::adc",    22000, 11);
 	helFLIPSchema   = hipo::schema("HEL::flip",   22000, 12);
 	helONLINESchema = hipo::schema("HEL::online", 22000, 13);
@@ -82,6 +82,9 @@ HipoSchema :: HipoSchema()
 	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
 
 	// detectors
+	bandADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
+	bandTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
@@ -112,9 +115,6 @@ HipoSchema :: HipoSchema()
 	rtpcADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	rtpcPOSSchema.parse(   "step/I, time/F, energy/F, posx/F, posy/F, posz/F, phi/F, tid/F");
 
-	bandADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	bandTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-
 	helADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	helFLIPSchema.parse(   "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
 	helONLINESchema.parse( "helicity/B, helicityRaw/B");
@@ -137,7 +137,10 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["MC::User"]     = userLund;
 	schemasToLoad["MC::Lund"]     = lundParticle;
 
+	
 	// The names corresponds to the hit process routine names, capitalized
+	schemasToLoad["BAND::adc"]    = bandADCSchema;
+	schemasToLoad["BAND::tdc"]    = bandTDCSchema;
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
 	schemasToLoad["BST::adc"]     = bstADCSchema;
 	schemasToLoad["CND::adc"]     = cndADCSchema;
