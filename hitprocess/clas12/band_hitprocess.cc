@@ -118,7 +118,9 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector    = identity[0].id;
 	int layer     = identity[1].id;
 	int component = identity[2].id;
-	
+	int side      = identity[2].id;  // left = 0 right = 1
+
+
 	// You can either loop over all the steps of the hit, or just take the
 	// Edep averaged quantities from the trueInfos object:
 	trueInfos tInfos(aHit);
@@ -158,19 +160,19 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double birks_constant=aHit->GetDetector().GetLogical()->GetMaterial()->GetIonisation()->GetBirksConstant();
 	birks_constant = 0.126; // mm/MeV
 	
-	vector<G4ThreeVector> 	Lpos 	= aHit->GetLPos();   	// local position wrt centre of the detector piece (ie: paddle): in mm
-	vector<G4ThreeVector> 	pos 	= aHit->GetPos();   	// global position, in mm
-	vector<double>      	Edep 	= aHit->GetEdep();     	// deposited energy in the hit, in MeV
-	vector<int> 		charge	= aHit->GetCharges();   // charge for each step
-	vector<int>		pid	= aHit->GetPIDs();	// PIDs for each step
-	vector<double> 		times 	= aHit->GetTime();
-	vector<double> 		dx 	= aHit->GetDx();        // step length
-	unsigned 		nsteps	= times.size();         // total number of steps in the hit
+	vector<G4ThreeVector> Lpos   = aHit->GetLPos();   	// local position wrt centre of the detector piece (ie: paddle): in mm
+	vector<G4ThreeVector> pos 	  = aHit->GetPos();   	// global position, in mm
+	vector<double>      	 Edep   = aHit->GetEdep();    // deposited energy in the hit, in MeV
+	vector<int> 		    charge = aHit->GetCharges(); // charge for each step
+	vector<int>		       pid	  = aHit->GetPIDs();	   // PIDs for each step
+	vector<double> 		 times  = aHit->GetTime();
+	vector<double> 		 dx 	  = aHit->GetDx();      // step length
+	unsigned 		       nsteps = times.size();       // total number of steps in the hit
 	
-	double 	L 	= BARLENGTHS[sector-1];				 // length of the bar [cm]
-	double 	attenL  = bhc.atten_len[sector-1][layer-1][component-1]; // attenuation length of the bar [cm]
-	double 	vEff_fadc= bhc.eff_vel_fadc[sector-1][layer-1][component-1]; 	 // effective velocity of bar [cm/ns]
-	double 	vEff_tdc = bhc.eff_vel_tdc [sector-1][layer-1][component-1]; 	 // effective velocity of bar [cm/ns]
+	double 	L 	       = BARLENGTHS[sector-1];				                 // length of the bar [cm]
+	double 	attenL    = bhc.atten_len[sector-1][layer-1][component-1];    // attenuation length of the bar [cm]
+	double 	vEff_fadc = bhc.eff_vel_fadc[sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
+	double 	vEff_tdc  = bhc.eff_vel_tdc [sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
 	
 	//double tL = time + (L/2.-x)/vEff;
 	//double tR = time + (L/2.+x)/vEff;
@@ -184,22 +186,27 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double tR_tdc = 0;
 	double tL_fadc = 0;
 	double tR_fadc = 0;
+	
 	double xHit = 0;
 	// double yHit = 0;
 	double zHit = 0;
 	double rawEtot = tInfos.eTot;
+	
+
 	if( rawEtot > 0 ){
-		double et_L_tdc = 0.; // energy-weighted timeL
-		double et_R_tdc = 0.; // energy-weighted timeR
+	
+		double et_L_tdc = 0.;  // energy-weighted timeL
+		double et_R_tdc = 0.;  // energy-weighted timeR
 		double et_L_fadc = 0.; // energy-weighted timeL
 		double et_R_fadc = 0.; // energy-weighted timeR
 		
 		double et_X = 0.; // energy-weighted X
-		double et_Y = 0.; // energy-weighted Y
+		// double et_Y = 0.; // energy-weighted Y
 		double et_Z = 0.; // energy-weighted Z
+		
 		for(unsigned int s=0; s<nsteps; s++){
 			// apply Birks effect:
-			double Edep_B = BirksAttenuation(Edep[s],dx[s],charge[s],birks_constant);
+			double Edep_B = BirksAttenuation(Edep[s], dx[s], charge[s], birks_constant);
 			//Edep_B = MeVtoMeVee(pid[s],charge[s],Edep[s]);
 			
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
@@ -207,6 +214,9 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double dR    = (L/2. - Lpos[s].x()/cm);
 			double e_L   = Edep_B * exp( -dL / attenL);
 			double e_R   = Edep_B * exp( -dR / attenL);
+			
+			// same for side = 0 or side = 1
+			double gain  = sqrt(e_L*e_R);
 			
 			//cout << "step: " << s << "\n";
 			//cout << "\t" << Edep[s] << " " << dx[s] << " " << charge[s] << " " << pid[s] << " " << birks_constant << "\n";
@@ -223,9 +233,9 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			et_L_fadc = et_L_fadc + (times[s] + dL/vEff_fadc)*e_L;
 			et_R_fadc = et_R_fadc + (times[s] + dR/vEff_fadc)*e_R;
 			
-			et_X = et_X + pos[s].x()/cm * sqrt(e_L*e_R);
-			et_Y = et_Y + pos[s].y()/cm * sqrt(e_L*e_R);
-			et_Z = et_Z + pos[s].z()/cm * sqrt(e_L*e_R);
+			et_X = et_X + pos[s].x()/cm * gain;
+			// et_Y = et_Y + pos[s].y()/cm * gain;
+			et_Z = et_Z + pos[s].z()/cm * gain;
 			
 		}   // close loop over steps s
 				
@@ -258,20 +268,37 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	tR_tdc  = CLHEP::RandGauss::shoot( tR_tdc,  0.3 );
 	
 	
-	dgtz["hitn"]      	= (int) hitn;
-	dgtz["sector"]    	= (int) sector;
-	dgtz["layer"]     	= (int) layer;
-	dgtz["component"] 	= (int) component;
-	dgtz["ADCL"]		= (int) (1E4 * eTotL);
-	//dgtz["amplitudeL"]	= (int) (1E4 * rawEtot);
-	dgtz["amplitudeL"]	= (int) (1E4 * xHit);
-	dgtz["ADCtimeL"]	= (double) tL_fadc;
-	dgtz["TDCL"]		= (int) (1E4 * tL_tdc / 0.02345);
-	dgtz["ADCR"]		= (int) (1E4 * eTotR);
-	//dgtz["amplitudeR"]	= (int) (1E4 * rawEtot );
-	dgtz["amplitudeR"]	= (int) (1E4 * zHit );
-	dgtz["ADCtimeR"]	= (double) tR_fadc;
-	dgtz["TDCR"]		= (int) (1E4 * tR_tdc / 0.02345);
+	double adcFactor = 1E4;
+	double tdcConv = 0.02345;
+
+	int ADC       = (int) ( adcFactor*(side == 0 ? eTotL : eTotR) );
+	int amplitude = (int) ( adcFactor*(side == 0 ? xHit  : zHit)  );
+	double time   = (side == 0 ? tL_fadc : tR_fadc);
+	int TDC       = (int) ( adcFactor*(side == 0 ? tL_tdc : tR_tdc)/tdcConv );
+
+	dgtz["hitn"]      = (int) hitn;
+	dgtz["sector"]    = (int) sector;
+	dgtz["layer"]     = (int) layer;
+	dgtz["component"] = (int) component;
+	dgtz["ADC_order"] = side;
+	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_time"]  = time;
+	dgtz["ADC_amplitude"] = amplitude;
+	dgtz["ADC_ped"]   = 0;
+	dgtz["TDC_order"] = side + 2;
+	dgtz["TDC_TDC"]   = TDC;
+
+
+//	dgtz["ADCL"]		= (int) (1E4 * eTotL);
+//	dgtz["amplitudeL"]	= (int) (1E4 * xHit);
+//	dgtz["ADCtimeL"]	= (double) tL_fadc;
+//	dgtz["TDCL"]		= (int) (1E4 * tL_tdc / 0.02345);
+//	dgtz["ADCR"]		= (int) (1E4 * eTotR);
+//	dgtz["amplitudeR"]	= (int) (1E4 * zHit );
+//	dgtz["ADCtimeR"]	= (double) tR_fadc;
+//	dgtz["TDCR"]		= (int) (1E4 * tR_tdc / 0.02345);
+
+	
 	
 	//cout << "***************\n";
 	//cout << "hitn:\t\t" << hitn << "\n";
@@ -304,14 +331,29 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 vector<identifier>  band_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
+	vector<identifier> yid = id;
+	yid[0].id_sharing = 1; // sector (paddle number)
+	yid[1].id_sharing = 1; // layer
+	yid[2].id_sharing = 1; // component
+	yid[3].id_sharing = 1; // side: 1 = left, 2 = right
 	
-	// This is where it's possible to create two dgtz from 1 hit of geant
+	if (yid[3].id != 0) {
+		cout << "*****WARNING***** in cnd_HitProcess :: processID, identifier \"direct\" of the original hit should be 0 but is " << yid[3].id << endl;
+		cout << "yid[3].id = " << yid[3].id << endl;
+	}
 	
+	// Now we want to have similar identifiers, with the only difference being the side to be 1 instead of 0
+	identifier this_id = yid[0];
+	yid.push_back(this_id);
+	this_id = yid[1];
+	yid.push_back(this_id);
+	this_id = yid[2];
+	yid.push_back(this_id);
+	this_id = yid[3];
+	this_id.id = 1;
+	yid.push_back(this_id);
 	
-	//cout << "IN PROCESS ID\n";
-	id[id.size()-1].id_sharing = 1;
-	return id;
-}
+	return yid;}
 
 // - charge: returns charge/time digitized information / step
 map< int, vector <double> > band_HitProcess :: chargeTime(MHit* aHit, int hitn)

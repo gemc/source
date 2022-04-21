@@ -371,12 +371,9 @@ vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aSt
 
 	vector<identifier> yid = id;
 
-	yid[0].id_sharing = 1; // This shows the paddle
+	yid[0].id_sharing = 1; // Paddle number
 	yid[1].id_sharing = 1; // Side: This shows the PMT, whether the upstream one, or the downstream. 0 in the geometry by default
 	
-	//    cout<<"Size of id is "<<id.size()<<endl;
-	//    cout<<"id[0].id = "<<id[0].id<<endl;
-	//    cout<<"id[1].id = "<<id[1].id<<endl;
 	// Check if in the geometry the yid[1].id is 0, this should come from the geometry.
 	if (yid[1].id != 0) {
 		cout << "*****WARNING***** in ctof_HitProcess :: processID, identifier PM! of the original hit should be 0 " << endl;
