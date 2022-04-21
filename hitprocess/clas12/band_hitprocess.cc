@@ -162,17 +162,17 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	vector<G4ThreeVector> Lpos   = aHit->GetLPos();   	// local position wrt centre of the detector piece (ie: paddle): in mm
 	vector<G4ThreeVector> pos 	  = aHit->GetPos();   	// global position, in mm
-	vector<double>      	 Edep   = aHit->GetEdep();    // deposited energy in the hit, in MeV
-	vector<int> 		    charge = aHit->GetCharges(); // charge for each step
-	vector<int>		       pid	  = aHit->GetPIDs();	   // PIDs for each step
-	vector<double> 		 times  = aHit->GetTime();
-	vector<double> 		 dx 	  = aHit->GetDx();      // step length
-	unsigned 		       nsteps = times.size();       // total number of steps in the hit
+	vector<double>        Edep   = aHit->GetEdep();    // deposited energy in the hit, in MeV
+	vector<int>           charge = aHit->GetCharges(); // charge for each step
+	vector<int>           pid	  = aHit->GetPIDs();	   // PIDs for each step
+	vector<double>        times  = aHit->GetTime();
+	vector<double>        dx 	  = aHit->GetDx();      // step length
+	unsigned              nsteps = times.size();       // total number of steps in the hit
 	
-	double 	L 	       = BARLENGTHS[sector-1];				                 // length of the bar [cm]
-	double 	attenL    = bhc.atten_len[sector-1][layer-1][component-1];    // attenuation length of the bar [cm]
-	double 	vEff_fadc = bhc.eff_vel_fadc[sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
-	double 	vEff_tdc  = bhc.eff_vel_tdc [sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
+	double L         = BARLENGTHS[sector-1];				                 // length of the bar [cm]
+	double attenL    = bhc.atten_len[sector-1][layer-1][component-1];    // attenuation length of the bar [cm]
+	double vEff_fadc = bhc.eff_vel_fadc[sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
+	double vEff_tdc  = bhc.eff_vel_tdc [sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
 	
 	//double tL = time + (L/2.-x)/vEff;
 	//double tR = time + (L/2.+x)/vEff;
@@ -210,8 +210,12 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//Edep_B = MeVtoMeVee(pid[s],charge[s],Edep[s]);
 			
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
+			
+			
 			double dL    = (L/2. + Lpos[s].x()/cm);
 			double dR    = (L/2. - Lpos[s].x()/cm);
+			
+			
 			double e_L   = Edep_B * exp( -dL / attenL);
 			double e_R   = Edep_B * exp( -dR / attenL);
 			
@@ -300,24 +304,26 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	
 	
-	//cout << "***************\n";
-	//cout << "hitn:\t\t" << hitn << "\n";
-	//cout << "sector:\t\t" << sector << "\n";
-	//cout << "layer:\t\t" << layer << "\n";
-	//cout << "component:\t" << component << "\n";
-	//cout << "eTotL:\t\t" << eTotL << "\n";
-	//cout << "eTotR:\t\t" << eTotR << "\n";
-	//cout << "tL:\t\t" << tL_fadc << "\n";
-	//cout << "tR:\t\t" << tR_fadc << "\n";
-	//cout << "tL:\t\t" << tL_tdc << "\n";
-	//cout << "tR:\t\t" << tR_tdc << "\n";
-	//cout << "EffVelTDC:\t" << vEff_tdc << "\n";
-	//cout << "EffVelFDC:\t" << vEff_fadc << "\n";
-	//cout << "tInfoTime:\t" << tInfos.time << "\n";
-	//cout << "x:\t\t" << xHit << "\n";
-	//cout << "y:\t\t" << yHit << "\n";
-	//cout << "z:\t\t" << zHit << "\n";
-	//cout << "***************\n";
+	cout << "***************\n";
+	cout << "hitn:\t\t" << hitn << "\n";
+	cout << "sector:\t\t" << sector << "\n";
+	cout << "layer:\t\t" << layer << "\n";
+	cout << "component:\t" << component << "\n";
+	cout << "side:\t" << side << "\n";
+	cout << "eTotL:\t\t" << eTotL << "\n";
+	cout << "eTotR:\t\t" << eTotR << "\n";
+	cout << "eTot:\t\t" << ADC << "\n";
+	cout << "tL:\t\t" << tL_fadc << "\n";
+	cout << "tR:\t\t" << tR_fadc << "\n";
+	cout << "tL:\t\t" << tL_tdc << "\n";
+	cout << "tR:\t\t" << tR_tdc << "\n";
+	cout << "EffVelTDC:\t" << vEff_tdc << "\n";
+	cout << "EffVelFDC:\t" << vEff_fadc << "\n";
+	cout << "tInfoTime:\t" << tInfos.time << "\n";
+	cout << "x:\t\t" << xHit << "\n";
+	cout << "z:\t\t" << zHit << "\n";
+	cout << "***************\n";
+	
 	// decide if write an hit or not
 	writeHit = true;
 	
@@ -335,10 +341,10 @@ vector<identifier>  band_HitProcess :: processID(vector<identifier> id, G4Step* 
 	yid[0].id_sharing = 1; // sector (paddle number)
 	yid[1].id_sharing = 1; // layer
 	yid[2].id_sharing = 1; // component
-	yid[3].id_sharing = 1; // side: 1 = left, 2 = right
+	yid[3].id_sharing = 1; // side: 0 = left, 1 = right
 	
 	if (yid[3].id != 0) {
-		cout << "*****WARNING***** in cnd_HitProcess :: processID, identifier \"direct\" of the original hit should be 0 but is " << yid[3].id << endl;
+		cout << "*****WARNING***** in band :: processID, identifier \"side\" of the original hit should be 0 but is " << yid[3].id << endl;
 		cout << "yid[3].id = " << yid[3].id << endl;
 	}
 	
