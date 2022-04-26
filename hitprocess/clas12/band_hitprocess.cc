@@ -57,8 +57,8 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	sprintf(bhc.database,"/calibration/band/effective_velocity:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
-		isector    = data[row][0];
-		ilayer     = data[row][1];
+		isector  = data[row][0];
+		ilayer   = data[row][1];
 		icomp	   = data[row][2];
 		bhc.eff_vel_tdc [isector-1][ilayer-1][icomp-1] = data[row][3];
 		bhc.eff_vel_fadc[isector-1][ilayer-1][icomp-1] = data[row][4];
@@ -69,8 +69,8 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	sprintf(bhc.database,"/calibration/band/attenuation_lengths:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
-		isector    = data[row][0];
-		ilayer     = data[row][1];
+		isector  = data[row][0];
+		ilayer   = data[row][1];
 		icomp	   = data[row][2];
 		bhc.atten_len[isector-1][ilayer-1][icomp-1] = data[row][3];
 		//printf("%i \t %i \t %i \t %.2f \n", isector, ilayer, icomp, bhc.atten_len[isector-1][ilayer-1][icomp-1]);
@@ -118,7 +118,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int sector    = identity[0].id;
 	int layer     = identity[1].id;
 	int component = identity[2].id;
-	int side      = identity[2].id;  // left = 0 right = 1
+	int side      = identity[3].id;  // left = 0 right = 1
 
 
 	// You can either loop over all the steps of the hit, or just take the
@@ -190,10 +190,13 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double xHit = 0;
 	// double yHit = 0;
 	double zHit = 0;
-	double rawEtot = tInfos.eTot;
-	
 
-	if( rawEtot > 0 ){
+
+	// TODO: the attenL from database is 10^10
+	// should be changed. I (Mauri) used the line below for debugging purposes.
+	// attenL = 100;
+
+	if( tInfos.eTot > 0 ) {
 	
 		double et_L_tdc = 0.;  // energy-weighted timeL
 		double et_R_tdc = 0.;  // energy-weighted timeR
@@ -210,22 +213,20 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			//Edep_B = MeVtoMeVee(pid[s],charge[s],Edep[s]);
 			
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
-			
-			
+
 			double dL    = (L/2. + Lpos[s].x()/cm);
 			double dR    = (L/2. - Lpos[s].x()/cm);
-			
-			
+
 			double e_L   = Edep_B * exp( -dL / attenL);
 			double e_R   = Edep_B * exp( -dR / attenL);
 			
 			// same for side = 0 or side = 1
 			double gain  = sqrt(e_L*e_R);
 			
-			//cout << "step: " << s << "\n";
-			//cout << "\t" << Edep[s] << " " << dx[s] << " " << charge[s] << " " << pid[s] << " " << birks_constant << "\n";
-			//cout << "\t" << Edep_B << "\n";
-			//cout << "\t" << dL << " " << dR << " " << attenL << " " << e_L << " " << e_R << "\n";
+//			cout << "step: " << s << "\n";
+//			cout << "\t" << Edep[s] << " " << dx[s] << " " << charge[s] << " " << pid[s] << " " << birks_constant << "\n";
+//			cout << "\t Edep_B: " << Edep_B << "\n";
+//			cout << "\t" << dL << " " << dR << " " << attenL << " " << e_L << " " << e_R << " pos x: " << Lpos[s].x() << "\n";
 			
 			// Integrate energy over entire hit. These values are used for time-smearing:
 			eTotL = eTotL + e_L;
@@ -304,25 +305,25 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	
 	
-	cout << "***************\n";
-	cout << "hitn:\t\t" << hitn << "\n";
-	cout << "sector:\t\t" << sector << "\n";
-	cout << "layer:\t\t" << layer << "\n";
-	cout << "component:\t" << component << "\n";
-	cout << "side:\t" << side << "\n";
-	cout << "eTotL:\t\t" << eTotL << "\n";
-	cout << "eTotR:\t\t" << eTotR << "\n";
-	cout << "eTot:\t\t" << ADC << "\n";
-	cout << "tL:\t\t" << tL_fadc << "\n";
-	cout << "tR:\t\t" << tR_fadc << "\n";
-	cout << "tL:\t\t" << tL_tdc << "\n";
-	cout << "tR:\t\t" << tR_tdc << "\n";
-	cout << "EffVelTDC:\t" << vEff_tdc << "\n";
-	cout << "EffVelFDC:\t" << vEff_fadc << "\n";
-	cout << "tInfoTime:\t" << tInfos.time << "\n";
-	cout << "x:\t\t" << xHit << "\n";
-	cout << "z:\t\t" << zHit << "\n";
-	cout << "***************\n";
+//	cout << "***************\n";
+//	cout << "hitn:\t\t" << hitn << "\n";
+//	cout << "sector:\t\t" << sector << "\n";
+//	cout << "layer:\t\t" << layer << "\n";
+//	cout << "component:\t" << component << "\n";
+//	cout << "side:\t" << side << "\n";
+//	cout << "eTotL:\t\t" << eTotL << "\n";
+//	cout << "eTotR:\t\t" << eTotR << "\n";
+//	cout << "ADC:\t\t" << ADC << "\n";
+//	cout << "tL:\t\t" << tL_fadc << "\n";
+//	cout << "tR:\t\t" << tR_fadc << "\n";
+//	cout << "tL:\t\t" << tL_tdc << "\n";
+//	cout << "tR:\t\t" << tR_tdc << "\n";
+//	cout << "EffVelTDC:\t" << vEff_tdc << "\n";
+//	cout << "EffVelFDC:\t" << vEff_fadc << "\n";
+//	cout << "tInfoTime:\t" << tInfos.time << "\n";
+//	cout << "x:\t\t" << xHit << "\n";
+//	cout << "z:\t\t" << zHit << "\n";
+//	cout << "***************\n";
 	
 	// decide if write an hit or not
 	writeHit = true;
