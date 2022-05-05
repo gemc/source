@@ -51,7 +51,6 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 						}
 					}
 				}
-
 			}
 		}
 	}
@@ -61,7 +60,7 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 		bigData += b + string("\n");
 	}
 
-	output->hipoWriter->addUserConfig("GEMC::CONFIG",  bigData);
+	output->hipoWriter->addUserConfig("GEMC::config",  bigData);
 	// output->hipoWriter->addUserConfig("GEMC::JCONFIG", sims["JSON"]);
 
 }

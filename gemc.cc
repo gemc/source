@@ -295,6 +295,7 @@ int main( int argc, char **argv )
 
 		outputFactory *processOutputFactory  = getOutputFactory(&outputFactoryMap, outContainer.outType);
 		processOutputFactory->recordSimConditions(&outContainer, sim_condition);
+
 		// then deleting process output pointer, not needed anymore
 		delete processOutputFactory;
 	}

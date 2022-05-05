@@ -534,7 +534,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vy     = thisParticleInfo.infos[12] + svy/cm;
 				double Vz     = thisParticleInfo.infos[13] + svz/cm;
 				
-				if(PROPAGATE_DVERTEXTIME==0){
+				if(PROPAGATE_DVERTEXTIME==0) {
 					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);   }
 				
 				// if this flag is set to 1 updated times are calculated for detached vertex events
@@ -992,8 +992,6 @@ void MPrimaryGeneratorAction::setBeam()
 				exit(1);
 			}
 
-
-
 			// Getting custom beam direction if it's set
 			values = get_info(gemcOpt->optMap["ALIGN_ZAXIS"].args);
 			string align = trimSpacesFromString(values[0]);
@@ -1128,11 +1126,8 @@ void MPrimaryGeneratorAction::setBeam()
 			exit(202);
 		}
 		beagleHeader = 0;
-	}
-
-	else if( input_gen.compare(0,6,"stdhep")==0 || input_gen.compare(0,6,"STDHEP")==0 ||
-			  input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 )
-	{
+	} else if( input_gen.compare(0,6,"stdhep")==0 || input_gen.compare(0,6,"STDHEP")==0 ||
+			     input_gen.compare(0,6,"StdHep")==0 || input_gen.compare(0,6,"StdHEP")==0 ) {
 		// StdHep is an (old like LUND) MC generator format in binary form.
 		gformat.assign(  input_gen, 0, input_gen.find(",")) ;
 		gfilename.assign(input_gen,    input_gen.find(",") + 1, input_gen.size()) ;
@@ -1167,10 +1162,8 @@ void MPrimaryGeneratorAction::setBeam()
 
 	}
 
-
 	// merging (background) events from LUND format
-	if(background_gen != "no")
-	{
+	if(background_gen != "no") {
 		// file may be already opened cause setBeam is called again in graphic mode
 		if(!bgif.is_open() )
 		{
@@ -1328,14 +1321,31 @@ double MPrimaryGeneratorAction::cosmicNeutBeam(double t, double p)
 
 void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, int pdef, double px, double py, double pz,  double Vx, double Vy, double Vz, G4Event* anEvent, int A, int Z) {
 
+	// PDG numbering scheme:
+	// 2021 version: https://pdg.lbl.gov/2021/mcdata/mc_particle_id_contents.html
+	// https://pdg.lbl.gov
+	// Translating from geant3: https://www.star.bnl.gov/public/comp/simu/newsite/gstar/Manual/particle_id.html
+	// 45 (deuteron), 46 (triton), 47 (alpha), 49 (helium3)
+
 	if(type == 1 && pindex == p+1) {
 		// Primary Particle
 
 		if(pdef != 80000) {
-			Particle = particleTable->FindParticle(pdef);
-			if(!Particle)
-			{
-				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
+			int redefinedPdef = pdef;
+
+			if (pdef == 45 ) {
+				redefinedPdef = 1000010020;  // deuteron
+			} else if (pdef == 46 ) {
+				redefinedPdef = 1000010030;  // triton
+			} else if (pdef == 47 ) {
+				redefinedPdef = 1000020040;  // alpha
+			} else if (pdef == 49 ) {
+				redefinedPdef = 1000020030;  // He3
+			}
+
+			Particle = particleTable->FindParticle(redefinedPdef);
+			if(!Particle) {
+				cout << hd_msg << " Particle id " << redefinedPdef << " not found in G4 table." << endl << endl;
 
 				cout << "Exiting !" << endl;
 				exit(1);
@@ -1385,15 +1395,15 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 
 void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<userInforForParticle> Userinfo, G4Event* anEvent, int A, int Z) {
 	
-	int pindex        = Userinfo[p].infos[0];
-	int type		  = Userinfo[p].infos[2];
-	int pdef          = Userinfo[p].infos[3];
-	double px         = Userinfo[p].infos[6];
-	double py         = Userinfo[p].infos[7];
-	double pz         = Userinfo[p].infos[8];
-	double Vx         = Userinfo[p].infos[11];
-	double Vy         = Userinfo[p].infos[12];
-	double Vz         = Userinfo[p].infos[13];
+	int pindex   = Userinfo[p].infos[0];
+	int type		 = Userinfo[p].infos[2];
+	int pdef     = Userinfo[p].infos[3];
+	double px    = Userinfo[p].infos[6];
+	double py    = Userinfo[p].infos[7];
+	double pz    = Userinfo[p].infos[8];
+	double Vx    = Userinfo[p].infos[11];
+	double Vy    = Userinfo[p].infos[12];
+	double Vz    = Userinfo[p].infos[13];
 	//Make a list of particles parents
 	vector<int> parentindex;
 	parentindex.push_back(Userinfo[p].infos[4]);
@@ -1401,9 +1411,22 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 
 	if(type == 1 && pindex == p+1) {
 		if(pdef != 80000) {
-			Particle = particleTable->FindParticle(pdef);
+
+			int redefinedPdef = pdef;
+
+			if (pdef == 45 ) {
+				redefinedPdef = 1000010020;  // deuteron
+			} else if (pdef == 46 ) {
+				redefinedPdef = 1000010030;  // triton
+			} else if (pdef == 47 ) {
+				redefinedPdef = 1000020040;  // alpha
+			} else if (pdef == 49 ) {
+				redefinedPdef = 1000020030;  // He3
+			}
+
+			Particle = particleTable->FindParticle(redefinedPdef);
 			if(!Particle) {
-				cout << hd_msg << " Particle id " << pdef << " not found in G4 table." << endl << endl;
+				cout << hd_msg << " Particle id " << redefinedPdef << " not found in G4 table." << endl << endl;
 
 				cout << "Exiting !" << endl;
 				exit(1);
