@@ -134,23 +134,20 @@ map<string, string> runConditions::getDetectorConditionsMap()
 	map<string, string> detmap;
 	
 	// filling name, rotation, position modifications from gcard
-	for(map<string, detectorCondition>::iterator it = detectorConditionsMap.begin(); it != detectorConditionsMap.end(); it++)
-	{
-		
-		detmap[it->first] = " is loaded with factory " +  it->second.get_factory()
+	for(map<string, detectorCondition>::iterator it = detectorConditionsMap.begin(); it != detectorConditionsMap.end(); it++) {
+
+		detmap["detector " + it->first] = " is loaded with factory " +  it->second.get_factory()
 		+ ", variation "     + it->second.get_variation()
 		+ " and run number " + stringify(it->second.get_run_number());
 		
-		if(it->second.get_position().mag2() != 0)
-		{
+		if(it->second.get_position().mag2() != 0) {
 			string key = "local shift for " + it->first;
 			detmap[key] = "(" + stringify(it->second.get_position().x()/mm) + ", "
 			+ stringify(it->second.get_position().y()/mm) + ", "
 			+ stringify(it->second.get_position().z()/mm) + ")mm";
 		}
 		
-		if(it->second.get_vrotation().mag2() != 0)
-		{
+		if(it->second.get_vrotation().mag2() != 0) {
 			string key = "local rotation for " + it->first;
 			detmap[key] = "(" + stringify(it->second.get_vrotation().x()/degree) + ", "
 			+ stringify(it->second.get_vrotation().y()/degree) + ", "
@@ -165,8 +162,7 @@ int check_if_factory_is_needed(map<string, detectorCondition> dcon, string facto
 {
 	int isneeded = 0;
 	
-	for(map<string, detectorCondition>::iterator it=dcon.begin(); it != dcon.end(); it++)
-	{
+	for(map<string, detectorCondition>::iterator it=dcon.begin(); it != dcon.end(); it++) {
 		if(it->second.get_factory() == factory)
 			isneeded++;
 	}

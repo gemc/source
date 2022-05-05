@@ -86,9 +86,9 @@ void evio_output :: writeHeader(outputContainer* output, map<string, double> dat
 		}
 
 		// storing event number in memory
-		if(it->first == "evn")
+		if(it->first == "evn") {
 			evn = it->second;
-
+		}
 	}
 	*event << headerBank;
 }
@@ -108,7 +108,6 @@ void evio_output :: writeUserInfoseHeader(outputContainer* output, map<string, d
 	for(unsigned i=data.size(); i<minNumberOfVarsToWrite; i++) {
 		*userHeaderBank << addVariable(USER_HEADER_BANK_TAG, banknum, "d", 0.0);
 		banknum++;
-
 	}
 
 	*event << userHeaderBank;
@@ -161,8 +160,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> multiplicity;
 
 
-	for(unsigned i=0; i<MAXP && i<MGP.size(); i++)
-	{
+	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
 		pid.push_back(MGP[i].PID);
 		px.push_back(MGP[i].momentum.getX()/MeV);
 		py.push_back(MGP[i].momentum.getY()/MeV);
@@ -189,8 +187,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 
 
 
-	if(SAVE_ALL_MOTHERS)
-	{
+	if(SAVE_ALL_MOTHERS) {
 		vector<string> dname;
 		vector<int>    stat;
 		vector<double> etot;
@@ -207,8 +204,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 
 		int writeFastMC = 0;
 
-		for(unsigned int i=0; i<MAXP && i<MGP.size(); i++)
-		{
+		for(unsigned int i=0; i<MAXP && i<MGP.size(); i++) {
 			if(MGP[i].fastMC.size() > 0) {
 				if(MGP[i].pSum.size() != MGP[i].fastMC.size()) {
 					cout << " !!! Warning: pSum and fastMC info do not match" << endl;
@@ -217,8 +213,7 @@ void evio_output :: writeGenerated(outputContainer* output, vector<generatedPart
 				}
 			}
 
-			for(unsigned d=0; d<MGP[i].pSum.size(); d++)
-			{
+			for(unsigned d=0; d<MGP[i].pSum.size(); d++) {
 				dname.push_back(MGP[i].pSum[d].dname);
 				stat.push_back(MGP[i].pSum[d].stat);
 				etot.push_back(MGP[i].pSum[d].etot);
@@ -338,8 +333,7 @@ void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 	static int oldEvn;
 
 	// new event, initialize everything
-	if(oldEvn != evn)
-	{
+	if(oldEvn != evn) {
 		insideBank.clear();
 		insideRawIntBank.clear();
 		insideDgtIntBank.clear();
@@ -347,8 +341,7 @@ void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 		oldEvn = evn;
 	}
 
-	if(!insideBank[thisHitBank.bankName])
-	{
+	if(!insideBank[thisHitBank.bankName]) {
 		// master bank
 		detectorBank = evioDOMNode::createEvioDOMNode(thisHitBank.idtag, DETECTOR_BANK_ID);
 		*event << detectorBank;
@@ -356,32 +349,28 @@ void evio_output :: initBank(outputContainer* output, gBank thisHitBank, int wha
 	}
 
 	// true information (integrated)
-	if(!insideRawIntBank[thisHitBank.bankName] && what == RAWINT_ID)
-	{
+	if(!insideRawIntBank[thisHitBank.bankName] && what == RAWINT_ID) {
 		detectorRawIntBank[thisHitBank.bankName] = evioDOMNode::createEvioDOMNode(thisHitBank.idtag + RAWINT_ID, 0);
 		*detectorBank << detectorRawIntBank[thisHitBank.bankName];
 		insideRawIntBank[thisHitBank.bankName] = 1;
 	}
 
 	// digitized information
-	if(!insideDgtIntBank[thisHitBank.bankName] && what == DGTINT_ID)
-	{
+	if(!insideDgtIntBank[thisHitBank.bankName] && what == DGTINT_ID) {
 		detectorDgtIntBank[thisHitBank.bankName] = evioDOMNode::createEvioDOMNode(thisHitBank.idtag + DGTINT_ID, 0);
 		*detectorBank << detectorDgtIntBank[thisHitBank.bankName];
 		insideDgtIntBank[thisHitBank.bankName] = 1;
 	}
 
 	// true information (step by step)
-	if(!insideRawAllBank[thisHitBank.bankName] && what == RAWSTEP_ID)
-	{
+	if(!insideRawAllBank[thisHitBank.bankName] && what == RAWSTEP_ID) {
 		detectorRawAllBank[thisHitBank.bankName] = evioDOMNode::createEvioDOMNode(thisHitBank.idtag + RAWSTEP_ID, 0);
 		*detectorBank << detectorRawAllBank[thisHitBank.bankName];
 		insideRawAllBank[thisHitBank.bankName] = 1;
 	}
 
 	// charge / time information (step by step)
-	if(!insideChargeTimeBank[thisHitBank.bankName] && what == CHARGE_TIME_ID)
-	{
+	if(!insideChargeTimeBank[thisHitBank.bankName] && what == CHARGE_TIME_ID) {
 		detectorChargeTimeBank[thisHitBank.bankName] = evioDOMNode::createEvioDOMNode(thisHitBank.idtag + CHARGE_TIME_ID, 0);
 		*detectorBank << detectorChargeTimeBank[thisHitBank.bankName];
 		insideChargeTimeBank[thisHitBank.bankName] = 1;
@@ -400,16 +389,14 @@ void evio_output :: writeG4RawIntegrated(outputContainer* output, vector<hitOutp
 
 	initBank(output, thisHitBank, RAWINT_ID);
 
-	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++)
-	{
+	for(map<int, string>::iterator it =  rawBank.orderedNames.begin(); it != rawBank.orderedNames.end(); it++) {
 		int bankId   = rawBank.getVarId(it->second);
 		int bankType = rawBank.getVarBankType(it->second);
 
 		// we only need the first hit to get the definitions
 		map<string, double> raws = HO[0].getRaws();
 
-		if(raws.find(it->second) != raws.end() && bankId > 0 && bankType == RAWINT_ID)
-		{
+		if(raws.find(it->second) != raws.end() && bankId > 0 && bankType == RAWINT_ID) {
 			vector<double> thisVar;
 			for(unsigned int nh=0; nh<HO.size(); nh++)
 			{
@@ -431,19 +418,16 @@ void evio_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 
 	initBank(output, thisHitBank, DGTINT_ID);
 
-	for(map<int, string>::iterator it =  dgtBank.orderedNames.begin(); it != dgtBank.orderedNames.end(); it++)
-	{
+	for(map<int, string>::iterator it =  dgtBank.orderedNames.begin(); it != dgtBank.orderedNames.end(); it++) {
 		int bankId   = dgtBank.getVarId(it->second);
 		int bankType = dgtBank.getVarBankType(it->second);
 
 		// we only need the first hit to get the definitions
 		map<string, double> dgts = HO[0].getDgtz();
 
-		if(dgts.find(it->second) != dgts.end() && bankId > 0 && bankType == DGTINT_ID)
-		{
+		if(dgts.find(it->second) != dgts.end() && bankId > 0 && bankType == DGTINT_ID) {
 			vector<double> thisVar;
-			for(unsigned int nh=0; nh<HO.size(); nh++)
-			{
+			for(unsigned int nh=0; nh<HO.size(); nh++) {
 				map<string, double> theseDgts = HO[nh].getDgtz();
 				thisVar.push_back(theseDgts[it->second]);
 			}
@@ -499,8 +483,7 @@ void evio_output :: writeChargeTime(outputContainer* output, vector<hitOutput> H
 	}
 
 	// done collecting, now writing them out
-	if(chargeTimeBank.getVarBankType("id") == CHARGE_TIME_ID)
-	{
+	if(chargeTimeBank.getVarBankType("id") == CHARGE_TIME_ID) {
 		// hit number
 		*(detectorChargeTimeBank[thisHitBank.bankName]) << addVector(chargeTimeBank.idtag + thisHitBank.idtag, chargeTimeBank.getVarId("hitn"), chargeTimeBank.getVarType("hitn"), allHitN);
 		// step index
@@ -526,8 +509,7 @@ void evio_output :: writeG4RawAll(outputContainer* output, vector<hitOutput> HO,
 
 	initBank(output, thisHitBank, RAWSTEP_ID);
 
-	for(map<int, string>::iterator it =  allRawsBank.orderedNames.begin(); it != allRawsBank.orderedNames.end(); it++)
-	{
+	for(map<int, string>::iterator it =  allRawsBank.orderedNames.begin(); it != allRawsBank.orderedNames.end(); it++) {
 		int bankId   = allRawsBank.getVarId(it->second);
 		int bankType = allRawsBank.getVarBankType(it->second);
 

@@ -21,17 +21,24 @@ map<string, double> hipo_output::fieldScales = {};
 void hipo_output :: recordSimConditions(outputContainer* output, map<string, string> sims)
 {
 	vector<string> data;
-	
+
+	// writing both key and argument as one string
+	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
+		if(it->first != "JSON") {
+			data.push_back(it->first + ":  " + it->second + "  ");
+		}
+	}
+
 	// writing both key and argument as one string
 	for(map<string, string>::iterator it=sims.begin(); it!=sims.end(); it++) {
 		if(it->first == "option ACTIVEFIELDS") {
-			
+
 			vector<string> fieldNames = getStringVectorFromString(it->second);
-			
+
 			for(auto &fieldName: fieldNames) {
-				
+
 				double scaleFactor = 1;
-				
+
 				vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
 				for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
 					vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
@@ -40,15 +47,23 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 							scaleFactor = get_number(scales[1]);
 							// scale to 1 unless set below
 							fieldScales[trimSpacesFromString(fieldName)] = scaleFactor;
-							
+							data.push_back("field" + trimSpacesFromString(fieldName) + " scale:  " + to_string(scaleFactor));
 						}
 					}
 				}
-				
+
 			}
 		}
 	}
-	
+
+	string bigData;
+	for ( auto b: data) {
+		bigData += b + string("\n");
+	}
+
+	output->hipoWriter->addUserConfig("GEMC::CONFIG",  bigData);
+	// output->hipoWriter->addUserConfig("GEMC::JCONFIG", sims["JSON"]);
+
 }
 
 // returns detectorID from map, given hitType
@@ -718,8 +733,8 @@ void hipo_output :: writeFADCMode7(outputContainer* output, vector<hitOutput> HO
 void hipo_output :: writeEvent(outputContainer* output)
 {
 	outEvent->addStructure(*trueInfoBank);
-	
+
 	output->hipoWriter->addEvent(*outEvent);
-	
+
 }
 
