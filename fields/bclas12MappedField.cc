@@ -37,12 +37,8 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// so we can output units as well
 	// add any useful information here
 	if(verbosity>3 && FIRST_ONLY != 99) {
-		cout << "  > Track position in magnetic field map, with displacement and rotations (x,y,z)/cm:"
-		<< "("  << x[0]/cm << ", "
-		<< x[1]/cm << ", "
-		<< x[2]/cm << ") cm,  " << endl;
-		cout << "    Cylindrical: ";
-		cout << "loc. pos. = ("    << x[0]/cm << ", " << x[1]/cm << ", " << x[2]/cm << ") cm,  ";
+		cout << "  > Cartesian track position in magnetic field map:" ;
+		cout << " ("    << x[0]/cm << ", " << x[1]/cm << ", " << x[2]/cm << ") cm " << endl;
 		cout << "B = ("   << bField[0]/gauss << ",  " << bField[1]/gauss << ",  " << bField[2]/gauss << ") gauss " << endl;
 	}
 

@@ -161,6 +161,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 
+	schemasToLoad["HEL::flip"]    = helFLIPSchema;
+
 	cout << " Done defining Hipo4 schemas." << endl;
 
 }
@@ -193,20 +195,23 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 
 
 
-void outputContainer::initializeHipo(string outputFile) {
+void outputContainer::initializeHipo(bool openFile) {
 
-	hipoSchema = new HipoSchema();
 
-	cout << " Initializing hipo4 writer to filename:" << outputFile << endl;
-	hipoWriter = new hipo::writer();
+	if ( !openFile ) {
+		hipoSchema = new HipoSchema();
 
-	// Open a writer and register schemas with the writer.
-	// The schemas have to be added to the writer before openning
-	// the file, since they are written into the header of the file.
-	for (auto &schema: hipoSchema->schemasToLoad) {
-		hipoWriter->getDictionary().addSchema(schema.second);
+		cout << " Initializing hipoSchema" << endl;
+		hipoWriter = new hipo::writer();
+
+		// Open a writer and register schemas with the writer.
+		// The schemas have to be added to the writer before openning
+		// the file, since they are written into the header of the file.
+		for (auto &schema: hipoSchema->schemasToLoad) {
+			hipoWriter->getDictionary().addSchema(schema.second);
+			// hipoWriter->addUserConfig("gemc","{\"version\": \"4.4.2\", \"beam\": \"e-,10.6 GeV\"}");
+		}
+	} else {
+		hipoWriter->open(outFile.c_str());
 	}
-
-	hipoWriter->open(outputFile.c_str());
-
 }

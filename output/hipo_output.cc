@@ -60,9 +60,10 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 		bigData += b + string("\n");
 	}
 
+	// file need to be opened after user configuration is added
 	output->hipoWriter->addUserConfig("GEMC::config",  bigData);
-	// output->hipoWriter->addUserConfig("GEMC::JCONFIG", sims["JSON"]);
-
+	output->initializeHipo(true);
+	
 }
 
 // returns detectorID from map, given hitType

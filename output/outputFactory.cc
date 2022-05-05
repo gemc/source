@@ -45,8 +45,9 @@ outputContainer::outputContainer(goptions Opts)
 		pchan = new evioFileChannel(trimSpacesFromString(outFile).c_str(), "w", evio_buffer);
 		pchan->open();
 	}
+
 	if(outType == "hipo") {
-		initializeHipo(trimSpacesFromString(outFile).c_str());
+		initializeHipo(false);
 	}
 
 }

@@ -246,7 +246,7 @@ public:
 	// The schemas have to be added to the writer before openning
 	// the file, since they are written into the header of the file.
 	// Thus the schema has to be declared in this base class
-	void initializeHipo(string outputfile);
+	void initializeHipo(bool openFile);
 	hipo::writer    *hipoWriter;
 	HipoSchema      *hipoSchema;
 
