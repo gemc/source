@@ -12,8 +12,14 @@ using namespace CLHEP;
 // hipo4
 #include "hipo4/writer.h"
 
-map<string, double> hipo_output::fieldScales = {};
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
 
+
+map<string, double> hipo_output::fieldScales = {};
 
 // record the simulation conditions
 // the format is a string for each variable
@@ -64,6 +70,35 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 	output->hipoWriter->addUserConfig("GEMC::config",  bigData);
 	output->initializeHipo(true);
 	
+	
+	// loading raster p0 and p1 from CCDB
+	string digiVariation = output->gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	int runno = output->gemcOpt.optMap["RUNNO"].arg;
+	string database =  "/calibration/raster/adc_to_position";
+	
+	string connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	if (getenv("CCDB_CONNECTION") != nullptr) {
+		connection = (string) getenv("CCDB_CONNECTION");
+	}
+	
+	vector<vector<double> > dbdata;
+	
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
+	database = database + ":" + to_string(runno) + ":" + digiVariation;
+	cout << " Connecting to " << connection << database << " to retrive raster parameters" << endl;
+
+	dbdata.clear();
+	calib->GetCalib(dbdata, database);
+
+	if ( dbdata.size() == 2 ) {
+	for (unsigned row = 0; row < dbdata.size(); row++) {
+		rasterP0[row] = dbdata[row][3];
+		rasterP1[row] = dbdata[row][4];
+	}
+
+		cout << " Raster Parameters: p0(x,y) = " << rasterP0[0] << ", " << rasterP0[1] << "), p1(x, y) = " << rasterP1[0] << ", " << rasterP1[1] << ")" << endl;
+	}
 }
 
 // returns detectorID from map, given hitType
@@ -348,6 +383,16 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 		}
 	}
 	outEvent->addStructure(lundParticleBank);
+	
+	
+	
+	// raster:
+	// given vx, vy of the first particle
+	// component = 1=vx 2=vy
+	// ADC=0
+	// pedestal = p0 + p1 *vx (o vy)
+	// p0, p1 from  /calibration/raster/adc_to_position
+	
 	
 	
 }
