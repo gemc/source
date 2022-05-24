@@ -114,12 +114,12 @@ int hipo_output :: getDetectorID(string hitType) {
 
 // returns hipo name from true info var name
 string hipo_output :: getHipoVariableName(string trueInfoVar) {
+	
 	if(trueInfoNamesMap.find(trueInfoVar) != trueInfoNamesMap.end() ) {
 		return trueInfoNamesMap[trueInfoVar];
 	} else {
 		return trueInfoVar;
 	}
-	
 }
 
 
@@ -387,14 +387,40 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	
 	
 	// raster:
+	// sector=0
+	// layer=0
+	// order=0
+	// ADC=0
+	// time=0
+	//
 	// given vx, vy of the first particle
 	// component = 1=vx 2=vy
-	// ADC=0
-	// pedestal = p0 + p1 *vx (o vy)
+	// vx = p0(0) + p1(0)*pedestal
+	// vy = p0(1) + p1(1)*pedestal
+	// ped = (vx - p0) / p1
 	// p0, p1 from  /calibration/raster/adc_to_position
 	
 	
+	int components[2] = {1, 2};
+	int peds[2];
 	
+	peds[0] = (int) (vx[0] - rasterP0[0] ) / rasterP1[0];
+	peds[1] = (int) (vy[0] - rasterP0[1] ) / rasterP1[1];
+
+	hipo::bank rasterBank(output->hipoSchema->rasterADCSchema, 2);
+	
+	// zero var infos
+	for(int j=0; j<2; j++) {
+		rasterBank.putByte("sector", j, 0);
+		rasterBank.putByte("layer", j, 0);
+		rasterBank.putByte("component", j, components[j]);
+		rasterBank.putByte("order", j, 0);
+		rasterBank.putInt("ADC", j, 0);
+		rasterBank.putFloat("time", j, 0);
+		rasterBank.putShort("ped", j, peds[j]);
+	}
+	outEvent->addStructure(rasterBank);
+
 }
 
 void hipo_output :: writeAncestors (outputContainer* output, vector<ancestorInfo> ainfo, gBank bank)

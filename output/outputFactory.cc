@@ -38,6 +38,7 @@ outputContainer::outputContainer(goptions Opts)
 	string optf = gemcOpt.optMap["OUTPUT"].args;
 	outType.assign(optf, 0, optf.find(",")) ;
 	outFile.assign(optf,    optf.find(",") + 1, optf.size()) ;
+	outFile.erase(remove(outFile.begin(), outFile.end(), ' '), outFile.end());
 
 	if(outType != "no") cout << hd_msg << " Opening output file \"" << trimSpacesFromString(outFile) << "\"." << endl;
 	if(outType == "txt" || outType == "txt_simple")  txtoutput = new ofstream(trimSpacesFromString(outFile).c_str());
