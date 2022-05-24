@@ -74,7 +74,7 @@ HipoSchema :: HipoSchema()
 	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B,mode/B, torus/F, solenoid/F");
 	runRFSchema.parse("id/S, time/F");
 	trueInfoSchema.parse("detector/B, pid/I, mpid/I, tid/I, mtid/I, otid/I, trackE/F, totEdep/F, avgX/F, avgY/F, avgZ/F, avgLx/F, avgLy/F, avgLz/F, px/F, py/F, pz/F, vx/F, vy/F, vz/F, mvx/F, mvy/F, mvz/F, avgT/F, nsteps/I, procID/I, hitn/I");
-	rasterADCSchema.parse("sector/B, layer/B, component/S, , order/B, ADC/I, time/F, ped/S");
+	rasterADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
 	// generators
 	geantParticle.parse("pid/I, px/F, py/F, pz/F, vx/F, vy/F, vz/F, vt/F");

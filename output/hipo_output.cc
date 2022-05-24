@@ -20,6 +20,9 @@ using namespace ccdb;
 
 
 map<string, double> hipo_output::fieldScales = {};
+int hipo_output::rasterInitialized = -99;
+double hipo_output::rasterP0[2] = {0, 0};
+double hipo_output::rasterP1[2] = {0, 0};
 
 // record the simulation conditions
 // the format is a string for each variable
@@ -69,36 +72,9 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 	// file need to be opened after user configuration is added
 	output->hipoWriter->addUserConfig("GEMC::config",  bigData);
 	output->initializeHipo(true);
-	
-	
-	// loading raster p0 and p1 from CCDB
-	string digiVariation = output->gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
-	int runno = output->gemcOpt.optMap["RUNNO"].arg;
-	string database =  "/calibration/raster/adc_to_position";
-	
-	string connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 
-	if (getenv("CCDB_CONNECTION") != nullptr) {
-		connection = (string) getenv("CCDB_CONNECTION");
-	}
-	
-	vector<vector<double> > dbdata;
-	
-	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
-	database = database + ":" + to_string(runno) + ":" + digiVariation;
-	cout << " Connecting to " << connection << database << " to retrive raster parameters" << endl;
 
-	dbdata.clear();
-	calib->GetCalib(dbdata, database);
 
-	if ( dbdata.size() == 2 ) {
-	for (unsigned row = 0; row < dbdata.size(); row++) {
-		rasterP0[row] = dbdata[row][3];
-		rasterP1[row] = dbdata[row][4];
-	}
-
-		cout << " Raster Parameters: p0(x,y) = " << rasterP0[0] << ", " << rasterP0[1] << "), p1(x, y) = " << rasterP1[0] << ", " << rasterP1[1] << ")" << endl;
-	}
 }
 
 // returns detectorID from map, given hitType
@@ -179,7 +155,42 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	}
 	
 	outEvent->addStructure(runConfigBank);
-	
+
+
+	// RASTER constant initialization
+	if ( rasterInitialized == -99 ) {
+
+	// loading raster p0 and p1 from CCDB
+	string digiVariation = output->gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+	int runno = output->gemcOpt.optMap["RUNNO"].arg;
+	string database =  "/calibration/raster/adc_to_position";
+
+	string connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+
+	if (getenv("CCDB_CONNECTION") != nullptr) {
+		connection = (string) getenv("CCDB_CONNECTION");
+	}
+
+	vector<vector<double> > dbdata;
+
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
+	database = database + ":" + to_string(runno) + ":" + digiVariation;
+	cout << " Connecting to " << connection << database << " to retrive raster parameters" << endl;
+
+	dbdata.clear();
+	calib->GetCalib(dbdata, database);
+
+	if ( dbdata.size() == 2 ) {
+		for (unsigned row = 0; row < dbdata.size(); row++) {
+			rasterP0[row] = dbdata[row][3];
+			rasterP1[row] = dbdata[row][4];
+		}
+
+		cout << " Raster Parameters: p0(x,y) = " << rasterP0[0] << ", " << rasterP0[1] << "), p1(x, y) = " << rasterP1[0] << ", " << rasterP1[1] << ")" << endl;
+	}
+		rasterInitialized = 1;
+	}
+
 }
 
 
@@ -401,23 +412,23 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	// p0, p1 from  /calibration/raster/adc_to_position
 	
 	
-	int components[2] = {1, 2};
-	int peds[2];
+	short components[2] = {1, 2};
+	short peds[2];
 	
-	peds[0] = (int) (vx[0] - rasterP0[0] ) / rasterP1[0];
-	peds[1] = (int) (vy[0] - rasterP0[1] ) / rasterP1[1];
+	peds[0] = (short) ((vx[0]/cm - rasterP0[0] ) / rasterP1[0]);
+	peds[1] = (short) ((vy[0]/cm - rasterP0[1] ) / rasterP1[1]);
 
 	hipo::bank rasterBank(output->hipoSchema->rasterADCSchema, 2);
 	
 	// zero var infos
 	for(int j=0; j<2; j++) {
-		rasterBank.putByte("sector", j, 0);
-		rasterBank.putByte("layer", j, 0);
-		rasterBank.putByte("component", j, components[j]);
-		rasterBank.putByte("order", j, 0);
-		rasterBank.putInt("ADC", j, 0);
-		rasterBank.putFloat("time", j, 0);
-		rasterBank.putShort("ped", j, peds[j]);
+		rasterBank.putByte("sector",     j, 0);
+		rasterBank.putByte("layer",      j, 0);
+		rasterBank.putShort("component", j, components[j]);
+		rasterBank.putByte("order",      j, 0);
+		rasterBank.putInt("ADC",         j, 0);
+		rasterBank.putFloat("time",      j, 0);
+		rasterBank.putShort("ped",       j, peds[j]);
 	}
 	outEvent->addStructure(rasterBank);
 

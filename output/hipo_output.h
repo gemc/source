@@ -24,10 +24,9 @@ class hipo_output : public outputFactory
 {
 private:
 	static map<string, double> fieldScales;
-	
-	// raster p0 variable
-	double rasterP0[2];
-	double rasterP1[2];
+	static int rasterInitialized;
+	static double rasterP0[2];
+	static double rasterP1[2];
 
 public:
 	~hipo_output(){
