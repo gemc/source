@@ -43,7 +43,7 @@ map<string, materialFactory> registerMaterialFactories()
 	
 	// TEXT initialization
 	materialMethodMap["TEXT"] = &text_materials::createMaterials;
-		
+
 	return materialMethodMap;
 }
 
@@ -80,7 +80,7 @@ void material::opticalsFromString(string property, string what)
 	else
 	{
 		stringstream comps(property);
-	
+
 		while(!comps.eof())
 		{
 			string c;
@@ -130,7 +130,7 @@ void material::opticalsFromString(string property, string what)
 			if(what == "birkConstant")
 				birkConstant = get_number(trimmedC);
 		}
-	
+
 		if(what == "rayleigh")
 		{
 			// yieldratio is the last quantity to be loaded
@@ -144,7 +144,7 @@ void material::opticalsFromString(string property, string what)
 			if(slowcomponent.size()     != photonEnergy.size()) slowcomponent.clear();
 			if(rayleigh.size()          != photonEnergy.size()) rayleigh.clear();
 		}
-	
+
 	}
 }
 
@@ -160,7 +160,7 @@ map<string, G4Material*> buildMaterials(map<string, materialFactory> materialFac
 	// Loading CPP def
 	materials *materialSelectedFactory = getMaterialFactory(&materialFactoryMap, "CPP");
 	map<string, G4Material*> mats = materialSelectedFactory->initMaterials(rc, go);
-		
+
 	// adding MYSQL
 	materials *mysqlFactory = getMaterialFactory(&materialFactoryMap, "MYSQL");
 	map<string, G4Material*> mysqlMats = mysqlFactory->initMaterials(rc, go);
@@ -186,7 +186,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 	vector<G4String> allMats = matman->GetNistMaterialNames();
 	for(unsigned int j=0; j<allMats.size(); j++) {
 		nistMap.insert(allMats[j]);
-	//	cout << allMats[j] << " material " << endl;
+		//	cout << allMats[j] << " material " << endl;
 	}
 	vector<G4String> allEls = matman->GetNistElementNames();
 	for(unsigned int j=0; j<allEls.size(); j++)
@@ -264,7 +264,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 			if(!allExist) continue;
 			
 			else
-			// elements exist, build material and remove it from from mmap
+				// elements exist, build material and remove it from from mmap
 			{
 				mats[it->first] = new G4Material(it->first, it->second.density*g/cm3, it->second.ncomponents);
 				
@@ -281,7 +281,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 					for(unsigned int i=0; i<it->second.fracs.size(); i++)
 					{
 						string compName = it->second.components[i];
-												
+
 						// existing material
 						if(mats.find(compName) != mats.end())
 							mats[it->first]->AddMaterial(mats[compName], it->second.fracs[i]);
@@ -420,7 +420,7 @@ map<string, G4Material*>  materials::materialsFromMap(map<string, material> mmap
 
 					mats[it->first]->SetMaterialPropertiesTable(optTable.back());
 				}
-			
+
 				// tagging material to be removed from map
 				toDelete.push_back(it->first);
 			}
@@ -470,11 +470,11 @@ map<string, G4Material*>  materialsWithIsotopes()
 			mats["H3"] = thisMat;
 		}
 		if(thisMat->GetName() == "Hgas")
-                {
-                        // Hgas already defined, so we can add the isotopes in our map here
-                        mats["Hgas"] = thisMat;
-                }
-	
+		{
+			// Hgas already defined, so we can add the isotopes in our map here
+			mats["Hgas"] = thisMat;
+		}
+
 	}
 	
 	if(already_defined)
@@ -528,7 +528,7 @@ map<string, G4Material*>  materialsWithIsotopes()
 
 
 
-	// ----  tritium 
+	// ----  tritium
 
 	// Tritium isotope
 	G4Isotope* triton  = new G4Isotope("triton", Z=1, N=3, a=3.0160492*g/mole);
@@ -543,9 +543,9 @@ map<string, G4Material*>  materialsWithIsotopes()
 
 
 	// hydrogen gas
-	G4Element* Hydrogen   = new G4Element("Hydrogen",  "H",  Z=1,  a=1.01*g/mole);        
+	G4Element* Hydrogen   = new G4Element("Hydrogen",  "H",  Z=1,  a=1.01*g/mole);
 	mats["Hgas"] = new G4Material("Hgas", 0.00275*g/cm3, 1, kStateGas, 50.0*kelvin);
-	mats["Hgas"]->AddElement(Hydrogen,1);
+	mats["Hgas"]->AddElement(Hydrogen, 2);
 	
 	return mats;
 }
