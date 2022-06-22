@@ -497,7 +497,7 @@ map<string, G4Material*>  materialsWithIsotopes()
 	
 	// Deuterium gas
 	mats["deuteriumGas"] = new G4Material("deuteriumGas", 0.000452*g/cm3, 1, kStateGas, 294.25*kelvin);
-	mats["deuteriumGas"]->AddElement(deuterium, 1);
+	mats["deuteriumGas"]->AddElement(deuterium, 2);
 	
 	// Liquid Deuterium
 	mats["LD2"] = new G4Material("LD2", 0.169*g/cm3, 1, kStateLiquid, 22.0*kelvin);
