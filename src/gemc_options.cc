@@ -130,7 +130,7 @@ void goptions::setGoptions()
 	optMap["SHIFT_LUND_VERTEX"].argsJSONTypes  = "F F F S";
 
 	optMap["RASTER_VERTEX"].args = "0*cm, 0*cm, default";
-	optMap["RASTER_VERTEX"].help = "Generate the x, y generated partice vertexes randomly in an ellipse defined by the x, y radii,  around their values.\n";
+	optMap["RASTER_VERTEX"].help = "Randomize the x, y generated partice vertexes within an ellipse defined by the x, y radii, around their values.\n";
 	optMap["RASTER_VERTEX"].help += "     If the third argument \"reset\" is given, the vertexes are centered at zero \n";
 	optMap["RASTER_VERTEX"].help += "      example 1: -RASTER_VERTEX=\"2*cm, 3*cm\" \n";
 	optMap["RASTER_VERTEX"].help += "      example 2: -RASTER_VERTEX=\"2*cm, 3*cm, reset\" \n";
