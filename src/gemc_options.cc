@@ -129,6 +129,18 @@ void goptions::setGoptions()
 	optMap["SHIFT_LUND_VERTEX"].argsJSONDescription  = "svx svy svz unit";
 	optMap["SHIFT_LUND_VERTEX"].argsJSONTypes  = "F F F S";
 
+	optMap["RASTER_VERTEX"].args = "0*cm, 0*cm, default";
+	optMap["RASTER_VERTEX"].help = "Generate the x, y generated partice vertexes randomly in an ellipse defined by the x, y radii,  around their values.\n";
+	optMap["RASTER_VERTEX"].help += "     If the third argument \"reset\" is given, the vertexes are centered at zero \n";
+	optMap["RASTER_VERTEX"].help += "      example 1: -RASTER_VERTEX=\"2*cm, 3*cm\" \n";
+	optMap["RASTER_VERTEX"].help += "      example 2: -RASTER_VERTEX=\"2*cm, 3*cm, reset\" \n";
+	optMap["RASTER_VERTEX"].name = "Randomizes the x, y generated partice vertexes";
+	optMap["RASTER_VERTEX"].type = 1;
+	optMap["RASTER_VERTEX"].ctgr = "generator";
+	optMap["RASTER_VERTEX"].argsJSONDescription  = "rvdx rvdy default/reset";
+	optMap["RASTER_VERTEX"].argsJSONTypes  = "F F S";
+
+
 	optMap["MERGE_LUND_BG"].args = "no";
 	optMap["MERGE_LUND_BG"].help = "LUND Input file to merge background events\n";
 	optMap["MERGE_LUND_BG"].help += "      example: -MERGE_LUND_BG=\"background.dat\" \n";

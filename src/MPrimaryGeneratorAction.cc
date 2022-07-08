@@ -188,11 +188,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 
+	double raster_r   = G4UniformRand()*rvdx;
+	double raster_phi = 2.0*pi*G4UniformRand();
+	double rasterx    = raster_r * cos(raster_phi);
+	double rastery    = ( rvdy / rvdx ) * raster_r * sin(raster_phi);
+
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal") {
 
-		// internal, no cosmic
-		if(cosmics == "no") {
+		if(cosmics == "no") { // internal, no cosmic
 			// redefining particle if in graphic mode
 			if( gemcOpt->optMap["USE_GUI"].arg > 0) {
 				setBeam();
@@ -228,9 +232,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			}
 
 
-
-			G4ThreeVector beam_dir;
-
 			// 4-momenta
 			double Mom   = mom/MeV   + (2.0*G4UniformRand()-1.0)*dmom/MeV;
 			double Theta = acos(G4UniformRand()*(cos(theta/rad-dtheta/rad)-cos(theta/rad+dtheta/rad)) + cos(theta/rad+dtheta/rad))/rad;
@@ -250,7 +251,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			}
 			double akine = sqrt(Mom*Mom + mass*mass) - mass ;
 
-
+			// beam direction
+			G4ThreeVector beam_dir;
 			if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "no") {
 				beam_dir = G4ThreeVector(cos(Phi/rad)*sin(Theta/rad), sin(Phi/rad)*sin(Theta/rad), cos(Theta/rad));
 			} else if(gemcOpt->optMap["ALIGN_ZAXIS"].args == "beamp") {
@@ -285,27 +287,33 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					VR  = sqrt(G4UniformRand())*dvr;
 				}
 
-
 				double PHI = 2.0*pi*G4UniformRand();
-
-				double Vx = vx/mm + VR*cos(PHI);
-				double Vy = vy/mm + VR*sin(PHI);
+				double Vx = vx/mm + VR*cos(PHI) + rasterx;
+				double Vy = vy/mm + VR*sin(PHI) + rastery;
 				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
 
-
+				if ( resetVertex ) {
+					Vx = rasterx;
+					Vy = rastery;
+				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
+
 			} else {
 
 				double Vx, Vy, Vz;
 
 				if(gaussOrFlatV == 1) {
-					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm);
-					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm);
+					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx;
+					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery;
 					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm);
 				} else {
-					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm;
-					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm;
+					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx;
+					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery;
 					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
+				}
+				if ( resetVertex ) {
+					Vx = rasterx;
+					Vy = rastery;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -335,9 +343,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					<< "azimuthal - " << polPhi/deg << " degrees " ;
 				cout << endl;
 			}
-		} else {
+		} else { // internal, cosmic model
 
-			// internal, cosmic model
 			// paper: A. Dar, Phys.Rev.Lett, 51,3,p.227 (1983)
 			bool cosmicNeutrons=false;
 			if(cosmicParticle != "muon") cosmicNeutrons=true;
@@ -352,8 +359,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			double cosmicVZ = 100000;
 
 			while( (cosmicVX - cosmicTarget.x() )*(cosmicVX - cosmicTarget.x() ) +
-					(cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
-					(cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius ) {
+					 (cosmicVY - cosmicTarget.y() )*(cosmicVY - cosmicTarget.y() ) +
+					 (cosmicVZ - cosmicTarget.z() )*(cosmicVZ - cosmicTarget.z() ) >= cosmicRadius*cosmicRadius ) {
 
 				// point generated inside spherical or cylindrical volume
 				if(cosmicGeo == "sph" || cosmicGeo == "sphere"){
@@ -441,8 +448,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetNumberOfParticles(1);
 			particleGun->GeneratePrimaryVertex(anEvent);
 		}
-	} else {
-		// external generator: input file
+	} else { // external generator: input file
+
 
 		// TODO: check beagle getLine is more elegant
 
@@ -528,18 +535,19 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double px     = thisParticleInfo.infos[6];
 				double py     = thisParticleInfo.infos[7];
 				double pz     = thisParticleInfo.infos[8];
+
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[11] + svx/cm;
-				double Vy     = thisParticleInfo.infos[12] + svy/cm;
-				double Vz     = thisParticleInfo.infos[13] + svz/cm;
+				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm;
+				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm;
+				double Vz     = thisParticleInfo.infos[13] + svz/cm ;
 				
-				if(PROPAGATE_DVERTEXTIME==0) {
-					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);   }
-				
-				// if this flag is set to 1 updated times are calculated for detached vertex events
-				if(PROPAGATE_DVERTEXTIME==1){
-					setParticleFromParsPropagateTime(p, userInfo, anEvent);  }
+				if(PROPAGATE_DVERTEXTIME == 0) {
+					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);
+				} else {
+					// if this flag is set updated times are calculated for detached vertex events
+					setParticleFromParsPropagateTime(p, userInfo, anEvent);
+				}
 			}
 			
 			if(eventIndex <= ntoskip) {
@@ -621,10 +629,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double px     = thisParticleInfo.infos[7];
 				double py     = thisParticleInfo.infos[8];
 				double pz     = thisParticleInfo.infos[9];
+
 				// vertex is already received in mm from beagle
 				// need to pass it in cm
-				double Vx     = (thisParticleInfo.infos[12]/cm) + svx/cm;
-				double Vy     = (thisParticleInfo.infos[13]/cm) + svy/cm;
+				double Vx     = (thisParticleInfo.infos[12]/cm) + svx/cm + rasterx/cm;
+				double Vy     = (thisParticleInfo.infos[13]/cm) + svy/cm + rastery/cm;
 				double Vz     = (thisParticleInfo.infos[14]/cm) + svz/cm;
 				double A      = thisParticleInfo.infos[15];
 				double Z      = thisParticleInfo.infos[16];
@@ -828,8 +837,9 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			{
 				L_Mom   = L_mom + (2.0*G4UniformRand()-1.0)*L_dmom;
 				L_Theta = acos(G4UniformRand()*(cos(L_theta/rad-L_dtheta/rad)-cos(L_theta/rad+L_dtheta/rad)) + cos(L_theta/rad+L_dtheta/rad))/rad;
-				if(lumiFlat)
+				if(lumiFlat) {
 					L_Theta = L_theta + (2.0*G4UniformRand()-1.0)*L_dtheta;
+				}
 
 				L_Phi = L_phi + (2.0*G4UniformRand()-1.0)*L_dphi;
 			}
@@ -854,16 +864,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			double lvz = L_vz;
 
 			// spread vertex if requested
-			if(L_dvz > 0)
-			{
+			if(L_dvz > 0) {
 				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
 
 			particleGun->SetNumberOfParticles(PBUNCH);
 
-			if(b == NBUNCHES-1)
+			if(b == NBUNCHES-1) {
 				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
-
+			}
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
 
@@ -960,6 +969,17 @@ void MPrimaryGeneratorAction::setBeam()
 
 	}
 
+	// Getting raster vertex from option value
+	values = get_info(gemcOpt->optMap["RASTER_VERTEX"].args);
+
+	rvdx = get_number(values[0]);
+	rvdy = get_number(values[1]);
+	resetVertex = false;
+
+	if(values.back().find("reset") != string::npos) {
+		resetVertex = true;
+	}
+
 	if(input_gen == "gemc_internal") {
 		if(cosmics == "no") {
 			// Getting particle name,  momentum from option value
@@ -1013,7 +1033,6 @@ void MPrimaryGeneratorAction::setBeam()
 			}
 
 			// Getting vertex from option value
-			
 			values = get_info(gemcOpt->optMap["BEAM_V"].args);
 			units = trimSpacesFromString(values[3]);
 
@@ -1454,8 +1473,7 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 
 		// beam polarization only along the beam
 		// only for the first particle
-		if(p==0)
-		{
+		if(p==0) {
 			particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
 		}
 		if(GEN_VERBOSITY > 3) {
@@ -1519,10 +1537,9 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 						double timeoffset2 = Parents_vertex_diff/(beta_parent2*speedoflight);
 						timeoffset += timeoffset2;
 
+					} else {
+						break;
 					}
-
-					else{
-						break; }
 				}
 
 
