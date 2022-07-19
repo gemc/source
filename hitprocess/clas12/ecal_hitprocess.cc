@@ -26,7 +26,6 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	
 	// database
 	ecc.runNo      = runno;
-	ecc.date       = "2015-11-29";
 	
 	if(getenv ("CCDB_CONNECTION") != nullptr) {
 		ecc.connection = (string) getenv("CCDB_CONNECTION");

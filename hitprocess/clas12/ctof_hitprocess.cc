@@ -29,7 +29,6 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	cout << "Entering initializeCTOF" << endl;
 	
 	ctc.runNo = runno;
-	ctc.date = "2015-11-29";
 	if (getenv("CCDB_CONNECTION") != nullptr)
 		ctc.connection = (string) getenv("CCDB_CONNECTION");
 	else

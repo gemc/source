@@ -26,7 +26,6 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	ftc.runNo = runno;
-	ftc.date = "2015-11-29";
 	if (getenv("CCDB_CONNECTION") != nullptr)
 		ftc.connection = (string) getenv("CCDB_CONNECTION");
 	else

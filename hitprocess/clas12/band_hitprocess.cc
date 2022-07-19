@@ -40,7 +40,6 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	// database
 	bhc.runNo = runno;
 	
-	bhc.date       = "2020-07-15";
 	if(getenv ("CCDB_CONNECTION") != nullptr)
 		bhc.connection = (string) getenv("CCDB_CONNECTION");
 	else

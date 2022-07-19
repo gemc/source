@@ -32,7 +32,6 @@ static ahdcConstants initializeAHDCConstants(int runno, string digiVariation = "
 	if (runno == -1) return atc;
 	
 	atc.runNo = runno;
-	atc.date = "2020-04-20";
 	if (getenv("CCDB_CONNECTION") != nullptr)
 		atc.connection = (string) getenv("CCDB_CONNECTION");
 	else

@@ -22,20 +22,7 @@ static bstConstants initializeBSTConstants(int runno, string digiVariation = "de
 	if(runno == -1) return bstc;
 	
 	// no DB connection yet
-	
-	//
-	//
-	//	// database
-	//	bstc.runNo = runno;
-	//	bstc.date       = "2016-03-15";
-	//	if(getenv ("CCDB_CONNECTION") != nullptr)
-	//	bstc.connection = (string) getenv("CCDB_CONNECTION");
-	//	else
-	//	bstc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	//
-	//	bstc.variation  = "main";
-	//	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(bstc.connection));
-	
+		
 	return bstc;
 }
 

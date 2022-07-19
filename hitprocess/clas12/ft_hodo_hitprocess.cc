@@ -32,7 +32,6 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 	// database
 	fthc.runNo = runno;
 	
-	fthc.date       = "2016-03-15";
 	if(getenv ("CCDB_CONNECTION") != nullptr)
 		fthc.connection = (string) getenv("CCDB_CONNECTION");
 	else

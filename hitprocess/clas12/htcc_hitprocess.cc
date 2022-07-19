@@ -32,7 +32,6 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 
 	// database
 	htccc.runNo = runno;
-	htccc.date       = "2016-03-15";
 	if(getenv ("CCDB_CONNECTION") != nullptr)
 		htccc.connection = (string) getenv("CCDB_CONNECTION");
 	else
