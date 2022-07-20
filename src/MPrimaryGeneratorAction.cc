@@ -188,10 +188,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 
-	double raster_r   = G4UniformRand()*rvdx;
+	double raster_r   = G4UniformRand();
 	double raster_phi = 2.0*pi*G4UniformRand();
-	double rasterx    = raster_r * cos(raster_phi);
-	double rastery    = ( rvdy / rvdx ) * raster_r * sin(raster_phi);
+	double rasterx    = rvdx * raster_r * cos(raster_phi);
+	double rastery    = rvdy * raster_r * sin(raster_phi);
+
+
+
 
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal") {
