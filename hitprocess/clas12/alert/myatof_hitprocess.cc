@@ -56,15 +56,11 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["superlayer"]      = 0;
 		dgtz["layer"]      = 0;
 		dgtz["paddle"]       = 0;
-		dgtz["tdc_front"]        = stepTime[0];
-		dgtz["tdc_back"]        = stepTime[0];
-		dgtz["tdc_top"]        = stepTime[0];
+		dgtz["time"]        = stepTime[0];
 		dgtz["hitn"]       = hitn;
 
 		if(filterDummyBanks == false) {
-			dgtz["adc_front"]       = 0;
-			dgtz["adc_back"]       = 0;
-			dgtz["adc_top"]       = 0;
+			dgtz["adc"]       = 0;
 		}
 		return dgtz;
 	}
@@ -72,7 +68,7 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	trueInfos tInfos(aHit);
 
 	double length = aHit->GetDetector().dimensions[0];
-	cout << "paddle half-length in Z (mm) = " << length << endl;
+	//cout << "paddle half-length in Z (mm) = " << length << endl;
 	// Need to know the (x,y) coordinate of the paddle vertices for the largest radius
 	double dim_3, dim_4, dim_5, dim_6, l_topXY, l_a, l_b;
 	
@@ -82,14 +78,14 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dim_6 = aHit->GetDetector().dimensions[6];
 
 	l_topXY = sqrt( pow((dim_3 - dim_5),2) + pow((dim_4 - dim_6),2) );
-	cout << "paddle top length in XY (l_topXY in mm) = " << l_topXY << endl;	
+	//cout << "paddle top length in XY (l_topXY in mm) = " << l_topXY << endl;	
 
 	vector<G4double>      Edep        = aHit->GetEdep();
 	// local variable for each step
 	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
 	vector<double> times = aHit->GetTime();
 	
-	double adc_CC_front, adc_CC_back, adc_CC_top;
+	double adc_CC_front, adc_CC_back, adc_CC_top, tdc_CC_front, tdc_CC_back, tdc_CC_top;
 
 	double LposX=0.0;
 	double LposY=0.0;
@@ -98,6 +94,8 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//Simple output not equal to real physics, just to feel the adc, time values
 	//Should be: double energy = tInfos.eTot*att;
 	
+	double totEdep=0.0;
+
 	//This is for superlayer 0 paddles!!!
 	//Distance calculation from the hit to the front or back SIPM, superlayer 0!
 	double dFront = 0.0;
@@ -112,17 +110,17 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double e_Top = 0.0;
 	double E_tot_Top = 0.0;
 
-	double attlength = 500.0; // here in mm! because all lengths from the volume are in mm!
-	double pmtPEYld = 1000.0; //
+	double attlength = 1600.0; // here in mm! because all lengths from the volume are in mm!! EJ-204 160 cm
+	double pmtPEYld = 1400.0; // EJ-204 10400 (photons / [1MeV*e-])
 	double dEdxMIP = 1.956; // energy deposited by MIP per cm of scintillator material, to be adapted for SiPM case, it is a function of ?
 
 	//Variables for tdc calculation (time)
 	double EtimesTime_Front=0.0;
 	double EtimesTime_Back=0.0;
 	double EtimesTime_Top=0.0;
-	double  v_eff_Front = 0.1; // mm/ns!
-	double  v_eff_Back = 0.1;
-	double  v_eff_Top = 0.1;
+	double  v_eff_Front = 200.0; // mm/ns! CND v_eff = 16 cm/ns
+	double  v_eff_Back = 200.0;
+	double  v_eff_Top = 200.0;
 
 	/*
 	double dist_h_SiPMFront =0.0;
@@ -144,12 +142,15 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 				e_Back = Edep[s] *exp(-dBack/attlength);
 				E_tot_Front = E_tot_Front + e_Front; // to sum over all the steps of the hit
 				E_tot_Back = E_tot_Back + e_Back;
+			
+				// to check the totEdep MC truth value
+				totEdep = totEdep + Edep[s];
 
 				// times[s] is in ns!
 				EtimesTime_Front = EtimesTime_Front + (times[s] + dFront/v_eff_Front)*e_Front;
 				EtimesTime_Back = EtimesTime_Back + (times[s] + dBack/v_eff_Back)*e_Back;
 						
-			cout << "Distance from hit to Front SIPM, to Back SiPM (mm): " << dFront << ", "<< dBack << endl;
+			//cout << "Distance from hit to Front SIPM, to Back SiPM (mm): " << dFront << ", "<< dBack << endl;
 				/*
 				if ( dist_h_SiPMFront <= dFront )
 				{
@@ -167,6 +168,9 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 				l_b = sqrt( pow((dim_5 - LposX),2) + pow((dim_6 - LposY),2) );
 			cout << "l_a & l_b (mm): " << l_a << ", " << l_b << endl;
 
+				// to check the totEdep MC truth value
+				totEdep = totEdep + Edep[s];
+
 				if( (l_a + l_b) == l_topXY) 
 				{
 					H_hit_SiPM = 0.0;
@@ -181,7 +185,7 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 				}
 
 			EtimesTime_Top = EtimesTime_Top + (times[s] + H_hit_SiPM/v_eff_Top)*e_Top;
-			cout << "Distance from hit to Top SiPM (mm): " << H_hit_SiPM << endl;
+			//cout << "Distance from hit to Top SiPM (mm): " << H_hit_SiPM << endl;
 			/*
 			if ( dist_h_SiPMTop <= H_hit_SiPM )
 				{
@@ -194,12 +198,15 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	if (identity[1].id == 0)
 	{	
 		//test factor for calibration coeff. conversion
-		adc_CC_front = 900.0;	
-		adc_CC_back = 900.0;
+		adc_CC_front = 10.0;	
+		adc_CC_back = 10.0;
+		tdc_CC_front = 1.0;	
+		tdc_CC_back = 1.0;
 	}
 	else 
 	{
-		adc_CC_top = 900.0;
+		adc_CC_top = 10.0;
+		tdc_CC_top = 1.0;
 	}
 
 	double adc_front = 0.00000;
@@ -208,6 +215,10 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double tdc_front = 0.00000;
 	double tdc_back = 0.00000;
 	double tdc_top = 0.00000;
+	double time_front = 0.00000;
+	double time_back = 0.00000;
+	double time_top = 0.00000;
+	double sigma_time = 0.1; // in ns! 100 ps = 0.1 ns
 
 	
 	
@@ -222,8 +233,11 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		adc_front = energy_fr *adc_CC_front *(1/(dEdxMIP*0.3)); // 3 mm sl0 (radial) thickness in XY -> 0.3 cm
 		adc_back = energy_bck *adc_CC_back *(1/(dEdxMIP*0.3));
 
-		tdc_front = EtimesTime_Front/E_tot_Front; 
-		tdc_back = EtimesTime_Back/E_tot_Back;
+
+		time_front = EtimesTime_Front/E_tot_Front;
+		time_back = EtimesTime_Back/E_tot_Back;
+		tdc_front = G4RandGauss::shoot(time_front, sigma_time) / tdc_CC_front; 
+		tdc_back = G4RandGauss::shoot(time_back, sigma_time) / tdc_CC_back;
 	}
 	if(E_tot_Top > 0.0)
 	{
@@ -231,7 +245,8 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		double energy_top = nphe_top/pmtPEYld;
 
 		adc_top = energy_top *adc_CC_top *(1/(dEdxMIP*2.0)); // 20 mm sl1 (radial) thickness in XY -> 2.0 cm
-		tdc_top  = EtimesTime_Top/E_tot_Top;
+		time_top = EtimesTime_Top/E_tot_Top;
+		tdc_top  = G4RandGauss::shoot(time_top, sigma_time) / tdc_CC_top;
 		
 	}
 
@@ -256,24 +271,31 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 			dgtz["tdc_front"] = tdc_front;
 			dgtz["tdc_back"] = tdc_back;
 			dgtz["tdc_top"] = tdc_top;
+			dgtz["time_front"] = time_front;
+			dgtz["time_back"] = time_back;
+			dgtz["time_top"] = time_top;
+			dgtz["E_tot_Front"] = E_tot_Front;
+			dgtz["E_tot_Back"] = E_tot_Back;
+			dgtz["E_tot_Top"] = E_tot_Top;
+			dgtz["totEdep_MC"] = totEdep;
 			dgtz["hitn"] = hitn;		//(2202,99)
 		
-		cout << " start of the ATOF hit " << endl;
-		cout << " sector = " << identity[0].id << endl;	
-		cout << " superlayer = " << identity[1].id << endl;
-		cout << " layer = " << identity[2].id << endl;
-		cout << " paddle = " << identity[3].id << endl;
-		cout << " E_tot_Front energy value = " << E_tot_Front << endl;
-		cout << " E_tot_Back energy value = " << E_tot_Back << endl;
-		cout << " E_tot_Top energy value = " << E_tot_Top << endl;
-		cout << " adc_front = " << adc_front << endl;
-		cout << " adc_back = " << adc_back << endl;
-		cout << " adc_top = " << adc_top << endl;
-		cout << " tdc_front = : " << tdc_front << endl;
-		cout << " tdc_back = : " << tdc_back << endl;
-		cout << " tdc_top = : " << tdc_top << endl;
-		cout << " value in hitn var: " << hitn << endl;
-		cout << " end of the ATOF hit " << endl;
+		//cout << " start of the ATOF hit " << endl;
+		//cout << " sector = " << identity[0].id << endl;	
+		//cout << " superlayer = " << identity[1].id << endl;
+		//cout << " layer = " << identity[2].id << endl;
+		//cout << " paddle = " << identity[3].id << endl;
+		//cout << " E_tot_Front energy value = " << E_tot_Front << endl;
+		//cout << " E_tot_Back energy value = " << E_tot_Back << endl;
+		//cout << " E_tot_Top energy value = " << E_tot_Top << endl;
+		//cout << " adc_front = " << adc_front << endl;
+		//cout << " adc_back = " << adc_back << endl;
+		//cout << " adc_top = " << adc_top << endl;
+		//cout << " tdc_front = : " << tdc_front << endl;
+		//cout << " tdc_back = : " << tdc_back << endl;
+		//cout << " tdc_top = : " << tdc_top << endl;
+		//cout << " value in hitn var: " << hitn << endl;
+		//cout << " end of the ATOF hit " << endl;
 
 
 
