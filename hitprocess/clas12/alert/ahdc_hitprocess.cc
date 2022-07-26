@@ -151,10 +151,12 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// this is for energy deposit calculation
 	double E_wire = 0.0;
 	double E_tot_wire = 0.0;
-	double attenuation = 1.0; // mm!!!
+	double attenuation = 10.0; // mm!!!
 	double adc_energy = 0.0;
-	double EYld = 1.0;
+	double EYld = 10.0;
 	
+	double totEdepMC = 0.0;
+
 	for(int p=0; p<17; p++)
 	{
 		CellVertex = aHit->GetDetector().dimensions[p]; // G4 Generic Trapezoide dimensions G4 Generic Trapezoide dimensions
@@ -198,9 +200,9 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 			Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
 		}
 	
-	cout << " shared side defined by points: (" << dim_id_1 << "," <<dim_id_2 << ") and (" << dim_id_7 << "," <<dim_id_8 << ") for the 1rst face; " << endl;
-	cout << " and  by points: (" << xV4 << "," << yV4 << ") and (" << xV7 << "," << yV7 << ") for the 2nd face; all in mm!!!" << endl;
- 	cout << "sub-cell number = " << subcell << "; hitted cell wire coord.: top face = (" << X_sigwire_top << ", " << Y_sigwire_top << "); bottom face = (" << X_sigwire_bot << ", " << Y_sigwire_bot << ");" << endl;
+	//cout << " shared side defined by points: (" << dim_id_1 << "," <<dim_id_2 << ") and (" << dim_id_7 << "," <<dim_id_8 << ") for the 1rst face; " << endl;
+	//cout << " and  by points: (" << xV4 << "," << yV4 << ") and (" << xV7 << "," << yV7 << ") for the 2nd face; all in mm!!!" << endl;
+ 	//cout << "sub-cell number = " << subcell << "; hitted cell wire coord.: top face = (" << X_sigwire_top << ", " << Y_sigwire_top << "); bottom face = (" << X_sigwire_bot << ", " << Y_sigwire_bot << ");" << endl;
 	
 	SigWireRadiusTop = sqrt(pow(X_sigwire_top,2) + pow(Y_sigwire_top,2)); // mm!
 	SigWireRadiusBottom = sqrt(pow(X_sigwire_bot,2) + pow(Y_sigwire_bot,2)); // mm!
@@ -216,11 +218,11 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		wirealigned = 1;
 	} 
 
-	cout << " Signal wire radius (top face) = " << SigWireRadiusTop << "; Signal wire radius (bottom face) = " << SigWireRadiusBottom << "; sig. wire aligned = " << wirealigned << endl;
-	cout << " Signal wire alpha (top face) degrees = " << (SigWireAlphaTop * 180.0 / PI)  << "; Signal wire alpha (bottom face) degrees = " << (SigWireAlphaBottom * 180.0 / PI) << "; sig. wire Delta Alpha (top - bot.) = " << (SigWireDeltaAlpha * 180.0 / PI) << endl;
+	//cout << " Signal wire radius (top face) = " << SigWireRadiusTop << "; Signal wire radius (bottom face) = " << SigWireRadiusBottom << "; sig. wire aligned = " << wirealigned << endl;
+	//cout << " Signal wire alpha (top face) degrees = " << (SigWireAlphaTop * 180.0 / PI)  << "; Signal wire alpha (bottom face) degrees = " << (SigWireAlphaBottom * 180.0 / PI) << "; sig. wire Delta Alpha (top - bot.) = " << (SigWireDeltaAlpha * 180.0 / PI) << endl;
 
 	cout << " ************** Hit started! **************** " << endl;
-	cout << "First loop on steps begins" << endl;
+	//cout << "First loop on steps begins" << endl;
 
 	L_ab = sqrt( pow((X_sigwire_bot - X_sigwire_top),2) + pow((Y_sigwire_bot - Y_sigwire_top),2) + pow((Z_sigwire_bot - Z_sigwire_top),2) );
 	int local = 0;
@@ -258,26 +260,31 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 			// energy deposit calculation
 			E_wire = Edep[s] *exp(-H_abh/attenuation);
-			E_tot_wire = E_tot_wire + E_wire;	
+			E_tot_wire = E_tot_wire + E_wire;
+
+			totEdepMC = totEdepMC+Edep[s];	
 
 			// time calculation
 			signal_t = stepTime[s] + (H_abh/driftVelocity);
 			cout << "signal_t: " << signal_t << ", stepTime: " << stepTime[s] << endl;	
 			signal_tTimesEdep = signal_tTimesEdep + (stepTime[s] + H_abh/driftVelocity) * E_wire;
+			cout << "signal_tTimesEdep: " << signal_tTimesEdep << endl;	
 		
 			//time = stepTime[s]++;
             		//adc = Edep[s]++;	
 			
 		}
-	cout << "First loop on steps ends" << endl;
+	//cout << "First loop on steps ends" << endl;
 
 			// energy adc value
 			adc_energy = E_tot_wire * EYld;
 			
 			// Just to test, time is linear with doca
-			double a = 3.5;
-			double b = 4.0;
+			double a = 5.0;
+			double b = 5.0;
 			time = a*doca+b + signal_tTimesEdep/E_tot_wire;
+			double signal = 0.0;
+			signal = signal_tTimesEdep/E_tot_wire;
 			
 		
 			// Here are the dgtz varibles that we want to calculate using MC true info of a hit
@@ -286,21 +293,28 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
        			dgtz["layer"] = identity[1].id;		//(2302,2)
         		dgtz["wire"] = identity[2].id;	//(2302,3)
         		dgtz["doca"]    = doca;		//(2302,4)
-			dgtz["energy"]    = adc_energy;		//(2302,5)
+			dgtz["subcell"]    = subcell;	// subcell 1 is on the right of the signal wire, subcell 2 is on the left of the signal wire
+			dgtz["adc_energy"]    = adc_energy;		//(2302,5)
+			dgtz["wire_energy"]    = E_tot_wire;		//(2302,5)
+			dgtz["totEdep_MC"]    = totEdepMC;
+			dgtz["signal"]   = signal;
 			dgtz["time"]   = time;		//(2302,6)	
 			dgtz["hitn"] = hitn;		//(2302,99)
 		
-		cout << " start of the AHDC hit " << endl;
-		cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;	
-		cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
-		cout << " value in identity[2].id = wire var: " << identity[2].id << endl;
-		cout << " value in identity[3].id var: " << identity[3].id << endl;
-		cout << " doca value = dist. hit->sig.wire & perpendicular to signal wire) (mm!!!): " << doca << endl;
-		cout << " value in doca output: " << doca << endl;
-		cout << " value in energy output: " << adc_energy << endl;
-		cout << " value in time var: " << time << endl;
-		cout << " value in hitn var: " << hitn << endl;
-		cout << " if local <> 0 than hit in local reference; local = " << local << endl;
+		//cout << " start of the AHDC hit " << endl;
+		//cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;	
+		//cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
+		//cout << " value in identity[2].id = wire var: " << identity[2].id << endl;
+		//cout << " value in identity[3].id var: " << identity[3].id << endl;
+		//cout << " doca value = dist. hit->sig.wire & perpendicular to signal wire) (mm!!!): " << doca << endl;
+		//cout << " value in doca output: " << doca << endl;
+		//cout << " value in MC totEdep: " << totEdepMC << endl;
+		//cout << " value in wire energy deposit: " << E_tot_wire << endl;
+		//cout << " value in adc energy deposit: " << adc_energy << endl;
+		//cout << " value in signal var: " << signal << endl;
+		//cout << " value in time var: " << time << endl;
+		//cout << " value in hitn var: " << hitn << endl;
+		//cout << " if local <> 0 than hit in local reference; local = " << local << endl;
 		cout << " ************** Hit ended! **************** " << endl;
 		
 		//cout << " value in superlayer var: " << identity[0].id << endl;	

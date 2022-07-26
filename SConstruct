@@ -121,6 +121,7 @@ hitp_sources = Split("""
 	hitprocess/clas12/svt/bst_strip.cc
 	hitprocess/clas12/alert/myatof_hitprocess.cc
 	hitprocess/clas12/alert/ahdc_hitprocess.cc
+	hitprocess/clas12/alert/alertshell_hitprocess.cc
 	hitprocess/clas12/ctof_hitprocess.cc
 	hitprocess/clas12/cnd_hitprocess.cc
 	hitprocess/clas12/dc_hitprocess.cc
