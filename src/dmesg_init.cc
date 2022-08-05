@@ -116,6 +116,7 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		commands.push_back("/vis/open OGLIQt " + gemcOpt.optMap["geometry"].args + newpos);
 	
 
+	commands.push_back("/vis/viewer/set/autoRefresh false");
 	commands.push_back("/vis/viewer/set/culling coveredDaughters true");
 
 
@@ -132,15 +133,14 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 
 		// increasing visualisation storing
 		commands.push_back("/vis/ogl/set/displayListLimit 500000");
-	}
-	else
-	{
+	} else {
 		commands.push_back("/vis/scene/add/trajectories");
 		commands.push_back("/vis/scene/add/hits");
 		commands.push_back("/vis/scene/endOfEventAction accumulate -1");
 	}
 	
-	
+	commands.push_back("/vis/viewer/set/autoRefresh true");
+
 
 	
 	// tracks colors
