@@ -13,7 +13,7 @@ QString PColorsTab::load_doc()
 	"<tr><td>neutrons:</td>           <td><font color='black'>  black </font></td></tr>"
 	"<tr><td>photons:</td>            <td><font color='blue'>   blue   </font></td></tr>"
 	"<tr><td><br></td><td></td></tr>"
-	"<tr><td>e-:  </td>               <td><font color='cyan'>   cyan   </font></td></tr>"
+	"<tr><td>e-:  </td>               <td><font color='red'>   red   </font></td></tr>"
 	"<tr><td>protons: </td>           <td><font color='orange'> orange </font></td></tr>"
 	"<tr><td><br></td><td></td></tr>"
 	"<tr><td>&pi;<sup>+</sup>:</td>   <td><font color='magenta'> magenta </font></td></tr>"
