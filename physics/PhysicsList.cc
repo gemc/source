@@ -297,6 +297,7 @@ void PhysicsList::cookPhysics()
 	g4DecayPhys = new G4DecayPhysics("decays");
 
 	// EM Physics
+	// see also https://geant4-userdoc.web.cern.ch/UsersGuides/PhysicsListGuide/html/electromagnetic/index.html
 	if(g4EMPhysics) delete  g4EMPhysics;
 	if(EMPhys == "STD")  g4EMPhysics = new G4EmStandardPhysics();
 	else if(EMPhys == "EMV")  g4EMPhysics = new G4EmStandardPhysics_option1();

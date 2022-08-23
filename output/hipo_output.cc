@@ -187,7 +187,7 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 			rasterP1[row] = dbdata[row][4];
 		}
 
-		cout << " Raster Parameters: p0(x,y) = " << rasterP0[0] << ", " << rasterP0[1] << "), p1(x, y) = " << rasterP1[0] << ", " << rasterP1[1] << ")" << endl;
+		cout << " Raster Parameters: p0(x,y) = (" << rasterP0[0] << ", " << rasterP0[1] << "), p1(x, y) = (" << rasterP1[0] << ", " << rasterP1[1] << ")" << endl;
 	}
 		rasterInitialized = 1;
 	}
