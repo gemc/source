@@ -111,18 +111,18 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	
 	// fastMC mode will set SAVE_ALL_MOTHERS to 1
 	// a bit cluncky for now
-	if(fastMCMode>0)
+	if(fastMCMode>0) {
 		SAVE_ALL_MOTHERS = 1;
+	}
 	
 	// SAVE_ALL_ANCESTORS will set SAVE_ALL_MOTHERS to nonzero
-	if (SAVE_ALL_ANCESTORS && (SAVE_ALL_MOTHERS == 0))
+	if (SAVE_ALL_ANCESTORS && (SAVE_ALL_MOTHERS == 0)) {
 		SAVE_ALL_MOTHERS = 1;
-	
+	}
 	tsampling  = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).front());
 	nsamplings = get_number(get_info(gemcOpt.optMap["TSAMPLING"].args).back());
 	
-	if(SAVE_ALL_MOTHERS>1)
-	{
+	if(SAVE_ALL_MOTHERS>1) {
 		lundOutput = new ofstream("background.dat");
 		cout << " > Opening background.dat file to save background particles in LUND format." << endl;
 	}
@@ -199,15 +199,20 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 	rw.getRunNumber(evtN);
 	bgMap.clear();
 	
+	// need this for MTwistEngine
+	// double throwingAnumberCauseTwistedEngineCannotShowJustTwoKys = G4UniformRand();
+	
 	static int lastEvtN = -1;
 	if(evtN > lastEvtN && evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
 		if(rw.isNewRun) cout << " (new) ";
 		cout << endl;
-		cout << hd_msg << " Random Number: " << G4UniformRand() << endl;
-		// CLHEP::HepRandom::showEngineStatus();
+		cout << hd_msg << " Random Seeds: ("  <<G4Random::getTheSeeds()[0]  << ", " << G4Random::getTheSeeds()[1] << ")" << endl;
+		// need this for MTwistEngine
+		//cout << hd_msg << " Current random number: " << throwingAnumberCauseTwistedEngineCannotShowJustTwoKys << endl;
 		lastEvtN = evtN;
 	}
+	
 	
 	// background hits:
 	// checking the whole hit map
@@ -234,6 +239,7 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 
 void MEventAction::EndOfEventAction(const G4Event* evt)
 {
+
 	if ((gen_action->isFileOpen() == false) ||
 		 (gen_action->doneRerun() == true))
 		return;
@@ -247,6 +253,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	MHitCollection* MHC;
 	int nhits;
+	
 	
 	// if FILTER_HITS is set, checking if there are any hits
 	if(FILTER_HITS) {
@@ -315,9 +322,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if (not foundHighmom) return;
 	}
 
-	if(evtN%Modulo == 0 )
-		cout << hd_msg << " Starting Event Action Routine " << evtN << "  Run Number: " << rw.runNo << endl;
-	
+	if(evtN%Modulo == 0 ) {
+		cout << hd_msg << " EndOfEventAction for event number " << evtN << ",  Run Number: " << rw.runNo << endl;
+	}
 	
 	// building the tracks set database with all the tracks in all the hits
 	// if SAVE_ALL_MOTHERS is set
@@ -369,11 +376,11 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		trajectoryContainer = evt->GetTrajectoryContainer();
 		momDaughter.clear();
 		
-		if(VERB>3)
+		if(VERB>3) {
 			cout << " >> Total number of tracks " << trajectoryContainer->size() << endl;
+		}
 		
-		while(trajectoryContainer && track_db.size())
-		{
+		while(trajectoryContainer && track_db.size()) {
 			// looping over all tracks
 			for(unsigned int i=0; i< trajectoryContainer->size(); i++)
 			{
@@ -1040,8 +1047,9 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		G4UImanager::GetUIpointer()->ApplyCommand(copCmd);
 	}
 	
-	if(evtN%Modulo == 0 )
+	if(evtN%Modulo == 0 && VERB > 2 ) {
 		cout << hd_msg << " End of Event " << evtN << " Routine..." << endl << endl;
+	}
 	
 	// Increase event number. Notice: this is different than evt->GetEventID()
 	evtN++;
