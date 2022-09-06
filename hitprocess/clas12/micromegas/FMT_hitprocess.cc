@@ -293,7 +293,7 @@ void FMT_HitProcess::initWithRunNumber(int runno)
 
 
 // this static function will be loaded first thing by the executable
-fmtConstants FMT_HitProcess::fmtc = initializeFMTConstants(-1);
+fmtConstants FMT_HitProcess::fmtc = initializeFMTConstants(1);
 
 
 

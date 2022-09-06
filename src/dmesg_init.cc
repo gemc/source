@@ -53,9 +53,9 @@ vector<string> init_dmesg(goptions gemcOpt)
 	
 	
 	// sets all verbosity to zero
-	commands.push_back("/control/verbose 0");
+//	commands.push_back("/control/verbose 0");
 	commands.push_back("/geometry/navigator/verbose 0");
-	commands.push_back("/event/verbose 0");
+	//commands.push_back("/event/verbose 0");
 	commands.push_back("/run/verbose 0");
 	commands.push_back("/run/particle/verbose 0");
 	commands.push_back("/material/verbose 0");
@@ -64,7 +64,8 @@ vector<string> init_dmesg(goptions gemcOpt)
 	commands.push_back("/process/eLoss/verbose 0");
 	commands.push_back("/vis/verbose 0");
  	commands.push_back("/vis/viewer/flush");
-	commands.push_back("/process/setVerbose 0 all");
+//	commands.push_back("/process/setVerbose 0 all");
+//	commands.push_back("/run/printProgress 1");
 
 	
     // Tell GEANT4 to check for overlaps. This method has changed in GEANT 4.10.0 to check overlap of each

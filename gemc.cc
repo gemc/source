@@ -128,11 +128,13 @@ int main( int argc, char **argv )
 	
 	
 	// random seed initialization
-	CLHEP::HepRandom::setTheEngine(new CLHEP::MTwistEngine);
+	// notice MTwistEngine cannot print 2 seeds, it only print the whole engine status which is huge
+//	G4Random::setTheEngine(new CLHEP::MTwistEngine);
+	G4Random::setTheEngine(new CLHEP::RanecuEngine);
+
 	G4int seed;
 	
-	if(gemcOpt.optMap["RANDOM"].args=="TIME")
-	{
+	if(gemcOpt.optMap["RANDOM"].args=="TIME") {
 		gemc_splash.message(" Initializing CLHEP Random Engine from local time " \
 							+ stringify((double) time(nullptr)) \
 							+ ", cpu clock "        \
@@ -140,9 +142,7 @@ int main( int argc, char **argv )
 							+ " and process id "    \
 							+ stringify(getpid()) + ".");
 		seed = (G4int) ( (double) time(nullptr)- (double) clock()-getpid() );
-	}
-	else
-	{
+	} else {
 		seed = atoi(gemcOpt.optMap["RANDOM"].args.c_str());
 		gemc_splash.message(" Initializing CLHEP Random Engine from user defined seed.");
 	}

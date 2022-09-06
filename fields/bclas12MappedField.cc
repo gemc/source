@@ -11,11 +11,15 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 {
 	static int FIRST_ONLY;
 	bField[0] = bField[1] = bField[2] = 0;
+<<<<<<< HEAD
 
 	if ( isnan(x[0]) ||  isnan(x[1]) ||  isnan(x[2]) ) {
 		cout << " field coordinates requested are nan?" << endl;
 	}
 
+=======
+	
+>>>>>>> 7f594689a9acfd464dbf9a089831a839eba6993a
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
 	
@@ -36,6 +40,19 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 
 	RotateField(bField);
 
+//	bool isNan = isnan(x[0]) * isnan(x[1]) * isnan(x[2]) * isnan(bField[0]) * isnan(bField[1]) * isnan(bField[2]);
+//	
+//	if (isNan) {
+//		cout << " Error: NAN detected: " << endl;
+//		cout << "x[0]: " << x[0] << endl;
+//		cout << "x[1]: " << x[1] << endl;
+//		cout << "x[2]: " << x[2] << endl;
+//		cout << "bField[0]: " << bField[0] << endl;
+//		cout << "bField[1]: " << bField[1] << endl;
+//		cout << "bField[2]: " << bField[2] << endl;
+//	}
+
+	
 	// we don't worry about computer speed
 	// if verbosity is set this high
 	// so we can output units as well

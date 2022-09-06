@@ -63,7 +63,7 @@ HipoSchema :: HipoSchema()
 	rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
 	rawVTPSchema    = hipo::schema("RAW::vtp",    20000, 14);
 	rawEPICSSchema  = hipo::schema("RAW::epics",  20000, 15);
-	rasterADCSchema = hipo::schema("RASTER::adc", 20000, 16);
+	rasterADCSchema = hipo::schema("RASTER::adc", 22200, 11);
 
 	// Defining structure of the schema (bank)
 	// The columns in the banks (or leafs, if you like ROOT)

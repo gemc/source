@@ -545,6 +545,23 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm;
 				double Vz     = thisParticleInfo.infos[13] + svz/cm ;
 				
+				
+				bool isNan = isnan(p) * isnan(pindex) * isnan(type) * isnan(pdef) * isnan(px) * isnan(py) * isnan(pz) * isnan(Vx) * isnan(Vy) * isnan(Vz);
+				
+				if (isNan) {
+					cout << " Error: NAN detected: " << endl;
+					cout << "p: " << isnan(p) << endl;
+					cout << "pindex: " << isnan(pindex) << endl;
+					cout << "type: " << isnan(type) << endl;
+					cout << "pdef: " << isnan(pdef) << endl;
+					cout << "px: " << isnan(px) << endl;
+					cout << "py: " << isnan(py) << endl;
+					cout << "pz: " << isnan(pz) << endl;
+					cout << "Vx: " << isnan(Vx) << endl;
+					cout << "Vy: " << isnan(Vy) << endl;
+					cout << "Vz: " << isnan(Vz) << endl;
+				}
+				
 				if(PROPAGATE_DVERTEXTIME == 0) {
 					setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent);
 				} else {
@@ -934,9 +951,6 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 
 	}
-
-
-
 
 	if(GEN_VERBOSITY > 5)
 		cout << " Generation done " << endl;
@@ -1395,12 +1409,12 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 
 		// beam polarization only along the beam
 		// only for the first particle
-		if(p==0)
-		{
+		if(p==0) {
 			particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
 		}
+		
 		if(GEN_VERBOSITY > 3)
-			cout << hd_msg << " Particle Number:  " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
+			cout << hd_msg << " Particle n. " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
 			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 
 		// Primary particle generated int the middle of Time window
