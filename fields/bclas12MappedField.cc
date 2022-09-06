@@ -11,15 +11,11 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 {
 	static int FIRST_ONLY;
 	bField[0] = bField[1] = bField[2] = 0;
-<<<<<<< HEAD
 
 	if ( isnan(x[0]) ||  isnan(x[1]) ||  isnan(x[2]) ) {
 		cout << " field coordinates requested are nan?" << endl;
 	}
 
-=======
-	
->>>>>>> 7f594689a9acfd464dbf9a089831a839eba6993a
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
 	
