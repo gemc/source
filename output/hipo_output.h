@@ -117,6 +117,7 @@ public:
 		{"rich",    18},
 		{"rtpc",    19},
 		{"band",    21},
+                {"urwell",  23},
 		{"flux",   100}
 	};
 
