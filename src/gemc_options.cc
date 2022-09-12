@@ -462,6 +462,14 @@ void goptions::setGoptions()
 	optMap["BANK_VERBOSITY"].argsJSONDescription  = "BANK_VERBOSITY";
 	optMap["BANK_VERBOSITY"].argsJSONTypes        = "F";
 
+	optMap["EVENT_VERBOSITY"].arg  = 0;
+	optMap["EVENT_VERBOSITY"].help = "Controls Event Log Output.";
+	optMap["EVENT_VERBOSITY"].name = "Event Output Verbosity";
+	optMap["EVENT_VERBOSITY"].type = 0;
+	optMap["EVENT_VERBOSITY"].ctgr = "verbosity";
+	optMap["EVENT_VERBOSITY"].argsJSONDescription  = "EVENT_VERBOSITY";
+	optMap["EVENT_VERBOSITY"].argsJSONTypes        = "F";
+
 	optMap["PHY_VERBOSITY"].arg  = 1;
 	optMap["PHY_VERBOSITY"].help = "Controls Physics List Log Output.";
 	optMap["PHY_VERBOSITY"].name = "Physics List Verbosity";

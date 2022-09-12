@@ -130,7 +130,7 @@ int main( int argc, char **argv )
 	// random seed initialization
 	// notice MTwistEngine cannot print 2 seeds, it only print the whole engine status which is huge
 //	G4Random::setTheEngine(new CLHEP::MTwistEngine);
-	G4Random::setTheEngine(new CLHEP::RanecuEngine);
+	G4Random::setTheEngine(new CLHEP::MixMaxRng);
 
 	G4int seed;
 	

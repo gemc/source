@@ -85,7 +85,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	gemcOpt          = opts;
 	hd_msg           = gemcOpt.optMap["LOG_MSG"].args + " Event Action: >> ";
 	Modulo           = (int) gemcOpt.optMap["PRINT_EVENT"].arg ;
-	VERB             = gemcOpt.optMap["BANK_VERBOSITY"].arg ;
+	VERB             = gemcOpt.optMap["EVENT_VERBOSITY"].arg ;
 	catch_v          = gemcOpt.optMap["CATCH"].args;
 	SAVE_ALL_MOTHERS = (int) gemcOpt.optMap["SAVE_ALL_MOTHERS"].arg ;
 	SAVE_ALL_ANCESTORS = (int) gemcOpt.optMap["SAVE_ALL_ANCESTORS"].arg ;
@@ -198,18 +198,18 @@ void MEventAction::BeginOfEventAction(const G4Event* evt)
 	
 	rw.getRunNumber(evtN);
 	bgMap.clear();
-	
-	// need this for MTwistEngine
-	// double throwingAnumberCauseTwistedEngineCannotShowJustTwoKys = G4UniformRand();
-	
+		
 	static int lastEvtN = -1;
 	if(evtN > lastEvtN && evtN%Modulo == 0 ) {
 		cout << hd_msg << " Begin of event " << evtN << "  Run Number: " << rw.runNo;
-		if(rw.isNewRun) cout << " (new) ";
+		if(rw.isNewRun) {
+			cout << " (new) ";
+			G4Random::getTheGenerator ()->showEngineStatus() ;
+		}
+		if ( VERB > 1 ) {
+			G4Random::getTheGenerator ()->showEngineStatus() ;
+		}
 		cout << endl;
-		cout << hd_msg << " Random Seeds: ("  <<G4Random::getTheSeeds()[0]  << ", " << G4Random::getTheSeeds()[1] << ")" << endl;
-		// need this for MTwistEngine
-		//cout << hd_msg << " Current random number: " << throwingAnumberCauseTwistedEngineCannotShowJustTwoKys << endl;
 		lastEvtN = evtN;
 	}
 	
@@ -322,7 +322,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		if (not foundHighmom) return;
 	}
 
-	if(evtN%Modulo == 0 ) {
+	if(evtN%Modulo == 0 && VERB > 0) {
 		cout << hd_msg << " EndOfEventAction for event number " << evtN << ",  Run Number: " << rw.runNo << endl;
 	}
 	
