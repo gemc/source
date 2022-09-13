@@ -58,6 +58,7 @@ HipoSchema :: HipoSchema()
 	helADCSchema    = hipo::schema("HEL::adc",    22000, 11);
 	helFLIPSchema   = hipo::schema("HEL::flip",   22000, 12);
 	helONLINESchema = hipo::schema("HEL::online", 22000, 13);
+        urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
 	rawADCSchema    = hipo::schema("RAW::adc",    20000, 11);
 	rawTDCSchema    = hipo::schema("RAW::tdc",    20000, 12);
 	rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
@@ -120,6 +121,8 @@ HipoSchema :: HipoSchema()
 	helFLIPSchema.parse(   "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
 	helONLINESchema.parse( "helicity/B, helicityRaw/B");
 
+        urwellADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+
 	rawADCSchema.parse(    "crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
 	rawTDCSchema.parse(    "crate/B, slot/B, channel/S, order/B, TDC/I");
 	rawSCALERSchema.parse( "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
@@ -162,7 +165,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 	schemasToLoad["HEL::flip"]    = helFLIPSchema;
-	schemasToLoad["RASTER::adc"]    = rasterADCSchema;
+	schemasToLoad["RASTER::adc"]  = rasterADCSchema;
+        schemasToLoad["URWELL::adc"]  = urwellADCSchema;
 
 	cout << " Done defining Hipo4 schemas." << endl;
 
@@ -187,7 +191,7 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 	} else if(schemaName == "ft_trk") {
 		return ftrkTDCSchema;
 	} else {
-		if( !(schemaName == "dc" && type == 0) && !(schemaName == "bmt" && type == 1)  && !(schemaName == "bst" && type == 1) &&  !(schemaName == "flux") ) {
+		if( !(schemaName == "dc" && type == 0) && !(schemaName == "bmt" && type == 1)  && !(schemaName == "bst" && type == 1) &&  !(schemaName == "urwell" && type == 1) &&  !(schemaName == "flux") ) {
 			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
 		}
 		return emptySchema;
