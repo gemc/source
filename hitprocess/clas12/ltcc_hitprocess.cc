@@ -199,8 +199,6 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["TDC_TDC"]   = (int) time;
 
 
-	// decide if write an hit or not
-	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

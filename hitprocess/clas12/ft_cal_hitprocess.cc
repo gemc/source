@@ -273,8 +273,6 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 
 
-	// decide if write an hit or not
-	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

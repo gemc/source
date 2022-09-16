@@ -53,6 +53,18 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 		}
 	}
 
+	cout<<"CND:Getting thresholds" << endl;
+	sprintf(cndc.database,"/calibration/cnd/Thresholds:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,cndc.database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+		cndc.threshold_L[isec-1][ilay-1][istr-1]       = data[row][3];
+		cndc.threshold_R[isec-1][ilay-1][istr-1]       = data[row][4];
+		cndc.sigma_threshold_L[isec-1][ilay-1][istr-1] = data[row][5];
+		cndc.sigma_threshold_R[isec-1][ilay-1][istr-1] = data[row][6];
+	}
+
 	cout<<"CND:Getting TDC slope"<<endl;
 	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
@@ -274,6 +286,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double t_offset_LR    = cndc.time_offset_LR[sector-1][layer-1][0];
 	double t_offset_layer = cndc.time_offset_layer[sector-1][layer-1][0];
 
+	double threshold = 0;
 
 	if ( side == 1 ){   // hit is in paddle L
 		
@@ -305,6 +318,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		adc_mip_D = cndc.mip_dir_L[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_L[sector-1][layer-1][0];
+		
+		
+		threshold = cndc.threshold_L[sector-1][layer-1][0] +  (2*G4UniformRand() - 1)*cndc.sigma_threshold_L[sector-1][layer-1][0];
 	}
 	
 	else if ( side == 2 ) {   // hit is in paddle R
@@ -336,11 +352,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		adc_mip_D = cndc.mip_dir_R[sector-1][layer-1][0];
 		adc_mip_N = cndc.mip_indir_R[sector-1][layer-1][0];
+
+		threshold = cndc.threshold_R[sector-1][layer-1][0] + (2*G4UniformRand() - 1)*cndc.sigma_threshold_R[sector-1][layer-1][0];
 	}
 	else {
 		cout <<"/n Help, do not recognise paddle number " << paddle << "!!!" << endl;
 	}
-
 
 	if(tInfos.eTot>0) {
 		for(unsigned int s=0; s<nsteps; s++) {
@@ -591,8 +608,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["TDC_order"] = direct + 2;
 	dgtz["TDC_TDC"]   = TDC;
 
-	// decide if write an hit or not
-	writeHit = true;
+	// reject hit if below threshold or efficiency
+	if ( eTotal < threshold ) {
+		rejectHitConditions = true;
+	}
+
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

@@ -219,9 +219,6 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_time"]  = TDC/25;
 	dgtz["ADC_ped"]   = 0;
 
-	// decide if write an hit or not
-	writeHit = true;
-	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

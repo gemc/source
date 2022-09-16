@@ -26,9 +26,15 @@ public:
 	//	1 - noADC
 	//	2 - noTDC
 	//	3 - noADC, noTDC (PMT is dead)
-	//      5 - any other reconstruction problem
+	// 5 - any other reconstruction problem
 	vector<int> status[1][1][2];
 	
+	// Threshold (MeV)
+	vector<double> threshold[1][1][2];
+
+	// efficiency
+	vector<double> efficiency[1][1][2];
+
 	// tdc_conc: tdc conversion factors
 	vector<double> tdcconv[1][1][2];
 	

@@ -325,9 +325,6 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// cout << "sector = " << sector << " layer = " << view << " strip = " << strip << " ADC = " << ADC << " TDC = " << TDC << endl;
 
-	// decide if write an hit or not
-	writeHit = true;
-
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

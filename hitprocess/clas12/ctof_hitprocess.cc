@@ -52,6 +52,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	cout << "Connecting to " << ctc.connection << "/calibration/ctof" << endl;
 	
 	sprintf(ctc.database, "/calibration/ctof/attenuation:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting attenuation" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -63,6 +64,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	sprintf(ctc.database, "/calibration/ctof/effective_velocity:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting effective_velocity" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -74,7 +76,8 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	if(accountForHardwareStatus) {
-		sprintf(ctc.database, "/calibration/ctof/status:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+		sprintf(ctc.database, "/calibration/ctof/:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+		cout << "CTOF:Getting status" << endl;
 		data.clear();
 		calib->GetCalib(data, ctc.database);
 		for (unsigned row = 0; row < data.size(); row++) {
@@ -85,7 +88,35 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 			ctc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
 		}
 	}
+	
+	sprintf(ctc.database, "/calibration/ctof/threshold:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting threshold" << endl;
+	data.clear();
+	calib->GetCalib(data, ctc.database);
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0];
+		ilay = data[row][1];
+		//        istr = data[row][2];
+		ctc.threshold[isec - 1][ilay - 1][0].push_back(data[row][3]);
+		ctc.threshold[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	}
+
+	sprintf(ctc.database, "/calibration/ctof/efficiency:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting efficiency" << endl;
+	data.clear();
+	calib->GetCalib(data, ctc.database);
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0];
+		ilay = data[row][1];
+		//        istr = data[row][2];
+		ctc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
+		ctc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	}
+
+	
+	
 	sprintf(ctc.database, "/calibration/ctof/gain_balance:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting gain_balance" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -113,6 +144,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	 */
 	
 	sprintf(ctc.database, "/calibration/ctof/time_offsets:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting time_offsets" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -125,6 +157,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	sprintf(ctc.database, "/calibration/ctof/tdc_conv:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting tdc_conv" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -137,6 +170,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	
 	
 	sprintf(ctc.database, "/geometry/ctof/ctof:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Getting geometry" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -150,11 +184,10 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	
-	cout << "CTOF:Setting time resolution" << endl;
 	sprintf(ctc.database, "/calibration/ctof/tres:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	cout << "CTOF:Setting time resolution" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
-	
 	for (unsigned row = 0; row < data.size(); row++) {
 		double sigma = data[row][3];
 		ctc.tres.push_back(sigma);
@@ -291,7 +324,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	double gain = sqrt(exp(-d / cm / attlen) * exp(-(2 * length - d) / cm / attlen_otherside));
 	
 	// Attenuated light at PMT
-	double ene = tInfos.eTot*att;
+	double energyDepositedAttenuated = tInfos.eTot*att;
 	
 	double adc = 0.;
 	double tdc = 0.;
@@ -299,14 +332,14 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// double adcu = 0.;
 	// double tdcu = 0.;
 	// if (ene > 0)
-	//	adcu = ene * ctc.countsForMIP[sector - 1][layer - 1][side][paddle - 1] / ctc.dEMIP / gain;
+	//	adcu = energyDepositedAttenuated * ctc.countsForMIP[sector - 1][layer - 1][side][paddle - 1] / ctc.dEMIP / gain;
 
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat Up and Dn separately, in case nphe=0
 	
-	double nphe = G4Poisson(ene * ctc.pmtPEYld);
-	ene = nphe / ctc.pmtPEYld;
+	double nphe = G4Poisson(energyDepositedAttenuated * ctc.pmtPEYld);
+	double ene = nphe / ctc.pmtPEYld;
 	
 	if (ene > 0) {
 		adc = ene * ctc.countsForMIP[sector - 1][layer - 1][0][paddle - 1] / ctc.dEMIP / gain;
@@ -360,8 +393,18 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = (int) adc;
 	dgtz["ADC_time"]  = (tdc*tdcconv);
 	dgtz["ADC_ped"]   = 0;
+	
 	dgtz["TDC_order"] = side + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;
+
+	// reject hit if below threshold or efficiency
+	if ( energyDepositedAttenuated < ctc.threshold[sector - 1][layer - 1][side][paddle - 1] ) {
+		rejectHitConditions = true;
+	}
+	double random = G4UniformRand();
+	if ( random < ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] ) {
+		rejectHitConditions = true;
+	}
 
 	return dgtz;
 }

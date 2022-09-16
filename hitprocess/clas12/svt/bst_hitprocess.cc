@@ -122,8 +122,6 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = 1.0;
 	}
 
-	// decide if write an hit or not
-	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;

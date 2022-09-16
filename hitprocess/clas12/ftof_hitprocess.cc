@@ -89,6 +89,29 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 			ftc.status[isec - 1][ilay - 1][1].push_back(data[row][4]);
 		}
 	}
+	
+	cout << "FTOF:Getting threshold" << endl;
+	sprintf(ftc.database, "/calibration/ftof/threshold:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear();
+	calib->GetCalib(data, ftc.database);
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0];
+		ilay = data[row][1];
+		ftc.threshold[isec - 1][ilay - 1][0].push_back(data[row][3]);
+		ftc.threshold[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	}
+
+	cout << "FTOF:Getting efficiency" << endl;
+	sprintf(ftc.database, "/calibration/ftof/efficiency:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear();
+	calib->GetCalib(data, ftc.database);
+	for (unsigned row = 0; row < data.size(); row++) {
+		isec = data[row][0];
+		ilay = data[row][1];
+		ftc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
+		ftc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
+	}
+
 	cout << "FTOF:Getting gain_balance" << endl;
 	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
@@ -288,7 +311,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	double eneL = tInfos.eTot*attLeft;
 	//	double eneR = tInfos.eTot*attRight;
 	
-	double ene = tInfos.eTot*att;
+	double energyDepositedAttenuated = tInfos.eTot*att;
 	
 	// giving geantinos some energies
 	if (aHit->GetPID() == 0) {
@@ -296,7 +319,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		//		eneL = gmomentum*attLeft;
 		//		eneR = gmomentum*attRight;
 		
-		ene = gmomentum*att;
+		energyDepositedAttenuated = gmomentum*att;
 		
 	}
 	
@@ -315,10 +338,8 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// Treat L and R separately, in case nphe=0
 	
 
-	
-	
-	double nphe = G4Poisson(ene * ftc.pmtPEYld);
-	ene = nphe / ftc.pmtPEYld;
+	double nphe = G4Poisson(energyDepositedAttenuated * ftc.pmtPEYld);
+	double ene = nphe / ftc.pmtPEYld;
 	
 	if (ene > 0) {
 		adc = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
@@ -385,9 +406,15 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["TDC_order"] = pmt + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;
 
-
-	// decide if write an hit or not
-	writeHit = true;
+	// reject hit if below threshold or efficiency
+	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] ) {
+		rejectHitConditions = true;
+	}
+	double random = G4UniformRand();
+	if ( random < ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1] ) {
+		rejectHitConditions = true;
+	}
+	
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;

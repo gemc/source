@@ -80,8 +80,6 @@ map<string, double> IC_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC"]  = ADC;
 	dgtz["TDC"]  = TDC;
 	
-	// decide if write an hit or not
-	writeHit = true;
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
