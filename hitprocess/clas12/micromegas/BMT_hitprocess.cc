@@ -352,7 +352,7 @@ void BMT_HitProcess::initWithRunNumber(int runno)
 
 
 // this static function will be loaded first thing by the executable
-bmtConstants BMT_HitProcess::bmtc = initializeBMTConstants(1);
+bmtConstants BMT_HitProcess::bmtc = initializeBMTConstants(-1);
 
 
 
