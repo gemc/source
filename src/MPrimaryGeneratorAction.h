@@ -98,6 +98,8 @@ private:
 	double svx, svy, svz;             ///< Beam Vertex coordinates shift from options
 	double rvdx, rvdy;                ///< Beam Vertex raster delta x and delta y
 	bool resetVertex;
+	double bssx, bssy, bsdx, bsdy, bsphi;   ///< Beam Spot shiftX, shiftY, delta x, delta y and phi
+	bool resetBeamSpot;
 	double dvr, dvz;                  ///< Deltas Beam Vertex: Radius and z-vertex
 	double dvx, dvy ;                 ///< Deltas Beam Vertex: individual coordinates
 	int gaussOrFlatV;                 ///< 0 (default): flat distribution 1: gaussian distribution

@@ -193,7 +193,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	double rasterx    = rvdx * raster_r * cos(raster_phi);
 	double rastery    = rvdy * raster_r * sin(raster_phi);
 
-
+	double beamSpot_phi  = 2.0*pi*G4UniformRand();
+	double beamSpot_ox   = G4RandGauss::shoot(0, bsdx) * cos(beamSpot_phi);
+	double beamSpot_oy   = G4RandGauss::shoot(0, bsdy) * cos(beamSpot_phi);
+	
+	double beamSpot_x   = bssx + beamSpot_ox * cos(bsphi) - beamSpot_oy * sin(bsphi);
+	double beamSpot_y   = bssy + beamSpot_ox * sin(bsphi) + beamSpot_oy * cos(bsphi);
 
 
 	// internal generator. Particle defined by command line
@@ -291,13 +296,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				}
 
 				double PHI = 2.0*pi*G4UniformRand();
-				double Vx = vx/mm + VR*cos(PHI) + rasterx;
-				double Vy = vy/mm + VR*sin(PHI) + rastery;
+				double Vx = vx/mm + VR*cos(PHI) + rasterx + beamSpot_x;
+				double Vy = vy/mm + VR*sin(PHI) + rastery + beamSpot_y;
 				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
 
 				if ( resetVertex ) {
-					Vx = rasterx;
-					Vy = rastery;
+					Vx = rasterx + beamSpot_x;
+					Vy = rastery + beamSpot_y;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -306,17 +311,17 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx, Vy, Vz;
 
 				if(gaussOrFlatV == 1) {
-					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx;
-					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery;
+					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx + beamSpot_x;
+					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery + beamSpot_y;
 					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm);
 				} else {
-					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx;
-					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery;
+					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx + beamSpot_x;
+					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery + beamSpot_y;
 					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
 				}
 				if ( resetVertex ) {
-					Vx = rasterx;
-					Vy = rastery;
+					Vx = rasterx + beamSpot_x;
+					Vy = rastery + beamSpot_y;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -541,8 +546,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm;
-				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm;
+				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm + beamSpot_x/cm;
+				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm + beamSpot_y/cm;
 				double Vz     = thisParticleInfo.infos[13] + svz/cm ;
 				
 				
@@ -652,8 +657,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in mm from beagle
 				// need to pass it in cm
-				double Vx     = (thisParticleInfo.infos[12]/cm) + svx/cm + rasterx/cm;
-				double Vy     = (thisParticleInfo.infos[13]/cm) + svy/cm + rastery/cm;
+				double Vx     = (thisParticleInfo.infos[12]/cm) + svx/cm + rasterx/cm + beamSpot_x/cm;
+				double Vy     = (thisParticleInfo.infos[13]/cm) + svy/cm + rastery/cm + beamSpot_y/cm;
 				double Vz     = (thisParticleInfo.infos[14]/cm) + svz/cm;
 				double A      = thisParticleInfo.infos[15];
 				double Z      = thisParticleInfo.infos[16];
@@ -992,9 +997,42 @@ void MPrimaryGeneratorAction::setBeam()
 	rvdx = get_number(values[0]);
 	rvdy = get_number(values[1]);
 	resetVertex = false;
-
 	if(values.back().find("reset") != string::npos) {
 		resetVertex = true;
+	}
+	bool isNanVX = isnan(rvdx) * isnan(rvdy) ;
+	
+	if (isNanVX) {
+		cout << " Error: NAN detected for RASTER_VERTEX parameters " << endl;
+		cout << "rvdx: " << isnan(rvdx) << endl;
+		cout << "rvdy: " << isnan(rvdy) << endl;
+	}
+	
+	
+
+
+	// Getting beamspot vertex from option value
+	values = get_info(gemcOpt->optMap["BEAM_SPOT"].args);
+	
+	bssx = get_number(values[0]);
+	bssy = get_number(values[1]);
+	bsdx = get_number(values[2]);
+	bsdy = get_number(values[3]);
+	bsphi = get_number(values[4]);
+	resetBeamSpot = false;
+	if(values.back().find("reset") != string::npos) {
+		resetBeamSpot = true;
+	}
+
+	bool isNanBS = isnan(bssx) * isnan(bssy) * isnan(bsdx) * isnan(bsdy) * isnan(bsphi) ;
+	
+	if (isNanBS) {
+		cout << " Error: NAN detected for RASTER_VERTEX parameters " << endl;
+		cout << "bssx: " << isnan(bssx) << endl;
+		cout << "bssy: " << isnan(bssy) << endl;
+		cout << "bsdx: " << isnan(bsdx) << endl;
+		cout << "bsdy: " << isnan(bsdy) << endl;
+		cout << "bsphi: " << isnan(bsphi) << endl;
 	}
 
 	if(input_gen == "gemc_internal") {
