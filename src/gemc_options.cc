@@ -134,7 +134,7 @@ void goptions::setGoptions()
 	optMap["RANDOMIZE_LUND_VZ"].help += "     By default the randomization is relative to the LUND vertex values. \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "     If the third argument \"reset\" is given, the vertexes are relative to VZ=0 \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "      example 1: -RANDOMIZE_LUND_VZ=\"-3*cm, 5*cm\" \n";
-	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by 5cm around the original LUND values and shift it by -3cm \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by plus-minus 5cm around the original LUND values and shift it by -3cm \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "      example 2: -RANDOMIZE_LUND_VZ=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg, reset\" \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by 5cm around vz = 0 and shift it by -3cm \n";
 	optMap["RANDOMIZE_LUND_VZ"].name = "Randomizes the z vertex according to a shift and a flat value";
@@ -164,7 +164,7 @@ void goptions::setGoptions()
 	optMap["BEAM_SPOT"].help += "       This randomizes the vertexes around the original LUND values, but shifted by (VX, VY) = (2, 3)cm \n";
 	optMap["BEAM_SPOT"].help += "       A gaussian with sigmas (SX, SY) = (0.2, 0.1)cm are used, rotated 22 degrees around z.\n";
 	optMap["BEAM_SPOT"].help += "      example 2: -BEAM_SPOT=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg, reset\" \n";
-	optMap["BEAM_SPOT"].help += "       This randomizes the vertexes around (VX, VY) = (0, 0), but shifted by (VX, VY) = (2, 3)cm \n";
+	optMap["BEAM_SPOT"].help += "       This randomizes the vertexes around (VX, VY) = (2, 3)cm \n";
 	optMap["BEAM_SPOT"].help += "       A gaussian with sigmas (SX, SY) = (0.2, 0.1)cm are used, rotated 22 degrees around z.\n";
 	optMap["BEAM_SPOT"].name = "Randomizes the x, y generated partice vertexes according to  gaussian";
 	optMap["BEAM_SPOT"].type = 1;
