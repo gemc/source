@@ -199,7 +199,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	
 	double beamSpot_x   = bssx + beamSpot_ox * cos(bsphi) - beamSpot_oy * sin(bsphi);
 	double beamSpot_y   = bssy + beamSpot_ox * sin(bsphi) + beamSpot_oy * cos(bsphi);
-
+	
+	double displaceZ = displaceZs + (2.0*G4UniformRand() - 1)*displaceZd;
 
 	// internal generator. Particle defined by command line
 	if(input_gen == "gemc_internal") {
@@ -298,11 +299,14 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double PHI = 2.0*pi*G4UniformRand();
 				double Vx = vx/mm + VR*cos(PHI) + rasterx + beamSpot_x;
 				double Vy = vy/mm + VR*sin(PHI) + rastery + beamSpot_y;
-				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
+				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ;
 
-				if ( resetVertex ) {
+				if ( resetVertex || resetBeamSpot) {
 					Vx = rasterx + beamSpot_x;
 					Vy = rastery + beamSpot_y;
+				}
+				if ( resetVertex || resetBeamSpot) {
+					Vz = displaceZ;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -319,10 +323,14 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery + beamSpot_y;
 					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
 				}
-				if ( resetVertex ) {
+				if ( resetVertex || resetBeamSpot) {
 					Vx = rasterx + beamSpot_x;
 					Vy = rastery + beamSpot_y;
 				}
+				if ( resetVertex || resetBeamSpot) {
+					Vz = displaceZ;
+				}
+
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
 			}
@@ -1027,15 +1035,35 @@ void MPrimaryGeneratorAction::setBeam()
 	bool isNanBS = isnan(bssx) * isnan(bssy) * isnan(bsdx) * isnan(bsdy) * isnan(bsphi) ;
 	
 	if (isNanBS) {
-		cout << " Error: NAN detected for RASTER_VERTEX parameters " << endl;
+		cout << " Error: NAN detected for BEAM_SPOT parameters " << endl;
 		cout << "bssx: " << isnan(bssx) << endl;
 		cout << "bssy: " << isnan(bssy) << endl;
 		cout << "bsdx: " << isnan(bsdx) << endl;
 		cout << "bsdy: " << isnan(bsdy) << endl;
 		cout << "bsphi: " << isnan(bsphi) << endl;
 	}
+	
+	
+	// Getting vertex z displacement from option value
+	values = get_info(gemcOpt->optMap["RANDOMIZE_LUND_VZ"].args);
+	
+	displaceZs = get_number(values[0]);
+	displaceZd = get_number(values[1]);
+	displaceZvertex = false;
+	if(values.back().find("reset") != string::npos) {
+		displaceZvertex = true;
+	}
+	bool isNanVZD = isnan(displaceZs) * isnan(displaceZd) ;
+	
+	if (isNanVZD) {
+		cout << " Error: NAN detected for RANDOMIZE_LUND_VZ parameters " << endl;
+		cout << "displaceZs: " << isnan(displaceZs) << endl;
+		cout << "displaceZd: " << isnan(displaceZd) << endl;
+	}
 
+	
 	if(input_gen == "gemc_internal") {
+		
 		if(cosmics == "no") {
 			// Getting particle name,  momentum from option value
 			values       = get_info(gemcOpt->optMap["BEAM_P"].args, string(",\""));
