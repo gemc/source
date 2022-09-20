@@ -557,7 +557,14 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm + beamSpot_x/cm;
 				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm + beamSpot_y/cm;
 				double Vz     = thisParticleInfo.infos[13] + svz/cm ;
-				
+				if ( resetVertex || resetBeamSpot) {
+					Vx = rasterx + beamSpot_x;
+					Vy = rastery + beamSpot_y;
+				}
+				if ( resetVertex || resetBeamSpot) {
+					Vz = displaceZ;
+				}
+
 				
 				bool isNan = isnan(p) * isnan(pindex) * isnan(type) * isnan(pdef) * isnan(px) * isnan(py) * isnan(pz) * isnan(Vx) * isnan(Vy) * isnan(Vz);
 				
@@ -663,13 +670,21 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double py     = thisParticleInfo.infos[8];
 				double pz     = thisParticleInfo.infos[9];
 
-				// vertex is already received in mm from beagle
-				// need to pass it in cm
-				double Vx     = (thisParticleInfo.infos[12]/cm) + svx/cm + rasterx/cm + beamSpot_x/cm;
-				double Vy     = (thisParticleInfo.infos[13]/cm) + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = (thisParticleInfo.infos[14]/cm) + svz/cm;
 				double A      = thisParticleInfo.infos[15];
 				double Z      = thisParticleInfo.infos[16];
+
+				// vertex is already received in cm from LUND
+				// need to pass it in cm
+				double Vx     = thisParticleInfo.infos[12] + svx/cm + rasterx/cm + beamSpot_x/cm;
+				double Vy     = thisParticleInfo.infos[13] + svy/cm + rastery/cm + beamSpot_y/cm;
+				double Vz     = thisParticleInfo.infos[14] + svz/cm ;
+				if ( resetVertex || resetBeamSpot) {
+					Vx = rasterx + beamSpot_x;
+					Vy = rastery + beamSpot_y;
+				}
+				if ( resetVertex || resetBeamSpot) {
+					Vz = displaceZ;
+				}
 
 				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent, A, Z);
 			}
