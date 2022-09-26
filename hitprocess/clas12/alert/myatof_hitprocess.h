@@ -14,7 +14,7 @@ public:
 	string date;
 	string connection;
 	char   database[80];
-
+	
 	// translation table
 	TranslationTable TT;
 };
