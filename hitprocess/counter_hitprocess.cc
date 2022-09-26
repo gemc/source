@@ -5,7 +5,7 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-
+	
 	int id  = identity[0].id;
 	
 	if(verbosity>4)
@@ -18,7 +18,7 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// now counting the particles
 	vector<int> pids = aHit->GetPIDs();
 	vector<int> tids = aHit->GetTIds();
-
+	
 	int ngamma, nep, nem, npip, npim, npi0, nkp, nkm, nk0, nproton, nneutron, noptphoton;
 	ngamma     = 0;
 	nep        = 0;
@@ -41,7 +41,7 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		if(trackIds.find(tid) == trackIds.end() ) {
 			
-				 if(pid == 22)   { ngamma++; }
+			if(pid == 22)   { ngamma++; }
 			else if(pid == 11)   { nem++; }
 			else if(pid == -11)  { nep++; }
 			else if(pid == 211)  { npip++; }
@@ -58,7 +58,7 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 		
 	}
-
+	
 	dgtz["ngamma"]     = ngamma;
 	dgtz["nep"]        = nep;
 	dgtz["nem"]        = nem;
@@ -71,7 +71,7 @@ map<string, double> counter_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["nproton"]    = nproton;
 	dgtz["nneutron"]   = nneutron;
 	dgtz["noptphoton"] = noptphoton;
-
+	
 	return dgtz;
 }
 
@@ -104,7 +104,7 @@ map< string, vector <int> >  counter_HitProcess :: multiDgt(MHit* aHit, int hitn
 map< int, vector <double> > counter_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
-
+	
 	return CT;
 }
 

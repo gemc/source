@@ -19,13 +19,13 @@ void bst_strip::fill_infos()
 	//alpha = /geometry/cvt/svt/svt/stereoAngle
 	pitch        = 0.156*mm;           // pitch of the strips
 	//pitch = /geometry/cvt/svt/svt/readoutPitch
-
+	
 	//========================//
 	// other variables needed //
 	//========================//
 	StripStart 	= 0.048*mm;					 // the first sensitive strip starts at stripStart + 1/2 of the pitch
 	//stripStart = /geometry/cvt/svt/svt/stripStart
-
+	
 	// number of cards by sector for each layer
 	NSensors.push_back(3);   NSensors.push_back(3);
 	NSensors.push_back(3);   NSensors.push_back(3);
@@ -118,13 +118,13 @@ vector<double> bst_strip::FindStrip(int layer,  int isens, G4ThreeVector Lxyz)
 	{
 		// correcting for z positioning inside the module
 		double dpitch = pitch + lz*tan(dalpha/rad);
-
+		
 		// for even layers x is proportional to strip number.
 		// for odd layers x is inversly proportional to strip number
 		int moduleDirection = 1;
 		if(layer%2 == 0)
 			moduleDirection = -1;
-
+		
 		// one strip only, all energy to it
 		if(fabs(minDist)<=dpitch/4.0)
 		{

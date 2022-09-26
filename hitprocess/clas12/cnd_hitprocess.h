@@ -47,7 +47,7 @@ public:
 	double threshold_R[24][3][2];
 	double sigma_threshold_L[24][3][2];
 	double sigma_threshold_R[24][3][2];
-
+	
 	double slope_L[24][3][2];
 	double slope_R[24][3][2];
 	double veff_L[24][3][2];

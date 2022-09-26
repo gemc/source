@@ -34,11 +34,11 @@ public:
 	
 	// veff: time shift
 	vector<double> tshift[6][2];
-
+	
 	// gain to match data yield to MC
 	vector<double> mc_gain[6][2];
-
-
+	
+	
 	// smearing factor to match data yield to MC
 	vector<double> mc_smear[6][2];
 	

@@ -16,7 +16,7 @@ public:
 	int    runNo;
 	string connection;
 	char   database[80];
-
+	
 	int    fieldPolarity;
 	//	double driftVelocity[6];
 	double miniStagger[6];
@@ -42,27 +42,27 @@ public:
 	double deltatime_bfield_par1[6][6], deltatime_bfield_par2[6][6], deltatime_bfield_par3[6][6], deltatime_bfield_par4[6][6];
 	double vmid[6][6], R[6][6];
 	double dmaxsuperlayer[6];
-
+	
 	// sector, SL, slot, cable
 	double T0Correction[6][6][7][6];
-
-
+	
+	
 	double get_T0(int sectorI, int superlayerI, int layerI, int nwire) {
-
+		
 		int slot = ((nwire - 1) / 16) + 1;
-
+		
 		int wire1to16I = ((nwire - 1) % 16);
 		int cable = CableID[layerI][wire1to16I];
-
+		
 		double t0corr = T0Correction[sectorI][superlayerI][slot - 1][cable - 1];
-
+		
 		//		cout << "  sectorI: " << sectorI << ", superlayerI: " << superlayerI << ",  layerI: " << layerI << ",  nwire: "
 		//		<< nwire << ", slot: " << slot << ", cable: " << cable << "  T0: " << t0corr << endl;
-
+		
 		return t0corr;
 	}
-
-
+	
+	
 	int CableID[6][16] = {
 		//[nLayer][nLocWire] => nLocWire=16, 7 groups of 16 wires in each layer
 		{1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6}, //Layer 1
@@ -74,9 +74,9 @@ public:
 	};
 	//===> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 	// (Local wire ID: 0 for 1st, 16th, 32th, 48th, 64th, 80th, 96th wires)
-
-
-
+	
+	
+	
 };
 
 
@@ -108,10 +108,10 @@ public:
 	
 	// returns a time given a distance: old exponential function
 	double calc_Time_exp(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
-
+	
 	// returns a time given a distance: neew polynomial function
 	double calc_Time(double x, double dmax, double tmax, double alpha, double bfield, int sector, int superlayer);
-
+	
 	// returns time walks according to ionisation process:
 	double doca_smearing(double x, double beta, int sector, int superlayer);
 	

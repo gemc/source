@@ -32,7 +32,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	} else {
 		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
-		
+	
 	ecc.TDC_time_to_evio    = 1.      ;
 	ecc.ADC_GeV_to_evio     = 1./10000.; // MIP based calibration is nominally 10 channels/MeV
 	ecc.pmtQE               = 0.27    ;
@@ -47,7 +47,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	// The callibration data will be filled in this vector data
 	vector<vector<double> > data;
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
-
+	
 	// ======== Initialization of EC gains ===========
 	sprintf(ecc.database,"/calibration/ec/gain:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
@@ -57,7 +57,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		isec = data[row][0]; ilay = data[row][1];
 		ecc.gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
-
+	
 	// ========= Initializations of attenuation lengths ========
 	sprintf(ecc.database,"/calibration/ec/attenuation:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
@@ -88,7 +88,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	sprintf(ecc.database,"/calibration/ec/tdc_global_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data, ecc.database);
 	ecc.tdc_global_offset = data[0][3];
-
+	
 	// ======== Initialization of EC effective velocities ===========
 	sprintf(ecc.database,"/calibration/ec/effective_velocity:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
@@ -109,7 +109,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 			ecc.status[isec-1][ilay-1].push_back(data[row][3]);
 		}	
 	}
-
+	
 	// =========== Initialization of FADC250 related informations, pedestals, nsa, nsb ======================
 	// FOR now we will initialize pedestals and sigmas to a random value,
 	// in the future they should come from CCDB
@@ -173,13 +173,13 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int strip  = identity[2].id;
 	// pcal
 	int view   = layer;
-
+	
 	bool isPCAL = layer < 4 ;
-
+	
 	// layer = 1, 2 stays the same
 	// subtract 3 from ec inner
 	// subtract 6 from ec outer
-
+	
 	if (layer > 3 && layer <7) {
 		// ec inner (stack 1)
 		view = layer - 3;
@@ -187,7 +187,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// ec outer (stack 2)
 		view = layer - 6;
 	}
-
+	
 	// Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	// Different for EC and PCAL
 	double pmtPEYld = 3.5 ;
@@ -195,7 +195,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// pcal
 		pmtPEYld  = 11.5 ;
 	}
-
+	
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
@@ -203,7 +203,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double stepTime = aHit->GetTime()[0];
 		double adc  = totEdep / ecc.ADC_GeV_to_evio ; // no gain as that comes from data already
 		double tdc = stepTime * ecc.TDC_time_to_evio ;
-
+		
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
@@ -212,19 +212,19 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) adc;
 		dgtz["ADC_time"]  = (int) tdc;
 		dgtz["ADC_ped"]   = 0;
-
+		
 		dgtz["TDC_order"] = layer < 4 ? 2 : 1;  // 1 ECAL, 2 PCAL
 		dgtz["TDC_TDC"]   = (int) tdc;
-
+		
 		return dgtz;
 	}
-
+	
 	HCname = "ECAL Hit Process";
 	trueInfos tInfos(aHit);
-
+	
 	vector<G4ThreeVector> Lpos = aHit->GetLPos();
 	vector<G4double>      Edep = aHit->GetEdep();
-
+	
 	// Get scintillator volume x dimension (mm)
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
 	
@@ -243,7 +243,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double a1   = ecc.timing[sector-1][layer-1][1][strip-1];
 	double a2   = ecc.timing[sector-1][layer-1][2][strip-1];
 	double veff = ecc.veff[sector-1][layer-1][strip-1]*10;
-
+	
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
 			double xlocal = Lpos[s].x();
@@ -265,11 +265,11 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			Etota = Etota + Edep[s];
 		}
 	}
-
+	
 	// initialize ADC and TDC
 	double ADC = 0;
 	double TDC = 0;
-
+	
 	// simulate the adc value.
 	if (Etota > 0) {
 		double EC_npe = G4Poisson(Etota*pmtPEYld); //number of photoelectrons
@@ -286,32 +286,32 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Status flags
 	if(accountForHardwareStatus) {
 		switch (ecc.status[sector-1][layer-1][strip-1]) {
-		case 0:
-			break;
-		case 1:
-			ADC = 0;
-			break;
-		case 2:
-			TDC = 0;
-			break;
-		case 3:
-			ADC = TDC = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown EC status: " << ecc.status[sector-1][layer-1][strip-1] << " for sector " << sector << ",  layer " << layer << ", strip " << strip << endl;
+			case 0:
+				break;
+			case 1:
+				ADC = 0;
+				break;
+			case 2:
+				TDC = 0;
+				break;
+			case 3:
+				ADC = TDC = 0;
+				break;
+				
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown EC status: " << ecc.status[sector-1][layer-1][strip-1] << " for sector " << sector << ",  layer " << layer << ", strip " << strip << endl;
 		}		
 	}
 	
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
-
+	
 	float tdc2ns = 0.02345f;
-
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
@@ -322,9 +322,9 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = 2;
 	dgtz["TDC_TDC"]   = TDC/a1;
-
+	
 	// cout << "sector = " << sector << " layer = " << view << " strip = " << strip << " ADC = " << ADC << " TDC = " << TDC << endl;
-
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -343,15 +343,15 @@ vector<identifier>  ecal_HitProcess :: processID(vector<identifier> id, G4Step* 
 vector<MHit*> ecal_HitProcess :: electronicNoise()
 {
 	vector<MHit*> noiseHits;
-
+	
 	// first, identify the cells that would have electronic noise
 	// then instantiate hit with energy E, time T, identifier IDF:
 	//
 	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
-
+	
 	// push to noiseHits collection:
 	// noiseHits.push_back(thisNoiseHit)
-
+	
 	return noiseHits;
 }
 
@@ -391,10 +391,10 @@ map< int, vector <double> > ecal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	int sector = identity[0].id;
 	int layer  = identity[1].id; // layer=1-3 (PCAL) 4-9 (ECAL). Layer = view for pcal, ecinner, ecouter
 	int strip  = identity[2].id;
-
+	
 	// pcal
 	int view   = layer;
-
+	
 	if (layer > 3 && layer < 7) {
 		// ec inner (stack 1)
 		view = layer - 3;
@@ -402,8 +402,8 @@ map< int, vector <double> > ecal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 		// ec inner (stack 2)
 		view = layer - 6;
 	}
-
-
+	
+	
 	// Number of p.e. divided by the energy deposited in MeV. See EC NIM paper table 1.
 	// Different for EC and PCAL
 	double pmtPEYld = 3.5 ;
@@ -411,7 +411,7 @@ map< int, vector <double> > ecal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 		// pcal
 		pmtPEYld  = 11.5 ;
 	}
-
+	
 	identifiers.push_back(sector);   // sector
 	identifiers.push_back(layer);    // laylayer=1-3 (PCAL) 4-9 (ECAL)er
 	identifiers.push_back(strip);    // component (pmt)

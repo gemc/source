@@ -31,10 +31,10 @@ public:
 	
 	// Threshold (MeV)
 	vector<double> threshold[1][1][2];
-
+	
 	// efficiency
 	vector<double> efficiency[1][1][2];
-
+	
 	// tdc_conc: tdc conversion factors
 	vector<double> tdcconv[1][1][2];
 	
@@ -81,7 +81,7 @@ public:
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
-
+	
 	// TODO: VARIATION SHOULD NOT BE HARDCODED
 	// target position from (hardcoded for now) variation rga_fall2018
 	double targetZPos;

@@ -22,7 +22,7 @@ static bstConstants initializeBSTConstants(int runno, string digiVariation = "de
 	if(runno == -1) return bstc;
 	
 	// no DB connection yet
-		
+	
 	return bstc;
 }
 
@@ -34,14 +34,14 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double minHit = 0.0261*MeV;
 	double maxHit = 0.11747*MeV;
 	double deltaADC = maxHit - minHit;
-
+	
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		
 		int adc     = floor(   7*(totEdep - minHit)/deltaADC);		
-
+		
 		// this assumes the hits have these ID in the LUND file
 		dgtz["sector"]    = identity[0].id;
 		dgtz["layer"]     = identity[1].id;
@@ -50,7 +50,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) adc;
 		dgtz["ADC_time"]  = (int) 255*G4UniformRand();
 		dgtz["ADC_ped"]   = 0;
-
+		
 		return dgtz;
 	}
 	
@@ -70,7 +70,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if( diffLen > 1E-3 || diffWid > 1E-3 )
 			cout << "  Warning: dimensions mismatch between sensor reconstruction dimensions and gemc card dimensions." << endl << endl;
 	}
-
+	
 	// 0. region (1 to 3)
 	// 1. module (bottom = 1, top = 2)
 	// 2. sector (variables depending on sector, starts at 1)
@@ -93,11 +93,11 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// I.e. there are 7 bins plus an overflow bin.
 	
 	int adc     = floor(   7*(tInfos.eTot - minHit)/deltaADC);
-
+	
 	if(tInfos.eTot>maxHit) {
 		adc   = 7;
 	}
-
+	
 	if(tInfos.eTot<minHit) {
 		adc   = -5;
 	}
@@ -107,7 +107,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
 	
-
+	
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;  // strip number
@@ -115,13 +115,13 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = (int) adc;
 	dgtz["ADC_time"]  = (int) 255*G4UniformRand();
 	dgtz["ADC_ped"]   = 0;
-
+	
 	// for geantinos, assigning ADC = 1
 	// notice for geant4 < 10.7, the pid of 0 conflicts with the optical photon
 	if (aHit->GetPID() == 0) {
 		dgtz["ADC_ADC"]   = 1.0;
 	}
-
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -315,7 +315,7 @@ void bst_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(bstc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		bstc = initializeBSTConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

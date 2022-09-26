@@ -100,7 +100,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.threshold[isec - 1][ilay - 1][0].push_back(data[row][3]);
 		ctc.threshold[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
-
+	
 	sprintf(ctc.database, "/calibration/ctof/efficiency:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting efficiency" << endl;
 	data.clear();
@@ -112,7 +112,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
 		ctc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
-
+	
 	
 	
 	sprintf(ctc.database, "/calibration/ctof/gain_balance:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
@@ -268,10 +268,10 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-
+		
 		double adc  = totEdep * ctc.countsForMIP[sector - 1][layer - 1][0][paddle - 1] / ctc.dEMIP ; // no gain as that comes from data already
 		double tdc = stepTime/tdcconv;
-
+		
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
 		dgtz["component"] = paddle;
@@ -279,10 +279,10 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) adc;
 		dgtz["ADC_time"]  = (tdc*24.0/1000);
 		dgtz["ADC_ped"]   = 0;
-
+		
 		dgtz["TDC_order"] = side + 2;
 		dgtz["TDC_TDC"]   = (int) tdc;
-
+		
 		return dgtz;
 	}
 	
@@ -333,7 +333,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	// double tdcu = 0.;
 	// if (ene > 0)
 	//	adcu = energyDepositedAttenuated * ctc.countsForMIP[sector - 1][layer - 1][side][paddle - 1] / ctc.dEMIP / gain;
-
+	
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat Up and Dn separately, in case nphe=0
@@ -364,24 +364,24 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		
 		// Status flags
 		switch (ctc.status[sector - 1][layer - 1][side][paddle - 1]) {
-		case 0:
-			break;
-		case 1:
-			adc = 0;
-			break;
-		case 2:
-			tdc = 0;
-			break;
-		case 3:
-			adc = tdc = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown CTOF status: " << ctc.status[sector - 1][layer - 1][side][paddle - 1] << " for sector " << sector <<
-			",  layer " << layer << ", paddle " << paddle << " Side " << side << endl;
+			case 0:
+				break;
+			case 1:
+				adc = 0;
+				break;
+			case 2:
+				tdc = 0;
+				break;
+			case 3:
+				adc = tdc = 0;
+				break;
+				
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown CTOF status: " << ctc.status[sector - 1][layer - 1][side][paddle - 1] << " for sector " << sector <<
+				",  layer " << layer << ", paddle " << paddle << " Side " << side << endl;
 		}
 	}
 	
@@ -396,7 +396,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	
 	dgtz["TDC_order"] = side + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;
-
+	
 	// reject hit if below threshold or efficiency
 	if ( energyDepositedAttenuated < ctc.threshold[sector - 1][layer - 1][side][paddle - 1] ) {
 		rejectHitConditions = true;
@@ -405,14 +405,14 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	if ( random < ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] ) {
 		rejectHitConditions = true;
 	}
-
+	
 	return dgtz;
 }
 
 vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {	
-
+	
 	vector<identifier> yid = id;
-
+	
 	yid[0].id_sharing = 1; // Paddle number
 	yid[1].id_sharing = 1; // Side: This shows the PMT, whether the upstream one, or the downstream. 0 in the geometry by default
 	
@@ -425,7 +425,7 @@ vector<identifier> ctof_HitProcess::processID(vector<identifier> id, G4Step* aSt
 	// Now we want to have similar identifiers, but the only difference be id PMT to be 1, instead of 0
 	identifier this_id = yid[0];
 	yid.push_back(this_id);
-
+	
 	// for the second hit, the energy declared is the same but the side id is 1 instead of 0
 	this_id = yid[1];
 	this_id.id = 1;
@@ -538,7 +538,7 @@ map< int, vector <double> > ctof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 		//pmt = 0 or 1,
 		
 		double d = length + (1. - 2. * side)*(Pos[s].z() - offset); // The distance between the hit and PMT?
-																	// attenuation factor
+		// attenuation factor
 		double att = exp(-d / cm / attlen);
 		
 		// Gain factors to simulate CTOF PMT gain matching algorithm.

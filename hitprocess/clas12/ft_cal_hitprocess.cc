@@ -29,23 +29,23 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	// database
 	ftcc.runNo = runno;
 	if(getenv ("CCDB_CONNECTION") != nullptr)
 		ftcc.connection = (string) getenv("CCDB_CONNECTION");
 	else
 		ftcc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-
+	
 	int icomponent;
 	
 	vector<vector<double> > data;
 	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ftcc.connection));
 	cout<<"Connecting to "<<ftcc.connection<<"/calibration/ft/ftcal"<<endl;
-
+	
 	if(accountForHardwareStatus) {
-
+		
 		cout<<"FT-Cal:Getting status"<<endl;
 		sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,ftcc.database);
@@ -152,21 +152,21 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-
+	
 	// ids
 	vector<identifier> identity = aHit->GetId();
 	// use Crystal ID to define IDX and IDY
 	int IDX = identity[0].id;
 	int IDY = identity[1].id;
 	int iCrystal = (IDY-1)*22+IDX-1;
-
+	
 	if(aHit->isBackgroundHit == 1) {
-
+		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
 		double charge   = totEdep*ftcc.mips_charge[iCrystal]/ftcc.mips_energy[iCrystal];
-
+		
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = 1;
 		dgtz["layer"]     = 1;
@@ -175,7 +175,7 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) (charge/ftcc.fadc_to_charge[iCrystal]);
 		dgtz["ADC_time"]  = (int) stepTime*ftcc.time_to_tdc/25;
 		dgtz["ADC_ped"]   = 0;
-
+		
 		return dgtz;
 	}
 	
@@ -183,18 +183,18 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	// R.De Vita (November 2016)
-
+	
 	// Get the crystal length: in the FT crystal are BOXes and the half-length is the 3rd element
 	double length = 2 * aHit->GetDetector().dimensions[2];
 	// Get the crystal width (rear face): in the FT crystal are BOXes and the half-length is the 2th element
 	//	double width  = 2 * aHit->GetDetector().dimensions[1];
 	
-
+	
 	// initialize ADC and TDC
 	int ADC = 0;
 	int TDC = 8191;
 	
-
+	
 	if(tInfos.eTot>0)
 	{
 		/*
@@ -210,7 +210,7 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		 */
 		double dRight = length/2 - tInfos.lz;                 // distance along z between the hit position and the end of the crystal
 		double timeR  = tInfos.time + dRight/ftcc.light_speed;  // arrival time of the signal at the end of the crystal (speed of light in the crystal=15 cm/ns)
-																// adding shift and spread on time
+		// adding shift and spread on time
 		timeR=timeR+ftcc.time_offset[iCrystal]+G4RandGauss::shoot(0., ftcc.time_rms[iCrystal]);
 		
 		TDC=int(timeR*ftcc.time_to_tdc);
@@ -244,22 +244,22 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// Status flags
 	if(accountForHardwareStatus) {
-
+		
 		switch (ftcc.status[iCrystal])
 		{
-		case 0:
-			break;
-		case 1:
-			break;
-		case 3:
-			ADC = TDC = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown FTCAL status: " << ftcc.status[iCrystal] << " for component " << iCrystal << endl;
+			case 0:
+				break;
+			case 1:
+				break;
+			case 3:
+				ADC = TDC = 0;
+				break;
+				
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown FTCAL status: " << ftcc.status[iCrystal] << " for component " << iCrystal << endl;
 		}
 	}
 	
@@ -271,8 +271,8 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = ADC;
 	dgtz["ADC_time"]  = (int) TDC/25;
 	dgtz["ADC_ped"]   = 0;
-
-
+	
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -370,7 +370,7 @@ map< int, vector <double> > ft_cal_HitProcess :: chargeTime(MHit* aHit, int hitn
 		
 		double dRight = length / 2 - Lpos[s].z(); // distance along z between the hit position and the end of the crystal
 		double stepTime = time[s] + dRight / ftcc.light_speed; // arrival time of the signal at the end of the crystal (speed of light in the crystal=15 cm/ns)
-															   // adding shift and spread on time
+		// adding shift and spread on time
 		stepTime = stepTime + ftcc.time_offset[crystal] + G4RandGauss::shoot(0., ftcc.time_rms[crystal]);
 		
 		//cout<<"stepTime = "<<stepTime<<endl;
@@ -445,7 +445,7 @@ void ft_cal_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(ftcc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		ftcc = initializeFTCALConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

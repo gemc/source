@@ -100,7 +100,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.threshold[isec - 1][ilay - 1][0].push_back(data[row][3]);
 		ftc.threshold[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
-
+	
 	cout << "FTOF:Getting efficiency" << endl;
 	sprintf(ftc.database, "/calibration/ftof/efficiency:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
@@ -111,7 +111,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		ftc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
 		ftc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
-
+	
 	cout << "FTOF:Getting gain_balance" << endl;
 	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
@@ -250,7 +250,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	// TDC conversion factors
 	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
-
+	
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
@@ -267,10 +267,10 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["ADC_ADC"]   = (int) adc;
 		dgtz["ADC_time"]  = (tdc*24.0/1000);
 		dgtz["ADC_ped"]   = 0;
-
+		
 		dgtz["TDC_order"] = pmt + 2;
 		dgtz["TDC_TDC"]   = (int) tdc;
-
+		
 		return dgtz;
 	}
 	
@@ -326,18 +326,18 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double adc = 0;
 	double tdc = 0;
 	// not used anymore
-//	double adcu = 0;
-//	double tdcu = 0;
+	//	double adcu = 0;
+	//	double tdcu = 0;
 	
-//	if (ene > 0) {
-//		adcu = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
-//	}
-
+	//	if (ene > 0) {
+	//		adcu = ene * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] / gain;
+	//	}
+	
 	// Fluctuate the light measured by the PMT with
 	// Poisson distribution for emitted photoelectrons
 	// Treat L and R separately, in case nphe=0
 	
-
+	
 	double nphe = G4Poisson(energyDepositedAttenuated * ftc.pmtPEYld);
 	double ene = nphe / ftc.pmtPEYld;
 	
@@ -348,7 +348,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		//double            C = ftc.twlk[sector-1][panel-1][2][paddle-1];
 		
 		double timeWalk  = A / pow(adc, B);
-//		double timeWalkU = A / pow(adcu, B);
+		//		double timeWalkU = A / pow(adcu, B);
 		
 		//		double tU = tInfos.time + d/ftc.veff[sector-1][panel-1][pmt][paddle-1]/cm + (1. - 2. * pmt)*ftc.toff_LR[sector-1][panel-1][paddle-1]/2.
 		//		- ftc.toff_RFpad[sector-1][panel-1][paddle-1]
@@ -363,7 +363,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		
 		// cout << " FTOF Unsmeared Time after p2p subtraction: " << tU << endl;
 		
-//		tdcu = (tU + timeWalkU) / tdcconv;
+		//		tdcu = (tU + timeWalkU) / tdcconv;
 		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
 		
 	}
@@ -372,23 +372,23 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// Status flags
 	if(accountForHardwareStatus) {
 		switch (ftc.status[sector - 1][panel - 1][pmt][paddle - 1]) {
-		case 0:
-			break;
-		case 1:
-			adc = 0;
-			break;
-		case 2:
-			tdc = 0;
-			break;
-		case 3:
-			adc = tdc = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown FTOF status: " << ftc.status[sector - 1][panel - 1][0][paddle - 1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left " << endl;
+			case 0:
+				break;
+			case 1:
+				adc = 0;
+				break;
+			case 2:
+				tdc = 0;
+				break;
+			case 3:
+				adc = tdc = 0;
+				break;
+				
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown FTOF status: " << ftc.status[sector - 1][panel - 1][0][paddle - 1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left " << endl;
 		}
 	}
 	
@@ -402,10 +402,10 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_ADC"]   = (int) adc;
 	dgtz["ADC_time"]  = (tdc*tdcconv);
 	dgtz["ADC_ped"]   = 0;
-
+	
 	dgtz["TDC_order"] = pmt + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;
-
+	
 	// reject hit if below threshold or efficiency
 	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] ) {
 		rejectHitConditions = true;

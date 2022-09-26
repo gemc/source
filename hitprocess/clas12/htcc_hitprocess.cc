@@ -29,7 +29,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	// database
 	htccc.runNo = runno;
 	if(getenv ("CCDB_CONNECTION") != nullptr)
@@ -42,9 +42,9 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	vector<vector<double> > data;
 	
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(htccc.connection));
-
+	
 	if(accountForHardwareStatus) {
-
+		
 		cout<<"HTCC:Getting status"<<endl;
 		sprintf(htccc.database,"/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear() ; calib->GetCalib(data,htccc.database);
@@ -70,11 +70,11 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.mc_smear[isec-1][ilay-1].push_back(data[row][3]);
 	}
-
-
-
-
-
+	
+	
+	
+	
+	
 	cout<<"HTCC:Getting time_offset"<<endl;
 	sprintf(htccc.database,"/calibration/htcc/time:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
@@ -128,22 +128,22 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-
+	
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector = identity[0].id;
 	int idring   = identity[1].id;
 	int idhalf   = identity[2].id; // layer is half sector (1 or 2)
 	int thisPid  = aHit->GetPID();
-
+	
 	if(aHit->isBackgroundHit == 1) {
-
+		
 		// background hit has all the nphe in the charge infp. Time is also first step
 		double nphe     = aHit->GetCharge();
 		double stepTime = aHit->GetTime()[0];
-
+		
 		dgtz["hitn"]   = hitn;
-
+		
 		dgtz["sector"]    = idsector;
 		dgtz["layer"]     = idhalf;
 		dgtz["component"] = idring;
@@ -151,32 +151,32 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) nphe*100;
 		dgtz["ADC_time"]  = (stepTime*24.0/1000);
 		dgtz["ADC_ped"]   = 0;
-
+		
 		dgtz["TDC_order"] = 0;
 		dgtz["TDC_TDC"]   = (int) stepTime;
-
+		
 		return dgtz;
 	}
 	
-
+	
 	trueInfos tInfos(aHit);
-
+	
 	// return if the particle is not an opticalphoton
 	// notice: the optical photon PID changed from 0 to -22 with 10.7
 	if(thisPid != MHit::OPTICALPHOTONPID) {
-
+		
 		return dgtz;
-
+		
 		dgtz["sector"]    = -idsector;
 		dgtz["layer"]     = -idhalf;
 		dgtz["component"] = -idring;
-
+		
 	}
-
-
+	
+	
 	int ndetected;
-
-
+	
+	
 	// Since the HTCC hit involves a PMT which detects photons with a certain quantum efficiency (QE)
 	// we want to implement QE here in a flexible way:
 	
@@ -207,7 +207,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if( newtrack.second ) photon_energies.push_back( Energies[s] );
 		}
 	}
-
+	
 	
 	// here is the fun part: figure out the number of photons we detect based
 	// on the quantum efficiency of the photocathode material, if defined:
@@ -222,7 +222,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
 		if( efficiency != nullptr ) gotefficiency = true;
 	}
-
+	
 	for( unsigned int iphoton = 0; iphoton<TIDS.size(); iphoton++ )
 	{
 		//loop over all unique photons contributing to the hit:
@@ -233,7 +233,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			bool outofrange = false;
 			double uniformR = G4UniformRand();
 			double peff = efficiency->GetValue( photon_energies[iphoton], outofrange );
-
+			
 			if(  uniformR <= peff) {
 				ndetected++;
 			}
@@ -256,40 +256,40 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		cout <<  log_msg << " (sector, ring, half)=(" << idsector << ", " << idring << ", " << idhalf << ")"
 		<< " x=" << tInfos.x/cm << " y=" << tInfos.y/cm << " z=" << tInfos.z/cm << endl;
 	}
-
-
+	
+	
 	//status flags
 	if(accountForHardwareStatus) {
-
+		
 		switch (htccc.status[idsector-1][idhalf-1][idring-1])
 		{
-		case 0:
-			break;
-		case 1:
-			ndetected=0;
-			break;
-		case 2:
-			tInfos.time = 0;
-			
-			break;
-		case 3:
-			tInfos.time = 0;
-			ndetected = 0;
-			
-			break;
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown HTCC status: " << htccc.status[idsector-1][idhalf-1][idring-1] << " for sector " << idsector << ",  halfsector " << idhalf << ", ring  " << idring << endl;
+			case 0:
+				break;
+			case 1:
+				ndetected=0;
+				break;
+			case 2:
+				tInfos.time = 0;
+				
+				break;
+			case 3:
+				tInfos.time = 0;
+				ndetected = 0;
+				
+				break;
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown HTCC status: " << htccc.status[idsector-1][idhalf-1][idring-1] << " for sector " << idsector << ",  halfsector " << idhalf << ", ring  " << idring << endl;
 		}
 	}
 	
 	double adc  = 100 * G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
 	double time = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
-
+	
 	dgtz["hitn"]   = hitn;
-
+	
 	dgtz["sector"]    = idsector;
 	dgtz["layer"]     = idhalf;
 	dgtz["component"] = idring;
@@ -297,11 +297,11 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = (int) adc;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
-
+	
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = (int) time;
-
-
+	
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -506,7 +506,7 @@ void htcc_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(htccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		htccc = initializeHTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
