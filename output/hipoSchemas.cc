@@ -4,7 +4,7 @@
 
 HipoSchema :: HipoSchema()
 {
-
+	
 	cout << " Defining Hipo4 schemas..." << endl;
 	//---------------------------------------------------------
 	// Define a Schema for particle bank and detector bank
@@ -14,13 +14,13 @@ HipoSchema :: HipoSchema()
 	//           this way banks can be grouped in skimming
 	// itemid  - and item number (8 bit) to just have a
 	//           unique number associated with bank.
-
+	
 	// CLAS12 schemas are defined at https://github.com/JeffersonLab/clas12-offline-software/tree/development/etc/bankdefs/hipo4
 	// Detectors: https://github.com/JeffersonLab/clas12-offline-software/blob/development/etc/bankdefs/hipo4/data.json
 	runConfigSchema = hipo::schema("RUN::config", 10000, 11);
 	runRFSchema     = hipo::schema("RUN::rf",     10000, 12);
 	trueInfoSchema  = hipo::schema("MC::True",       40, 4);
-
+	
 	// generators
 	geantParticle = hipo::schema("MC::Particle",  40, 2);
 	mcEventHeader = hipo::schema("MC::Event",     40, 1);
@@ -28,6 +28,12 @@ HipoSchema :: HipoSchema()
 	lundParticle  = hipo::schema("MC::Lund",      40, 3);
 	
 	// detectors
+	alertShellADCSchema = hipo::schema("ALRTSHELL::adc", 22400, 11);
+	alertAtofADCchema   = hipo::schema("ALRTTOF::adc",   22400, 12);
+	alertAtofTDCchema   = hipo::schema("ALRTTOF::tdc",   22400, 13);
+	alertAhdcADCchema   = hipo::schema("ALRTDC::adc",    22400, 14);
+	alertAhdcTDCchema   = hipo::schema("ALRTDC::tdc",    22400, 15);
+
 	bandADCSchema   = hipo::schema("BAND::adc",   22100, 11);
 	bandTDCSchema   = hipo::schema("BAND::tdc",   22100, 12);
 	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
@@ -58,35 +64,41 @@ HipoSchema :: HipoSchema()
 	helADCSchema    = hipo::schema("HEL::adc",    22000, 11);
 	helFLIPSchema   = hipo::schema("HEL::flip",   22000, 12);
 	helONLINESchema = hipo::schema("HEL::online", 22000, 13);
-        urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
+	urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
 	rawADCSchema    = hipo::schema("RAW::adc",    20000, 11);
 	rawTDCSchema    = hipo::schema("RAW::tdc",    20000, 12);
 	rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
 	rawVTPSchema    = hipo::schema("RAW::vtp",    20000, 14);
 	rawEPICSSchema  = hipo::schema("RAW::epics",  20000, 15);
 	rasterADCSchema = hipo::schema("RASTER::adc", 22200, 11);
-
+	
 	// Defining structure of the schema (bank)
 	// The columns in the banks (or leafs, if you like ROOT)
 	// are given comma separated with type after the name.
 	// Available types : I-integer, S-short, B-byte, F-float,
 	//                   D-double, L-long
-
+	
 	runConfigSchema.parse("run/I, event/I, unixtime/I, trigger/L, timestamp/L, type/B,mode/B, torus/F, solenoid/F");
 	runRFSchema.parse("id/S, time/F");
 	trueInfoSchema.parse("detector/B, pid/I, mpid/I, tid/I, mtid/I, otid/I, trackE/F, totEdep/F, avgX/F, avgY/F, avgZ/F, avgLx/F, avgLy/F, avgLz/F, px/F, py/F, pz/F, vx/F, vy/F, vz/F, mvx/F, mvy/F, mvz/F, avgT/F, nsteps/I, procID/I, hitn/I");
 	rasterADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-
+	
 	// generators
 	geantParticle.parse("pid/I, px/F, py/F, pz/F, vx/F, vy/F, vz/F, vt/F");
 	mcEventHeader.parse("npart/S, atarget/S, ztarget/S, ptarget/F, pbeam/F, btype/S, ebeam/F, targetid/S, processid/S, weight/F");
 	userLund.parse("userVar/F");
 	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
-
+	
 	// detectors
+	alertShellADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
+	alertAtofADCchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
+	alertAtofTDCchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	alertAhdcADCchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
+	alertAhdcTDCchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+
 	bandADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
 	bandTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
-
+	
 	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
 	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
@@ -94,9 +106,9 @@ HipoSchema :: HipoSchema()
 	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-
+	
 	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
-
+	
 	// need to add pcal to this
 	ecalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ecalTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
@@ -109,40 +121,47 @@ HipoSchema :: HipoSchema()
 	htccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 	ltccADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	ltccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-
+	
 	rfADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	rfTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
-
+	
 	richTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
 	rtpcADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	rtpcPOSSchema.parse(   "step/I, time/F, energy/F, posx/F, posy/F, posz/F, phi/F, tid/F");
-
+	
 	helADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	helFLIPSchema.parse(   "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
 	helONLINESchema.parse( "helicity/B, helicityRaw/B");
-
-        urwellADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-
+	
+	urwellADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	
 	rawADCSchema.parse(    "crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
 	rawTDCSchema.parse(    "crate/B, slot/B, channel/S, order/B, TDC/I");
 	rawSCALERSchema.parse( "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
 	rawVTPSchema.parse(    "crate/B, word/I");
 	rawEPICSSchema.parse(  "json/B");
-
+	
 	emptySchema.parse(     "empty/B");
-
+	
 	schemasToLoad["RUN::config"] = runConfigSchema;
 	schemasToLoad["RUN::rf"]     = runRFSchema;
 	schemasToLoad["MC::True"]    = trueInfoSchema;
-
+	
 	// generators
 	schemasToLoad["MC::Particle"] = geantParticle;
 	schemasToLoad["MC::Event"]    = mcEventHeader;
 	schemasToLoad["MC::User"]     = userLund;
 	schemasToLoad["MC::Lund"]     = lundParticle;
-
 	
+
+
 	// The names corresponds to the hit process routine names, capitalized
+	schemasToLoad["ALRTSHELL::adc"] = alertShellADCSchema;
+	schemasToLoad["ALRTTOF::adc"]   = alertAtofADCchema;
+	schemasToLoad["ALRTTOF::tdc"]   = alertAtofTDCchema;
+	schemasToLoad["ALRTDC::adc"]    = alertAhdcADCchema;
+	schemasToLoad["ALRTDC::tdc"]    = alertAhdcTDCchema;
+
 	schemasToLoad["BAND::adc"]    = bandADCSchema;
 	schemasToLoad["BAND::tdc"]    = bandTDCSchema;
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
@@ -166,22 +185,22 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 	schemasToLoad["HEL::flip"]    = helFLIPSchema;
 	schemasToLoad["RASTER::adc"]  = rasterADCSchema;
-        schemasToLoad["URWELL::adc"]  = urwellADCSchema;
-
+	schemasToLoad["URWELL::adc"]  = urwellADCSchema;
+	
 	cout << " Done defining Hipo4 schemas." << endl;
-
+	
 }
 
 #include <cstring>
 // type: 0 = adc, 1 = tdc
 hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
-
+	
 	string schemaType = type == 0 ? "adc" : "tdc";
-
+	
 	string toUpperS = schemaName;
 	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
 	string thisSchema = toUpperS + "::" + schemaType;
-
+	
 	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
 		return schemasToLoad[thisSchema];
 	} else if(schemaName == "ft_cal") {
@@ -201,14 +220,14 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 
 
 void outputContainer::initializeHipo(bool openFile) {
-
-
+	
+	
 	if ( !openFile ) {
 		hipoSchema = new HipoSchema();
-
+		
 		cout << " Initializing hipoSchema" << endl;
 		hipoWriter = new hipo::writer();
-
+		
 		// Open a writer and register schemas with the writer.
 		// The schemas have to be added to the writer before openning
 		// the file, since they are written into the header of the file.
