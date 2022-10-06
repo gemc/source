@@ -80,9 +80,9 @@ void rich_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(richc.runNo != runno) {
-//		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
+		//		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		richc = initializeRICHConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
 		richc.runNo = runno;
 	}

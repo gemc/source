@@ -5,7 +5,7 @@ map<string, double> mirror_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-
+	
 	int id  = identity[0].id;
 	
 	if(verbosity>4)
@@ -46,7 +46,7 @@ map< string, vector <int> >  mirror_HitProcess :: multiDgt(MHit* aHit, int hitn)
 map< int, vector <double> > mirror_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
-
+	
 	return CT;
 }
 

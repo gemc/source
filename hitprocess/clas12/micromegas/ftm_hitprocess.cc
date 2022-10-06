@@ -57,9 +57,7 @@ map<string, double> ftm_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = adc;
 	dgtz["ADC_time"]  = 0;
 	dgtz["ADC_ped"]   = 0;
-
-	// decide if write an hit or not
-	writeHit = true;
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -184,7 +182,7 @@ void ftm_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(this->ftmcc.runNo != runno)
 	{
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;

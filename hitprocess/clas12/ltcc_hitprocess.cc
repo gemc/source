@@ -26,7 +26,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	if(digiSnapshotTime != "no") {
 		timestamp = ":"+digiSnapshotTime;
 	}
-
+	
 	// database
 	ltccc.runNo = runno;
 	if(getenv ("CCDB_CONNECTION") != nullptr)
@@ -54,43 +54,43 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
-
+	
 	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
 		layer     = data[row][1] - 1;
 		component = data[row][2] - 1;
-
+		
 		ltccc.timeOffset[sector][layer][component]  = data[row][3];
 		ltccc.timeRes[sector][layer][component]  = data[row][4];
-
+		
 		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
-
+	
 	return ltccc;
 }
 
 map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-
+	
 	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
 	int idsector  = identity[0].id;
 	int idside    = identity[1].id;
 	int idsegment = identity[2].id;
 	int thisPid   = aHit->GetPID();
-
+	
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the nphe in the charge infp. Time is also first step
 		double nphe     = aHit->GetCharge();
 		double stepTime = aHit->GetTime()[0];
-
+		
 		dgtz["hitn"]   = hitn;
-
+		
 		dgtz["sector"]    = idsector;
 		dgtz["layer"]     = idside;
 		dgtz["component"] = idsegment;
@@ -98,15 +98,15 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];;
 		dgtz["ADC_time"]  = (int) (stepTime*24.0/1000);
 		dgtz["ADC_ped"]   = 0;
-
+		
 		dgtz["TDC_order"] = 0;
 		dgtz["TDC_TDC"]   = (int) (stepTime*24.0/1000);
-
-
+		
+		
 		return dgtz;
 	}
 	
-
+	
 	trueInfos tInfos(aHit);
 	
 	// if anything else than a photon hits the PMT
@@ -115,11 +115,11 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// this should be changed, what if we still have a photon later?
 	// if the particle is not an opticalphoton return bank filled with negative identifiers
 	if(thisPid != MHit::OPTICALPHOTONPID) {
-
+		
 		dgtz["sector"]    = -idsector;
 		dgtz["layer"]     = -idside;
 		dgtz["component"] = -idsegment;
-
+		
 		return dgtz;
 	}
 	
@@ -181,12 +181,12 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
-
+	
 	double timeOffset = G4RandGauss::shoot(ltccc.timeOffset[idsector-1][idside-1][idsegment-1], ltccc.timeRes[idsector-1][idside-1][idsegment-1]);
 	double time = tInfos.time + timeOffset;
-
+	
 	dgtz["hitn"]   = hitn;
-
+	
 	dgtz["sector"]    = idsector;
 	dgtz["layer"]     = idside;
 	dgtz["component"] = idsegment;
@@ -194,13 +194,11 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = adc;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
-
+	
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = (int) time;
-
-
-	// decide if write an hit or not
-	writeHit = true;
+	
+	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
@@ -262,7 +260,7 @@ void ltcc_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
-
+	
 	if(ltccc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
 		ltccc = initializeLTCCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);

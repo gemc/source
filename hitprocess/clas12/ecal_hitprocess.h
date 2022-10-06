@@ -31,10 +31,10 @@ public:
 	//timing: TDC calibration constants
 	vector<double> timing[nsect][nlayer][5];
 	double tdc_global_offset;
-
+	
 	//veff: effective velocity (cm/ns)
 	vector<double> veff[nsect][nlayer];
-
+	
 	// status:
 	//	0 - fully functioning
 	//	1 - noADC

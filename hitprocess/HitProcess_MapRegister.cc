@@ -67,7 +67,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		hitMap["flux"]    = &flux_HitProcess::createHitClass;
 		hitMap["mirror"]  = &mirror_HitProcess::createHitClass;
 		hitMap["counter"] = &counter_HitProcess::createHitClass;
-
+		
 		// CLAS12
 		if(EXP == "clas12") {
 			hitMap["myatof"]   = &myatof_HitProcess::createHitClass;
@@ -90,7 +90,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
 			hitMap["rich"]     = &rich_HitProcess::createHitClass;
 			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
- 			hitMap["urwell"]   = &uRwell_HitProcess::createHitClass;
+			hitMap["urwell"]   = &uRwell_HitProcess::createHitClass;
 		} else if(EXP == "HPS") {
 			// Aprime
 			hitMap["SVT"]        = &SVT_HitProcess::createHitClass;

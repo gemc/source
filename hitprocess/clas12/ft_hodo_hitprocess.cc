@@ -159,7 +159,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ADC"]   = (int) (charge/fthc.fadc_LSB);
 		dgtz["ADC_time"]  = (int) (stepTime*fthc.time_to_tdc)/25;
 		dgtz["ADC_ped"]   = 0;
-
+		
 		return dgtz;
 	}
 	
@@ -192,22 +192,22 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(accountForHardwareStatus) {
 		switch (fthc.status[isector-1][ilayer-1][icomponent-1])
 		{
-		case 0:
-			break;
-		case 1:
-			break;
-		case 3:
-			ADC = TDC = 0;
-			break;
-			
-		case 5:
-			break;
-			
-		default:
-			cout << " > Unknown FTHODO status: " << fthc.status[isector-1][ilayer-1][icomponent-1] << " for sector, layer, component "
-			<< isector << ", "
-			<< ilayer  << ", "
-			<< icomponent << endl;
+			case 0:
+				break;
+			case 1:
+				break;
+			case 3:
+				ADC = TDC = 0;
+				break;
+				
+			case 5:
+				break;
+				
+			default:
+				cout << " > Unknown FTHODO status: " << fthc.status[isector-1][ilayer-1][icomponent-1] << " for sector, layer, component "
+				<< isector << ", "
+				<< ilayer  << ", "
+				<< icomponent << endl;
 		}
 	}
 	dgtz["hitn"]      = hitn;
@@ -218,9 +218,6 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ADC"]   = ADC;
 	dgtz["ADC_time"]  = TDC/25;
 	dgtz["ADC_ped"]   = 0;
-
-	// decide if write an hit or not
-	writeHit = true;
 	
 	// define conditions to reject hit
 	if(rejectHitConditions) {

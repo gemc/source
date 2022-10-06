@@ -16,7 +16,7 @@ using namespace std;
 class fmtConstants
 {
 public:
-
+	
 	// database
 	int    runNo;
 	string date;
@@ -32,10 +32,10 @@ public:
 	double Twindow;          // readout window
 	double Tmean;            // average hit time
 	double Tsigma;           // sigma of the hit time distribution
-
+	
 	// THE GEOMETRY CONSTANTS
 	const static int NLAYERS = 6  ;	// 6 DISKS
-
+	
 	// Detector geometrical characteristics
 	vector<double> Z0;       // z of the upstream part of the layer
 	vector<double> alpha;    // strip angles of layers
@@ -47,7 +47,7 @@ public:
 	int N_halfstr;           // number of bottom strips in the central part
 	int N_sidestr;           // number of strips one side
 	double y_central;        // Limit the central part for stip finding
-
+	
 	// Detector response characteristics
 	double HV_DRIFT[NLAYERS]; //Need to know the HV to compute the lorentz angle...0 upstream
 	double HV_STRIPS_IN[NLAYERS]; //Might be needed for the gain
@@ -55,10 +55,10 @@ public:
 	vector<vector<int> >     STRIP_STATUS; // Say if strip is dead or alive
 	vector<vector<double> >     STRIP_GAIN; // Give the gain where the strip is
 	vector<vector<double> >     STRIP_EFFICIENCY; // Give the efficiency (correlated to gain fluctuation)
-
+	
 	double w_i=20; //ionization potential assumed to be 25 eV
 	Lorentz Lor_Angle;
-
+	
 };
 
 class fmt_strip
@@ -72,11 +72,11 @@ public:
 	double strip_x;          // strip_x is the middle of the strips
 	double strip_y;          // strip_y is the position of the strips
 	double strip_length;     // length of the strip
-
+	
 	vector<double> FindStrip( int layer, int sector, double x, double y, double z, double Edep, fmtConstants fmtc);   // Strip Finding Routine
 	void Carac_strip(int strip, fmtConstants fmtc); //length of the strip
 	double Weight_td(int strip, double x, double y, double z, fmtConstants fmtc); //Compute the fraction of Nel falling onto the strip, depending on x,y in the FMT coordinate system
 	double GetBinomial(double n, double p);//CLHEP Binomial has a weird limit condition which returns -1 instead of 0 when n*p=0
- };
+};
 
 #endif

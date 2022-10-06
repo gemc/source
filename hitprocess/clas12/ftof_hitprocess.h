@@ -26,6 +26,13 @@ public:
 	// 5 - any other reconstruction problem
 	vector<int> status[6][3][2];
 	
+	// Threshold (MeV)
+	vector<double> threshold[1][1][2];
+	
+	// efficiency
+	vector<double> efficiency[1][1][2];
+	
+	
 	// tdc_conc: tdc conversion factors
 	vector<double> tdcconv[6][3][2];
 	
@@ -53,7 +60,7 @@ public:
 	// tres: Gaussian sigma for smearing time resolution
 	// indexes are sector/layer/paddle
 	vector<double> tres[6][3];
-
+	
 	int    npaddles[3];  // Number of paddles for Panel 1A, 1B and 2.
 	int    thick[3];     // Thickness of paddles (cm) for Panel 1A, 1B and 2.
 	double dEdxMIP;      // Nominal MIP specific energy loss (MeV/gm/cm2)
@@ -64,7 +71,7 @@ public:
 	double pmtDynodeGain; // PMT dynode gain
 	double pmtDynodeK;    // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
 	double pmtFactor;     // Contribution to FWHM from PMT statistical fluctuations.
-								 //	double tdcLSB;        // Conversion from ns to TDC channel.
+	//	double tdcLSB;        // Conversion from ns to TDC channel.
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];

@@ -14,11 +14,11 @@ vector<double> fmt_strip::FindStrip(int layer, int sector, double x, double y, d
 	// number of electrons (Nt)
 	Nel = (int) (1e6*Edep/fmtc.w_i);
 	sigma_td = fmtc.SigmaDrift*(z+fmtc.hDrift/2); // expression without Lorentz angle
-
+	
 	//Lorentz Angle correction
 	x=x+(z+fmtc.hDrift/2)*tan(fmtc.ThetaL)*cos(fmtc.Theta_Ls);
 	y=y+(z+fmtc.hDrift/2)*tan(fmtc.ThetaL)*sin(fmtc.Theta_Ls);
-
+	
 	if (fmtc.HV_DRIFT[layer]==0||(fmtc.HV_STRIPS_IN[layer]==0&&sqrt(x*x+y*y)<fmtc.R_IR)||(fmtc.HV_STRIPS_OUT[layer]==0&&sqrt(x*x+y*y)>=fmtc.R_IR&&sqrt(x*x+y*y)<fmtc.R_max)) Nel=0;
 	
 	int ClosestStrip=0;

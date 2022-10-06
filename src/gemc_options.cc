@@ -129,17 +129,49 @@ void goptions::setGoptions()
 	optMap["SHIFT_LUND_VERTEX"].argsJSONDescription  = "svx svy svz unit";
 	optMap["SHIFT_LUND_VERTEX"].argsJSONTypes  = "F F F S";
 
+	optMap["RANDOMIZE_LUND_VZ"].args = "0*cm, 0*cm, default";
+	optMap["RANDOMIZE_LUND_VZ"].help = " Randomizes the z vertexes using, in order: Z shift, DZ sigma\n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "     By default the randomization is relative to the LUND vertex values. \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "     If the third argument \"reset\" is given, the vertexes are relative to VZ=0 \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "      example 1: -RANDOMIZE_LUND_VZ=\"-3*cm, 5*cm\" \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by plus-minus 5cm around the original LUND values and shift it by -3cm \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "      example 2: -RANDOMIZE_LUND_VZ=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg, reset\" \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by 5cm around vz = 0 and shift it by -3cm \n";
+	optMap["RANDOMIZE_LUND_VZ"].name = "Randomizes the z vertex according to a shift and a flat value";
+	optMap["RANDOMIZE_LUND_VZ"].type = 1;
+	optMap["RANDOMIZE_LUND_VZ"].ctgr = "generator";
+	optMap["RANDOMIZE_LUND_VZ"].argsJSONDescription  = "lundvzs lundvzd default/reset";
+	optMap["RANDOMIZE_LUND_VZ"].argsJSONTypes  = "F F S";
+
 	optMap["RASTER_VERTEX"].args = "0*cm, 0*cm, default";
-	optMap["RASTER_VERTEX"].help = "Randomize the x, y generated partice vertexes within an ellipse defined by the x, y radii, around their values.\n";
-	optMap["RASTER_VERTEX"].help += "     If the third argument \"reset\" is given, the vertexes are centered at zero \n";
+	optMap["RASTER_VERTEX"].help = "Randomizes the x, y generated partice vertexes within an ellipse defined by the x, y radii, around their values.\n";
+	optMap["RASTER_VERTEX"].help += "     If the third argument \"reset\" is given, the vertexes are relative to (VX, VY) = (0, 0) \n";
 	optMap["RASTER_VERTEX"].help += "      example 1: -RASTER_VERTEX=\"2*cm, 3*cm\" \n";
+	optMap["RASTER_VERTEX"].help += "       This randomizes the vertexes around the original LUND values. \n";
 	optMap["RASTER_VERTEX"].help += "      example 2: -RASTER_VERTEX=\"2*cm, 3*cm, reset\" \n";
+	optMap["RASTER_VERTEX"].help += "       This randomizes the vertexes around (VX, VY) = (0, 0). \n";
 	optMap["RASTER_VERTEX"].name = "Randomizes the x, y generated partice vertexes";
 	optMap["RASTER_VERTEX"].type = 1;
 	optMap["RASTER_VERTEX"].ctgr = "generator";
 	optMap["RASTER_VERTEX"].argsJSONDescription  = "rvdx rvdy default/reset";
 	optMap["RASTER_VERTEX"].argsJSONTypes  = "F F S";
 
+	optMap["BEAM_SPOT"].args = "0*cm, 0*cm, 0*cm, 0*cm, 0*deg, default";
+	optMap["BEAM_SPOT"].help = " Randomizes the vertexes using, in order: X, Y shifts, DX DY sigmas, elippse phi orientation\n";
+	optMap["BEAM_SPOT"].help += "     By default the randomization is relative to the LUND vertex values. \n";
+	optMap["BEAM_SPOT"].help += "     If the sixth argument \"reset\" is given, the vertexes are relative to (VX, VY) = (0, 0) \n";
+	optMap["BEAM_SPOT"].help += "      example 1: -BEAM_SPOT=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg\" \n";
+	optMap["BEAM_SPOT"].help += "       This randomizes the vertexes around the original LUND values, but shifted by (VX, VY) = (2, 3)cm \n";
+	optMap["BEAM_SPOT"].help += "       A gaussian with sigmas (SX, SY) = (0.2, 0.1)cm are used, rotated 22 degrees around z.\n";
+	optMap["BEAM_SPOT"].help += "      example 2: -BEAM_SPOT=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg, reset\" \n";
+	optMap["BEAM_SPOT"].help += "       This randomizes the vertexes around (VX, VY) = (2, 3)cm \n";
+	optMap["BEAM_SPOT"].help += "       A gaussian with sigmas (SX, SY) = (0.2, 0.1)cm are used, rotated 22 degrees around z.\n";
+	optMap["BEAM_SPOT"].name = "Randomizes the x, y generated partice vertexes according to  gaussian";
+	optMap["BEAM_SPOT"].type = 1;
+	optMap["BEAM_SPOT"].ctgr = "generator";
+	optMap["BEAM_SPOT"].argsJSONDescription  = "bssx bssy bsdx bsdy bsphi default/reset";
+	optMap["BEAM_SPOT"].argsJSONTypes  = "F F F F F S";
+	
 
 	optMap["MERGE_LUND_BG"].args = "no";
 	optMap["MERGE_LUND_BG"].help = "LUND Input file to merge background events\n";
@@ -461,6 +493,14 @@ void goptions::setGoptions()
 	optMap["BANK_VERBOSITY"].ctgr = "verbosity";
 	optMap["BANK_VERBOSITY"].argsJSONDescription  = "BANK_VERBOSITY";
 	optMap["BANK_VERBOSITY"].argsJSONTypes        = "F";
+
+	optMap["EVENT_VERBOSITY"].arg  = 0;
+	optMap["EVENT_VERBOSITY"].help = "Controls Event Log Output.";
+	optMap["EVENT_VERBOSITY"].name = "Event Output Verbosity";
+	optMap["EVENT_VERBOSITY"].type = 0;
+	optMap["EVENT_VERBOSITY"].ctgr = "verbosity";
+	optMap["EVENT_VERBOSITY"].argsJSONDescription  = "EVENT_VERBOSITY";
+	optMap["EVENT_VERBOSITY"].argsJSONTypes        = "F";
 
 	optMap["PHY_VERBOSITY"].arg  = 1;
 	optMap["PHY_VERBOSITY"].help = "Controls Physics List Log Output.";
