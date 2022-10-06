@@ -184,7 +184,7 @@ vector<identifier> uRwell_HitProcess :: processID(vector<identifier> id, G4Step*
 			this_id.time       = id[j].time;
 			if(j==3){    //J==3 strip ID
 			if(id[1].id>0 && multi_hit_u.at(h).numberID>0) {
-				  this_id.id  = multi_hit_u.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,1);
+				  this_id.id  = multi_hit_u.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,0);
 			}else this_id.id  = multi_hit_u.at(h).numberID;
 			this_id.time       = multi_hit_u.at(h).time;
 			}
@@ -208,7 +208,7 @@ vector<identifier> uRwell_HitProcess :: processID(vector<identifier> id, G4Step*
 			this_id.time       = id[j].time;
 			if(j==3){    //J==3 strip ID
 			   if(id[1].id>0 && multi_hit_v.at(h).numberID>0) {
-					this_id.id  = multi_hit_v.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,1);
+					this_id.id  = multi_hit_v.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,0);
 				}else this_id.id  = multi_hit_v.at(h).numberID;
 			this_id.time       = multi_hit_v.at(h).time;
 			}
