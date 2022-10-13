@@ -346,7 +346,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"]     = identity[0].id;
 	dgtz["layer"]      = SLI*6 + identity[2].id;
 	dgtz["component"]  = nwire;
-	dgtz["TDC_order"]  = 2;
+	dgtz["TDC_order"]  = 0;
 	dgtz["TDC_TDC"]    = smeared_time;
 	
 	// decide if write an hit or not based on inefficiency value

@@ -27,10 +27,10 @@ public:
 	vector<int> status[6][3][2];
 	
 	// Threshold (MeV)
-	vector<double> threshold[1][1][2];
+	vector<double> threshold[6][3][2];
 	
 	// efficiency
-	vector<double> efficiency[1][1][2];
+	vector<double> efficiency[6][3][2];
 	
 	
 	// tdc_conc: tdc conversion factors

@@ -109,7 +109,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 		isec = data[row][0];
 		ilay = data[row][1];
 		ftc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
-		ftc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
+		ftc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][3]);
 	}
 	
 	cout << "FTOF:Getting gain_balance" << endl;
@@ -405,7 +405,11 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	dgtz["TDC_order"] = pmt + 2;
 	dgtz["TDC_TDC"]   = (int) tdc;
-	
+
+
+//	cout << " FTOF EDEP energyDepositedAttenuated " << sector << " " << panel << " " << paddle << " " << energyDepositedAttenuated << "  vs "
+//	<< ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1]  << " and efficiency " << ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1]  << endl;
+
 	// reject hit if below threshold or efficiency
 	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] ) {
 		rejectHitConditions = true;

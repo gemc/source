@@ -110,7 +110,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ilay = data[row][1];
 		//        istr = data[row][2];
 		ctc.efficiency[isec - 1][ilay - 1][0].push_back(data[row][3]);
-		ctc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][4]);
+		ctc.efficiency[isec - 1][ilay - 1][1].push_back(data[row][3]);
 	}
 	
 	
