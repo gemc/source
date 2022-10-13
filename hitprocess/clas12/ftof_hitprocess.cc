@@ -433,6 +433,9 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 // paddle = identity[2].id;
 // pmt    = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
 
+
+
+
 vector<identifier> ftof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 	
 	vector<identifier> yid = id;
@@ -499,9 +502,9 @@ map< int, vector <double> > ftof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 	vector<identifier> identity = aHit->GetId();
 	
 	int sector = identity[0].id;
-	int panel = identity[1].id;
+	int panel  = identity[1].id;
 	int paddle = identity[2].id;
-	int pmt = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
+	int pmt    = identity[3].id; // 0=> Left PMT, 1=> Right PMT. A better name would be pmtSide
 	
 	identifiers.push_back(sector); // sector
 	identifiers.push_back(panel); // panel, 1a, 1b, 2a

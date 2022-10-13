@@ -15,13 +15,10 @@ public:
 	hipo::schema mcEventHeader;
 	hipo::schema userLund;
 	hipo::schema lundParticle;
-	
+
 	// detectors
-	hipo::schema alertShellADCSchema;
-	hipo::schema alertAtofADCchema;
-	hipo::schema alertAtofTDCchema;
-	hipo::schema alertAhdcTDCchema;
 	hipo::schema alertAhdcADCchema;
+	hipo::schema alertAtofADCchema;
 	hipo::schema bandADCSchema;
 	hipo::schema bandTDCSchema;
 	hipo::schema bmtADCSchema;

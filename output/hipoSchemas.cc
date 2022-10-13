@@ -28,49 +28,45 @@ HipoSchema :: HipoSchema()
 	lundParticle  = hipo::schema("MC::Lund",      40, 3);
 	
 	// detectors
-	alertShellADCSchema = hipo::schema("ALRTSHELL::adc", 22400, 11);
-	alertAtofADCchema   = hipo::schema("ALRTTOF::adc",   22400, 12);
-	alertAtofTDCchema   = hipo::schema("ALRTTOF::tdc",   22400, 13);
-	alertAhdcADCchema   = hipo::schema("ALRTDC::adc",    22400, 14);
-	alertAhdcTDCchema   = hipo::schema("ALRTDC::tdc",    22400, 15);
-
-	bandADCSchema   = hipo::schema("BAND::adc",   22100, 11);
-	bandTDCSchema   = hipo::schema("BAND::tdc",   22100, 12);
-	bmtADCSchema    = hipo::schema("BMT::adc",    20100, 11);
-	bstADCSchema    = hipo::schema("BST::adc",    20200, 11);
-	cndADCSchema    = hipo::schema("CND::adc",    20300, 11);
-	cndTDCSchema    = hipo::schema("CND::tdc",    20300, 12);
-	ctofADCSchema   = hipo::schema("CTOF::adc",   20400, 11);
-	ctofTDCSchema   = hipo::schema("CTOF::tdc",   20400, 12);
-	dcTDCSchema     = hipo::schema("DC::tdc",     20600, 12);
-	dcDOCASchema    = hipo::schema("DC::doca",    20600, 14);
-	ecalADCSchema   = hipo::schema("ECAL::adc",   20700, 11);
-	ecalTDCSchema   = hipo::schema("ECAL::tdc",   20700, 12);
-	fmtADCSchema    = hipo::schema("FMT::adc",    20800, 11);
-	ftcalADCSchema  = hipo::schema("FTCAL::adc",  21000, 11);
-	fthodoADCSchema = hipo::schema("FTHODO::adc", 21100, 11);
-	ftofADCSchema   = hipo::schema("FTOF::adc",   21200, 11);
-	ftofTDCSchema   = hipo::schema("FTOF::tdc",   21200, 12);
-	ftrkTDCSchema   = hipo::schema("FTTRK::adc",  21300, 11);
-	htccADCSchema   = hipo::schema("HTCC::adc",   21500, 11);
-	htccTDCSchema   = hipo::schema("HTCC::tdc",   21500, 12);
-	ltccADCSchema   = hipo::schema("LTCC::adc",   21600, 11);
-	ltccTDCSchema   = hipo::schema("LTCC::tdc",   21600, 12);
-	rfADCSchema     = hipo::schema("RF::adc",     21700, 11);
-	rfTDCSchema     = hipo::schema("RF::adc",     21700, 12);
-	richTDCSchema   = hipo::schema("RICH::tdc",   21800, 12);
-	rtpcADCSchema   = hipo::schema("RTPC::adc",   21900, 11);
-	rtpcPOSSchema   = hipo::schema("RTPC::pos",   21900, 14);
-	helADCSchema    = hipo::schema("HEL::adc",    22000, 11);
-	helFLIPSchema   = hipo::schema("HEL::flip",   22000, 12);
-	helONLINESchema = hipo::schema("HEL::online", 22000, 13);
-	urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
-	rawADCSchema    = hipo::schema("RAW::adc",    20000, 11);
-	rawTDCSchema    = hipo::schema("RAW::tdc",    20000, 12);
-	rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
-	rawVTPSchema    = hipo::schema("RAW::vtp",    20000, 14);
-	rawEPICSSchema  = hipo::schema("RAW::epics",  20000, 15);
-	rasterADCSchema = hipo::schema("RASTER::adc", 22200, 11);
+	alertAhdcADCchema = hipo::schema("ALRTDC::adc",    22400, 11);
+	alertAtofADCchema = hipo::schema("ALRTTOF::adc",   22500, 11);
+	bandADCSchema     = hipo::schema("BAND::adc",   22100, 11);
+	bandTDCSchema     = hipo::schema("BAND::tdc",   22100, 12);
+	bmtADCSchema      = hipo::schema("BMT::adc",    20100, 11);
+	bstADCSchema      = hipo::schema("BST::adc",    20200, 11);
+	cndADCSchema      = hipo::schema("CND::adc",    20300, 11);
+	cndTDCSchema      = hipo::schema("CND::tdc",    20300, 12);
+	ctofADCSchema     = hipo::schema("CTOF::adc",   20400, 11);
+	ctofTDCSchema     = hipo::schema("CTOF::tdc",   20400, 12);
+	dcTDCSchema       = hipo::schema("DC::tdc",     20600, 12);
+	dcDOCASchema      = hipo::schema("DC::doca",    20600, 14);
+	ecalADCSchema     = hipo::schema("ECAL::adc",   20700, 11);
+	ecalTDCSchema     = hipo::schema("ECAL::tdc",   20700, 12);
+	fmtADCSchema      = hipo::schema("FMT::adc",    20800, 11);
+	ftcalADCSchema    = hipo::schema("FTCAL::adc",  21000, 11);
+	fthodoADCSchema   = hipo::schema("FTHODO::adc", 21100, 11);
+	ftofADCSchema     = hipo::schema("FTOF::adc",   21200, 11);
+	ftofTDCSchema     = hipo::schema("FTOF::tdc",   21200, 12);
+	ftrkTDCSchema     = hipo::schema("FTTRK::adc",  21300, 11);
+	htccADCSchema     = hipo::schema("HTCC::adc",   21500, 11);
+	htccTDCSchema     = hipo::schema("HTCC::tdc",   21500, 12);
+	ltccADCSchema     = hipo::schema("LTCC::adc",   21600, 11);
+	ltccTDCSchema     = hipo::schema("LTCC::tdc",   21600, 12);
+	rfADCSchema       = hipo::schema("RF::adc",     21700, 11);
+	rfTDCSchema       = hipo::schema("RF::adc",     21700, 12);
+	richTDCSchema     = hipo::schema("RICH::tdc",   21800, 12);
+	rtpcADCSchema     = hipo::schema("RTPC::adc",   21900, 11);
+	rtpcPOSSchema     = hipo::schema("RTPC::pos",   21900, 14);
+	helADCSchema      = hipo::schema("HEL::adc",    22000, 11);
+	helFLIPSchema     = hipo::schema("HEL::flip",   22000, 12);
+	helONLINESchema   = hipo::schema("HEL::online", 22000, 13);
+	urwellADCSchema   = hipo::schema("URWELL::adc", 22300, 11);
+	rawADCSchema      = hipo::schema("RAW::adc",    20000, 11);
+	rawTDCSchema      = hipo::schema("RAW::tdc",    20000, 12);
+	rawSCALERSchema   = hipo::schema("RAW::scaler", 20000, 13);
+	rawVTPSchema      = hipo::schema("RAW::vtp",    20000, 14);
+	rawEPICSSchema    = hipo::schema("RAW::epics",  20000, 15);
+	rasterADCSchema   = hipo::schema("RASTER::adc", 22200, 11);
 	
 	// Defining structure of the schema (bank)
 	// The columns in the banks (or leafs, if you like ROOT)
@@ -90,58 +86,55 @@ HipoSchema :: HipoSchema()
 	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
 	
 	// detectors
-	alertShellADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
-	alertAtofADCchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
-	alertAtofTDCchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
-	alertAhdcADCchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
-	alertAhdcTDCchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	alertAtofADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
 	bandADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
 	bandTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	
-	bmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-	fmtADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-	bstADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
-	cndADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	cndTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
-	ctofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ctofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+	bmtADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	fmtADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	bstADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, timestamp/L");
+	cndADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	cndTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
+	ctofADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ctofTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	
-	dcTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
+	dcTDCSchema.parse(      "sector/B, layer/B, component/S, order/B, TDC/I");
 	
 	// need to add pcal to this
-	ecalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ecalTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	ftcalADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	fthodoADCSchema.parse( "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ftrkTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-	ftofADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ftofTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	htccADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	htccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	ltccADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	ltccTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
+	ecalADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ecalTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	ftcalADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	fthodoADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ftrkTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	ftofADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ftofTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	htccADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	htccTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	ltccADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	ltccTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
 	
-	rfADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	rfTDCSchema.parse(     "sector/B, layer/B, component/S, order/B, TDC/I");
+	rfADCSchema.parse(      "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	rfTDCSchema.parse(      "sector/B, layer/B, component/S, order/B, TDC/I");
 	
-	richTDCSchema.parse(   "sector/B, layer/B, component/S, order/B, TDC/I");
-	rtpcADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	rtpcPOSSchema.parse(   "step/I, time/F, energy/F, posx/F, posy/F, posz/F, phi/F, tid/F");
+	richTDCSchema.parse(    "sector/B, layer/B, component/S, order/B, TDC/I");
+	rtpcADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	rtpcPOSSchema.parse(    "step/I, time/F, energy/F, posx/F, posy/F, posz/F, phi/F, tid/F");
 	
-	helADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-	helFLIPSchema.parse(   "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
-	helONLINESchema.parse( "helicity/B, helicityRaw/B");
+	helADCSchema.parse(     "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	helFLIPSchema.parse(    "run/I, event/I, timestamp/L, helicity/B, helicityRaw/B, pair/B, pattern/B, status/B");
+	helONLINESchema.parse(  "helicity/B, helicityRaw/B");
 	
-	urwellADCSchema.parse(   "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+	urwellADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 	
-	rawADCSchema.parse(    "crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
-	rawTDCSchema.parse(    "crate/B, slot/B, channel/S, order/B, TDC/I");
-	rawSCALERSchema.parse( "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
-	rawVTPSchema.parse(    "crate/B, word/I");
-	rawEPICSSchema.parse(  "json/B");
+	rawADCSchema.parse(     "crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
+	rawTDCSchema.parse(     "crate/B, slot/B, channel/S, order/B, TDC/I");
+	rawSCALERSchema.parse(  "crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
+	rawVTPSchema.parse(     "crate/B, word/I");
+	rawEPICSSchema.parse(   "json/B");
 	
-	emptySchema.parse(     "empty/B");
+	emptySchema.parse(      "empty/B");
 	
 	schemasToLoad["RUN::config"] = runConfigSchema;
 	schemasToLoad["RUN::rf"]     = runRFSchema;
@@ -156,12 +149,8 @@ HipoSchema :: HipoSchema()
 
 
 	// The names corresponds to the hit process routine names, capitalized
-	schemasToLoad["ALRTSHELL::adc"] = alertShellADCSchema;
-	schemasToLoad["ALRTTOF::adc"]   = alertAtofADCchema;
-	schemasToLoad["ALRTTOF::tdc"]   = alertAtofTDCchema;
-	schemasToLoad["ALRTDC::adc"]    = alertAhdcADCchema;
-	schemasToLoad["ALRTDC::tdc"]    = alertAhdcTDCchema;
-
+	schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
+	schemasToLoad["ALRTTOF::adc"] = alertAtofADCchema;
 	schemasToLoad["BAND::adc"]    = bandADCSchema;
 	schemasToLoad["BAND::tdc"]    = bandTDCSchema;
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
@@ -210,7 +199,13 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 	} else if(schemaName == "ft_trk") {
 		return ftrkTDCSchema;
 	} else {
-		if( !(schemaName == "dc" && type == 0) && !(schemaName == "bmt" && type == 1)  && !(schemaName == "bst" && type == 1) &&  !(schemaName == "urwell" && type == 1) &&  !(schemaName == "flux") ) {
+		// for non tdc detectors
+		if( !(schemaName == "dc"     && type == 0) &&
+			 !(schemaName == "bmt"    && type == 1) &&
+			 !(schemaName == "bst"    && type == 1) &&
+			 !(schemaName == "alrtdc" && type == 1) &&
+			 !(schemaName == "urwell" && type == 1) &&
+			 !(schemaName == "flux") ) {
 			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
 		}
 		return emptySchema;

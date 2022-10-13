@@ -70,27 +70,27 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		
 		// CLAS12
 		if(EXP == "clas12") {
-			hitMap["myatof"]   = &myatof_HitProcess::createHitClass;
-			hitMap["ahdc"]     = &ahdc_HitProcess::createHitClass;
-			hitMap["alertshell"]= &alertshell_HitProcess::createHitClass;
-			hitMap["band"]	    = &band_HitProcess::createHitClass;
-			hitMap["bmt"]      = &BMT_HitProcess::createHitClass;
-			hitMap["fmt"]      = &FMT_HitProcess::createHitClass;
-			hitMap["ftm"]      = &ftm_HitProcess::createHitClass;
-			hitMap["bst"]      = &bst_HitProcess::createHitClass;
-			hitMap["cnd"]      = &cnd_HitProcess::createHitClass;
-			hitMap["ctof"]     = &ctof_HitProcess::createHitClass;
-			hitMap["dc"]       = &dc_HitProcess::createHitClass;
-			hitMap["ecal"]     = &ecal_HitProcess::createHitClass;
-			hitMap["ftof"]     = &ftof_HitProcess::createHitClass;
-			hitMap["ft_cal"]   = &ft_cal_HitProcess::createHitClass;
-			hitMap["ft_hodo"]  = &ft_hodo_HitProcess::createHitClass;
-			hitMap["ft_trk"]   = &ftm_HitProcess::createHitClass;
-			hitMap["htcc"]     = &htcc_HitProcess::createHitClass;
-			hitMap["ltcc"]     = &ltcc_HitProcess::createHitClass;
-			hitMap["rich"]     = &rich_HitProcess::createHitClass;
-			hitMap["rtpc"]     = &rtpc_HitProcess::createHitClass;
-			hitMap["urwell"]   = &uRwell_HitProcess::createHitClass;
+			hitMap["myatof"]    = &myatof_HitProcess::createHitClass;
+			hitMap["alrtdc"]    = &ahdc_HitProcess::createHitClass;
+			//hitMap["alertshell"] = &alertshell_HitProcess::createHitClass;
+			hitMap["band"]	     = &band_HitProcess::createHitClass;
+			hitMap["bmt"]       = &BMT_HitProcess::createHitClass;
+			hitMap["fmt"]       = &FMT_HitProcess::createHitClass;
+			hitMap["ftm"]       = &ftm_HitProcess::createHitClass;
+			hitMap["bst"]       = &bst_HitProcess::createHitClass;
+			hitMap["cnd"]       = &cnd_HitProcess::createHitClass;
+			hitMap["ctof"]      = &ctof_HitProcess::createHitClass;
+			hitMap["dc"]        = &dc_HitProcess::createHitClass;
+			hitMap["ecal"]      = &ecal_HitProcess::createHitClass;
+			hitMap["ftof"]      = &ftof_HitProcess::createHitClass;
+			hitMap["ft_cal"]    = &ft_cal_HitProcess::createHitClass;
+			hitMap["ft_hodo"]   = &ft_hodo_HitProcess::createHitClass;
+			hitMap["ft_trk"]    = &ftm_HitProcess::createHitClass;
+			hitMap["htcc"]      = &htcc_HitProcess::createHitClass;
+			hitMap["ltcc"]      = &ltcc_HitProcess::createHitClass;
+			hitMap["rich"]      = &rich_HitProcess::createHitClass;
+			hitMap["rtpc"]      = &rtpc_HitProcess::createHitClass;
+			hitMap["urwell"]    = &uRwell_HitProcess::createHitClass;
 		} else if(EXP == "HPS") {
 			// Aprime
 			hitMap["SVT"]        = &SVT_HitProcess::createHitClass;
