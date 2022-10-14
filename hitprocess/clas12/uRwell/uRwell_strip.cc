@@ -109,7 +109,7 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 	int avg = (max->numberID + min->numberID)/2;
 	//	auto number_of_strip = Number_of_strip(uRwellc);
 	
-	for (int i=0; i<strip_found_temp.size();i++){
+	for (unsigned int i=0; i<strip_found_temp.size();i++){
 		strip_found_temp.at(i).numberID = strip_found_temp.at(i).numberID - avg + strip_found_temp.size()/2 ;
 	}
 	

@@ -566,7 +566,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				}
 
 				
-				bool isNan = isnan(p) * isnan(pindex) * isnan(type) * isnan(pdef) * isnan(px) * isnan(py) * isnan(pz) * isnan(Vx) * isnan(Vy) * isnan(Vz);
+				bool isNan = isnan(p) && isnan(pindex) && isnan(type) && isnan(pdef) && isnan(px) && isnan(py) && isnan(pz) && isnan(Vx) && isnan(Vy) && isnan(Vz);
 				
 				if (isNan) {
 					cout << " Error: NAN detected: " << endl;
@@ -1023,7 +1023,7 @@ void MPrimaryGeneratorAction::setBeam()
 	if(values.back().find("reset") != string::npos) {
 		resetVertex = true;
 	}
-	bool isNanVX = isnan(rvdx) * isnan(rvdy) ;
+	bool isNanVX = isnan(rvdx) && isnan(rvdy) ;
 	
 	if (isNanVX) {
 		cout << " Error: NAN detected for RASTER_VERTEX parameters " << endl;
@@ -1047,7 +1047,7 @@ void MPrimaryGeneratorAction::setBeam()
 		resetBeamSpot = true;
 	}
 
-	bool isNanBS = isnan(bssx) * isnan(bssy) * isnan(bsdx) * isnan(bsdy) * isnan(bsphi) ;
+	bool isNanBS = isnan(bssx) && isnan(bssy) && isnan(bsdx) && isnan(bsdy) && isnan(bsphi) ;
 	
 	if (isNanBS) {
 		cout << " Error: NAN detected for BEAM_SPOT parameters " << endl;
@@ -1068,7 +1068,7 @@ void MPrimaryGeneratorAction::setBeam()
 	if(values.back().find("reset") != string::npos) {
 		displaceZvertex = true;
 	}
-	bool isNanVZD = isnan(displaceZs) * isnan(displaceZd) ;
+	bool isNanVZD = isnan(displaceZs) && isnan(displaceZd) ;
 	
 	if (isNanVZD) {
 		cout << " Error: NAN detected for RANDOMIZE_LUND_VZ parameters " << endl;

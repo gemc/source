@@ -36,7 +36,7 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 
 	RotateField(bField);
 
-//	bool isNan = isnan(x[0]) * isnan(x[1]) * isnan(x[2]) * isnan(bField[0]) * isnan(bField[1]) * isnan(bField[2]);
+//	bool isNan = isnan(x[0]) && isnan(x[1]) && isnan(x[2]) && isnan(bField[0]) && isnan(bField[1]) && isnan(bField[2]);
 //	
 //	if (isNan) {
 //		cout << " Error: NAN detected: " << endl;
