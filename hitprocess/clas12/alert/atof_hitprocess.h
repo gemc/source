@@ -5,7 +5,7 @@
 #include "HitProcess.h"
 
 
-class myatofConstants
+class atofConstants
 {
 public:
 	
@@ -24,14 +24,14 @@ public:
 /// \class atof_HitProcess
 /// <b> Alert Time of Flight Hit Process Routine</b>\n\n
 
-class myatof_HitProcess : public HitProcess
+class atof_HitProcess : public HitProcess
 {
 public:
 	
-	~myatof_HitProcess(){;}
+	~atof_HitProcess(){;}
 	
 	// constants initialized with initWithRunNumber
-	static myatofConstants atc;
+	static atofConstants atc;
 	
 	void initWithRunNumber(int runno);
 	
@@ -52,7 +52,7 @@ public:
 	vector<identifier> processID(vector<identifier>, G4Step*, detector);
 	
 	// creates the HitProcess
-	static HitProcess *createHitClass() {return new myatof_HitProcess;}
+	static HitProcess *createHitClass() {return new atof_HitProcess;}
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();

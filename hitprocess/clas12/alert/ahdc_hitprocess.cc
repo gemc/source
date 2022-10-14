@@ -326,12 +326,6 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 
 
-
-// sector    = 0;
-// layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
-// component = identity[2].id;
-// order     = identity[3].id; // 0 = left, 1 = right
-
 vector<identifier> ahdc_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 
 	id[id.size()-1].id_sharing = 1;

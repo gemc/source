@@ -6,9 +6,7 @@
 #include "counter_hitprocess.h"      ///< counter hit process common to all
 
 // CLAS12
-//#include "clas12/atof_hitprocess.h"           ///< Alert TOF
-//#include "clas12/ahdc_hitprocess.h"  		///< Alert Drift Chamber
-#include "clas12/alert/myatof_hitprocess.h"     ///< Alert TOF
+#include "clas12/alert/atof_hitprocess.h"       ///< Alert TOF
 #include "clas12/alert/ahdc_hitprocess.h"       ///< Alert Drift Chamber
 #include "clas12/alert/alertshell_hitprocess.h" ///< Alert shell non active geometry
 #include "clas12/band_hitprocess.h"		         ///< BAND
@@ -70,7 +68,7 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		
 		// CLAS12
 		if(EXP == "clas12") {
-			hitMap["myatof"]    = &myatof_HitProcess::createHitClass;
+			hitMap["alrttof"]   = &atof_HitProcess::createHitClass;
 			hitMap["alrtdc"]    = &ahdc_HitProcess::createHitClass;
 			//hitMap["alertshell"] = &alertshell_HitProcess::createHitClass;
 			hitMap["band"]	     = &band_HitProcess::createHitClass;

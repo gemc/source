@@ -8,14 +8,14 @@
 using namespace ccdb;
 
 // gemc headers
-#include "myatof_hitprocess.h"
+#include "atof_hitprocess.h"
 
 // CLHEP units
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
-static myatofConstants initializeMYATOFConstants(int runno, string digiVariation = "default") {
-	myatofConstants atc;
+static atofConstants initializeATOFConstants(int runno, string digiVariation = "default") {
+	atofConstants atc;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
@@ -32,44 +32,41 @@ static myatofConstants initializeMYATOFConstants(int runno, string digiVariation
 
 
 // this methos is for implementation of digitized outputs and the first one that needs to be implemented.
-map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
+map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	// digitized output
 	map<string, double> dgtz;
-	// hit ids
 	vector<identifier> identity = aHit->GetId();
 	
-	/*
-	 int sector;
-	 int superlayer;
-	 int layer;
-	 int paddle;
-	 double adc = -1.0;
-	 double time = -1.0;
-	 */
+	
+	int atof_sector     = identity[0].id;
+	int atof_superlayer = identity[1].id; // long paddles: SL = 0; top: SL=1
+	int atof_layer      = identity[2].id;
+	int atof_paddle     = identity[3].id;
+	int atof_order      = identity[4].id; // 0/1 for long front/back. 0 for top
 	
 	if(aHit->isBackgroundHit == 1) {
 		
-		vector<double>        stepTime    = aHit->GetTime();
-		cout << " This is a background hit with time " << stepTime[0] << endl;
-		dgtz["sector"]     = 0;
-		dgtz["superlayer"]      = 0;
-		dgtz["layer"]      = 0;
-		dgtz["paddle"]       = 0;
-		dgtz["time"]        = stepTime[0];
-		dgtz["hitn"]       = hitn;
+		double totEdep  = aHit->GetEdep()[0];
+		double stepTime = aHit->GetTime()[0];
+		double tdc      = stepTime;
+
+		dgtz["hitn"]      = hitn;
+		dgtz["sector"]    = atof_sector;
+		dgtz["layer"]     = 10*atof_superlayer + atof_layer;
+		dgtz["component"] = atof_paddle;
+		dgtz["ADC_order"] = atof_order;
+		dgtz["ADC_ADC"]   = (int) totEdep;
+		dgtz["ADC_time"]  = tdc;
+		dgtz["ADC_ped"]   = 0;
+
 		
-		if(filterDummyBanks == false) {
-			dgtz["adc"]       = 0;
-		}
 		return dgtz;
 	}
 	
 	trueInfos tInfos(aHit);
 	
 	double length = aHit->GetDetector().dimensions[0];
-	//cout << "paddle half-length in Z (mm) = " << length << endl;
-	// Need to know the (x,y) coordinate of the paddle vertices for the largest radius
 	double dim_3, dim_4, dim_5, dim_6, l_topXY, l_a, l_b;
 	
 	dim_3 = aHit->GetDetector().dimensions[3];
@@ -78,12 +75,10 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dim_6 = aHit->GetDetector().dimensions[6];
 	
 	l_topXY = sqrt( pow((dim_3 - dim_5),2) + pow((dim_4 - dim_6),2) );
-	//cout << "paddle top length in XY (l_topXY in mm) = " << l_topXY << endl;	
 	
-	vector<G4double>      Edep        = aHit->GetEdep();
-	// local variable for each step
-	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-	vector<double> times = aHit->GetTime();
+	vector<G4double>      Edep  = aHit->GetEdep();
+	vector<G4ThreeVector> Lpos  = aHit->GetLPos(); // local position at each step
+	vector<double>        times = aHit->GetTime();
 	
 	double adc_CC_front, adc_CC_back, adc_CC_top, tdc_CC_front, tdc_CC_back, tdc_CC_top;
 	
@@ -91,8 +86,8 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double LposY=0.0;
 	double LposZ=0.0;
 	
-	//Simple output not equal to real physics, just to feel the adc, time values
-	//Should be: double energy = tInfos.eTot*att;
+	// Simple output not equal to real physics, just to feel the adc, time values
+	// Should be: double energy = tInfos.eTot*att;
 	
 	double totEdep=0.0;
 	
@@ -127,14 +122,19 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	 double dist_h_SiPMBack =0.0;
 	 double dist_h_SiPMTop =0.0;
 	 */
-	cout << "First loop on steps begins" << endl;
+	// cout << "First loop on steps begins" << endl;
+	
+	
+	// notice these calculations are done both for front and back for long paddles
+	// this can be optimized to have just one calculation using order as discriminating value
 	for(unsigned int s=0; s<tInfos.nsteps; s++)
 	{
 		LposX = Lpos[s].x();
 		LposY = Lpos[s].y();
 		LposZ = Lpos[s].z();
 		
-		if(identity[1].id == 0)
+		// long paddles
+		if(atof_superlayer == 0)
 		{
 			dFront = length - LposZ;
 			dBack = length + LposZ;
@@ -162,11 +162,12 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 			 }
 			 */
 		}
+		// top paddles
 		else
 		{
 			l_a = sqrt( pow((dim_3 - LposX),2) + pow((dim_4 - LposY),2) );
 			l_b = sqrt( pow((dim_5 - LposX),2) + pow((dim_6 - LposY),2) );
-			cout << "l_a & l_b (mm): " << l_a << ", " << l_b << endl;
+			// cout << "l_a & l_b (mm): " << l_a << ", " << l_b << endl;
 			
 			// to check the totEdep MC truth value
 			totEdep = totEdep + Edep[s];
@@ -194,10 +195,10 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 			 */
 		}	
 	}
-	cout << "First loop on steps ends" << endl;
-	if (identity[1].id == 0)
+	// cout << "First loop on steps ends" << endl;
+	if (atof_superlayer == 0)
 	{	
-		//test factor for calibration coeff. conversion
+		// test factor for calibration coeff. conversion
 		adc_CC_front = 10.0;	
 		adc_CC_back = 10.0;
 		tdc_CC_front = 1.0;	
@@ -261,44 +262,69 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	 }
 	 */
 	
-	dgtz["sector"] = identity[0].id;
-	dgtz["superlayer"] = identity[1].id;
-	dgtz["layer"] = identity[2].id;
-	dgtz["paddle"] = identity[3].id;
-	dgtz["adc_front"] = adc_front;
-	dgtz["adc_back"] = adc_back;
-	dgtz["adc_top"] = adc_top;
-	dgtz["tdc_front"] = tdc_front;
-	dgtz["tdc_back"] = tdc_back;
-	dgtz["tdc_top"] = tdc_top;
-	dgtz["time_front"] = time_front;
-	dgtz["time_back"] = time_back;
-	dgtz["time_top"] = time_top;
-	dgtz["E_tot_Front"] = E_tot_Front;
-	dgtz["E_tot_Back"] = E_tot_Back;
-	dgtz["E_tot_Top"] = E_tot_Top;
-	dgtz["totEdep_MC"] = totEdep;
-	dgtz["hitn"] = hitn;		//(2202,99)
+//	dgtz["sector"] = identity[0].id;
+//	dgtz["superlayer"] = identity[1].id;
+//	dgtz["layer"] = identity[2].id;
+//	dgtz["paddle"] = identity[3].id;
+//	dgtz["adc_front"] = adc_front;
+//	dgtz["adc_back"] = adc_back;
+//	dgtz["adc_top"] = adc_top;
+//	dgtz["tdc_front"] = tdc_front;
+//	dgtz["tdc_back"] = tdc_back;
+//	dgtz["tdc_top"] = tdc_top;
+//	dgtz["time_front"] = time_front;
+//	dgtz["time_back"] = time_back;
+//	dgtz["time_top"] = time_top;
+//	dgtz["E_tot_Front"] = E_tot_Front;
+//	dgtz["E_tot_Back"] = E_tot_Back;
+//	dgtz["E_tot_Top"] = E_tot_Top;
+//	dgtz["totEdep_MC"] = totEdep;
+//	dgtz["hitn"] = hitn;		//(2202,99)
 	
-	//cout << " start of the ATOF hit " << endl;
-	//cout << " sector = " << identity[0].id << endl;	
-	//cout << " superlayer = " << identity[1].id << endl;
-	//cout << " layer = " << identity[2].id << endl;
-	//cout << " paddle = " << identity[3].id << endl;
-	//cout << " E_tot_Front energy value = " << E_tot_Front << endl;
-	//cout << " E_tot_Back energy value = " << E_tot_Back << endl;
-	//cout << " E_tot_Top energy value = " << E_tot_Top << endl;
-	//cout << " adc_front = " << adc_front << endl;
-	//cout << " adc_back = " << adc_back << endl;
-	//cout << " adc_top = " << adc_top << endl;
-	//cout << " tdc_front = : " << tdc_front << endl;
-	//cout << " tdc_back = : " << tdc_back << endl;
-	//cout << " tdc_top = : " << tdc_top << endl;
-	//cout << " value in hitn var: " << hitn << endl;
-	//cout << " end of the ATOF hit " << endl;
+//	cout << " start of the ATOF hit " << endl;
+//	cout << " sector = " << identity[0].id << endl;
+//	cout << " superlayer = " << identity[1].id << endl;
+//	cout << " layer = " << identity[2].id << endl;
+//	cout << " paddle = " << identity[3].id << endl;
+//	cout << " order = : " << identity[4].id << endl;
+//	cout << " E_tot_Front energy value = " << E_tot_Front << endl;
+//	cout << " E_tot_Back energy value = " << E_tot_Back << endl;
+//	cout << " E_tot_Top energy value = " << E_tot_Top << endl;
+//	cout << " adc_front = " << adc_front << endl;
+//	cout << " adc_back = " << adc_back << endl;
+//	cout << " adc_top = " << adc_top << endl;
+//	cout << " tdc_front = : " << tdc_front << endl;
+//	cout << " tdc_back = : " << tdc_back << endl;
+//	cout << " tdc_top = : " << tdc_top << endl;
+//	cout << " value in hitn var: " << hitn << endl;
+//	cout << " end of the ATOF hit " << endl << endl;;
 	
+	double adc = 0;
+	double time = 0;
 	
+	if (atof_superlayer == 0) {
+		if ( atof_order == 0 ) {
+			adc  = adc_front;
+			time = tdc_front;
+		} else {
+			adc  = adc_back;
+			time = tdc_back ;
+		}
+	} else {
+		adc  = adc_top;
+		time = tdc_top;
+	}
 	
+	dgtz["hitn"]      = hitn;
+	dgtz["sector"]    = atof_sector;
+	dgtz["layer"]     = 10*atof_superlayer + atof_layer;
+	dgtz["component"] = atof_paddle;
+	dgtz["ADC_order"] = atof_order;
+	
+	dgtz["ADC_ADC"]   = (int)adc*100;
+	dgtz["ADC_time"]  = time;
+	dgtz["ADC_ped"]   = 0;
+
 	// decide if write an hit or not
 	writeHit = true;
 	// define conditions to reject hit
@@ -309,18 +335,53 @@ map<string, double> myatof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	return dgtz;
 }
 
-// this method is to locate the hit event, it returns a hitted wire or paddle; this is also the one that needs to be implemented at first.
-vector<identifier> myatof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
+
+// sector     = identity[0].id;
+// superlayer = identity[1].id;
+// layer      = identity[2].id;
+// paddle     = identity[3].id;
+// order      = identity[4].id;
+
+vector<identifier> atof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 	
-	id[id.size()-1].id_sharing = 1;
-	return id;
+	vector<identifier> yid = id;
 	
+	// top paddles do not modify order
+	if (yid[1].id == 1) {
+		id[id.size()-1].id_sharing = 1;
+		return id;
+	}
 	
+	yid[0].id_sharing = 1; // sector
+	yid[1].id_sharing = 1; // superlayer
+	yid[2].id_sharing = 1; // layer
+	yid[3].id_sharing = 1; // paddle
+	yid[4].id_sharing = 1; // order
+
+	if (yid[4].id != 0) {
+		cout << "*****WARNING***** in ahdc_HitProcess :: processID, order of the original hit should be 0 " << endl;
+		cout << "yid[4].id = " << yid[4].id << endl;
+	}
+	
+	// Now we want to have similar identifiers, but the only difference be id order to be 1, instead of 0
+	identifier this_id = yid[0];
+	yid.push_back(this_id);
+	this_id = yid[1];
+	yid.push_back(this_id);
+	this_id = yid[2];
+	yid.push_back(this_id);
+	this_id = yid[3];
+	yid.push_back(this_id);
+	this_id = yid[4];
+	this_id.id = 1;
+	yid.push_back(this_id);
+
+	return yid;
 }
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
 
-vector<MHit*> myatof_HitProcess::electronicNoise() {
+vector<MHit*> atof_HitProcess::electronicNoise() {
 	vector<MHit*> noiseHits;
 	
 	// first, identify the cells that would have electronic noise
@@ -334,7 +395,7 @@ vector<MHit*> myatof_HitProcess::electronicNoise() {
 	return noiseHits;
 }
 
-map< string, vector <int> > myatof_HitProcess::multiDgt(MHit* aHit, int hitn) {
+map< string, vector <int> > atof_HitProcess::multiDgt(MHit* aHit, int hitn) {
 	map< string, vector <int> > MH;
 	
 	return MH;
@@ -342,7 +403,7 @@ map< string, vector <int> > myatof_HitProcess::multiDgt(MHit* aHit, int hitn) {
 
 // - charge: returns charge/time digitized information / step
 
-map< int, vector <double> > myatof_HitProcess::chargeTime(MHit* aHit, int hitn) {
+map< int, vector <double> > atof_HitProcess::chargeTime(MHit* aHit, int hitn) {
 	map< int, vector <double> >  CT;
 	
 	return CT;
@@ -352,23 +413,23 @@ map< int, vector <double> > myatof_HitProcess::chargeTime(MHit* aHit, int hitn) 
 // charge value (coming from chargeAtElectronics)
 // time (coming from timeAtElectronics)
 
-double myatof_HitProcess::voltage(double charge, double time, double forTime) {
+double atof_HitProcess::voltage(double charge, double time, double forTime) {
 	return 0.0;
 }
 
-void myatof_HitProcess::initWithRunNumber(int runno)
+void atof_HitProcess::initWithRunNumber(int runno)
 {
 	string digiVariation = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	
 	if (atc.runNo != runno) {
 		cout << " > Initializing " << HCname << " digitization for run number " << runno << endl;
-		atc = initializeMYATOFConstants(runno, digiVariation);
+		atc = initializeATOFConstants(runno, digiVariation);
 		atc.runNo = runno;
 	}
 }
 
 // this static function will be loaded first thing by the executable
-myatofConstants myatof_HitProcess::atc = initializeMYATOFConstants(-1);
+atofConstants atof_HitProcess::atc = initializeATOFConstants(-1);
 
 
 

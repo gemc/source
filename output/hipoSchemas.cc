@@ -200,11 +200,12 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 		return ftrkTDCSchema;
 	} else {
 		// for non tdc detectors
-		if( !(schemaName == "dc"     && type == 0) &&
-			 !(schemaName == "bmt"    && type == 1) &&
-			 !(schemaName == "bst"    && type == 1) &&
-			 !(schemaName == "alrtdc" && type == 1) &&
-			 !(schemaName == "urwell" && type == 1) &&
+		if( !(schemaName == "dc"      && type == 0) &&
+			 !(schemaName == "bmt"     && type == 1) &&
+			 !(schemaName == "bst"     && type == 1) &&
+			 !(schemaName == "alrtdc"  && type == 1) &&
+ 			 !(schemaName == "alrttof" && type == 1) &&
+			 !(schemaName == "urwell"  && type == 1) &&
 			 !(schemaName == "flux") ) {
 			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
 		}
