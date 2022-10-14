@@ -46,41 +46,13 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	// digitized output
 	map<string, double> dgtz;
-	// hit ids
 	vector<identifier> identity = aHit->GetId();
 	
-	// From here the implementation of what we consider as a hit
-	// And dgtz variables calculation algorithms
-	
-	//int superlayer;
-	//int layer;
-	//int wire;
-	double doca = 100.0;
-
-	//double adc;
-	double time;
-
-
 	int sector    = 0;
 	int layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 	int component = identity[2].id;
-	int order     = identity[3].id; // 0 = left, 1 = right
 
 	if(aHit->isBackgroundHit == 1) {
-
-//		vector<double>        stepTime    = aHit->GetTime();
-//		cout << " This is a background hit with time " << stepTime[0] << endl;
-//		dgtz["superlayer"]     = 0;
-//		dgtz["layer"]      = 0;
-//		dgtz["wire"]       = 0;
-//		dgtz["time"]        = stepTime[0];
-//		dgtz["hitn"]       = hitn;
-//
-//		if(filterDummyBanks == false) {
-//			dgtz["doca"]       = 0;
-//			dgtz["energy"] = 0;
-//		}
-//		return dgtz;
 
 		double totEdep  = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
@@ -90,7 +62,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
 		dgtz["component"] = component;
-		dgtz["ADC_order"] = order;
+		dgtz["ADC_order"] = 0;
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
@@ -99,7 +71,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	}
 	
-	
+	double doca = 100.0;
+
 	// true information
 	
 	trueInfos tInfos(aHit);
@@ -107,23 +80,16 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	vector<int>           stepTrackId = aHit->GetTIds();
 	vector<double>        stepTime    = aHit->GetTime();
 	vector<double>        mgnf        = aHit->GetMgnf();
-	// energy at each step
-	// for example tInfos.eTot is total energy deposited
-	// tInfos.eTot is the sum of all steps s of Edep[s]
 	vector<G4double>      Edep        = aHit->GetEdep();
-	vector<G4ThreeVector> pos         = aHit->GetPos();
-	// local variable for each step
+	vector<G4ThreeVector> pos         = aHit->GetPos(); // local position variable for each step
 	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-	// take momentum for each step
 	vector<G4ThreeVector> mom         = aHit->GetMoms();
 	vector<double>        E           = aHit->GetEs();
 	
-	// unsigned nsteps = Edep.size();
 	
 //	double signal_t = 0.0;
 	double signal_tTimesEdep = 0.0;
 	
-	// cout << " AHDC hitprocess: number of steps in a hit: " << nsteps << endl;
 	
 	double LposX=0.;
 	double LposY=0.;
@@ -150,8 +116,9 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double X_sigwire_bot = 0.0;
 	double Z_sigwire_bot = 150.0;// Global coordiantes = 277.7 mm // Local coordinates = 150.0 mm!
 	
-	// double dim_id_2, dim_id_8;
-	
+	double dim_id_2, dim_id_8;
+	// int subcell = 0; // subcell value = 1 or 2, for one same cell, 1 is to the right of the signal wire, 2 is to the left of the signal wire.
+
 	// Vertices #0 and #3 are always the first/last ones to define the top face of G4 generic trapezoide
 	// Vertices #6 and #9 are always the first/last ones to define the bottom face of G4 generic trapezoide
 	
@@ -185,9 +152,9 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 //	}
 	
 	//	dim_id_1 = aHit->GetDetector().dimensions[1];
-	// dim_id_2 = aHit->GetDetector().dimensions[2];
 	
-	// dim_id_8 = aHit->GetDetector().dimensions[8];
+	 dim_id_2 = aHit->GetDetector().dimensions[2];
+	 dim_id_8 = aHit->GetDetector().dimensions[8];
 	
 	yV3 = aHit->GetDetector().dimensions[8];
 	xV3 = aHit->GetDetector().dimensions[7];
@@ -200,42 +167,22 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	xV4 = aHit->GetDetector().dimensions[9];
 
 
-//	if ( abs(dim_id_2) > abs(dim_id_8))
-//	{
-//		subcell = 1;
-//
-//		X_sigwire_top = xV3 + (xV0 - xV3)/2;
-//		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
-//		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
-//		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
-//
-//	}
-//	else
-//	{
-//		subcell = 2;
-//
-//		X_sigwire_top = xV0 + (xV3 - xV0)/2;
-//		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
-//		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
-//		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
-//	}
-
-
-	// order now is set by processID
-	if ( order == 0 ) {
+	if ( abs(dim_id_2) > abs(dim_id_8)) {
+		// subcell = 1;
 
 		X_sigwire_top = xV3 + (xV0 - xV3)/2;
 		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
 		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
 		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
 
-	} else if ( order == 1 ) {
+	} else {
+		// subcell = 2;
+
 		X_sigwire_top = xV0 + (xV3 - xV0)/2;
 		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
 		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
 		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
 	}
-
 
 
 	//cout << " shared side defined by points: (" << dim_id_1 << "," <<dim_id_2 << ") and ("  << "," <<dim_id_8 << ") for the 1rst face; " << endl;
@@ -283,7 +230,6 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		// Calculation of distance from hit to signal wire and perpendicular to the wire!
 		L_ah = sqrt( pow((X_sigwire_top - LposX),2) + pow((Y_sigwire_top - LposY),2) + pow((Z_sigwire_top - LposZ), 2) );
 		L_bh = sqrt( pow((X_sigwire_bot - LposX),2) + pow((Y_sigwire_bot - LposY),2) + pow((Z_sigwire_bot - LposZ), 2) );
-
 		H_abh = L_ah * sqrt( 1 - pow(((L_ah*L_ah + L_ab*L_ab - L_bh*L_bh)/(2*L_ab*L_ah)), 2) );
 		
 		// variables check for doca calculation
@@ -292,8 +238,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 //		cout << "distance hit->signal wire &perpendicular to wire (mm) = " << H_abh << endl;
 //		cout << "Hit radius (mm) and alpha (deg.) = (" << HitRadius << ", " << (AlphaHit) * 180.0 / PI << ")" << endl;
 		
-		if ( H_abh <= doca )
-		{
+		if ( H_abh <= doca ) {
 			doca = H_abh; // mm!!!
 		}
 		
@@ -321,7 +266,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// Just to test, time is linear with doca
 	double a = 5.0;
 	double b = 5.0;
-	time = a*doca+b + signal_tTimesEdep/E_tot_wire;
+	double time = a*doca+b + signal_tTimesEdep/E_tot_wire;
 //	double signal = 0.0;
 //	signal = signal_tTimesEdep/E_tot_wire;
 	
@@ -363,10 +308,10 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
-	dgtz["ADC_order"] = order;
+	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = (int) 100000*adc_energy;
 	dgtz["ADC_time"]  = time;
-	dgtz["ADC_ped"]   = doca;
+	dgtz["ADC_ped"]   = doca*1000;
 
 	
 	// decide if write an hit or not
@@ -389,29 +334,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 vector<identifier> ahdc_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 
-	vector<identifier> yid = id;
-	yid[0].id_sharing = 1; // superlayer
-	yid[1].id_sharing = 1; // layer
-	yid[2].id_sharing = 1; // wire
-	yid[3].id_sharing = 1; // side, left or right
-
-	if (yid[3].id != 0) {
-		cout << "*****WARNING***** in ahdc_HitProcess :: processID, identifier PTT of the original hit should be 0 " << endl;
-		cout << "yid[3].id = " << yid[3].id << endl;
-	}
-
-	// Now we want to have similar identifiers, but the only difference be id order to be 1, instead of 0
-	identifier this_id = yid[0];
-	yid.push_back(this_id);
-	this_id = yid[1];
-	yid.push_back(this_id);
-	this_id = yid[2];
-	yid.push_back(this_id);
-	this_id = yid[3];
-	this_id.id = 1;
-	yid.push_back(this_id);
-
-	return yid;
+	id[id.size()-1].id_sharing = 1;
+	return id;
 }
 
 

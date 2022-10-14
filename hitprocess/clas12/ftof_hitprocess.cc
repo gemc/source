@@ -407,15 +407,18 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["TDC_TDC"]   = (int) tdc;
 
 
-//	cout << " FTOF EDEP energyDepositedAttenuated " << sector << " " << panel << " " << paddle << " " << energyDepositedAttenuated << "  vs "
-//	<< ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1]  << " and efficiency " << ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1]  << endl;
 
 	// reject hit if below threshold or efficiency
 	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] ) {
 		rejectHitConditions = true;
 	}
 	double random = G4UniformRand();
-	if ( random < ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1] ) {
+
+//	cout << " FTOF EDEP energyDepositedAttenuated " << sector << " " << panel << " " << paddle << " " << energyDepositedAttenuated << "  vs "
+//	<< ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1]  << " and efficiency " << ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1]
+//	<< " random " << random << endl;
+
+	if ( random > ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1] ) {
 		rejectHitConditions = true;
 	}
 	

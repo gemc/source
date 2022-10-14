@@ -402,7 +402,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		rejectHitConditions = true;
 	}
 	double random = G4UniformRand();
-	if ( random < ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] ) {
+	if ( random > ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] ) {
 		rejectHitConditions = true;
 	}
 	
