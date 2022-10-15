@@ -13,6 +13,7 @@ map<string, double> ECAL_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
+	writeHit = true;
 
 	vector<identifier> identity = aHit->GetId();
 	trueInfos tInfos(aHit);

@@ -9,8 +9,8 @@ map<string, double> muon_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
-
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
 
 	int idx = identity[0].id;
 	int idy = identity[1].id;

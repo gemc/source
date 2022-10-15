@@ -108,12 +108,10 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 
 map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
-	
-	// This is all steps for one identifier
-	
-	//cout << "IN INTEGRATE DGT\n";
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	int sector    = identity[0].id;
 	int layer     = identity[1].id;
 	int component = identity[2].id;
@@ -324,8 +322,6 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//	cout << "z:\t\t" << zHit << "\n";
 	//	cout << "***************\n";
 	
-	// decide if write an hit or not
-	writeHit = true;
 	
 	// define conditions to reject hit
 	//if(rejectHitConditions) {

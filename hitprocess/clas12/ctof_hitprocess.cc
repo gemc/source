@@ -252,9 +252,10 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 {
 	
 	map<string, double> dgtz;
-	
-	// hit ids
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
+	// hit ids
 	int sector = 1;
 	int layer  = 1;
 	int paddle = identity[0].id;

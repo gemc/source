@@ -160,6 +160,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
 	
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -175,7 +176,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["sector"]     = identity[0].id;
 		dgtz["layer"]      = SLI*6 + identity[2].id;
 		dgtz["component"]  = nwire;
-		dgtz["TDC_order"] = 2;
+		dgtz["TDC_order"] = 0;
 		dgtz["TDC_TDC"]   = stepTime[0];
 		
 		return dgtz;
@@ -351,12 +352,16 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// decide if write an hit or not based on inefficiency value
 	rejectHitConditions=(ineff==-1);
-	
+
+
+
 	// define conditions to reject hit
 	if(rejectHitConditions) {
 		writeHit = false;
 	}
-	
+
+	// cout << " ASD hit n " << hitn << " reject: " << rejectHitConditions << " ddeff:" << ddEff << " random:" << random << " X:" << X << " writeHit: " << writeHit << endl;
+
 	return dgtz;
 }
 

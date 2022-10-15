@@ -141,7 +141,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	
 	map<string, double> dgtz;
-	
+	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material
 	double thickness = 3;           // thickness of each CND paddle
 	
@@ -149,8 +151,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double sigmaTD = 0.24;          // direct signal
 	double sigma   = 0.24;          // direct signal
 	
-	vector<identifier> identity = aHit->GetId();
-	
+
 	int sector = identity[0].id; // paddle number
 	int layer  = identity[1].id; // layer
 	int paddle = identity[2].id; // side: 1 = left, 2 = right

@@ -47,9 +47,9 @@ map<string, double> alertshell_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	// digitized output
 	map<string, double> dgtz;
-	// hit ids
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	// From here the implementation of what we consider as a hit
 	// And dgtz variables calculation algorithms
 	

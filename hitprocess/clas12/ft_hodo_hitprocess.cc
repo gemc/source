@@ -136,9 +136,9 @@ static ftHodoConstants initializeFTHODOConstants(int runno, string digiVariation
 map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
-	// use Crystal ID to define IDX and IDY
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	int isector    = identity[0].id;
 	int ilayer     = identity[1].id;
 	int icomponent = identity[2].id;

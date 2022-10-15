@@ -239,10 +239,9 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 
 map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	map<string, double> dgtz;
-	
-	// hit ids
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	int sector = identity[0].id;
 	int panel  = identity[1].id; // 1-1A, 2-1B, 3-2B
 	int paddle = identity[2].id;

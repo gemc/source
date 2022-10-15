@@ -75,9 +75,9 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
-	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	int idsector  = identity[0].id;
 	int idside    = identity[1].id;
 	int idsegment = identity[2].id;

@@ -30,7 +30,8 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	double minHit = 0.0261*MeV;
 	double maxHit = 0.11747*MeV;
 	double deltaADC = maxHit - minHit;

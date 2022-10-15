@@ -116,7 +116,8 @@ map<string, double>  BMT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double>  dgtz;
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step.

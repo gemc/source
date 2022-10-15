@@ -7,9 +7,9 @@ map<string, double> SVT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
-
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	// STR ID:
 	// layer, type, sector, module, strip
 	// class str_strip strs;

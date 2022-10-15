@@ -80,11 +80,10 @@ static uRwellConstants initializeuRwellConstants(int runno, string digiVariation
 
 map<string, double>uRwell_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
-	
-	
 	map<string, double> dgtz;
-	
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	//uRwellConstants uRwellC;
 	trueInfos tInfos(aHit);
 	

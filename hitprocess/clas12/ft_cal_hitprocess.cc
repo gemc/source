@@ -152,9 +152,9 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
-	// ids
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	// use Crystal ID to define IDX and IDY
 	int IDX = identity[0].id;
 	int IDY = identity[1].id;

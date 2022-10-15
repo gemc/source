@@ -37,7 +37,8 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// digitized output
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	
 	int atof_sector     = identity[0].id;
 	int atof_superlayer = identity[1].id; // long paddles: SL = 0; top: SL=1

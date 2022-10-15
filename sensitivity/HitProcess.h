@@ -81,7 +81,7 @@ public:
 			filterDummyBanks = true;
 		}
 	}
-	bool writeHit;
+	bool writeHit;           ///< MUST BE INITIALIZED FOR EACH HIT, not each event like above
 	bool filterDummyBanks;   ///< do not write out variables that has no valuable information
 
 

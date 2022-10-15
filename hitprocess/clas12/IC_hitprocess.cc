@@ -11,7 +11,8 @@ map<string, double> IC_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if(aHit->isBackgroundHit == 1) return dgtz;
 	
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	
 	// R.De Vita (April 2009)
 	

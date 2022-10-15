@@ -47,7 +47,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// digitized output
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
-	
+	writeHit = true;
+
 	int sector    = 0;
 	int layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 	int component = identity[2].id;

@@ -165,9 +165,9 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
-	// get sector, layer, and strip.
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
 	int sector = identity[0].id;
 	int layer  = identity[1].id; // layer=1-3 (PCAL) 4-9 (ECAL). Layer = view for pcal, ecinner, ecouter
 	int strip  = identity[2].id;

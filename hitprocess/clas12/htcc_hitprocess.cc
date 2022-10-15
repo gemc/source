@@ -128,9 +128,10 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	
-	// we want to crash if identity doesn't have size 3
 	vector<identifier> identity = aHit->GetId();
+	writeHit = true;
+
+
 	int idsector = identity[0].id;
 	int idring   = identity[1].id;
 	int idhalf   = identity[2].id; // layer is half sector (1 or 2)
