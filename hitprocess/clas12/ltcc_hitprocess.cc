@@ -76,6 +76,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	int idsector  = identity[0].id;

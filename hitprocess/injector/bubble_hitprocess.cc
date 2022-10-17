@@ -9,6 +9,7 @@ map<string, double> bubble_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
+	rejectHitConditions = false;
 	writeHit = true;
 
 	vector<identifier> identity = aHit->GetId();
