@@ -297,16 +297,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				}
 
 				double PHI = 2.0*pi*G4UniformRand();
-				double Vx = vx/mm + VR*cos(PHI) + rasterx + beamSpot_x;
-				double Vy = vy/mm + VR*sin(PHI) + rastery + beamSpot_y;
-				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ;
+				double Vx = vx/mm + VR*cos(PHI) + rasterx /cm + beamSpot_x /cm;
+				double Vy = vy/mm + VR*sin(PHI) + rastery /cm + beamSpot_y /cm;
+				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm;
 
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx + beamSpot_x;
-					Vy = rastery + beamSpot_y;
+					Vx = rasterx /cm + beamSpot_x /cm;
+					Vy = rastery /cm + beamSpot_y /cm;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ;
+					Vz = displaceZ / cm;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -315,20 +315,20 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx, Vy, Vz;
 
 				if(gaussOrFlatV == 1) {
-					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx + beamSpot_x;
-					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery + beamSpot_y;
-					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm);
+					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx /cm  + beamSpot_x /cm ;
+					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery /cm  + beamSpot_y /cm ;
+					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm) + displaceZ /cm ;
 				} else {
-					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx + beamSpot_x;
-					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery + beamSpot_y;
-					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm;
+					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx /cm + beamSpot_x /cm ;
+					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery /cm + beamSpot_y /cm ;
+					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx + beamSpot_x;
-					Vy = rastery + beamSpot_y;
+					Vx = rasterx /cm  + beamSpot_x /cm ;
+					Vy = rastery /cm  + beamSpot_y /cm ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ;
+					Vz = displaceZ /cm ;
 				}
 
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
@@ -556,13 +556,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				// need to pass it in cm
 				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm + beamSpot_x/cm;
 				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = thisParticleInfo.infos[13] + svz/cm ;
+				double Vz     = thisParticleInfo.infos[13] + svz/cm + displaceZ / cm ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx + beamSpot_x;
-					Vy = rastery + beamSpot_y;
+					Vx = rasterx /cm  + beamSpot_x /cm ;
+					Vy = rastery /cm  + beamSpot_y /cm ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ;
+					Vz = displaceZ /cm ;
 				}
 
 				
@@ -679,11 +679,11 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vy     = thisParticleInfo.infos[13] + svy/cm + rastery/cm + beamSpot_y/cm;
 				double Vz     = thisParticleInfo.infos[14] + svz/cm ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx + beamSpot_x;
-					Vy = rastery + beamSpot_y;
+					Vx = rasterx /cm + beamSpot_x /cm;
+					Vy = rastery /cm + beamSpot_y /cm;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ;
+					Vz = displaceZ /cm;
 				}
 
 				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent, A, Z);
