@@ -79,6 +79,8 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 		cout << endl << "  #### Loading Binary Field Maps for " << b12map->identifier << endl;
 	}
 
+	// initialize map pointers
+	b12map->combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
 	if (b12map->identifier == TorusSymmSolenoid2018 ) {
 	
 		b12map->solenoid       = initializeSolenoid(b12map->solenoidFileName.c_str());

@@ -18,10 +18,7 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
-	
-	// Uses David's routine to return the BX BY BZ components
-	FieldValuePtr combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
-	
+		
 	if(identifier == TorusSymmSolenoid2018) {
 		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], symmetricTorus, solenoid);
 
