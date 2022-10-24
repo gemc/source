@@ -372,6 +372,7 @@ void PhysicsList::cookPhysics()
 	else if(hadronicPhys == "ShieldingLEND")  {g4HadronicPhysics.push_back( new G4HadronPhysicsShieldingLEND(verbosity));}
 //	else if(hadronicPhys == "ShieldingM")     {g4HadronicPhysics.push_back( new G4HadronPhysicsFTFP_BERT(verbosity));}
 	else if(hadronicPhys == "NuBeam")         {g4HadronicPhysics.push_back( new G4HadronPhysicsNuBeam(verbosity));}
+	else if(hadronicPhys == "none")           {;}
 	else {
 		cout << " > " << hadronicPhys << " is not supported in this version of GEMC yet. Exiting." << endl;
 		exit(1);
