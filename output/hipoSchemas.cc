@@ -202,6 +202,8 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 		// for non tdc detectors
 		if( !(schemaName == "dc"      && type == 0) &&
 			 !(schemaName == "bmt"     && type == 1) &&
+			 !(schemaName == "fmt"     && type == 1) &&
+			 !(schemaName == "rtpc"    && type == 1) &&
 			 !(schemaName == "bst"     && type == 1) &&
 			 !(schemaName == "alrtdc"  && type == 1) &&
  			 !(schemaName == "alrttof" && type == 1) &&
