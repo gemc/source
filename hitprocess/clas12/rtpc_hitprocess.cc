@@ -15,64 +15,67 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	static const double PI=3.1415926535;
 	rejectHitConditions = false;
 	writeHit = true;
-
+	
 	// Establish constants
+	// NEW CONSTANTS FOR UPDATED RECONSTRUCTION
 	PAD_W =2.79;
 	PAD_L = 4.0;
-	PAD_S = 80.0;
+	PAD_S = 79.0;//=80.0 old version after comment
 	RTPC_L = 384.0;
 	phi_per_pad=(2.0*PI)/180;
 	
 	// Drift time from first GEM to readout pad
-	t_2GEM2 = 296.082;
+	t_2GEM2 = 0.0; // 169.183;
 	sigma_t_2GEM2 = 8.72728;
-	t_2GEM3 = 296.131;
-	sigma_t_2GEM3 = 6.77807;
-	t_2PAD = 399.09;
+	t_2GEM3 = 0.0; //222.415;
+	sigma_t_2GEM3 = 5.62223;
+	t_2PAD = 0.0; //414.459;
 	sigma_t_2PAD = 7.58056;
 	
-	phi_2GEM2 = 0.0492538;
+	phi_2GEM2 = 0.0; // 0.0416925;
 	sigma_phi_2GEM2 = 0.00384579;
-	phi_2GEM3 = 0.0470817;
-	sigma_phi_2GEM3 = 0.00234478;
-	phi_2PAD = 0.0612122;
+	phi_2GEM3 = 0.0; // 0.0416574;
+	sigma_phi_2GEM3 = 0.00160235;
+	phi_2PAD = 0.0; // 0.057566;
 	sigma_phi_2PAD = 0.00238653;
 	
 	// parameters to change for gas mixture and potential
-	// gas mixture = He:CO2 at 80:20
-	// potential = 3500V
+	// gas mixture = He:CO2 at 85.5:14.5
+	// potential = 4450V
 	
-	// --------- May 2019 B-field parameters ----------- //
-	double a_t1 = -2.34637e-04;
-	double a_t2 = 1.12685e-03;
-	double a_t3 = -8.73537e-03;
-	double a_t4 = -3.73064e-01;
-	double a_t5 = 1.83874e+03;
+	// --------- Updated 25 June 2020 B-field parameters ----------- //
+	double a_t0 = 1470.0; // -0.607056;
+	double a_t1 = 0.009; // -0.00138137;
+	//double a_t2 = -9.0e05; // 1.6494e-05; //Gave crazy big -ve values to tdc or time 
+	double a_t2 = -9.0e-05; // 1.6494e-05;
 	
-	double b_t1 = 1.71487e-05;
-	double b_t2 = -3.92849e-04;
-	double b_t3 = -2.87046e-03;
-	double b_t4 = 1.26281e-01;
-	double b_t5 = -1.32689e+02;
+	double b_t0 = 3290.0; // 3183.62;
+	double b_t1 = -0.0138; // -0.0269385;
+	double b_t2 = -0.000332; // -0.00037645;
 	
-	double a_phi1 = -1.75851e-08;
-	double a_phi2 = 2.98814e-07;
-	double a_phi3 = -8.84479e-07;
-	double a_phi4 = -7.87568e-05;
-	double a_phi5 = 1.75647e-01;
+	double c_t0 = 0.0; // -0.0200932;
+	double c_t1 = 0.0; // 0.00319441;
+	double c_t2 = 0.0; // -8.75299e-06;
 	
-	double b_phi1 = -5.99407e-09;
-	double b_phi2 = -8.21323e-08;
-	double b_phi3 = 2.61592e-07;
-	double b_phi4 = 2.81728e-05;
-	double b_phi5 = 2.24182e-02;
+	double a_phi0 = -0.113; // 0;
+	double a_phi1 = -1.05e-6; // 0;
+	double a_phi2 = 1.58e-8; // 0;
+	
+	double b_phi0 = -0.9697; // 1.22249;
+	double b_phi1 = 9.48e-6; // -2.3708e-05;
+	double b_phi2 = 9.9e-8; // -1.11055e-07;
+	
+	double c_phi0 = 0.0; // -1.13197;
+	double c_phi1 = 0.0; // 0.000118575;
+	double c_phi2 = 0.0; // 2.50094e-08;
+	
 	
 	// Diffusion parameters
-	c_t=388.7449859;
-	d_t=-4.33E+01;
+	diff_at = 388.7449859;
+	diff_bt = -4.33E+01;
 	
-	c_phi=6.00E-06;
-	d_phi=2.00E-06;
+	diff_aphi = 6.00E-06;
+	diff_bphi = 2.00E-06;
 	
 	a_z=0.035972097;
 	b_z =-0.000739386;
@@ -129,7 +132,7 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	TPC_TZERO = 0.0;
 	
 	// not used anymore?
-	// int chan=0;
+	int chan=0;
 	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
@@ -148,17 +151,33 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// so tInfos.eTot is the sum of all steps s of Edep[s]
 	vector<double>      Edep = aHit->GetEdep();
 	
-	//
-	// Get the information x,y,z and Edep at each ionization point
-	//
 	
 	// -------------------------- TIME SHIFT for non-primary tracks ---------------------------
-	if(aHit->GetTId() != timeShift_map.cend()->first){
+	//M. U.: map.find(Key) tries to find an entry with that key, if it doesn't find it, it will return map.end()
+	//     So, to ensure that hits of a given track gets the same timeShift (but random among different tracks)
+	//     we must check if the find returns map.end(). If it does, we should create a new entry, else we should 
+	//     skip from overwriting/reassigning in order to keep the same old value for all hits of a given track.
+	//if(aHit->GetTId() != timeShift_map.cend()->first){
+	if(timeShift_map.find(aHit->GetTId()) == timeShift_map.end()){
 		if(aHit->GetTId()< 3) timeShift_map[aHit->GetTId()] = 0.0;
 		else timeShift_map[aHit->GetTId()] = G4RandFlat::shoot(-8000.,8000.);
 	}
 	
+	//cout<<"kp: aHit->GetTId(): "<<aHit->GetTId()<<endl;
+	vector<int> tids = aHit->GetTIds();
+	vector<int> mtids = aHit->GetmTrackIds();  
+	//raws["otid"]    = (double) aHit->GetoTrackId(); 
+	vector<int>    otids = aHit->GetoTrackIds();
+	/*
+	cout<<"kp: tInfos.nsteps = "<<tInfos.nsteps<<" aHit->GetTIds().size() = "<<tids.size()
+	    <<" aHit->GetmTrackIds().size() = "<<mtids.size()<<" aHit->GetoTrackIDs().size() = "<<otids.size()<<endl; 
+	cout<<"tids[step]   mtids[step]   otids[step]"<<endl;
+	for (unsigned int s=0; s<tInfos.nsteps; s++) cout<< tids[s] << "   "<< mtids[s] << "   "<< otids[s]<<endl;
+	*/
 	
+	//
+	// Get the information x,y,z and Edep at each ionization point
+	//
 	double LposX=0.;
 	double LposY=0.;
 	double LposZ=0.;
@@ -186,11 +205,13 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			z_cm = LposZ/10.0;
 			
 			// all in cm
-			a_t=a_t1*(pow(z_cm,4)) + a_t2*(pow(z_cm,3)) + a_t3*(pow(z_cm,2)) + a_t4*z_cm + a_t5;
-			b_t=b_t1*(pow(z_cm,4)) + b_t2*(pow(z_cm,3)) + b_t3*(pow(z_cm,2)) + b_t4*z_cm + b_t5;
-			
-			a_phi=a_phi1*(pow(z_cm,4)) + a_phi2*(pow(z_cm,3)) + a_phi3*(pow(z_cm,2)) + a_phi4*z_cm + a_phi5;
-			b_phi=b_phi1*(pow(z_cm,4)) + b_phi2*(pow(z_cm,3)) + b_phi3*(pow(z_cm,2)) + b_phi4*z_cm + b_phi5;
+			a_t= a_t0 + a_t1*(pow(z_cm,2)) + a_t2*(pow(z_cm,4));
+			b_t= b_t0 + b_t1*(pow(z_cm,2)) + b_t2*(pow(z_cm,4));
+			c_t= c_t0 + c_t1*(pow(z_cm,2)) + c_t2*(pow(z_cm,4));
+			     
+			a_phi=a_phi2*(pow(z_cm,4)) + a_phi1*(pow(z_cm,2)) + a_phi0;
+			b_phi=b_phi2*(pow(z_cm,4)) + b_phi1*(pow(z_cm,2)) + b_phi0;
+			c_phi=c_phi2*(pow(z_cm,4)) + c_phi1*(pow(z_cm,2)) + c_phi0;
 			
 			double r0,phi0_rad;
 			//convert (x0,y0,z0) into (r0,phi0,z0)
@@ -204,16 +225,17 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			// -------------------------------- Addition of Diffusion -----------------------------
 			
 			// calculate drift time [ns] to first GEM
-			double t_drift = a_t*(7.0-r0)+b_t*(7.0-r0)*(7.0-r0);
+			double t_drift = a_t + b_t*(7.0*7.0-r0*r0)/40.0;
 			
 			// determine sigma of drift time [ns]
-			double t_diff = sqrt(c_t*(7.0-r0)+d_t*(7.0-r0)*(7.0-r0));
+			double t_diff = sqrt(diff_at*(7.0-r0)+diff_bt*(7.0-r0)*(7.0-r0));
 			
 			// calculate drift angle to first GEM at 7 cm [rad]
-			double phi_drift = a_phi*(7.0-r0)+b_phi*(7.0-r0)*(7.0-r0);
+			double phi_drift = a_phi + b_phi*log(7.0/r0) + c_phi*((1.0/(r0*r0)) - (1.0/(49.0)));
+			//double phi_drift = a_phi*(7.0-r0)+b_phi*(7.0-r0)*(7.0-r0);
 			
 			// determine sigma of drift angle [rad]
-			double phi_diff = sqrt(c_phi*(7.0-r0)+d_phi*(7.0-r0)*(7.0-r0));
+			double phi_diff = sqrt(diff_aphi*(7.0-r0)+diff_bphi*(7.0-r0)*(7.0-r0));
 			
 			// calculate drift in z [mm]
 			double z_drift = 0.0;
@@ -235,15 +257,19 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if( phi_rad>=2.0*PI )  phi_rad-=2.0*PI;
 			
 			// time shift
-			shift_t = timeShift_map.find(aHit->GetTId())->second;
+			//shift_t = timeShift_map.find(aHit->GetTId())->second;
+			shift_t = timeShift_map.find(otids[s])->second; //To ensure secondaries have the same shift_t as primaries or acencestors
 			
 			// NO time shift
 			//shift_t = 0.0;
 			
-			tdc=t_s2pad+t_gap+shift_t;
-			adc=DiffEdep;
+			tdc=t_s2pad+t_gap+shift_t; //kp:
+			adc=((int)100000.0*DiffEdep); //cludge for tiny ADC numbers
+			//adc = 0.5 + adc; //kp: For debugging purpose to avoid lots of zeros (due to int typecasting below)
+			//adc = 100000*DiffEdep;//kp: For same reason as bove 
 			
-			double z_pos = LposZ+delta_z;
+			//double z_pos = (z_cm+delta_z)*10.0;// must be mm
+			double z_pos = z_cm*10.0 + delta_z;// must be mm
 			int col = -999;
 			int row = -999;
 			
@@ -260,9 +286,11 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				col = ceil((z_pos+RTPC_L/2.0-z_shift)/PAD_L);
 			}
 			
-			//	int Num_of_Col = (int) (RTPC_L/PAD_L);
-			//	chan = row*Num_of_Col+col;
+			int Num_of_Col = (int) (RTPC_L/PAD_L);
+			chan = row*Num_of_Col+col;
 			
+			//Mohammad: kill all the hits in the last three rows that correspond to the seam effect
+			if(row>177){row = -999; col = -999;}
 			
 			dgtz["Sector"]    = 1;
 			dgtz["Layer"]     = col;
@@ -271,7 +299,7 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			dgtz["Time"]      = tdc;
 			dgtz["ADC"]       = (int) adc;
 			dgtz["Ped"]       = 0;
-			dgtz["TimeShift"] = shift_t;
+			//dgtz["TimeShift"] = shift_t;
 			dgtz["hitn"]      = (int) hitn;
 			
 		} // end step
@@ -286,38 +314,45 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
 	static const double PI=3.1415926535;
-	double r0 = 0.;
-	double phi0_rad=0.;
 	
 	// Establish constants
-	PAD_W =2.79;
+	PAD_W = 2.758; //2.79 !!
 	PAD_L = 4.0;
-	PAD_S = 80.0;
+	PAD_S = 79.0;
 	RTPC_L = 384.0;
 	phi_per_pad=PAD_W/PAD_S;
 	
-	// parameters to change for gas mixture and potential
-	// gas mixture = He:CO2 at 80:20
-	// potential = 3500V
-	a_t=1741.179712;
-	b_t=-1.25E+02;
-	c_t=388.7449859;
-	d_t=-4.33E+01;
-	
-	a_phi=0.161689123;
-	b_phi=0.023505021;
-	c_phi=6.00E-06;
-	d_phi=2.00E-06;
-	
-	a_z=0.035972097;
-	b_z =-0.000739386;
-	
-	phi_2GEM2 = 0.0492538;
+	// Drift time from first GEM to readout pad
+	phi_2GEM2 = 0.0; // 0.0416925;
 	sigma_phi_2GEM2 = 0.00384579;
-	phi_2GEM3 = 0.0470817;
-	sigma_phi_2GEM3 = 0.00234478;
-	phi_2PAD = 0.0612122;
+	phi_2GEM3 = 0.0; // 0.0416574;
+	sigma_phi_2GEM3 = 0.00160235;
+	phi_2PAD = 0.0; // 0.057566;
 	sigma_phi_2PAD = 0.00238653;
+	
+	// parameters to change for gas mixture and potential
+	// gas mixture = He:CO2 at 85.5:14.5
+	// potential = 4450V
+	
+	// --------- Updated 14 Dec 2020 B-field parameters
+	double a_phi0 = -0.113; // 0;
+	double a_phi1 = -1.05e-6; // 0;
+	double a_phi2 = 1.58e-8; // 0;
+	double b_phi0 = -0.9697; // 1.22249;
+	double b_phi1 = 9.48e-6; // -2.3708e-05;
+	double b_phi2 = 9.9e-8; // -1.11055e-07;
+	double c_phi0 = 0.0; // -1.13197;
+	double c_phi1 = 0.0; // 0.000118575;
+	double c_phi2 = 0.0; // 2.50094e-08;
+
+	// Diffusion parameters
+	diff_aphi = 6.00E-06;
+	diff_bphi = 2.00E-06;
+	
+	
+	a_z = 0.035972097;
+	b_z = -0.000739386;
+	
 	phi_2END = phi_2GEM2 + phi_2GEM3 + phi_2PAD;
 	sigma_phi_gap = sqrt(pow(sigma_phi_2GEM2,2)+pow(sigma_phi_2GEM3,2)+pow(sigma_phi_2PAD,2));
 	
@@ -335,7 +370,17 @@ vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* 
 	LposY = Lxyz.y();
 	LposZ = Lxyz.z();
 	
-	r0=(sqrt(LposX*LposX+LposY*LposY))/10.0;  //in mm
+	z_cm = LposZ/10.0;
+	
+	// all in cm
+	a_phi=a_phi2*(pow(z_cm,4)) + a_phi1*(pow(z_cm,2)) + a_phi0;
+	b_phi=b_phi2*(pow(z_cm,4)) + b_phi1*(pow(z_cm,2)) + b_phi0;
+	c_phi=c_phi2*(pow(z_cm,4)) + c_phi1*(pow(z_cm,2)) + c_phi0;
+	
+	double r0,phi0_rad;
+	//convert (x0,y0,z0) into (r0,phi0,z0)
+	r0=(sqrt(LposX*LposX+LposY*LposY))/10.0;  //in cm
+	
 	
 	phi0_rad=atan2(LposY,LposX); //return (-Pi, + Pi)
 	if( phi0_rad<0.)  phi0_rad+=2.0*PI;
@@ -344,10 +389,11 @@ vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* 
 	// -------------------------------- Addition of Diffusion -----------------------------
 	
 	// calculate drift angle to first GEM at 7 cm [rad]
-	double phi_drift = a_phi*(7.0-r0)+b_phi*(7.0-r0)*(7.0-r0);
+	double phi_drift = a_phi + b_phi*log(7.0/r0) + c_phi*((1.0/(r0*r0)) - (1.0/(49.0)));
+	//double phi_drift = a_phi*(7.0-r0)+b_phi*(7.0-r0)*(7.0-r0);
 	
 	// determine sigma of drift angle [rad]
-	double phi_diff = sqrt(c_phi*(7.0-r0)+d_phi*(7.0-r0)*(7.0-r0));
+	double phi_diff = sqrt(diff_aphi*(7.0-r0)+diff_bphi*(7.0-r0)*(7.0-r0));
 	
 	// calculate drift in z [mm]
 	double z_drift = 0.0;
@@ -364,15 +410,27 @@ vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* 
 	// ------------------------------------------------------------------------------------
 	
 	double phi_rad= phi0_rad+delta_phi+phi_gap;   //phi at pad pcb board
-	if( phi_rad<0. )  phi_rad+=2.0*PI;
-	if( phi_rad>2.0*PI )  phi_rad-=2.0*PI;
+	if( phi_rad<0.0 )  phi_rad+=2.0*PI;
+	if( phi_rad>=2.0*PI )  phi_rad-=2.0*PI;
 	
-	double z_pos = LposZ+delta_z;
+	double z_pos = (z_cm+delta_z)*10.0; //mm
+	int col = -999;
+	int row = -999;
 	
-	int row = int(phi_rad/phi_per_pad);
+	row = ceil(phi_rad/phi_per_pad);
 	float z_shift = row%4;
-	int col = (int) ((z_pos-z_shift+RTPC_L/2.0)/PAD_L);
-	int Num_of_Col = (int) (ceil(RTPC_L/PAD_L));
+	
+	float col_min = -RTPC_L/2.0+z_shift;
+	float col_max = RTPC_L/2.0+z_shift;
+	
+	if( z_pos < col_min || z_pos > col_max ) {row = -999; col = -999;}
+	else {
+	
+	  row = ceil(phi_rad/phi_per_pad);
+	  col = ceil((z_pos+RTPC_L/2.0-z_shift)/PAD_L);
+	}
+	
+	int Num_of_Col = (int) (RTPC_L/PAD_L);
 	chan = row*Num_of_Col+col;
 	
 	yid[0].id=chan;
