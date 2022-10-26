@@ -13,6 +13,7 @@ using namespace CLHEP;
 map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	static const double PI=3.1415926535;
+	rejectHitConditions = false;
 	writeHit = true;
 	
 	// Establish constants

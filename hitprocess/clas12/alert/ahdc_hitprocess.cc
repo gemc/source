@@ -47,6 +47,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// digitized output
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	int sector    = 0;
@@ -316,6 +317,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	
 	// decide if write an hit or not
+	rejectHitConditions = false;
 	writeHit = true;
 	// define conditions to reject hit
 	if (rejectHitConditions) {

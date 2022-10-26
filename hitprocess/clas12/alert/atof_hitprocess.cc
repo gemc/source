@@ -37,6 +37,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// digitized output
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	
@@ -327,6 +328,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_ped"]   = 0;
 
 	// decide if write an hit or not
+	rejectHitConditions = false;
 	writeHit = true;
 	// define conditions to reject hit
 	if (rejectHitConditions) {

@@ -142,6 +142,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material

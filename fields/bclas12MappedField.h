@@ -66,6 +66,8 @@ public:
 	string fullTorusFileName;
 
 	// map pointers
+	// Uses David's routine to return the BX BY BZ components
+	FieldValuePtr combinedValuePtr;
 	MagneticFieldPtr symmetricTorus;
 	MagneticFieldPtr solenoid;
 	MagneticFieldPtr fullTorus;

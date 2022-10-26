@@ -14,6 +14,7 @@ map<string, double> cormo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	map<string, double> dgtz;
 	if(aHit->isBackgroundHit == 1) return dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	int sector = identity[0].id;

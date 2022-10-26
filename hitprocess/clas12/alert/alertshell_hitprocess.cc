@@ -48,6 +48,7 @@ map<string, double> alertshell_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// digitized output
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
+	rejectHitConditions = false;
 	writeHit = true;
 
 	// From here the implementation of what we consider as a hit
@@ -148,6 +149,7 @@ map<string, double> alertshell_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	cout << " ************** Hit ended! **************** " << endl;
 	
 	// decide if write an hit or not
+	rejectHitConditions = false;
 	writeHit = true;
 	// define conditions to reject hit
 	if (rejectHitConditions) {
