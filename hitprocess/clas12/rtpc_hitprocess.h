@@ -42,8 +42,8 @@ public:
 	
 	// parameters for drift and diffustion equations for drift time, 
 	// drift angle, and diffusion in z
-	float a_t, b_t, c_t, d_t;
-	float a_phi, b_phi, c_phi, d_phi;
+	float a_t, b_t, c_t, diff_at, diff_bt;
+	float a_phi, b_phi, c_phi, diff_aphi, diff_bphi;
 	float a_z, b_z;
 	
 	// variables for storing drift times and diffusion in time
