@@ -148,17 +148,18 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double dEdxMIP = 1.956;         // energy deposited by MIP per cm of scintillator material
 	double thickness = 3;           // thickness of each CND paddle
 	
-	// MARK TO DELETE LATER
-	double sigmaTD = 0.24;          // direct signal
+	
+	double sigmaTD = 0.24;          // direct signal MARK: TO DELETE LATER
 	double sigma   = 0.24;          // direct signal
 	
 
 	int sector = identity[0].id; // paddle number
 	int layer  = identity[1].id; // layer
 	int paddle = identity[2].id; // side: 1 = left, 2 = right
-	int side   = identity[2].id; // side: 1 = left, 2 = right
+	int side   = paddle;         // same as paddle side: 1 = left, 2 = right
 	int direct = identity[3].id; // direct = 0, indirect = 1
 	
+	// cout << " sector: " << sector << " layer: " << layer << " paddle: " << paddle << " side: " << side << " direct: " << direct << endl;
 	
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -181,8 +182,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	uturn_scale[2] = 0.5;
 	double neigh_scale = uturn_scale[layer-1] * exp(-2*length/cm/150.);   // energy scaling due to nominal propagation in neighbour
 	
-	// MARK TO DELETE LATER
-	double sigmaTN = sigmaTD / sqrt(neigh_scale);   // indirect signal in neighbour
+	double sigmaTN = sigmaTD / sqrt(neigh_scale);   // indirect signal in neighbour MARK: TO DELETE LATER
 	if ( direct == 1) {
 		sigma = sigmaTD / sqrt(neigh_scale);   // indirect signal in neighbour
 	}
@@ -192,9 +192,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// estimated yield of photoelectrons at the photocathode of PMT:
 	// assumes 10,000 photons/MeV, LG length 1.4m with attenuation length 9.5m, 30% losses at junctions and PMT QE = 0.2
 	
-	// MARK TO DELETE LATER
-	double pmtPEYldD = 1210;                      // for the direct signal
-	double pmtPEYldN = pmtPEYldD * neigh_scale;   // for the indirect signal, additional loss in u-turn and attenuation in neighbour
+	double pmtPEYldD = 1210;                      // for the direct signal MARK: TO DELETE LATER
+	double pmtPEYldN = pmtPEYldD * neigh_scale;   // for the indirect signal, additional loss in u-turn and attenuation in neighbour MARK: TO DELETE LATER
 	
 	
 	double pmtPEYld = 1210;  // for the direct signal
@@ -216,73 +215,64 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// variables for each step:
 	
-	double distanceTravelled = 0; // distance travelled by the light along the paddle. For indirect, it will then go through the u-turn and along the neighbouring paddle
-	double attenuatedEnergy  = 0;  // attenuated energy as it arrives at the edge of the hit paddle
-	
-	// MARK TO DELETE LATER
-	double dUp    = 0.;       // distance travelled by the light along the paddle UPSTREAM (direct light)
-	double dDown  = 0.;     // distance travelled by the light along the paddle DOWNSTREAM (it will then go through the u-turn and along the neighbouring paddle)
-	double e_up   = 0.;      // attenuated energy as it arrives at the upstream edge of the hit paddle
-	double e_down = 0.;    // attenuated energy as it arrives at the downstream edge of the hit paddle
-	
+	double dUp    = 0.;  // distance travelled by the light along the paddle UPSTREAM (direct light) MARK: TO DELETE LATER
+	double dDown  = 0.;  // same for DOWNSTREAM (it will then go through the u-turn and along the neighbouring paddle) MARK: TO DELETE LATER
+	double distanceTravelled = 0; // distance travelled by the light along the paddle. (direct = upstream, indirect = downstream)
+
+	double e_up   = 0.;  // attenuated energy as it arrives at the upstream edge of the hit paddle MARK: TO DELETE LATER
+	double e_down = 0.;  // attenuated energy as it arrives at the downstream edge of the hit paddle MARK: TO DELETE LATER
+	double attenuatedEnergy  = 0;  // attenuated energy as it arrives at the edge of the hit paddle (direct = upstream, indirect = downstream)
+
 	
 	double Edep_B = 0.;    // Energy deposit, scaled in accordance with Birk's effect
 	
 	
 	// Variables for each hit:
 	
-	double eTotalTime = 0;    // total energy*time for each hit propagated to end paddle (direct = upstream, indirect = downstream)
+	double et_D = 0.;      // total energy*time for each hit propagated to upstream end of hit paddle MARK: TO DELETE LATER
+	double et_N = 0.;      // total energy*time for each hit propagated to upstream end of the neighbour paddle MARK: TO DELETE LATER
+	double eTotalTime = 0; // total energy*time for each hit propagated to end paddle (direct = upstream, indirect = downstream)
 	
-	// MARK TO DELETE LATER
-	double et_D = 0.;         // total energy*time for each hit propagated to upstream end of hit paddle
-	double et_N = 0.;         // total energy*time for each hit propagated to upstream end of the neighbour paddle
-	
-	
-	double eTotal = 0;   // total energy of hit propagated to end paddle (direct = upstream, indirect = downstream)
-	double eTime  = 0;   // hit times measured at the upstream edges of the two paddles
-	
-	// MARK TO DELETE LATER
-	
-	double etotUp = 0.;       // total energy of hit propagated to the upstream end of paddle
-	double etotDown = 0.;     // total energy of hit propagated to the downstream end of the paddle
-	double timeD = 0.;        // hit times measured at the upstream edges of the two paddles
-	double timeN = 0.;
+	double etotUp = 0.;   // total energy of hit propagated to the upstream end of paddle MARK: TO DELETE LATER
+	double etotDown = 0.; // total energy of hit propagated to the downstream end of the paddle MARK: TO DELETE LATER
+	double eTotal = 0;    // total energy of hit propagated to end paddle (direct = upstream, indirect = downstream)
+
+	double timeD = 0.;  // hit times measured at the upstream edges of the two paddles MARK: TO DELETE LATER
+	double timeN = 0.;  // MARK: TO DELETE LATER
+	double eTime  = 0;  // hit times measured at the upstream edges of the two paddles (direct = upstream, indirect = downstream)
+
 	
 	int TDCmax = 16384;       // max value of the ADC readout
 	
+	
+	int ADCD = 0;      // MARK: TO DELETE LATER
+	int ADCN = 0;      // MARK: TO DELETE LATER
+	int TDCD = TDCmax; // MARK: TO DELETE LATER
+	int TDCN = TDCmax; // MARK: TO DELETE LATER
+	
 	int ADC = 0;
 	int TDC = TDCmax;
+		
 	
-	// MARK TO DELETE LATER
-	int ADCD = 0;
-	int ADCN = 0;
-	int TDCD = TDCmax;
-	int TDCN = TDCmax;
-	
-	//	int ADCL = 0;
-	//	int ADCR = 0;
-	//	int TDCL = TDCmax;
-	//	int TDCR = TDCmax;
-	
-	
+	double attlength_D = 0.;  // attlength_N was not needed MARK: TO DELETE LATER
 	double attlength = 0.;
-	double slope     = 0.;
-	// int status       = 0;
+
+
+	double v_eff_D   = 0.; // MARK: TO DELETE LATER
+	double v_eff_N   = 0.; // MARK: TO DELETE LATER
 	double v_eff     = 0.;
+
+	double slope_D   = 0.; // MARK: TO DELETE LATER
+	double slope_N   = 0.; // MARK: TO DELETE LATER
+	double slope     = 0.;
+	
+	int status_D     = 0; // MARK: TO DELETE LATER
+	int status_N     = 0; // MARK: TO DELETE LATER
+	int status       = 0;
+	
+	double adc_mip_D = 0.; // MARK: TO DELETE LATER
+	double adc_mip_N = 0.; // MARK: TO DELETE LATER
 	double adc_mip   = 0.;
-	
-	
-	// MARK TO DELETE LATER
-	double attlength_D = 0.;  // attlength_N was not needed
-	//	double attlength_N = 0.;
-	double slope_D   = 0.;
-	double slope_N   = 0.;
-	int status_D     = 0;
-	int status_N     = 0;
-	double v_eff_D   = 0.;
-	double v_eff_N   = 0.;
-	double adc_mip_D = 0.;
-	double adc_mip_N = 0.;
 	
 	double t_u            = cndc.uturn_tloss[sector-1][layer-1][0];
 	double t_offset_LR    = cndc.time_offset_LR[sector-1][layer-1][0];
@@ -290,70 +280,65 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double threshold = 0;
 	
-	if ( side == 1 ){   // hit is in paddle L
+	// LEFT PADDLE
+	if ( side == 1 ){
 		
-		attlength = cndc.attlen_L[sector-1][layer-1][0];
-		
+		attlength_D = cndc.attlen_L[sector-1][layer-1][0];  // MARK: TO DELETE LATER
+		attlength   = cndc.attlen_L[sector-1][layer-1][0];
+
+		slope_D   = cndc.slope_L[sector-1][layer-1][0];   // MARK: TO DELETE LATER
+		status_D  = cndc.status_L[sector-1][layer-1][0];  // MARK: TO DELETE LATER
+		v_eff_D   = cndc.veff_L[sector-1][layer-1][0];    // MARK: TO DELETE LATER
+		adc_mip_D = cndc.mip_dir_L[sector-1][layer-1][0]; // MARK: TO DELETE LATER
+
+		slope_N   = cndc.slope_R[sector-1][layer-1][0];     // MARK: TO DELETE LATER
+		status_N  = cndc.status_R[sector-1][layer-1][0];    // MARK: TO DELETE LATER
+		v_eff_N   = cndc.veff_R[sector-1][layer-1][0];      // MARK: TO DELETE LATER
+		adc_mip_N = cndc.mip_indir_L[sector-1][layer-1][0]; // MARK: TO DELETE LATER
+
+
 		if ( direct == 0 ) {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			// status  = cndc.status_L[sector-1][layer-1][0];
+			status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			// status  = cndc.status_R[sector-1][layer-1][0];
+			status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_L[sector-1][layer-1][0];
 		}
 		
-		
-		attlength_D = cndc.attlen_L[sector-1][layer-1][0];
-		
-		slope_D = cndc.slope_L[sector-1][layer-1][0];
-		slope_N = cndc.slope_R[sector-1][layer-1][0];
-		
-		status_D = cndc.status_L[sector-1][layer-1][0];
-		status_N = cndc.status_R[sector-1][layer-1][0];
-		
-		v_eff_D = cndc.veff_L[sector-1][layer-1][0];
-		v_eff_N = cndc.veff_R[sector-1][layer-1][0];
-		
-		adc_mip_D = cndc.mip_dir_L[sector-1][layer-1][0];
-		adc_mip_N = cndc.mip_indir_L[sector-1][layer-1][0];
-		
-		
 		threshold = cndc.threshold_L[sector-1][layer-1][0] +  (2*G4UniformRand() - 1)*cndc.sigma_threshold_L[sector-1][layer-1][0];
 	}
 	
-	else if ( side == 2 ) {   // hit is in paddle R
+	// RIGHT PADDLE
+	else if ( side == 2 ) {
 		
-		attlength = cndc.attlen_R[sector-1][layer-1][0];
+		attlength_D = cndc.attlen_R[sector-1][layer-1][0];  // MARK: TO DELETE LATER
+		attlength   = cndc.attlen_R[sector-1][layer-1][0];
 		
+		slope_D   = cndc.slope_R[sector-1][layer-1][0];     // MARK: TO DELETE LATER
+		status_D  = cndc.status_R[sector-1][layer-1][0];    // MARK: TO DELETE LATER
+		v_eff_D   = cndc.veff_R[sector-1][layer-1][0];      // MARK: TO DELETE LATER
+		adc_mip_D = cndc.mip_dir_R[sector-1][layer-1][0];   // MARK: TO DELETE LATER
+
+		slope_N   = cndc.slope_L[sector-1][layer-1][0];     // MARK: TO DELETE LATER
+		status_N  = cndc.status_L[sector-1][layer-1][0];    // MARK: TO DELETE LATER
+		v_eff_N   = cndc.veff_L[sector-1][layer-1][0];      // MARK: TO DELETE LATER
+		adc_mip_N = cndc.mip_indir_R[sector-1][layer-1][0]; // MARK: TO DELETE LATER
+
 		if ( direct == 0 ) {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			// status  = cndc.status_R[sector-1][layer-1][0];
+			status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			// status  = cndc.status_L[sector-1][layer-1][0];
+			status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_R[sector-1][layer-1][0];
 		}
-		
-		attlength_D = cndc.attlen_R[sector-1][layer-1][0];
-		
-		slope_D = cndc.slope_R[sector-1][layer-1][0];
-		slope_N = cndc.slope_L[sector-1][layer-1][0];
-		
-		status_D = cndc.status_R[sector-1][layer-1][0];
-		status_N = cndc.status_L[sector-1][layer-1][0];
-		
-		v_eff_D = cndc.veff_R[sector-1][layer-1][0];
-		v_eff_N = cndc.veff_L[sector-1][layer-1][0];
-		
-		adc_mip_D = cndc.mip_dir_R[sector-1][layer-1][0];
-		adc_mip_N = cndc.mip_indir_R[sector-1][layer-1][0];
 		
 		threshold = cndc.threshold_R[sector-1][layer-1][0] + (2*G4UniformRand() - 1)*cndc.sigma_threshold_R[sector-1][layer-1][0];
 	}
@@ -368,29 +353,26 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			Edep_B = BirksAttenuation(Edep[s], dx[s], charge[s], birks_constant);
 			
 			// Distances travelled through the paddles to the upstream (direct) or downstream (indirect) edges
+			dUp   = (length + Lpos[s].z()); // MARK: TO DELETE LATER
+			dDown = (length - Lpos[s].z()); // MARK: TO DELETE LATER
 			if ( direct == 0 ) {
 				distanceTravelled = (length + Lpos[s].z());
 			} else {
 				distanceTravelled = (length - Lpos[s].z());
 			}
-			
-			dUp   = (length + Lpos[s].z());
-			dDown = (length - Lpos[s].z());
-			
+						
 			
 			// Calculate attenuated energy which will reach the upstream and downstream edges of the hit paddle:
+			e_up             = Edep_B * 0.5 * exp(-dUp/cm/attlength_D);   // MARK: TO DELETE LATER
+			e_down           = Edep_B * 0.5 * exp(-dDown/cm/attlength_D); // MARK: TO DELETE LATER
 			attenuatedEnergy = Edep_B * 0.5 * exp(-distanceTravelled/cm/attlength);
-			e_up   = Edep_B * 0.5 * exp(-dUp/cm/attlength_D);
-			e_down = Edep_B * 0.5 * exp(-dDown/cm/attlength_D);
 			
 			// Integrate energy over entire hit. These values are used for time-smearing:
-			eTotal = eTotal + attenuatedEnergy;
+			etotUp   = etotUp   + e_up;    // MARK: TO DELETE LATER
+			etotDown = etotDown + e_down;  // MARK: TO DELETE LATER
+			eTotal   = eTotal   + attenuatedEnergy;
 			
-			etotUp   = etotUp + e_up;
-			etotDown = etotDown + e_down;
-			
-			
-			/****** Time of hit calculation *******/
+			// Time of hit calculation
 			// In all the methods below, the assumption is that the time taken to travel along the light-guides,
 			// through PMTs and the electronics to the ADC units is the same for all paddles, therefore this time offset is ignored.
 			// Pick whichever method you like:
@@ -410,60 +392,44 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			
 			// Method 3: This calculates the total energy * time value at the upstream edges of the hit paddle and its neighbour,
 			// will be used to get the energy-weighted average times (should correspond roughly to the peak energy deposit):
-			
-			// cout<<"times[s] (ns) "<<times[s]/ns<<endl;
-			
-			
+						
+			et_D         = et_D        + ((times[s] + dUp/cm/v_eff_D) * e_up);                                            // MARK: TO DELETE LATER
+			et_N         = et_N        + ((times[s] + dDown/cm/v_eff_D            + t_u + 2*length/cm/v_eff_N) * e_down); // MARK: TO DELETE LATER
 			if ( direct == 0 ) {
 				eTotalTime = eTotalTime + ((times[s] + distanceTravelled/cm/v_eff) * attenuatedEnergy);
 			} else {
 				eTotalTime = eTotalTime + ((times[s] + distanceTravelled/cm/v_eff + t_u + 2*length/cm/v_eff) * attenuatedEnergy);
 			}
 			
-			et_D = et_D + ((times[s] + dUp/cm/v_eff_D) * e_up);
-			et_N = et_N + ((times[s] + dDown/cm/v_eff_D + t_u + 2*length/cm/v_eff_N) * e_down);
-			
-		}   // close loop over steps s
+			// cout << " side: " << side << " direct " << direct << "  et_D: " << et_D << " et_N " << et_N << " diff D " << eTotalTime - et_D  <<  " diff N " << eTotalTime - et_N  << endl;
+ 		}   // close loop over steps s
 		
-		/**** The following calculates the time based on energy-weighted average of all step times ****/
-		
+		// The following calculates the time based on energy-weighted average of all step times
+		timeD = et_D / etotUp;      // sum(energy*time) /  sum(energy)   MARK: TO DELETE LATER
+		timeN = et_N / etotDown;                                      // MARK: TO DELETE LATER
 		eTime = eTotalTime / eTotal;
-		timeD = et_D / etotUp;      // sum(energy*time) /  sum(energy)
-		timeN = et_N / etotDown;
 		
-		// "Actual" GEMC hit timings, propagated to paddle edges and not:
-		//timeD = tInfos.time + dUp/cm/v_eff_D;
-		//timeN = tInfos.time + dDown/cm/v_eff_D + t_u + 2*length/cm/v_eff_N;
-		//timeD = tInfos.time;
-		//timeN = tInfos.time + t_u + 2*length/cm/v_eff_N;
 		
-		//	cout<<"timeD "<<timeD<<endl;
-		//	cout<<"timeN "<<timeN<<endl;
-		//	cout<<"timeD-timeN "<<timeD-timeN<<endl;
-		
-		// Apply offsets between left and right paddles (these are only applied on paddle 2, which is R):
+		// Apply offsets between left and right paddles (these are only applied on paddle 2, which is R)
+		// that comment looks wrong. Offset are applied for right side direct and left side indirect
+		if (paddle == 2)      timeD = timeD + t_offset_LR;   // MARK: TO DELETE LATER
+		else if (paddle == 1) timeN = timeN + t_offset_LR;   // MARK: TO DELETE LATER
 		
 		if ( (direct == 0 && side == 2) || (direct == 1 && side == 1) ) {
 			eTime = eTime + t_offset_LR;
 		}
 		
-		if (paddle == 2) {
-			timeD = timeD + t_offset_LR;
-		} else if (paddle == 1) {
-			timeN = timeN + t_offset_LR;
-		}
-		
+		timeD = timeD + t_offset_layer; // MARK: TO DELETE LATER
+		timeN = timeN + t_offset_layer; // MARK: TO DELETE LATER
 		eTime = eTime + t_offset_layer;
+
 		
-		timeD = timeD + t_offset_layer;
-		timeN = timeN + t_offset_layer;
+//		 cout << " side: " << side << ", direct: " << direct ;
+//		 cout << ", etotUp: " << etotUp << ", etotDown: " << etotDown << ", eTotal: " << eTotal;
+//		 cout << ", timeD: " << timeD << ", timeN: " << timeN << ", eTime: " << eTime << endl;
+		// cout << ", timeD: " << timeD-eTime << ", timeN: " << timeN-eTime << endl;
 		
-		
-		//		cout << " side: " << side << ", direct: " << direct << ", etotUp: " << etotUp << ", etotDown: " << etotDown << ", eTotal: " << eTotal;
-		//		cout << ", timeD: " << timeD << ", timeN: " << timeN << ", eTime: " << eTime << endl;
-		
-		
-		/******** end timing determination ***********/
+		// end timing determination
 		
 		// cout << "Half-length of paddle(cm): "<<length/cm<<endl;
 		// cout << "etotUp, etotDown (in MeV): " << etotUp/MeV << ", " << etotDown/MeV << endl;
@@ -481,9 +447,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		//  }
 		//  cout << "Total for the hit:" << endl;
 		//  cout << "etotUp (in MeV): " << etotUp << " etotDown: " << etotDown  << " timeD (in ns): " << timeD << " timeN: " << timeN << endl;
+				
 		
-		
-		/**** Actual digitisation happens here! *****/
 		
 		// MARK: TO delete later
 		if (etotUp > 0.) {
@@ -499,33 +464,29 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			ADCN = (int) (eneN*adc_mip_N*2./(dEdxMIP*thickness));
 		}
 		
+		// Notice there are going to be small differences to the above quantities because
+		// of the shooting of random numbers
+		if ( eTotal > 0 ) {
+			TDC = (int) ( (G4RandGauss::shoot(eTime, sigma/sqrt(eTotal)) ) / slope);
+			double nphe = G4Poisson(eTotal*pmtPEYld);
+			double ene  = nphe/pmtPEYld;
+			ADC = (int) (ene*adc_mip*2./(dEdxMIP*thickness));
+		}
 		
-		TDC = (int) ((G4RandGauss::shoot(eTime, sigma/sqrt(eTotal)))/slope);
-		double nphe = G4Poisson(eTotal*pmtPEYld);
-		double ene  = nphe/pmtPEYld;
-		ADC = (int) (ene*adc_mip*2./(dEdxMIP*thickness));
-		
-		
-		
-		// MARK: TO delete later
-		if (TDCD < 0) TDCD = 0;
-		else if (TDCD > TDCmax) TDCD = TDCmax;
-		if (TDCN < 0) TDCN = 0;
-		else if (TDCN > TDCmax) TDCN = TDCmax;
-		
-		if (ADCD < 0) ADCD = 0;
-		if (ADCN < 0) ADCN = 0;
-		
-		
-		
+
+		if (TDCD < 0) TDCD = 0;                // MARK: TO delete later
+		else if (TDCD > TDCmax) TDCD = TDCmax; // MARK: TO delete later
+		if (TDCN < 0) TDCN = 0;		            // MARK: TO delete later
+		else if (TDCN > TDCmax) TDCN = TDCmax;	// MARK: TO delete later
 		if (TDC < 0) {
 			TDC = 0;
 		} else if (TDC > TDCmax) {
 			TDC = TDCmax;
 		}
-		
+		if (ADCD < 0) ADCD = 0; // MARK: TO delete later
+		if (ADCN < 0) ADCN = 0;	// MARK: TO delete later
 		if (ADC < 0) ADC = 0;
-		
+
 		
 	}  // closes tInfos.eTot>0
 	
@@ -592,8 +553,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//		TDCR = (int) TDCD;
 	//	}
 	
-	//	cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
-	//	cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
+//		cout << " sector: " << sector << ", layer: " << layer <<  ", side: " << side << ", direct: " << direct << ", TDCD: " << TDCD << ", TDCN: " << TDCN << ", TDC: " << TDC;
+//		cout << ", ADCD: " << ADCD << ", ADCN: " << ADCN << ", ADC: " << ADC << endl;
 	
 	
 	// Apply global offsets for each paddle-pair (a.k.a. component):
@@ -614,7 +575,6 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if ( eTotal < threshold ) {
 		rejectHitConditions = true;
 	}
-	
 	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
