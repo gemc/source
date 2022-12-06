@@ -558,17 +558,33 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	// Apply global offsets for each paddle-pair (a.k.a. component):
-	
+
+	// actual side hit: if order is 1 (indirect) switch side
+	// up to here side: 1 = left, 2 = right
+	// in the output adc_order is 0 for left, 1 for right
+	int adc_order = -1;
+	if        ( side == 1 && direct == 0 ) {
+		adc_order = 0;
+	} else if ( side == 1 && direct == 1 ) {
+		adc_order = 1;
+	} else if ( side == 2 && direct == 0 ) {
+		adc_order = 1;
+	} else if ( side == 2 && direct == 1 ) {
+		adc_order = 0;
+
+	}
+
+
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = 1;
-	dgtz["ADC_order"] = direct;
+	dgtz["ADC_order"] = adc_order ; // 0 = left 1 = right
 	dgtz["ADC_ADC"]   = ADC;
 	dgtz["ADC_time"]  = TDC;   // no conversion
 	dgtz["ADC_ped"]   = 0;
-	dgtz["TDC_order"] = direct + 2;
+	dgtz["TDC_order"] = adc_order + 2; // 2 = left 3 = right
 	dgtz["TDC_TDC"]   = TDC;
 	
 	// reject hit if below threshold or efficiency
