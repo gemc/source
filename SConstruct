@@ -3,11 +3,7 @@ from init_env import init_environment
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
 env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh hipo c12bfields")
-
-# env.Replace(CXX = "/apps/gcc/4.7.2/bin/g++")
-# env.Replace(CXX = "/usr/bin/clang++")
-# env.Append(CXXFLAGS='-Wno-shorten-64-to-32')
-# env.Append(CXXFLAGS='-Wno-sign-conversion')
+env.Append(CXXFLAGS=['-std=c++14'])
 
 # added because clhep is still behind clang (5/2015)
 if env['PLATFORM'] == 'darwin':
