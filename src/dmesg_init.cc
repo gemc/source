@@ -171,9 +171,9 @@ vector<string> init_dvmesg(goptions gemcOpt, G4VisManager *VM)
 		   pname !=  "pi-"     &&
 		   pname !=  "proton"    ) {
 			if(charge > 0) {
-				gemcColorIDModel->Set(pname,  "red");
+				gemcColorIDModel->Set(pname,  "cyan");
 			} else if(charge == 0) {
-				gemcColorIDModel->Set(pname,  "blue");
+				gemcColorIDModel->Set(pname,  "gray");
 			} else if(charge < 0) {
 				gemcColorIDModel->Set(pname,  "green");
 			}

@@ -11,22 +11,20 @@ graph::graph(QWidget *parent) : QGraphicsView(parent)
 	this->setScene(scene);
 
 	// particle colors follow gemc settings
-	// red:   positive
-	// gray:  neutral
-	// green: negative
+	// follows the convention set in dmsg_init
 	//
 	// second argument of QPen is thickness of pencil
 	pcolors[2112] = QPen(Qt::black,             2);   // neutrons: black
 	pcolors[22]   = QPen(Qt::blue,              2);   // photons: blue
-	pcolors[11]   = QPen(Qt::cyan,              2);   // electrons: cyan
-	pcolors[2212] = QPen(QColor(219, 117, 41),  2);   // protons: orange
+	pcolors[11]   = QPen(Qt::red,               2);   // electrons: red
 	pcolors[211]  = QPen(Qt::magenta,           2);   // pi+: magenta
 	pcolors[-211] = QPen(Qt::yellow,            2);   // pi-: yellow
+	pcolors[2212] = QPen(QColor(219, 117, 41),  2);   // protons: orange
 	pcolors[-11]  = QPen(Qt::red,               2);   // positrons: positive - red
-	pcolors[0]    = QPen(Qt::blue,              2);   // optical photons: blue
-	pcolors[13  ] = QPen(QColor(0,125, 0   ),   2);   // Muon+ - dark green
-	pcolors[-13 ] = QPen(QColor(0,250, 0   ),   2);   // Muon- - light green
-	pcolors[1000] = QPen(Qt::black,             2);   // neutrals: black
+	pcolors[MHit::OPTICALPHOTONPID]  = QPen(Qt::white,             2);   // optical photons: white
+	pcolors[13  ] = QPen(Qt::cyan,    2);       // Muon+ - dark green
+	pcolors[-13 ] = QPen(Qt::green,   2);       // Muon- - light green
+	pcolors[1000] = QPen(Qt::gray,              2);   // neutrals: black
 	pcolors[-99]  = QPen(Qt::red,               3);   // ion
 
 	// default pen widts
