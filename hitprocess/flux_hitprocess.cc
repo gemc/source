@@ -8,11 +8,20 @@ map<string, double> flux_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int id  = identity[0].id;
 	
-	if(verbosity>4)
+	if(verbosity>4) {
 		cout << log_msg << " flux detector id: " << id << endl;
+	}
 	
-	dgtz["hitn"] = hitn;
-	dgtz["id"]   = id;
+	trueInfos tInfos(aHit);
+	
+	dgtz["hitn"]      = hitn;
+	dgtz["sector"]    = 1;
+	dgtz["layer"]     = 1;
+	dgtz["component"] = id;
+	dgtz["ADC_order"] = 0;
+	dgtz["ADC_ADC"]   = tInfos.eTot;
+	dgtz["ADC_time"]  = (int) tInfos.time;
+	dgtz["ADC_ped"]   = 0;
 	
 	return dgtz;
 }

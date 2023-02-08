@@ -16,6 +16,9 @@ public:
 	hipo::schema userLund;
 	hipo::schema lundParticle;
 
+	// flux
+	hipo::schema fluxADCSchema;
+
 	// detectors
 	hipo::schema alertAhdcADCchema;
 	hipo::schema alertAtofADCchema;

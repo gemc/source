@@ -27,6 +27,10 @@ HipoSchema :: HipoSchema()
 	userLund      = hipo::schema("MC::User",      40, 5);
 	lundParticle  = hipo::schema("MC::Lund",      40, 3);
 	
+	// flux
+	fluxADCSchema     = hipo::schema("FLUX::adc",    22200, 20);
+
+	
 	// detectors
 	alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
 	alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
@@ -84,6 +88,10 @@ HipoSchema :: HipoSchema()
 	mcEventHeader.parse("npart/S, atarget/S, ztarget/S, ptarget/F, pbeam/F, btype/S, ebeam/F, targetid/S, processid/S, weight/F");
 	userLund.parse("userVar/F");
 	lundParticle.parse("index/B, lifetime/F, type/B, pid/I, parent/B, daughter/B, px/F, py/F, pz/F, energy/F, mass/F, vx/F, vy/F, vz/F");
+	
+	// flux
+	fluxADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
+
 	
 	// detectors
 	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
@@ -146,7 +154,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["MC::User"]     = userLund;
 	schemasToLoad["MC::Lund"]     = lundParticle;
 	
-
+	// flux
+	schemasToLoad["FLUX::adc"]    = fluxADCSchema;
 
 	// The names corresponds to the hit process routine names, capitalized
 	schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
@@ -208,7 +217,7 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 			 !(schemaName == "alrtdc"  && type == 1) &&
  			 !(schemaName == "alrttof" && type == 1) &&
 			 !(schemaName == "urwell"  && type == 1) &&
-			 !(schemaName == "flux") ) {
+			 !(schemaName == "flux"    && type == 1) ) {
 			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
 		}
 		return emptySchema;

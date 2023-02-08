@@ -170,8 +170,13 @@ map<string, gBank> read_banks(goptions gemcOpt, map<string, string> allSystems)
 	// flux bank digitized infos
 	// flux digitized provide just one "digitized" variable, the detector id
 	abank =  gBank(FLUX_BANK_TAG, "flux", "Geant4 flux digitized information");
-	abank.load_variable("hitn",   99,  "Di", "Hit Number");
-	abank.load_variable("id",     1,  "Di", "ID of flux element");
+	abank.load_variable("hitn",      99,  "Di", "Hit Number");
+	abank.load_variable("sector",     1,  "Di", "ID of flux element");
+	abank.load_variable("layer",      2,  "Di", "ID of flux element");
+	abank.load_variable("component",  3,  "Di", "ID of flux element");
+	abank.load_variable("ADC_order",  4,  "Di", "ID of flux element");
+	abank.load_variable("ADC_ADC",    5,  "Di", "ID of flux element");
+	abank.load_variable("ADC_time",   6,  "Di", "ID of flux element");
 	abank.orderNames();
 	banks["flux"]   = abank;
 	
