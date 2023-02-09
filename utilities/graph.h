@@ -1,6 +1,9 @@
 #ifndef graph_H
 #define graph_H 1
 
+// gemc headers - needed for the definition of MHit::OPTICALPHOTONPID
+#include "HitProcess.h"
+
 // Qt headers
 #include <QtWidgets>
 
