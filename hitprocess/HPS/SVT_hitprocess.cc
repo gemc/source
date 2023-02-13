@@ -42,6 +42,11 @@ map<string, double> SVT_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["module"]  = module;
 	dgtz["strip"]   = strip;
 	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+	
 	return dgtz;
 }
 

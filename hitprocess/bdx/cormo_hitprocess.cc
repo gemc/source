@@ -199,6 +199,11 @@ map<string, double> cormo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["tdcb"]   = TDCB;
 	dgtz["tdcf"]   = TDCF;
 	
+	// define conditions to reject hit
+	if (rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 

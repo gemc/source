@@ -306,6 +306,11 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 	}
 	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+	
 	return dgtz;
 }
 

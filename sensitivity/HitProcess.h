@@ -71,6 +71,8 @@ public:
 		gpars     = gp;
 		verbosity                = gemcOpt.optMap["HIT_VERBOSITY"].arg;
 		accountForHardwareStatus = gemcOpt.optMap["HARDWARESTATUS"].arg;
+		applyInefficiencies      = gemcOpt.optMap["DETECTOR_INEFFICIENCY"].arg;
+		applyThresholds          = gemcOpt.optMap["APPLY_THRESHOLDS"].arg;
 
 		log_msg   = "  > " + HCname + "  Hit Process ";
 		HCname = name;
@@ -145,6 +147,8 @@ protected:
 	string log_msg;
 	bool rejectHitConditions;
 	bool accountForHardwareStatus;
+	bool applyInefficiencies;
+	bool applyThresholds;
 
 	inline double DGauss(double x, double *par, double Edep, double stepTime)
 	{

@@ -325,9 +325,9 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	// define conditions to reject hit
-	//if(rejectHitConditions) {
-	//	writeHit = false;
-	//}
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
 	//cout << "RETURNING DGTZ\n";
 	return dgtz;
 }

@@ -335,6 +335,11 @@ map<string, double> crs_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["tdcb"]   = TDCB*1000.;//original time in ps
 	dgtz["tdcf"]   = 0;
 	
+	// define conditions to reject hit
+	if (rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 }
 

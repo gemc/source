@@ -588,7 +588,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["TDC_TDC"]   = TDC;
 	
 	// reject hit if below threshold or efficiency
-	if ( eTotal < threshold ) {
+	if ( eTotal < threshold && applyThresholds) {
 		rejectHitConditions = true;
 	}
 	

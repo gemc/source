@@ -762,7 +762,20 @@ void goptions::setGoptions()
 	optMap["HARDWARESTATUS"].type = 0;
 	optMap["HARDWARESTATUS"].ctgr = "control";
 
+	optMap["DETECTOR_INEFFICIENCY"].arg  = 0;
+	optMap["DETECTOR_INEFFICIENCY"].name = "Accounts for detector inefficiency";
+	optMap["DETECTOR_INEFFICIENCY"].help = "Accounts for detector inefficiency\n";
+	optMap["DETECTOR_INEFFICIENCY"].help += "This flag can be used by the digitization routines to account for hardware status\n";
+	optMap["DETECTOR_INEFFICIENCY"].type = 0;
+	optMap["DETECTOR_INEFFICIENCY"].ctgr = "control";
 
+	optMap["APPLY_THRESHOLDS"].arg  = 0;
+	optMap["APPLY_THRESHOLDS"].name = "Accounts for detector thresholds";
+	optMap["APPLY_THRESHOLDS"].help = "Accounts for detector thresholds\n";
+	optMap["APPLY_THRESHOLDS"].help += "This flag can be used by the digitization routines to account for hardware status\n";
+	optMap["APPLY_THRESHOLDS"].type = 0;
+	optMap["APPLY_THRESHOLDS"].ctgr = "control";
+	
 
 
 	// Output

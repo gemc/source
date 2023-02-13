@@ -42,6 +42,11 @@ map<string, double> muon_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["tdcl"]   = tdcl;
 	dgtz["tdcr"]   = tdcr;
 	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+	
 	return dgtz;
 }
 

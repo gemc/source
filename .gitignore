@@ -1,4 +1,3 @@
-.sconsign.dblite
 *.o
 gui/src/moc_camera_control.cc
 gui/src/moc_detector_editor.cc

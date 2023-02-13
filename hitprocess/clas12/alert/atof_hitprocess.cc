@@ -327,9 +327,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
 
-	// decide if write an hit or not
-	rejectHitConditions = false;
-	writeHit = true;
+
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;

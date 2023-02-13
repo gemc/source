@@ -400,12 +400,18 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	dgtz["TDC_TDC"]   = (int) tdc;
 	
 	// reject hit if below threshold or efficiency
-	if ( energyDepositedAttenuated < ctc.threshold[sector - 1][layer - 1][side][paddle - 1] ) {
+	if ( energyDepositedAttenuated < ctc.threshold[sector - 1][layer - 1][side][paddle - 1] && applyThresholds ) {
 		rejectHitConditions = true;
 	}
+	
 	double random = G4UniformRand();
-	if ( random > ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] ) {
+	if ( random > ctc.efficiency[sector - 1][layer - 1][side][paddle - 1] && applyInefficiencies) {
 		rejectHitConditions = true;
+	}
+	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
 	}
 	
 	return dgtz;

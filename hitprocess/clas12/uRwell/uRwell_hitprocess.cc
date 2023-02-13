@@ -106,6 +106,11 @@ map<string, double>uRwell_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// cout<<dgtz["sector"]<<" "<< dgtz["layer"]<< " "<< dgtz["component"] << " "<< dgtz["ADC"]<< " "<< dgtz["time"]<<" "<< 1e6*tInfos.eTot<<endl;
 	
+	// define conditions to reject hit
+	if (rejectHitConditions) {
+		writeHit = false;
+	}
+
 	return dgtz;
 	
 }

@@ -87,6 +87,11 @@ map<string, double> ECAL_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["adc"]  = adc;
 	dgtz["tdc"]  = tdc;
 	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+	
 	return dgtz;
 }
 

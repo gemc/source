@@ -148,9 +148,6 @@ map<string, double> alertshell_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	cout << " value in hitn var: " << hitn << endl;
 	//	cout << " ************** Hit ended! **************** " << endl;
 	
-	// decide if write an hit or not
-	rejectHitConditions = false;
-	writeHit = true;
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;

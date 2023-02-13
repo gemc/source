@@ -23,6 +23,11 @@ map<string, double> bubble_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["pid"]   = thisPid;
 	dgtz["hitn"]  = hitn;
 	
+	// define conditions to reject hit
+	if(rejectHitConditions) {
+		writeHit = false;
+	}
+	
 	return dgtz;
 }
 

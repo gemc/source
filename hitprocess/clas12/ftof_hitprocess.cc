@@ -409,7 +409,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 
 	// reject hit if below threshold or efficiency
-	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] ) {
+	if ( energyDepositedAttenuated < ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1] && applyThresholds) {
 		rejectHitConditions = true;
 	}
 	double random = G4UniformRand();
@@ -418,7 +418,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 //	<< ftc.threshold[sector - 1][panel - 1][pmt][paddle - 1]  << " and efficiency " << ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1]
 //	<< " random " << random << endl;
 
-	if ( random > ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1] ) {
+	if ( random > ftc.efficiency[sector - 1][panel - 1][pmt][paddle - 1] && applyInefficiencies) {
 		rejectHitConditions = true;
 	}
 	
