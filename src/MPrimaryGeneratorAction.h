@@ -68,7 +68,7 @@ public:
 	// these two should belong to a general generator class
 	// start time can be modeled
 	double getTimeWindow(){return TWINDOW;}
-	double getStartTime(){return TWINDOW/2;}
+	double getStartTime(){return TSIGNAL;}
 
 
 	bool isFileOpen() {return !gif.eof();}
@@ -139,6 +139,7 @@ private:
 	int NP;                            ///< Number of Luminosity Particles per event
 	double TWINDOW;                    ///< Time Window
 	double TBUNCH;                     ///< Time Between Bunches
+	double TSIGNAL;                    ///< Primary Beam Particle Time
 	double lumiFlat;                   ///< if this is set to 1, spread flat in theta, not cos(theta)
 
 	// Luminosity Beam2
@@ -154,6 +155,7 @@ private:
 
 	G4ParticleGun* particleGun;
 	void setBeam();
+	vector<int> setBunches(int, int);
 
 	double cosmicMuBeam(double, double);
 	double cosmicNeutBeam(double, double);

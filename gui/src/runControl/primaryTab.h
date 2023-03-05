@@ -24,6 +24,7 @@ class lumiEvent : public QWidget
 		QLineEdit *nevents;
 		QLineEdit *timewindow;
 		QLineEdit *time_bunch;
+		QLineEdit *time_signal;
 		
 		QGroupBox *LumiGroup;
 };
