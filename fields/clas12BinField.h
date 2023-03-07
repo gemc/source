@@ -11,6 +11,9 @@ public:
 
 	// save map list for loadFieldMap
 	map<string, vector<string> > validC12MapNames;
+
+	// fields used in real data:
+	// https://github.com/JeffersonLab/clas12-offline-software/blob/development/etc/services/data.yaml
 	
 	// constructor:  create map list with hardcoded names
 	// hardcoding names here
