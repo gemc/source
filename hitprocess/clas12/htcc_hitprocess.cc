@@ -46,7 +46,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	if(accountForHardwareStatus) {
 		
 		cout<<"HTCC:Getting status"<<endl;
-		sprintf(htccc.database,"/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear() ; calib->GetCalib(data,htccc.database);
 		for(unsigned row = 0; row < data.size(); row++)
 		{
@@ -55,7 +55,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		}
 	}
 	cout<<"HTCC:Getting mc_gain"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/mc_gain:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/mc_gain:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -63,7 +63,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		htccc.mc_gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
 	cout <<"HTCC:Getting mc_gain, mc_smearing" <<endl;
-	sprintf(htccc.database,"/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -76,7 +76,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	
 	
 	cout<<"HTCC:Getting time_offset"<<endl;
-	sprintf(htccc.database,"/calibration/htcc/time:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/time:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		isec   = data[row][0]; ilay   = data[row][1];

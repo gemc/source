@@ -51,7 +51,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ctc.connection));
 	cout << "Connecting to " << ctc.connection << "/calibration/ctof" << endl;
 	
-	sprintf(ctc.database, "/calibration/ctof/attenuation:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/attenuation:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting attenuation" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -63,7 +63,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.attlen[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	sprintf(ctc.database, "/calibration/ctof/effective_velocity:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/effective_velocity:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting effective_velocity" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -76,7 +76,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	if(accountForHardwareStatus) {
-		sprintf(ctc.database, "/calibration/ctof/:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 		cout << "CTOF:Getting status" << endl;
 		data.clear();
 		calib->GetCalib(data, ctc.database);
@@ -89,7 +89,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		}
 	}
 	
-	sprintf(ctc.database, "/calibration/ctof/threshold:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/threshold:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting threshold" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -101,7 +101,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.threshold[isec - 1][ilay - 1][1].push_back(data[row][4]);
 	}
 	
-	sprintf(ctc.database, "/calibration/ctof/efficiency:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/efficiency:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting efficiency" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -115,7 +115,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	
 	
 	
-	sprintf(ctc.database, "/calibration/ctof/gain_balance:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/gain_balance:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting gain_balance" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -129,7 +129,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	
 	/* For future use in HitProcess
 	 cout<<"Getting time_walk"<<endl;
-	 sprintf(ctc.database,"/calibration/ctof/time_walk:%d:%s%s",ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	 snprintf(ctc.database, sizeof(ctc.database), "/calibration/ctof/time_walk:%d:%s%s",ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	 data.clear() ; calib->GetCalib(data,ctc.database);
 	 for(unsigned row = 0; row < data.size(); row++)
 	 {
@@ -143,7 +143,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	 }
 	 */
 	
-	sprintf(ctc.database, "/calibration/ctof/time_offsets:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+    snprintf(ctc.database, sizeof(ctc.database), "/calibration/ctof/time_offsets:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting time_offsets" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -156,7 +156,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 		ctc.toff_P2P[isec-1][ilay-1].push_back(data[row][5]);
 	}
 	
-	sprintf(ctc.database, "/calibration/ctof/tdc_conv:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/tdc_conv:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting tdc_conv" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -169,7 +169,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	
-	sprintf(ctc.database, "/geometry/ctof/ctof:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/geometry/ctof/ctof:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Getting geometry" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -184,7 +184,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	}
 	
 	
-	sprintf(ctc.database, "/calibration/ctof/tres:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database),  "/calibration/ctof/tres:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	cout << "CTOF:Setting time resolution" << endl;
 	data.clear();
 	calib->GetCalib(data, ctc.database);
@@ -240,7 +240,7 @@ static ctofConstants initializeCTOFConstants(int runno, string digiVariation = "
 	
 	
 	// now connecting to target geometry to get its position
-	sprintf(ctc.database,"/geometry/target:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ctc.database, sizeof(ctc.database), "/geometry/target:%d:%s%s", ctc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ctc.database);
 	ctc.targetZPos = data[0][3]*cm;
 	

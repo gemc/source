@@ -43,7 +43,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	
 	if(accountForHardwareStatus) {
 		cout<<"CND:Getting status" << endl;
-		sprintf(cndc.database,"/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,cndc.database);
 		for(unsigned row = 0; row < data.size(); row++)
 		{
@@ -54,7 +54,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting thresholds" << endl;
-	sprintf(cndc.database,"/calibration/cnd/Thresholds:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Thresholds:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -66,7 +66,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting TDC slope"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -76,7 +76,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting attenuation"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Attenuation:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Attenuation:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -86,7 +86,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting effective_velocity"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/EffV:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/EffV:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -96,7 +96,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting energy calibration"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Energy:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Energy:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -108,7 +108,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting u-turn delay"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/UturnTloss:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -117,7 +117,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset LR"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TimeOffsets_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -126,7 +126,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset layer"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TimeOffsets_layer:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -268,7 +268,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int status_D     = 0; // MARK: TO DELETE LATER
 	int status_N     = 0; // MARK: TO DELETE LATER
-	int status       = 0;
+	// int status       = 0;
 	
 	double adc_mip_D = 0.; // MARK: TO DELETE LATER
 	double adc_mip_N = 0.; // MARK: TO DELETE LATER
@@ -299,12 +299,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_L[sector-1][layer-1][0];
 		}
@@ -330,12 +330,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_R[sector-1][layer-1][0];
 		}

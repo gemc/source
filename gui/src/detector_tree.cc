@@ -296,7 +296,7 @@ void detector_tree::switch_visibility()
 	tree_map[name].visible == 1 ? tree_map[name].visible = 0 : tree_map[name].visible = 1;
 	tree_map[name].visible == 1 ? CurrentItem->setBackground(0, ActiveBrush ) : CurrentItem->setBackground(0, NonVisibleBrush);
 	char command[100];
-	sprintf(command, "/vis/geometry/set/visibility %s 0 %d", name.c_str(), tree_map[name].visible);
+    snprintf(command, 100, "/vis/geometry/set/visibility %s 0 %d", name.c_str(), tree_map[name].visible);
 	UImanager->ApplyCommand(command);
 }
 
@@ -314,7 +314,7 @@ void detector_tree::switch_visibility_daughters()
 		}
 	
 	char command[100];
-	sprintf(command, "/vis/geometry/set/daughtersInvisible %s 0 %d", name.c_str(), !vis);
+    snprintf(command, 100, "/vis/geometry/set/daughtersInvisible %s 0 %d", name.c_str(), !vis);
 	UImanager->ApplyCommand(command);	
 }
 
@@ -323,13 +323,13 @@ void detector_tree::inspectDetector()
 	string name  = qs_tostring(treeWidget->currentItem()->text(0));
 	
 	char command[100];
-	sprintf(command,"/vis/viewer/set/lineSegmentsPerCircle 100 ");
+    snprintf(command, 100,"/vis/viewer/set/lineSegmentsPerCircle 100 ");
 	UImanager->ApplyCommand(command);
-	sprintf(command, "/vis/open OGL");
+    snprintf(command, 100, "/vis/open OGL");
 	UImanager->ApplyCommand(command);
-	sprintf(command, "/vis/specify %s", name.c_str());
+    snprintf(command, 100, "/vis/specify %s", name.c_str());
 	UImanager->ApplyCommand(command);
-	sprintf(command, "/vis/viewer/set/background .85 .95 .98 1");
+    snprintf(command, 100, "/vis/viewer/set/background .85 .95 .98 1");
 	UImanager->ApplyCommand(command);
 }
 
@@ -343,8 +343,8 @@ void detector_tree::switch_wiresolid()
 	tree_map[name].wiresolid == 1 ? tree_map[name].wiresolid = 0 : tree_map[name].wiresolid = 1;
 	
 	char command[100];
-	if( tree_map[name].wiresolid == 1) sprintf(command, "/vis/geometry/set/forceSolid     %s 0 1", name.c_str());
-	if( tree_map[name].wiresolid == 0) sprintf(command, "/vis/geometry/set/forceWireframe %s 0 1", name.c_str());
+	if( tree_map[name].wiresolid == 1) snprintf(command, 100, "/vis/geometry/set/forceSolid     %s 0 1", name.c_str());
+	if( tree_map[name].wiresolid == 0) snprintf(command, 100, "/vis/geometry/set/forceWireframe %s 0 1", name.c_str());
 	UImanager->ApplyCommand(command);
 }
 
@@ -356,7 +356,7 @@ void detector_tree::switch_color()
 	QColor color = QColorDialog::getColor(Qt::green, this);
 	color.getRgb(&r, &g, &b);
 	char command[100];
-	sprintf(command, "/vis/geometry/set/colour %s 0 %3.2f %3.2f %3.2f", name.c_str(), r/255.0, g/255.0, b/255.0);
+    snprintf(command, 100, "/vis/geometry/set/colour %s 0 %3.2f %3.2f %3.2f", name.c_str(), r/255.0, g/255.0, b/255.0);
 	UImanager->ApplyCommand(command);
 }
 
@@ -450,14 +450,14 @@ void detector_tree::write_wrl_file(string name)
 
 	if(name != "root")
 	{
-		sprintf(command, "/vis/specify %s", name.c_str());
+        snprintf(command, 100, "/vis/specify %s", name.c_str());
 		UImanager->ApplyCommand(command);
 	}
 
-	sprintf(command, "/vis/open VRML2FILE");
+    snprintf(command, 100, "/vis/open VRML2FILE");
 	UImanager->ApplyCommand(command);
-	
-	sprintf(command, "/vis/viewer/flush");
+
+    snprintf(command, 100, "/vis/viewer/flush");
 	UImanager->ApplyCommand(command);
 }
 

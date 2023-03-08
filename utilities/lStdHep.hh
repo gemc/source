@@ -128,7 +128,7 @@ public:
    static int         getMinor(void) { return(MINOR); };
    static const char *getText(void)  {
       static char buff[80];
-      sprintf(buff, "lStdHep version %d.%d (%02d.%02d.%d) by W.G.J. Langeveld, SLAC",
+       snprintf(buff, 80, "lStdHep version %d.%d (%02d.%02d.%d) by W.G.J. Langeveld, SLAC",
               MAJOR, MINOR, DAY, MONTH, YEAR);
       return(buff);
    };

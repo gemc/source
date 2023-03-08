@@ -98,7 +98,7 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 	for(int a=0; a<nticksx; a++)
 	{
 		char lab[20];
-		sprintf(lab, "%4.3f", xmin+ a*dx/nticksx);
+		snprintf(lab, 20, "%4.3f", xmin+ a*dx/nticksx);
 		QGraphicsSimpleTextItem *alab = new QGraphicsSimpleTextItem(QString(lab));
 		alab->setFont(QFont("Helvetica", 12));
 		alab->moveBy(xorig + inside + a*DX/nticksx - 12, yorig + 8);
@@ -112,17 +112,17 @@ void graph::plots_bg(string xtit, string ytit, vector<double> x, vector<double> 
 
 		// format depends on number
 		if     (fabs(ymin + a*dy/nticksy) < 0.01)
-			sprintf(lab, "%5.4f", ymin+ a*dy/nticksy);
+            snprintf(lab, 20, "%5.4f", ymin+ a*dy/nticksy);
 		else if(fabs(ymin + a*dy/nticksy) < 1)
-			sprintf(lab, "%5.3f", ymin+ a*dy/nticksy);
+            snprintf(lab, 20, "%5.3f", ymin+ a*dy/nticksy);
 		else if(fabs(ymin + a*dy/nticksy) < 10)
-			sprintf(lab, "%5.2f", ymin+ a*dy/nticksy);
+            snprintf(lab, 20, "%5.2f", ymin+ a*dy/nticksy);
 		else if(fabs(ymin + a*dy/nticksy) < 100)
-			sprintf(lab, "%5.1f", ymin+ a*dy/nticksy);
+            snprintf(lab, 20, "%5.1f", ymin+ a*dy/nticksy);
 		else if(fabs(ymin + a*dy/nticksy) > 1000)
-			sprintf(lab, "%2.1e", ymin+ a*dy/nticksy);
+            snprintf(lab, 20, "%2.1e", ymin+ a*dy/nticksy);
 		else
-			sprintf(lab, "%5.0f", ymin+ a*dy/nticksy);
+			snprintf(lab, 20, "%5.0f", ymin+ a*dy/nticksy);
 		
 		QGraphicsSimpleTextItem *alab = new QGraphicsSimpleTextItem(QString(lab));
 		alab->setFont(QFont("Helvetica", 12));

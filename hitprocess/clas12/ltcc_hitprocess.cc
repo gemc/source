@@ -41,7 +41,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	// component = segment number
 	int sector, layer, component;
 	
-	sprintf(ltccc.database,"/calibration/ltcc/spe:%d:%s%s",ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ltccc.database, sizeof(ltccc.database), "/calibration/ltcc/spe:%d:%s%s",ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
@@ -55,7 +55,7 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
 	
-	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ltccc.database, sizeof(ltccc.database), "/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;

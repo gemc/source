@@ -207,7 +207,7 @@ void gemcMainWidget::beamOn()
 	int nevs = atoi(qs_tostring(nEvents->text()).c_str());
 
 	char command[100];
-	sprintf(command, "/run/beamOn %d", nevs);
+    snprintf(command, 100, "/run/beamOn %d", nevs);
 	uim->ApplyCommand(command);
 
 	if(pagesWidget->currentIndex() == 5)
@@ -230,10 +230,10 @@ void gemcMainWidget::beamOnCycle()
 	G4UImanager *uim = G4UImanager::GetUIpointer();
 	
 	char command[100];
-	sprintf(command, "/vis/viewer/refresh");
+    snprintf(command, 100, "/vis/viewer/refresh");
 	uim->ApplyCommand(command);
-	
-	sprintf(command, "/run/beamOn 1");
+
+    snprintf(command, 100, "/run/beamOn 1");
 	uim->ApplyCommand(command);
 	
 }

@@ -132,7 +132,7 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	TPC_TZERO = 0.0;
 	
 	// not used anymore?
-	int chan=0;
+	// int chan=0;
 	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();

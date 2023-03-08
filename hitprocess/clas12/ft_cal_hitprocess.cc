@@ -47,7 +47,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	if(accountForHardwareStatus) {
 		
 		cout<<"FT-Cal:Getting status"<<endl;
-		sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,ftcc.database);
 		for(unsigned row = 0; row < data.size(); row++)
 		{
@@ -57,7 +57,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting noise"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/noise:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -70,7 +70,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting charge_to_energy"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/charge_to_energy:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -83,7 +83,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting time_offsets"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d:%s%s", ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/time_offsets:%d:%s%s", ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{

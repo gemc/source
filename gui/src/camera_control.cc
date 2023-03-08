@@ -61,7 +61,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	for(int t=0; t<=180; t+=30)
 	{
 		char tmp[100];
-		sprintf(tmp, "%d", t);
+        snprintf(tmp, 100, "%d", t);
 		ThetaSet.push_back(tmp);
 	}
 	
@@ -91,7 +91,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 	for(int t=0; t<=360; t+=30)
 	{
 		char tmp[100];
-		sprintf(tmp, "%d", t);
+        snprintf(tmp, 100, "%d", t);
 		PhiSet.push_back(tmp);
 	}
 	QComboBox *PhiCombo = new QComboBox;
@@ -372,7 +372,7 @@ camera_control::camera_control(QWidget *parent, goptions *Opts) : QWidget(parent
 void camera_control::printPNG()
 {
 	char command[100];
-	sprintf(command, "/vis/ogl/export gemc.png");
+    snprintf(command, 100, "/vis/ogl/export gemc.png");
 	UImanager->ApplyCommand(command);
 }
 
@@ -380,16 +380,16 @@ void camera_control::printPNG()
 void camera_control::printEPS()
 {
 	char command[100];
-	sprintf(command, "/vis/ogl/set/printMode vectored");
+    snprintf(command, 100,  "/vis/ogl/set/printMode vectored");
 	UImanager->ApplyCommand(command);
-	sprintf(command, "/vis/ogl/printEPS");
+    snprintf(command, 100, "/vis/ogl/printEPS");
 	UImanager->ApplyCommand(command);
 }
 
 void camera_control::printPDF()
 {
 	char command[100];
-	sprintf(command, "/vis/ogl/export gemc.pdf");
+    snprintf(command, 100,  "/vis/ogl/export gemc.pdf");
 	UImanager->ApplyCommand(command);
 }
 
@@ -417,17 +417,17 @@ void camera_control::slice()
 		
 	if(sliceXActi->isChecked() )
 	{
-		sprintf(command, "/vis/viewer/addCutawayPlane  %d   0  0 mm %d 0 0 ", (int) qs_toDouble(sliceXEdit->text()), sliceXInve->isChecked() ? -1 : 1 );
+        snprintf(command, 200, "/vis/viewer/addCutawayPlane  %d   0  0 mm %d 0 0 ", (int) qs_toDouble(sliceXEdit->text()), sliceXInve->isChecked() ? -1 : 1 );
 		UImanager->ApplyCommand(command);
 	}
 	if(sliceYActi->isChecked() )
 	{
-		sprintf(command, "/vis/viewer/addCutawayPlane   0  %d  0 mm 0 %d 0 ", (int) qs_toDouble(sliceYEdit->text()), sliceYInve->isChecked() ? -1 : 1);
+        snprintf(command, 200, "/vis/viewer/addCutawayPlane   0  %d  0 mm 0 %d 0 ", (int) qs_toDouble(sliceYEdit->text()), sliceYInve->isChecked() ? -1 : 1);
 		UImanager->ApplyCommand(command);
 	}
 	if(sliceZActi->isChecked() )
 	{
-		sprintf(command, "/vis/viewer/addCutawayPlane   0   0 %d mm 0 0 %d ", (int) qs_toDouble(sliceZEdit->text()), sliceZInve->isChecked() ? -1 : 1);
+        snprintf(command, 200, "/vis/viewer/addCutawayPlane   0   0 %d mm 0 0 %d ", (int) qs_toDouble(sliceZEdit->text()), sliceZInve->isChecked() ? -1 : 1);
 		UImanager->ApplyCommand(command);
 	}
 	solidVis = true;
@@ -455,10 +455,10 @@ void camera_control::change_theta(int theta)
 	theta_hall = theta - 1;
 
 	if(qs_tostring(moveCombo->currentText()) == "Detector")
-		sprintf(command,"/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
+        snprintf(command, 100,"/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
 
 	if(qs_tostring(moveCombo->currentText()) == "Light")
-		sprintf(command,"/vis/viewer/set/lightsThetaPhi %d %d.", theta_hall, phi_hall);
+        snprintf(command, 100,"/vis/viewer/set/lightsThetaPhi %d %d.", theta_hall, phi_hall);
 
 	UImanager->ApplyCommand(command);
 }
@@ -467,7 +467,7 @@ void camera_control::set_theta(int index)
 {
 	char command[100];
 	theta_hall = atoi(ThetaSet[index].c_str());
-	sprintf(command,"/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
+    snprintf(command, 100,"/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
 	UImanager->ApplyCommand(command);
 }
 
@@ -483,10 +483,10 @@ void camera_control::change_phi(int phi)
 
 
 	if(qs_tostring(moveCombo->currentText()) == "Detector")
-		sprintf(command,"/vis/viewer/set/viewpointThetaPhi %d %d", theta_hall, phi_hall);
+        snprintf(command, 100,"/vis/viewer/set/viewpointThetaPhi %d %d", theta_hall, phi_hall);
 
 	if(qs_tostring(moveCombo->currentText()) == "Light")
-		sprintf(command,"/vis/viewer/set/lightsThetaPhi %d %d.", theta_hall, phi_hall);
+        snprintf(command, 100, "/vis/viewer/set/lightsThetaPhi %d %d.", theta_hall, phi_hall);
 		
 	UImanager->ApplyCommand(command);
 }
@@ -500,7 +500,7 @@ void camera_control::set_phi(int index)
 {
 	char command[100];
 	phi_hall = atoi(PhiSet[index].c_str());
-	sprintf(command,"/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
+	snprintf(command, 100, "/vis/viewer/set/viewpointThetaPhi %d %d.", theta_hall, phi_hall);
 	UImanager->ApplyCommand(command);
 }
 
@@ -510,8 +510,8 @@ void camera_control::explode(int boom)
 	char command[100];
 
 	double xf = 1 +  ((double) boom)/15.0;
-	
-	sprintf(command,"/vis/viewer/set/explodeFactor %3.2f", xf);
+
+    snprintf(command, 100,"/vis/viewer/set/explodeFactor %3.2f", xf);
 	
 	UImanager->ApplyCommand(command);
 }
@@ -522,7 +522,7 @@ void camera_control::set_perspective(int index)
 	double angles[4] = { 0,   30,  45, 60};
 	string which[4]  = {"o", "p", "p", "p"};
 
-	sprintf(command,"/vis/viewer/set/projection %s %4.2f ",which[index].c_str(),  angles[index]);
+    snprintf(command, 100,"/vis/viewer/set/projection %s %4.2f ",which[index].c_str(),  angles[index]);
 	UImanager->ApplyCommand(command);
 }
 
@@ -580,8 +580,8 @@ void camera_control::switch_sides_per_circle(int index)
 {
 	char command[100];
 	int sides[4] = { 25, 50,   100,  200};
-	
-	sprintf(command,"/vis/viewer/set/lineSegmentsPerCircle %d ", sides[index]);
+
+    snprintf(command, 100,"/vis/viewer/set/lineSegmentsPerCircle %d ", sides[index]);
 	UImanager->ApplyCommand(command);
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }
@@ -612,7 +612,7 @@ void camera_control::addFieldsArrows()
 	int npoints = 6;
 	char command[100];
 
-	sprintf(command,"/vis/scene/add/magneticField %d ", npoints);
+    snprintf(command, 100, "/vis/scene/add/magneticField %d ", npoints);
 	UImanager->ApplyCommand(command);
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }

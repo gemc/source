@@ -365,12 +365,12 @@ int main( int argc, char **argv )
 			char command[100];
 			// starting clock after the first event is much more precise
 			if(nEventsToProcess > 10) {
-				sprintf(command, "/run/beamOn 1");
+                snprintf(command, 100, "/run/beamOn 1");
 				UImanager->ApplyCommand(command);
 				start_events = clock();
 				nEventsToProcess--;
 			}
-			sprintf(command, "/run/beamOn %ld", nEventsToProcess);
+            snprintf(command, 100, "/run/beamOn %ld", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 		
@@ -388,12 +388,12 @@ int main( int argc, char **argv )
 			char command[100];
 			// starting clock after the first event is much more precise
 			if(nEventsToProcess > 10) {
-				sprintf(command, "/run/beamOn 1");
+                snprintf(command, 100, "/run/beamOn 1");
 				UImanager->ApplyCommand(command);
 				start_events = clock();
 				nEventsToProcess--;
 			}
-			sprintf(command, "/run/beamOn %ld", nEventsToProcess);
+            snprintf(command, 100, "/run/beamOn %ld", nEventsToProcess);
 			UImanager->ApplyCommand(command);
 		}
 	}
