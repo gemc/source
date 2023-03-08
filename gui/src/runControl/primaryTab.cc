@@ -18,7 +18,9 @@ lumiEvent::lumiEvent(goptions *Opts, QWidget *parent, string type)
 	int lnevents = (int) get_number(values[0]);
 	double twindow = get_number(values[1]);
 	double tbunch  = get_number(values[2]);
-		
+ 	double tsignal = twindow/2;
+	if(values.size()==4) tsignal = get_number(values[3]);		
+
 	if(type == "Lumi2")
 	{
 		values  = get_info(Opts->optMap["LUMI2_EVENT"].args);
@@ -32,32 +34,41 @@ lumiEvent::lumiEvent(goptions *Opts, QWidget *parent, string type)
 	if( type == "Lumi1")   timewindowLabel = new QLabel(tr("Time Window"));
 	if( type == "Lumi2")   timewindowLabel = new QLabel(tr(""));
 	QLabel *bunchLabel       = new QLabel(tr("Bunch Time"));
+	QLabel *signalLabel       = new QLabel(tr("Signal Time"));
+	if( type == "Lumi2")   signalLabel = new QLabel(tr(""));
 	neventLabel->setFixedHeight(10);
 	timewindowLabel->setFixedHeight(10);
 	bunchLabel->setFixedHeight(10);
+	signalLabel->setFixedHeight(10);
 	QHBoxLayout *lumiHLayout = new QHBoxLayout;
-	lumiHLayout->addSpacing(45);
+	lumiHLayout->addSpacing(15);
 	lumiHLayout->addWidget(neventLabel);
-	lumiHLayout->addSpacing(25);
+	lumiHLayout->addSpacing(20);
 	lumiHLayout->addWidget(timewindowLabel);
 	lumiHLayout->addSpacing(20);
 	lumiHLayout->addWidget(bunchLabel);
+	lumiHLayout->addSpacing(20);
+	lumiHLayout->addWidget(signalLabel);
 	
 	nevents     = new QLineEdit();
 	timewindow  = new QLineEdit();
 	time_bunch  = new QLineEdit();
-	nevents->setMaximumWidth(100);
-	timewindow->setMaximumWidth(100);
-	time_bunch->setMaximumWidth(100);
+	time_signal = new QLineEdit();
+	nevents->setMaximumWidth(85);
+	timewindow->setMaximumWidth(85);
+	time_bunch->setMaximumWidth(85);
+	time_signal->setMaximumWidth(85);
 	nevents->setMinimumHeight(18);
 	timewindow->setMinimumHeight(18);
 	time_bunch->setMinimumHeight(18);
+	time_signal->setMinimumHeight(18);
 	QHBoxLayout *lumiHLayout2 = new QHBoxLayout;
 	lumiHLayout2->addWidget(nevents);
 	if( type == "Lumi1") lumiHLayout2->addWidget(timewindow);
-	if( type == "Lumi2") lumiHLayout2->addSpacing(135);
+	if( type == "Lumi2") lumiHLayout2->addSpacing(120);
 	lumiHLayout2->addWidget(time_bunch);
-		
+	if( type == "Lumi1") lumiHLayout2->addWidget(time_signal);
+
 	QString L_ne = stringify(lnevents).c_str();
 	nevents->setText(L_ne);
 	
@@ -67,9 +78,13 @@ lumiEvent::lumiEvent(goptions *Opts, QWidget *parent, string type)
 	QString L_tb = stringify(tbunch/ns).c_str() +  QString("*ns");
 	time_bunch->setText(L_tb);
 	
+	QString L_ts = stringify(tsignal/ns).c_str() +  QString("*ns");
+	time_signal->setText(L_ts);
+	
 	connect ( nevents     , SIGNAL( textChanged(const QString & ) ), parent, SLOT( changePars() ) );
 	connect ( timewindow  , SIGNAL( textChanged(const QString & ) ), parent, SLOT( changePars() ) );
 	connect ( time_bunch  , SIGNAL( textChanged(const QString & ) ), parent, SLOT( changePars() ) );
+	connect ( time_signal , SIGNAL( textChanged(const QString & ) ), parent, SLOT( changePars() ) );
 	
 	LumiGroup = new QGroupBox(tr(""));
 	QVBoxLayout *LLayout = new QVBoxLayout;
