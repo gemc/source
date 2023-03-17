@@ -335,9 +335,6 @@ void MDetectorConstruction::hasMagfield(detector detect)
 	string catch_v   = gemcOpt.optMap["CATCH"].args;
 	string field     = gemcOpt.optMap["NO_FIELD"].args;
 
-
-	//cout << field << " " <<
-
 	if(field == "all" || detect.magfield.find(field) != string::npos)
 		return;
 	

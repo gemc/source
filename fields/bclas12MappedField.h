@@ -63,14 +63,16 @@ public:
 	// fields filenames
 	string symmetricTorusFileName;
 	string solenoidFileName;
-	string fullTorusFileName;
+	string fullTorus20FileName;
+	string fullTorus21FileName;
 
 	// map pointers
 	// Uses David's routine to return the BX BY BZ components
 	FieldValuePtr combinedValuePtr;
 	MagneticFieldPtr symmetricTorus;
 	MagneticFieldPtr solenoid;
-	MagneticFieldPtr fullTorus;
+	MagneticFieldPtr fullTorus20;
+	MagneticFieldPtr fullTorus21;
 
 	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
 	double sinAlpha, cosAlhpa;

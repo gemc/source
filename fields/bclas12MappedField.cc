@@ -19,11 +19,12 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
 		
-	if(identifier == TorusSymm2018Solenoid2018) {
+	if       (identifier == TorusSymm2018Solenoid2018) {
 		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], symmetricTorus, solenoid);
-
 	} else if(identifier == TorusFull2020Solenoid2018) {
-		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus, solenoid);
+		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus20, solenoid);
+	} else if(identifier == TorusFull2021Solenoid2018) {
+		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus21, solenoid);
 	}
 
 
@@ -53,7 +54,7 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	if(verbosity>3 && FIRST_ONLY != 99) {
 		cout << "  > Cartesian track position in magnetic field map:" ;
 		cout << " ("    << x[0]/cm << ", " << x[1]/cm << ", " << x[2]/cm << ") cm " << endl;
-		cout << "B = ("   << bField[0]/gauss << ",  " << bField[1]/gauss << ",  " << bField[2]/gauss << ") gauss " << endl;
+		cout << "    B = ("   << bField[0]/gauss << ",  " << bField[1]/gauss << ",  " << bField[2]/gauss << ") gauss " << endl;
 	}
 
 	if(verbosity == 99) FIRST_ONLY = 99;

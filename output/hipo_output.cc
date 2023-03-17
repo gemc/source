@@ -61,6 +61,28 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 					}
 				}
 			}
+			
+			string hardcodedBinaryTorusOptionName = "binary_torus";
+			string hardcodedBinarySolenOptionName = "binary_solenoid";
+			double scaleFactor = 1;
+			vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
+			for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
+				vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
+				if(scales.size() == 2) {
+					if (scales[0].find(hardcodedBinaryTorusOptionName) != string::npos) {
+						scaleFactor = get_number(scales[1]);
+						// scale to 1 unless set below
+						fieldScales[trimSpacesFromString(hardcodedBinaryTorusOptionName)] = scaleFactor;
+						data.push_back("field" + trimSpacesFromString(hardcodedBinaryTorusOptionName) + " scale:  " + to_string(scaleFactor));
+					} else if (scales[0].find(hardcodedBinarySolenOptionName) != string::npos) {
+						scaleFactor = get_number(scales[1]);
+						// scale to 1 unless set below
+						fieldScales[trimSpacesFromString(hardcodedBinarySolenOptionName)] = scaleFactor;
+						data.push_back("field" + trimSpacesFromString(hardcodedBinaryTorusOptionName) + " scale:  " + to_string(scaleFactor));
+					}
+				}
+			}
+			
 		}
 	}
 

@@ -579,8 +579,9 @@ void dc_HitProcess::initWithRunNumber(int runno)
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 	
-	string hardcodedTorusMapName = "TorusSymmetric";
-	
+	string hardcodedAsciiTorusMapName  = "TorusSymmetric";
+	string hardcodedBinaryTorusMapName = "binary_torus";
+
 	if(dcc.runNo != runno) {
 		
 		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
@@ -591,7 +592,9 @@ void dc_HitProcess::initWithRunNumber(int runno)
 		for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
 			vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
 			if(scales.size() == 2) {
-				if (scales[0].find(hardcodedTorusMapName) != string::npos) {
+				if (scales[0].find(hardcodedAsciiTorusMapName) != string::npos) {
+					scaleFactor = get_number(scales[1]);
+				} else 	if (scales[0].find(hardcodedBinaryTorusMapName) != string::npos) {
 					scaleFactor = get_number(scales[1]);
 				}
 			}
@@ -599,7 +602,7 @@ void dc_HitProcess::initWithRunNumber(int runno)
 		dcc.fieldPolarity = scaleFactor;
 		
 		string nofield = gemcOpt.optMap["NO_FIELD"].args;
-		if(nofield == "all" || nofield.find(hardcodedTorusMapName) != string::npos ) {
+		if(nofield == "all") {
 			dcc.fieldPolarity = 1;
 		}
 		

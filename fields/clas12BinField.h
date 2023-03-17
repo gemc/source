@@ -48,6 +48,9 @@ public:
 		return new clas12BinField;
 	}
 	
+	double solenoidScale = 1;
+	double torusScale    = 1;
+	
 };
 
 
