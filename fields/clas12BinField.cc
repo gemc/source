@@ -22,9 +22,9 @@ using namespace gstring;
 
 bool clas12BinField::isEligible(string compositeFieldsName)
 {
-	if (compositeFieldsName ==  TorusSymmSolenoid2018 ) {
+	if (compositeFieldsName ==  TorusSymm2018Solenoid2018 ) {
 		return 1;
-	} else if ( compositeFieldsName == TorusASymmSolenoid2018 ) {
+	} else if ( compositeFieldsName == TorusFull2020Solenoid2018 ) {
 		return 1;
 	} else {
 		return 0;
@@ -50,9 +50,9 @@ gfield clas12BinField::loadField(string file, goptions opts)
 		gf.bc12map = new gclas12BinaryMappedField(file);
 		if(getenv("FIELD_DIR") != nullptr) {
 			string fieldDir=getenv("FIELD_DIR");
-			gf.bc12map->symmetricTorusFileName = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][1];
-			gf.bc12map->solenoidFileName       = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][0];
-			gf.bc12map->fullTorusFileName      = fieldDir + "/" + validC12MapNames[TorusASymmSolenoid2018][1];
+			gf.bc12map->symmetricTorusFileName = fieldDir + "/" + validC12MapNames[TorusSymm2018Solenoid2018][1];
+			gf.bc12map->solenoidFileName       = fieldDir + "/" + validC12MapNames[TorusSymm2018Solenoid2018][0];
+			gf.bc12map->fullTorusFileName      = fieldDir + "/" + validC12MapNames[TorusFull2020Solenoid2018][1];
 		}
 	}
 	
@@ -81,12 +81,12 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 
 	// initialize map pointers
 	b12map->combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
-	if (b12map->identifier == TorusSymmSolenoid2018 ) {
+	if (b12map->identifier == TorusSymm2018Solenoid2018 ) {
 	
 		b12map->solenoid       = initializeSolenoid(b12map->solenoidFileName.c_str());
 		b12map->symmetricTorus = initializeTorus(b12map->symmetricTorusFileName.c_str());
 		
-	} else if (b12map->identifier == TorusASymmSolenoid2018 ) {
+	} else if (b12map->identifier == TorusFull2020Solenoid2018 ) {
 	
 		b12map->solenoid  = initializeSolenoid(b12map->solenoidFileName.c_str());
 		b12map->fullTorus = initializeTorus(b12map->fullTorusFileName.c_str());

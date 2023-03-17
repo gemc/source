@@ -277,8 +277,8 @@ map<string, string> getFilesInDirectory(string directory)
 		}
 		closedir (dir);
 		
-		filesMap[TorusSymmSolenoid2018]  = "CLAS12BIN" ;
-		filesMap[TorusASymmSolenoid2018] = "CLAS12BIN" ;
+		filesMap[TorusSymm2018Solenoid2018]  = "CLAS12BIN" ;
+		filesMap[TorusFull2020Solenoid2018] = "CLAS12BIN" ;
 		
 	} else {
 		cout << "    Error: directory " << directory << " could not be opened." << endl;

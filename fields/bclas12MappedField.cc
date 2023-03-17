@@ -19,10 +19,10 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
 		
-	if(identifier == TorusSymmSolenoid2018) {
+	if(identifier == TorusSymm2018Solenoid2018) {
 		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], symmetricTorus, solenoid);
 
-	} else if(identifier == TorusASymmSolenoid2018) {
+	} else if(identifier == TorusFull2020Solenoid2018) {
 		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus, solenoid);
 	}
 

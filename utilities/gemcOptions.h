@@ -8,8 +8,9 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#define TorusSymmSolenoid2018  "c12BinaryTorusSymmSolenoid2018"
-#define TorusASymmSolenoid2018 "c12BinaryTorusASymmSolenoid2018"
+#define TorusSymm2018Solenoid2018      "c12BinaryTorusSymm2018Solenoid2018"
+#define TorusFull2020Solenoid2018     "c12BinaryTorusFull2020Solenoid2018"
+#define TorusFull2021Solenoid2018  "c12BinaryTorusFull2021Solenoid2018"
 
 // Qt4 headers
 #include <QDomDocument>

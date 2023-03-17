@@ -133,14 +133,14 @@ G4MagIntegratorStepper *createStepper(string sname, G4Mag_UsualEqRhs* ie)
 {
 	if (sname == "G4CashKarpRKF45")	      return new G4CashKarpRKF45(ie);
 	if (sname == "G4ClassicalRK4")	      return new G4ClassicalRK4(ie);
-	if (sname == "G4SimpleHeum")		  return new G4SimpleHeum(ie);
-	if (sname == "G4SimpleRunge")	      return new G4SimpleRunge(ie);
+	if (sname == "G4SimpleHeum")		      return new G4SimpleHeum(ie);
+	if (sname == "G4SimpleRunge")	         return new G4SimpleRunge(ie);
 	if (sname == "G4ImplicitEuler")	      return new G4ImplicitEuler(ie);
 	if (sname == "G4ExplicitEuler")	      return new G4ExplicitEuler(ie);
-	if (sname == "G4HelixImplicitEuler")  return new G4HelixImplicitEuler(ie);
-	if (sname == "G4HelixExplicitEuler")  return new G4HelixExplicitEuler(ie);
-	if (sname == "G4HelixSimpleRunge")	  return new G4HelixSimpleRunge(ie);
-	if (sname == "G4NystromRK4")	      return new G4NystromRK4(ie);
+	if (sname == "G4HelixImplicitEuler")   return new G4HelixImplicitEuler(ie);
+	if (sname == "G4HelixExplicitEuler")   return new G4HelixExplicitEuler(ie);
+	if (sname == "G4HelixSimpleRunge")	   return new G4HelixSimpleRunge(ie);
+	if (sname == "G4NystromRK4")	         return new G4NystromRK4(ie);
 	
 	// if requested is not found return nullptr
 	cout << "  !!! Error: stepper " << sname << " is not defined " << endl;

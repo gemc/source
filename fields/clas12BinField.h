@@ -3,6 +3,7 @@
 
 #include "fieldFactory.h"
 
+// uses David's Heddle cmag: https://github.com/JeffersonLab/clas12-cmag
 
 class clas12BinField : public fieldFactory
 {
@@ -18,8 +19,9 @@ public:
 	// constructor:  create map list with hardcoded names
 	// hardcoding names here
 	clas12BinField() {
-		validC12MapNames[TorusSymmSolenoid2018]  = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Symm_torus_r2501_phi16_z251_24Apr2018.dat"};
-		validC12MapNames[TorusASymmSolenoid2018] = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Full_torus_r251_phi181_z251_03March2020.dat"};
+		validC12MapNames[TorusSymm2018Solenoid2018] = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Symm_torus_r2501_phi16_z251_24Apr2018.dat"};
+		validC12MapNames[TorusFull2020Solenoid2018] = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Full_torus_r251_phi181_z251_03March2020.dat"};
+		validC12MapNames[TorusFull2021Solenoid2018] = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Full_torus_r251_phi181_z251_25Jan2021.dat"};
 	}
 
 	// check if the binary map filename is a match for a pre-defined list
