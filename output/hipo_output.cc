@@ -163,11 +163,15 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	if(fieldScales.find("TorusSymmetric") != fieldScales.end()) {
 		runConfigBank.putFloat("torus",      0, fieldScales["TorusSymmetric"]);
 		//		cout << "TorusSymmetric scaled by: " << fieldScales["TorusSymmetric"] << endl;
+	} else if(fieldScales.find("binary_torus") != fieldScales.end()) {
+		runConfigBank.putFloat("torus",      0, fieldScales["binary_torus"]);
 	} else {
 		runConfigBank.putFloat("torus",      0, 0);
 	}
 	if(fieldScales.find("clas12-newSolenoid") != fieldScales.end()) {
 		runConfigBank.putFloat("solenoid",      0, fieldScales["clas12-newSolenoid"]);
+	} else if(fieldScales.find("binary_solenoid") != fieldScales.end()) {
+		runConfigBank.putFloat("solenoid",      0, fieldScales["binary_solenoid"]);
 	} else {
 		runConfigBank.putFloat("solenoid",      0, 0);
 	}
