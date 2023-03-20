@@ -50,7 +50,11 @@ public:
 	
 	double solenoidScale = 1;
 	double torusScale    = 1;
-	
+
+	double solenoidOrigin[3] = {0, 0, 0};
+	double torusOrigin[3]    = {0, 0, 0};
+
+
 };
 
 

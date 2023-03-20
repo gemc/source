@@ -85,6 +85,24 @@ gfield clas12BinField::loadField(string file, goptions opts)
 		}
 	}
 	
+	vector<aopt> FIELD_DISPLACEMENT_OPTION = opts.getArgs("DISPLACE_FIELDMAP");
+	for (unsigned int f = 0; f < FIELD_DISPLACEMENT_OPTION.size(); f++) {
+		vector < string > displacement = getStringVectorFromStringWithDelimiter(FIELD_DISPLACEMENT_OPTION[f].args, ",");
+		if(displacement.size() == 4) {
+			if (displacement[0].find(hardcodedBinaryTorusOptionName) != string::npos) {
+				torusOrigin[0] = get_number(displacement[1]);
+				torusOrigin[1] = get_number(displacement[2]);
+				torusOrigin[2] = get_number(displacement[3]);
+			} else if (displacement[0].find(hardcodedBinarySolenOptionName) != string::npos) {
+				solenoidOrigin[0] = get_number(displacement[1]);
+				solenoidOrigin[1] = get_number(displacement[2]);
+				solenoidOrigin[2] = get_number(displacement[3]);
+			}
+		}
+	}
+
+	
+	
 	return gf;
 }
 
@@ -106,6 +124,14 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 		b12map->solenoid->scale       = solenoidScale;
 		b12map->symmetricTorus->scale = torusScale;
 
+		b12map->solenoid->shiftX       = solenoidOrigin[0]/cm;
+		b12map->solenoid->shiftY       = solenoidOrigin[1]/cm;
+		b12map->solenoid->shiftZ       = solenoidOrigin[2]/cm;
+
+		b12map->symmetricTorus->shiftX  = torusOrigin[0]/cm;
+		b12map->symmetricTorus->shiftY  = torusOrigin[1]/cm;
+		b12map->symmetricTorus->shiftZ  = torusOrigin[2]/cm;
+		
 	} else if (b12map->identifier == TorusFull2020Solenoid2018 ) {
 	
 		b12map->solenoid    = initializeSolenoid(b12map->solenoidFileName.c_str());
@@ -113,12 +139,29 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 		b12map->solenoid->scale    = solenoidScale;
 		b12map->fullTorus20->scale = torusScale;
 
+		b12map->solenoid->shiftX       = solenoidOrigin[0]/cm;
+		b12map->solenoid->shiftY       = solenoidOrigin[1]/cm;
+		b12map->solenoid->shiftZ       = solenoidOrigin[2]/cm;
+
+		b12map->fullTorus20->shiftX  = torusOrigin[0]/cm;
+		b12map->fullTorus20->shiftY  = torusOrigin[1]/cm;
+		b12map->fullTorus20->shiftZ  = torusOrigin[2]/cm;
+
 	} else if (b12map->identifier == TorusFull2021Solenoid2018 ) {
 		
 		b12map->solenoid    = initializeSolenoid(b12map->solenoidFileName.c_str());
 		b12map->fullTorus21 = initializeTorus(b12map->fullTorus21FileName.c_str());
 		b12map->solenoid->scale    = solenoidScale;
 		b12map->fullTorus21->scale = torusScale;
+
+		b12map->solenoid->shiftX       = solenoidOrigin[0]/cm;
+		b12map->solenoid->shiftY       = solenoidOrigin[1]/cm;
+		b12map->solenoid->shiftZ       = solenoidOrigin[2]/cm;
+
+		b12map->fullTorus21->shiftX  = torusOrigin[0]/cm;
+		b12map->fullTorus21->shiftY  = torusOrigin[1]/cm;
+		b12map->fullTorus21->shiftZ  = torusOrigin[2]/cm;
+		
 	}
 
 	cout << endl << "  ####  Binary Field Maps for " << b12map->identifier << " loading complete." << endl << endl;
