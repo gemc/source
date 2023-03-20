@@ -333,7 +333,22 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> btime;
 	
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
-		pid.push_back(MGP[i].PID);
+		
+		int my_pid = MGP[i].PID;
+		
+		// more user friendly values
+		if (my_pid == 1000010020 ) {
+			my_pid = 45;  // deuteron
+		} else if (my_pid == 1000010030 ) {
+			my_pid = 46;  // triton
+		} else if (my_pid == 1000020040 ) {
+			my_pid = 47;  // alpha
+		} else if (my_pid == 1000020030 ) {
+			my_pid = 49;  // He3
+		}
+		
+		pid.push_back(my_pid);
+		
 		px.push_back(MGP[i].momentum.getX()/MeV);
 		py.push_back(MGP[i].momentum.getY()/MeV);
 		pz.push_back(MGP[i].momentum.getZ()/MeV);
