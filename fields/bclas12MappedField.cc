@@ -19,14 +19,8 @@ void gclas12BinaryMappedField::GetFieldValue(const double x[3], double *bField) 
 	// displacement point
 	double rpoint[3] = {(x[0] - mapOrigin[0])/cm, (x[1] - mapOrigin[1])/cm, (x[2] - mapOrigin[2])/cm};
 		
-	if       (identifier == TorusSymm2018Solenoid2018) {
-		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], symmetricTorus, solenoid);
-	} else if(identifier == TorusFull2020Solenoid2018) {
-		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus20, solenoid);
-	} else if(identifier == TorusFull2021Solenoid2018) {
-		getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], fullTorus21, solenoid);
-	}
 
+	getCompositeFieldValue(combinedValuePtr, rpoint[0], rpoint[1], rpoint[2], torusPtr, solenoidPtr);
 
 	bField[0] = combinedValuePtr->b1*kilogauss;
 	bField[1] = combinedValuePtr->b2*kilogauss;
@@ -89,8 +83,7 @@ void gclas12BinaryMappedField::RotateField( double *Bfield) const  {
 
 
 
-void gclas12BinaryMappedField::initializeMap()
-{
+void gclas12BinaryMappedField::initializeMap() {
 	// setting rotation sin and cosines
 	sinAlpha = sin(mapRotation[0]);
 	cosAlhpa = cos(mapRotation[0]);
@@ -102,6 +95,20 @@ void gclas12BinaryMappedField::initializeMap()
 
 
 
+void gclas12BinaryMappedField::defineNamesAndType(string field_dir) {
+
+	stringstream combined_mapnames(identifier);
+	string temps;
+
+	getline(combined_mapnames, temps, ':');
+	solenoidMapFileName = field_dir + "/" + temps + ".dat";
+	getline(combined_mapnames, temps, ':');
+	torusMapFileName = field_dir + "/" + temps + ".dat";
+
+	cout << " > Solenoid binary map name: " << solenoidMapFileName << endl;
+	cout << " > Torus binary map name: "    << torusMapFileName << endl;
+
+}
 
 
 

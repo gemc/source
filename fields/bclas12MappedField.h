@@ -29,6 +29,7 @@ using namespace std;
 /// This class defines gemc gclas12BinaryMappedField .\n
 /// It implements G4MagneticField::GetFieldValue
 /// that returns a magnetic field value at a point in space
+
 class gclas12BinaryMappedField : public G4MagneticField
 {
 public:
@@ -44,6 +45,7 @@ public:
 		scaleFactor    = 1;
 		interpolation = "linear";
 		verbosity      = 0;
+
 	}
 	~gclas12BinaryMappedField(){;}
 	
@@ -61,18 +63,15 @@ public:
 	void GetFieldValue( const double x[3], double *Bfield) const;
 
 	// fields filenames
-	string symmetricTorusFileName;
-	string solenoidFileName;
-	string fullTorus20FileName;
-	string fullTorus21FileName;
+	string solenoidMapFileName;
+	string torusMapFileName;
+
+	MagneticFieldPtr solenoidPtr;
+	MagneticFieldPtr torusPtr;
 
 	// map pointers
 	// Uses David's routine to return the BX BY BZ components
 	FieldValuePtr combinedValuePtr;
-	MagneticFieldPtr symmetricTorus;
-	MagneticFieldPtr solenoid;
-	MagneticFieldPtr fullTorus20;
-	MagneticFieldPtr fullTorus21;
 
 	// precalculating values of the rotation angles so we don't do it at GetFieldValue time
 	double sinAlpha, cosAlhpa;
@@ -94,6 +93,12 @@ public:
 
 	inline const double xRotZ(double p[3]) const {return  p[0]*cosGamma + p[1]*sinGamma;}
 	inline const double yRotZ(double p[3]) const {return -p[0]*sinGamma + p[1]*cosGamma;}
+
+	
+	void defineNamesAndType(string field_dir);
+
+private:
+
 
 };
 
