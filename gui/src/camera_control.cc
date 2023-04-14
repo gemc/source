@@ -528,18 +528,18 @@ void camera_control::set_perspective(int index)
 
 void camera_control::switch_antialiasing(int index)
 {
-	if(index == 0)
-	{
-		glDisable (GL_LINE_SMOOTH);
-		glDisable (GL_POLYGON_SMOOTH);
-	}
-	else
-	{
-		glEnable (GL_LINE_SMOOTH);
-		glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
-		glEnable (GL_POLYGON_SMOOTH);
-		glHint (GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-	}
+//	if(index == 0)
+//	{
+//		glDisable (GL_LINE_SMOOTH);
+//		glDisable (GL_POLYGON_SMOOTH);
+//	}
+//	else
+//	{
+//		glEnable (GL_LINE_SMOOTH);
+//		glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+//		glEnable (GL_POLYGON_SMOOTH);
+//		glHint (GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+//	}
 	UImanager->ApplyCommand("/vis/viewer/flush");
 }
 
