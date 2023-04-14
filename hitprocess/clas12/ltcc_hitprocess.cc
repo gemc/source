@@ -96,7 +96,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["layer"]     = idside;
 		dgtz["component"] = idsegment;
 		dgtz["ADC_order"] = 0;
-		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];;
+		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];
 		dgtz["ADC_time"]  = (int) (stepTime*24.0/1000);
 		dgtz["ADC_ped"]   = 0;
 		
@@ -139,7 +139,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			penergy[tids[s]] = Energies[s];
 	}
 	
-	int narrived  = 0;
+	//int narrived  = 0;
 	int ndetected = 0;
 	
 	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
@@ -163,7 +163,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			if( G4UniformRand() <= efficiency->GetValue( penergy[tids[iphoton]], outofrange ) )
 				ndetected++;
 			
-			narrived++;
+			//narrived++;
 			
 			if( verbosity > 4 )
 			{

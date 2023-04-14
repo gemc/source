@@ -860,7 +860,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
-	int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
+	//int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
 	vector<int> BUNCHES = setBunches(NP,NBUNCHES);
 
 	if(NP > 0)

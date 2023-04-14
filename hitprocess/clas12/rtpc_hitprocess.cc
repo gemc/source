@@ -132,7 +132,7 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	TPC_TZERO = 0.0;
 	
 	// not used anymore?
-	int chan=0;
+	//int chan=0;
 	
 	map<string, double> dgtz;
 	vector<identifier> identity = aHit->GetId();
@@ -286,8 +286,8 @@ map<string, double> rtpc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				col = ceil((z_pos+RTPC_L/2.0-z_shift)/PAD_L);
 			}
 			
-			int Num_of_Col = (int) (RTPC_L/PAD_L);
-			chan = row*Num_of_Col+col;
+			//int Num_of_Col = (int) (RTPC_L/PAD_L);
+			//chan = row*Num_of_Col+col;
 			
 			//Mohammad: kill all the hits in the last three rows that correspond to the seam effect
 			if(row>177){row = -999; col = -999;}
@@ -367,7 +367,7 @@ vector<identifier>  rtpc_HitProcess :: processID(vector<identifier> id, G4Step* 
 	G4ThreeVector Lxyz = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
 	->GetTopTransform().TransformPoint(xyz);///< Local Coordinates of interaction
 	
-	int chan;
+	int chan = 0;
 	double LposX = 0;
 	double LposY = 0;
 	double LposZ = 0;
