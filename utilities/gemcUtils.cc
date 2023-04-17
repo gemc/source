@@ -280,7 +280,8 @@ map<string, string> getFilesInDirectory(string directory)
 
 		// hardcoding filenames and looping over combinations
 		vector<string> solenoidMapNames, torusMapNames;
-		solenoidMapNames.push_back("Symm_solenoid_r601_phi1_z1201_13June2018");
+        solenoidMapNames.push_back("Symm_solenoid_r601_phi1_z1201_2008");
+        solenoidMapNames.push_back("Symm_solenoid_r601_phi1_z1201_13June2018");
 		torusMapNames.push_back("Full_torus_r251_phi181_z251_25Jan2021");
 		torusMapNames.push_back("Full_torus_r251_phi181_z251_03March2020");
 		torusMapNames.push_back("Symm_torus_r2501_phi16_z251_24Apr2018");
