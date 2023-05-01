@@ -387,13 +387,16 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
+	int fadc_time = convert_to_precision(tdc*tdcconv);
+
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = 1;
 	dgtz["layer"]     = 1;
 	dgtz["component"] = paddle;
 	dgtz["ADC_order"] = side;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (tdc*tdcconv);
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = side + 2;

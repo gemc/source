@@ -313,13 +313,15 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	float tdc2ns = 0.02345f;
 	
+	int fadc_time = convert_to_precision(tdc2ns*TDC/a1);
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = tdc2ns*TDC/a1;
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = 2;
 	dgtz["TDC_TDC"]   = TDC/a1;

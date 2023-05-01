@@ -211,13 +211,17 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				<< icomponent << endl;
 		}
 	}
+	
+	int fadc_time = convert_to_precision(TDC/25);
+
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = isector;
 	dgtz["layer"]     = ilayer;
 	dgtz["component"] = icomponent;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = TDC/25;
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	// define conditions to reject hit

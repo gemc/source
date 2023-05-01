@@ -289,6 +289,9 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double adc  = 100 * G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
 	double time = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
+
+	int fadc_time = convert_to_precision(time);
+
 	
 	dgtz["hitn"]   = hitn;
 	
@@ -297,7 +300,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = idring;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = time;
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = 0;

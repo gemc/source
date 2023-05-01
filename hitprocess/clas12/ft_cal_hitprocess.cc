@@ -264,13 +264,15 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
+	int fadc_time = convert_to_precision(TDC/25);
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = 1;
 	dgtz["layer"]     = 1;
 	dgtz["component"] = iCrystal;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = (int) TDC/25;
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	

@@ -574,7 +574,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	}
 
-
+	int fadc_time = convert_to_precision(TDC*slope);
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -582,7 +582,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = 1;
 	dgtz["ADC_order"] = adc_order ; // 0 = left 1 = right
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = TDC;   // no conversion
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = adc_order + 2; // 2 = left 3 = right
 	dgtz["TDC_TDC"]   = TDC;

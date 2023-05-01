@@ -99,11 +99,19 @@ public:
 	
 	double BirksAttenuation(double,double,int,double);
 	
+	
+
 private:
 	
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
+	
+	double fadc_precision = 0.0625;  // 16 picoseconds resolution
+	int convert_to_precision(double tdc) {
+		return (int( tdc / fadc_precision ) / fadc_precision);
+	}
+	
 };
 
 #endif
