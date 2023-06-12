@@ -135,7 +135,7 @@ void goptions::setGoptions()
 	optMap["RANDOMIZE_LUND_VZ"].help += "     If the third argument \"reset\" is given, the vertexes are relative to VZ=0 \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "      example 1: -RANDOMIZE_LUND_VZ=\"-3*cm, 5*cm\" \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by plus-minus 5cm around the original LUND values and shift it by -3cm \n";
-	optMap["RANDOMIZE_LUND_VZ"].help += "      example 2: -RANDOMIZE_LUND_VZ=\"2*cm, 3*cm, 0.2*cm, 0.1*cm, 22*deg, reset\" \n";
+	optMap["RANDOMIZE_LUND_VZ"].help += "      example 1: -RANDOMIZE_LUND_VZ=\"-3*cm, 5*cm, reset\" \n";
 	optMap["RANDOMIZE_LUND_VZ"].help += "       This randomizes the z vertex by 5cm around vz = 0 and shift it by -3cm \n";
 	optMap["RANDOMIZE_LUND_VZ"].name = "Randomizes the z vertex according to a shift and a flat value";
 	optMap["RANDOMIZE_LUND_VZ"].type = 1;
