@@ -18,38 +18,85 @@ using namespace CLHEP;
 static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
 	// all these constants should be read from CCDB
-	richConstants richc;
+        richConstants richc;
+	
 	if(runno == -1) return richc;
+
+        string timestamp = "";
+        if(digiSnapshotTime != "no") {
+                timestamp = ":"+digiSnapshotTime;
+        }
 	
+	// database
+	richc.runNo = runno;
 	
-	// no quantities read yet.
-	
-	//	// database
-	//	richc.runNo = runno;
 	//	richc.date       = "2016-03-15";
-	//	if(getenv ("CCDB_CONNECTION") != nullptr)
-	//		richc.connection = (string) getenv("CCDB_CONNECTION");
-	//	else
-	//		richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	//
-	//	richc.variation  = "main";
-	//	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+	if(getenv ("CCDB_CONNECTION") != nullptr)
+	  richc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+	  richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	
+        richc.variation  = "main";
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+
+	vector<vector<double>> data;
+	
+	// Eventually: not limited to module1
+
+	// read timewalk correction
+	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+	calib->GetCalib(data,richc.database);
+
+	for(int row = 0; row<data.size(); row++){	  
+	  int ipmt = data[row][1];
+	  richc.timewalkCorr_D0[ipmt-1] = data[row][3];
+	  richc.timewalkCorr_m1[ipmt-1]	= data[row][4];
+	  richc.timewalkCorr_m2[ipmt-1]	= data[row][5];
+	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];	  
+	}	
+
+        // read time offset
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
+
+        for(int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+          richc.timeOffsetCorr[ipmt-1] = data[row][3];
+        }
+
+	// TODO: set dead pixels? hot pixels?
 	return richc;
 }
 
 
+// digitized info integrated over hit
+// should this match what was in rich_sector4/rich__bank.txt?
+// or should it roughly match RICH::tdc from data.json?
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	if(aHit->isBackgroundHit == 1) return dgtz;
+	//cout << "hit number " << hitn << endl;
+        vector<identifier> identity = aHit->GetId();
+        int idsector = identity[0].id;
+        int idpmt = identity[1].id;
+        int idpixel = 0;//identity[2].id;
+	
 	rejectHitConditions = false;
 	writeHit = true;
 
-	dgtz["hitn"]   = hitn;
+	// setting all values generically just to see how they get printed out
 	
-	writeHit = false;
+	dgtz["hitn"]   = hitn;
+	dgtz["sector"] = idsector;
+	dgtz["layer"] = idpmt;
+	dgtz["component"] = idpixel; // TODO: function for local position -> pixel #
+
+	dgtz["TDC_TDC"]=0;
+	dgtz["TDC_order"]=2;
+	
+	writeHit = true;	
+	
 	return dgtz;
 }
 
@@ -70,6 +117,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	return id;
 }
 
+// not really used in any others?
 map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
@@ -112,14 +160,14 @@ vector<MHit*> rich_HitProcess :: electronicNoise()
 map< int, vector <double> > rich_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
 	map< int, vector <double> >  CT;
-	
+
 	return CT;
 }
 
 // - voltage: returns a voltage value for a given time. The input are charge value, time
 double rich_HitProcess :: voltage(double charge, double time, double forTime)
 {
-	return 0.0;
+	return 1.0;
 }
 
 

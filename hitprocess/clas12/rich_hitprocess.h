@@ -18,13 +18,22 @@ public:
 	// database
 	int    runNo;
 	string date;
-	string connection;
-	
+        string connection;
+        char   database[80];
+        string variation;
 	// translation table
 	TranslationTable TT;
-	
-	// add constants here
-	
+  
+  // add constants here
+  const static int npmt = 391;
+  const static int npixel = 64;
+  double timewalkCorr_D0[npmt];
+  double timewalkCorr_m1[npmt];
+  double timewalkCorr_m2[npmt];
+  double timewalkCorr_T0[npmt];
+  double timeOffsetCorr[npmt];
+  
+  
 };
 
 
