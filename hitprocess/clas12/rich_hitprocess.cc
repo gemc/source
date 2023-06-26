@@ -40,13 +40,13 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
 
 	vector<vector<double>> data;
-	
+	data.clear();
 	// Eventually: not limited to module1
 
 	// read timewalk correction
 	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
 	calib->GetCalib(data,richc.database);
-
+	
 	for(int row = 0; row<data.size(); row++){	  
 	  int ipmt = data[row][1];
 	  richc.timewalkCorr_D0[ipmt-1] = data[row][3];
@@ -54,7 +54,9 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	  richc.timewalkCorr_m2[ipmt-1]	= data[row][5];
 	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];	  
 	}	
-
+	cout << "timewalk test: " << richc.timewalkCorr_D0[0] << endl;
+	data.clear();
+	  
         // read time offset
         snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
         calib->GetCalib(data,richc.database);
@@ -64,7 +66,10 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
           richc.timeOffsetCorr[ipmt-1] = data[row][3];
         }
 
-	// TODO: set dead pixels? hot pixels?
+	// initialize rich pixel class
+	richc.richPixel = new RichPixel();
+	richc.richPixel->InitReadout(12700, 3e6, 1, 1);
+	
 	return richc;
 }
 
@@ -85,17 +90,15 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	rejectHitConditions = false;
 	writeHit = true;
 
+	int pid  = aHit->GetPID();
+	double stepzerotime = aHit->GetTime()[0];
+	//cout << "step zero time: " << stepzerotime << endl;
 	// setting all values generically just to see how they get printed out
 	
-	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = idsector;
-	dgtz["layer"] = idpmt;
-	dgtz["component"] = idpixel; // TODO: function for local position -> pixel #
-
-	dgtz["TDC_TDC"]=0;
-	dgtz["TDC_order"]=2;
-	
-	writeHit = true;	
+	dgtz["hitn"]   = 0;//hitn;
+	dgtz["sector"] = 0;//idsector;
+	dgtz["layer"] = 0;//idpmt;
+	dgtz["component"] = 0;//idpixel; // TODO: function for local position -> pixel #
 	
 	return dgtz;
 }
@@ -117,10 +120,39 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	return id;
 }
 
-// not really used in any others?
+// setting TDC information (need leading and trailing edge in rich reco)
 map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
+	
+	vector<identifier> identity = aHit->GetId();
+        int idsector = identity[0].id;
+        int idpmt = identity[1].id;
+        int idpixel = 0;//identity[2].id;
+
+	int pid  = aHit->GetPID();
+        double stepzerotime = aHit->GetTime()[0];
+
+	// getting digitized timing information from RichPixel
+	richc.richPixel->GenerateTDC(1, stepzerotime);
+	// t2 and t1 now set
+
+	vector<int> order, tdc;
+
+	// leading edge
+	order.push_back(2);
+	tdc.push_back(richc.richPixel->get_T1());
+	//trailing edge
+	order.push_back(3);
+	tdc.push_back(richc.richPixel->get_T2());	
+
+	cout << "t1 : " << richc.richPixel->get_T1() << endl;
+	cout <<	"t2 : "	<< richc.richPixel->get_T2() << endl;
+	
+	MH["TDC_TDC"]=tdc;
+	MH["TDC_order"]=order;
+        
+        writeHit = true;	
 	
 	return MH;
 }
@@ -179,3 +211,257 @@ richConstants rich_HitProcess::richc = initializeRICHConstants(-1);
 
 
 
+/* ---------------------------------------------------*/
+RichPixel::RichPixel(int t)
+{
+
+  if ( (t == 8500) || (t == 12700) || (t == 12701) ) {
+    InitPmt(t);
+  }
+  else {
+    printf("ERROR: pmt type %d not known\n", t);
+    return;
+  }
+
+
+  InitMaroc();
+
+  Clear();
+
+  return;
+}
+/* ---------------------------------------------------*/
+void RichPixel::InitPmt(int t, double g)
+{
+
+  PmtType = t;
+  Gain = g;
+
+  if (t == 8500) {
+    nStages = 12;
+    d1Ratio = 1;
+  }
+  else if ( (t == 12700) || (t == 12701) ) {
+    nStages = 10;
+    d1Ratio = 2;
+  }
+  else {
+    printf("ERROR: pmt type %d not known\n", t);
+    return;
+  }
+
+
+  GN = pow( (Gain/d1Ratio), 1./nStages);
+  G1 = d1Ratio * GN;
+
+  /* old calculation, wrong */
+  if (t == 12701) {
+    GN = pow(Gain, 1./(nStages+d1Ratio-1));
+    G1 = pow(GN, d1Ratio);
+  }
+
+
+  return;
+}
+/* ---------------------------------------------------*/
+void RichPixel::InitMaroc(double g, double th)
+{
+
+  MarocG = g;
+  MarocThrF = th;
+
+  ThresholdScale = 5;
+
+  MarocThrCharge = ThresholdScale * (MarocThrF - 1) * StdTrhesholdDAC * DAC;
+
+
+
+  /* charge to time conversion, saturated region */
+  q0_t = 230;
+  /* Values from Ctest data analysis
+    p_t[0] = 118.3;
+  p_t[1] = -0.3134;
+  p_t[2] = 0.002787;
+  p_t[3] = -1.382e-5;
+  p_t[4] = 2.531e-8;
+  */
+
+  p_t[0] = 7.32 + 4;
+  p_t[1] = -0.08027;
+  p_t[2] = 0.0001407;
+  p_t[3] = 0;
+  p_t[4] = 0;
+
+
+  /* charge to time conversion, linear region */
+  //m_t = -0.00307; //value from CTest data analysis
+  m_t = -0.00207;
+  q_t = -m_t * q0_t;
+  for (int i=0; i<5; i++) {
+    q_t = q_t + p_t[i] * pow(q0_t, i);
+  }
+
+
+  /* from charge to duration */
+
+  //p0_d = 80; //from CTest data
+  //p1_d = 170.1;  //from CTest data
+
+  p0_d = 68.19;
+  p1_d = 60.1;
+
+  /* parameter to shift doen the duration per 1 unit of MarocThrF */
+  alphaD = 0.1;
+
+  
+
+  return;
+}
+/* ---------------------------------------------------*/
+void RichPixel::InitReadout(int pmttype, double pmtgain, double marocgain, double marocthr)
+{
+  InitPmt(pmttype, pmtgain);
+  InitMaroc(marocgain, marocthr);
+
+  return;
+}
+/* ---------------------------------------------------*/
+void RichPixel::Clear()
+{
+  npe = 0;
+  
+  qadc = 0;
+  ADC = 0;
+  
+  qtdc = 0;
+  start_time = 0;
+  true_t1 = 0;
+  t1 = 0;
+  t2 = 0;
+  duration = 0;
+
+
+  return;
+}
+/* ---------------------------------------------------*/
+int RichPixel::GenerateADC(int n0)
+{
+
+  GenerateNpe(n0);
+
+  qadc = npe*Qe;
+  ADC = Pedestal + (int)(DAC*qadc);
+
+  return 0;
+}
+/* ---------------------------------------------------*/
+bool RichPixel::GenerateTDC(int n0, double t0)
+{
+
+  GenerateNpe(n0);
+
+  qtdc = npe * Qe * MarocG;
+  if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
+
+  if (qtdc < MarocThrCharge) return false;
+
+  start_time = t0;
+  ChargeToTime();
+  ChargeToDuration();
+  t2 = t1 + duration;
+  
+  return true;
+}
+/* ---------------------------------------------------*/
+bool RichPixel::GenerateTDCfromADC(double qadc, double t0)
+{
+
+  qtdc = qadc * MarocG;
+  if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
+
+  if (qtdc < MarocThrCharge) return false;
+
+  start_time = t0;
+  ChargeToTime();
+  ChargeToDuration();
+  t2 = t1 + duration;
+
+
+  return true;
+}
+/* -------------------------------- */
+void RichPixel::GenerateNpe(int n0)
+{
+  int nEle = n0;
+  for (int n=0; n<nStages; n++) {
+    double g = GN;
+    if (n == 0) g = G1;
+    
+    int nIn = nEle;
+    double nAve = g * nIn;
+    nEle = G4Poisson(nAve);
+    if (nEle == 0) nEle = n0;
+  }
+  npe = nEle;
+
+
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::ChargeToTime()
+{
+  double qeff = qtdc / MarocThrF;
+  double time = 0;
+  if (qeff < q0_t) {
+    for (int i=0; i<5; i++) {
+      time = time + p_t[i] * pow(qeff, i);
+    }
+  }
+  else {
+    time = q_t + m_t * qeff;
+  }
+
+  true_t1 = time + TimeOffset + start_time;
+
+  /* gaussian smearing of t1 */
+  double dt = G4RandGauss::shoot(TimeOffset, TimeResol);
+
+  t1 = time + dt + start_time;
+  
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::ChargeToDuration()
+{
+  //double qeff = qtdc / MarocThrF;
+  double qeff = qtdc;
+  double p0_eff = p0_d;
+  if (MarocThrF > 1) {
+    p0_eff = p0_d * (1. - (MarocThrF-1)*alphaD);
+  }
+  else if (MarocThrF < 1) {
+    p0_eff = p0_d * (1. - (1./MarocThrF-1)*alphaD);
+  }
+  
+  duration = p0_eff * (1. - exp( -sqrt(qeff/p1_d) ) );
+
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::PrintPmt()
+{
+
+  printf("MAPMT H%d\n", PmtType);
+  printf("  G=%f    nStages=%d   g1=%f   gN=%f\n", Gain, nStages, G1, GN);
+
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::PrintMaroc()
+{
+
+  printf("MAROC setting\n");
+  printf("  gain=%f   RelThreshold=%f   threshold=%f fC\n", MarocG, MarocThrF, MarocThrCharge);
+
+  return;
+}
