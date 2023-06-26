@@ -148,17 +148,17 @@ class richConstants
 {
 public:
 	
-        // database                                                                                                                                              
+        // database
         int    runNo;
         string date;
         string connection;
         char   database[80];
         string variation;
         RichPixel *richPixel;
-        // translation table                                                                                                                                     
-        TranslationTable TT;
+        // translation table
+  TranslationTable TT;
 
-  // add constants here                                                                                                                                          
+  // add constants here
   const static int npmt = 391;
   const static int npixel = 64;
   double timewalkCorr_D0[npmt];
@@ -207,6 +207,9 @@ private:
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
+
+        // RICH specific functions 
+        int getPixelNumber(G4ThreeVector  Lxyz);
 };
 
 #endif

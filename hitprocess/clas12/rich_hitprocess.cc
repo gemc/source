@@ -54,7 +54,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	  richc.timewalkCorr_m2[ipmt-1]	= data[row][5];
 	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];	  
 	}	
-	cout << "timewalk test: " << richc.timewalkCorr_D0[0] << endl;
+	//cout << "timewalk test: " << richc.timewalkCorr_D0[0] << endl;
 	data.clear();
 	  
         // read time offset
@@ -116,6 +116,28 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
 {
+        // id[0]: sector
+        // id[1]: pad
+        // id[2]: pixel
+        // id[i].id: number
+        // time same for all
+        // taken from dc_hitprocess: 
+        G4StepPoint   *prestep   = aStep->GetPreStepPoint();
+        G4StepPoint   *poststep  = aStep->GetPostStepPoint();
+        G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction                          
+	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction                           
+        ->GetTopTransform().TransformPoint(xyz);
+
+	id[2].id = getPixelNumber(Lxyz);
+
+	/*
+	cout << "id size " << id.size() << endl;
+	for(int i = 0; i <id.size(); i++){
+	  cout << "detector identifier " << id[i].name << " " << id[i].time << " " << id[i].id << endl;  
+	}
+	*/
+	//cout << "local pmt hit pos: " << Lxyz.x() << " " << Lxyz.y() << " " << Lxyz.z() << endl;
+	//cout << "pixel number " << id[2].id << endl;
 	id[id.size()-1].id_sharing = 1;
 	return id;
 }
@@ -146,8 +168,8 @@ map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 	order.push_back(3);
 	tdc.push_back(richc.richPixel->get_T2());	
 
-	cout << "t1 : " << richc.richPixel->get_T1() << endl;
-	cout <<	"t2 : "	<< richc.richPixel->get_T2() << endl;
+	//cout << "t1 : " << richc.richPixel->get_T1() << endl;
+	//cout <<	"t2 : "	<< richc.richPixel->get_T2() << endl;
 	
 	MH["TDC_TDC"]=tdc;
 	MH["TDC_order"]=order;
@@ -187,7 +209,6 @@ vector<MHit*> rich_HitProcess :: electronicNoise()
 }
 
 
-
 // - charge: returns charge/time digitized information / step
 map< int, vector <double> > rich_HitProcess :: chargeTime(MHit* aHit, int hitn)
 {
@@ -207,6 +228,35 @@ double rich_HitProcess :: voltage(double charge, double time, double forTime)
 // this static function will be loaded first thing by the executable
 richConstants rich_HitProcess::richc = initializeRICHConstants(-1);
 
+// PMT local position to pixel number
+int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
+  // H8500:
+  // 6.08mm for small
+  // 6.26mm for large
+  // H12700:
+  // 6mm for small
+  // 6.25mm for large
+  // test: treating all as H12700
+  // Pixel 1 is top left: -max x, +max y ?
+  double edge_large = 6.25;
+  double edge_small = 6.;
+  
+  double xloc = Lxyz.x() + 24.5; //mm
+  double yloc = Lxyz.y() + 24.5;
+  //cout << "x: " << xloc << " y: " << yloc << endl;
+  int xpix = -1;
+  int ypix = -1;
+  if (xloc < edge_large){ xpix = 1; }
+  else if (xloc > edge_large+6*edge_small){ xpix = 8; }
+  else{ xpix = int((xloc-edge_large)/edge_small) + 1; }
+
+  if (yloc < edge_large){ ypix = 1;}
+  else if (yloc > edge_large+6*edge_small){ ypix = 8;}
+  else{ ypix = int((yloc-edge_large)/edge_small) + 1; 
+  }
+  //cout << "xpix: " << xpix << " ypix: " << ypix << endl;
+  return (int ((ypix-1)*8 + xpix));
+}
 
 
 
