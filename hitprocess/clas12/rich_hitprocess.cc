@@ -19,7 +19,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 {
 	// all these constants should be read from CCDB
         richConstants richc;
-	
+	cout << "initializing rich constants" << endl;
 	if(runno == -1) return richc;
 
         string timestamp = "";
@@ -67,39 +67,45 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         }
 
 	// initialize rich pixel class
-	richc.richPixel = new RichPixel();
-	richc.richPixel->InitReadout(12700, 3e6, 1, 1);
-	
+	//richc.richPixel = new RichPixel(12700);
+	//richc.richPixel->InitReadout(12700, 3e6, 1, 1);	
 	return richc;
 }
 
 
 // digitized info integrated over hit
-// should this match what was in rich_sector4/rich__bank.txt?
+// should this match what was originally in rich_sector4/rich__bank.txt?
 // or should it roughly match RICH::tdc from data.json?
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-	//cout << "hit number " << hitn << endl;
+
         vector<identifier> identity = aHit->GetId();
         int idsector = identity[0].id;
         int idpmt = identity[1].id;
-        int idpixel = 0;//identity[2].id;
+
+        int idpixel = identity[2].id;
+	int order = identity[2].userInfos[0];
+	int tdc = identity[2].userInfos[1];
 	
 	rejectHitConditions = false;
 	writeHit = true;
 
 	int pid  = aHit->GetPID();
-	double stepzerotime = aHit->GetTime()[0];
+	//double stepzerotime = aHit->GetTime()[0];
+	
 	//cout << "step zero time: " << stepzerotime << endl;
 	// setting all values generically just to see how they get printed out
+	//cout << "intDgt pmt: " << idpmt << " pixel: " << idpixel << endl;
+	//cout << "intDgt order: " << order << " tdc " << tdc << endl;
 	
-	dgtz["hitn"]   = 0;//hitn;
-	dgtz["sector"] = 0;//idsector;
-	dgtz["layer"] = 0;//idpmt;
-	dgtz["component"] = 0;//idpixel; // TODO: function for local position -> pixel #
-	
+	dgtz["hitn"]   = hitn;
+	dgtz["sector"] = idsector;
+	dgtz["layer"] = idpmt;
+	dgtz["component"] = idpixel; // TODO: function for local position -> pixel #
+	dgtz["TDC_TDC"] = tdc;
+	dgtz["TDC_order"] = order; // 2: leading edge 3: trailing edge
 	return dgtz;
 }
 
@@ -115,67 +121,69 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 #include "G4ParticleTable.hh"
 
 vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
-{
+{  
+        vector<identifier> yid = id;
         // id[0]: sector
         // id[1]: pad
-        // id[2]: pixel
-        // id[i].id: number
-        // time same for all
-        // taken from dc_hitprocess: 
+        // id[2]: pixel        
+	
         G4StepPoint   *prestep   = aStep->GetPreStepPoint();
         G4StepPoint   *poststep  = aStep->GetPostStepPoint();
         G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction                          
 	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction                           
         ->GetTopTransform().TransformPoint(xyz);
+	
+	int pixel = getPixelNumber(Lxyz);	
 
-	id[2].id = getPixelNumber(Lxyz);
-
-	/*
-	cout << "id size " << id.size() << endl;
-	for(int i = 0; i <id.size(); i++){
-	  cout << "detector identifier " << id[i].name << " " << id[i].time << " " << id[i].id << endl;  
+	RichPixel richPixel(12700);
+	cout << "processID pmt: " << id[1].id << " pixel: " << pixel << endl;
+	double stepTime = yid[0].time;
+	richPixel.Clear();
+	int t1 = -1;
+	int t2 = -1;
+	
+	if(richPixel.GenerateTDC(1, stepTime)){
+	  t1 = richPixel.get_T1();
+	  t2 = richPixel.get_T2();		    
 	}
-	*/
-	//cout << "local pmt hit pos: " << Lxyz.x() << " " << Lxyz.y() << " " << Lxyz.z() << endl;
-	//cout << "pixel number " << id[2].id << endl;
-	id[id.size()-1].id_sharing = 1;
-	return id;
+
+	for(int i = 0; i < 3; i++){
+	  identifier idtemp;
+	  idtemp.name = id[i].name;
+	  idtemp.rule = id[i].rule;
+	  idtemp.id = id[i].id;
+	  idtemp.TimeWindow = id[i].TimeWindow;
+	  idtemp.TrackId = id[i].TrackId;
+
+	  yid.push_back(idtemp);
+	}
+
+	yid[2].id = pixel;
+	  
+	yid[2].userInfos.clear();
+	yid[2].userInfos.push_back(double(2)); // TDC_order
+	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
+	yid[2].userInfos.push_back(double(pixel)); // pixel
+
+	yid[5].id = pixel; // just to see if this fixes anything
+	yid[5].userInfos.clear();
+	yid[5].userInfos.push_back(double(3)); // TDC_order
+	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
+	yid[5].userInfos.push_back(double(pixel));
+
+	//cout << "processID identifier size: " << yid.size() << endl;
+	//cout << "processID: lead time: " << t1 << " trail time: " << t2 << endl;
+	//cout << "processID pixel : " << yid[5].userInfos[2] << " order: " << yid[5].userInfos[0] <<  " tdc: " << yid[5].userInfos[1] << endl;
+	
+	yid[2].id_sharing = .5;
+	yid[5].id_sharing = .5;
+	return yid;
 }
 
 // setting TDC information (need leading and trailing edge in rich reco)
 map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
-	
-	vector<identifier> identity = aHit->GetId();
-        int idsector = identity[0].id;
-        int idpmt = identity[1].id;
-        int idpixel = 0;//identity[2].id;
-
-	int pid  = aHit->GetPID();
-        double stepzerotime = aHit->GetTime()[0];
-
-	// getting digitized timing information from RichPixel
-	richc.richPixel->GenerateTDC(1, stepzerotime);
-	// t2 and t1 now set
-
-	vector<int> order, tdc;
-
-	// leading edge
-	order.push_back(2);
-	tdc.push_back(richc.richPixel->get_T1());
-	//trailing edge
-	order.push_back(3);
-	tdc.push_back(richc.richPixel->get_T2());	
-
-	//cout << "t1 : " << richc.richPixel->get_T1() << endl;
-	//cout <<	"t2 : "	<< richc.richPixel->get_T2() << endl;
-	
-	MH["TDC_TDC"]=tdc;
-	MH["TDC_order"]=order;
-        
-        writeHit = true;	
-	
 	return MH;
 }
 
@@ -286,7 +294,7 @@ void RichPixel::InitPmt(int t, double g)
 
   PmtType = t;
   Gain = g;
-
+  
   if (t == 8500) {
     nStages = 12;
     d1Ratio = 1;
@@ -309,7 +317,7 @@ void RichPixel::InitPmt(int t, double g)
     GN = pow(Gain, 1./(nStages+d1Ratio-1));
     G1 = pow(GN, d1Ratio);
   }
-
+  
 
   return;
 }
@@ -407,9 +415,7 @@ int RichPixel::GenerateADC(int n0)
 /* ---------------------------------------------------*/
 bool RichPixel::GenerateTDC(int n0, double t0)
 {
-
-  GenerateNpe(n0);
-
+  GenerateNpe(n0);  
   qtdc = npe * Qe * MarocG;
   if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
 

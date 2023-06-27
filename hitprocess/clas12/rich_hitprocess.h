@@ -23,7 +23,7 @@
 
 class RichPixel {
 
-private:
+public:
 
   /* charge of the electron in fC */
   const double Qe = 1.602e-4;
@@ -53,7 +53,6 @@ private:
 
   /* Pedestal in DAC units */
   const int Pedestal = 0;
-
 
 
   /* TDC conversion factors */
@@ -176,7 +175,7 @@ public:
 class rich_HitProcess : public HitProcess
 {
 public:
-	
+  
 	~rich_HitProcess(){;}
 	
 	// - integrateDgt: returns digitized information integrated over the hit
@@ -210,6 +209,7 @@ private:
 
         // RICH specific functions 
         int getPixelNumber(G4ThreeVector  Lxyz);
+        
 };
 
 #endif
