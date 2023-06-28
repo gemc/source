@@ -17,9 +17,7 @@ using namespace CLHEP;
 
 static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
-	// all these constants should be read from CCDB
         richConstants richc;
-	cout << "initializing rich constants" << endl;
 	if(runno == -1) return richc;
 
         string timestamp = "";
@@ -66,46 +64,44 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
           richc.timeOffsetCorr[ipmt-1] = data[row][3];
         }
 
-	// initialize rich pixel class
-	//richc.richPixel = new RichPixel(12700);
-	//richc.richPixel->InitReadout(12700, 3e6, 1, 1);	
 	return richc;
 }
 
 
 // digitized info integrated over hit
-// should this match what was originally in rich_sector4/rich__bank.txt?
-// or should it roughly match RICH::tdc from data.json?
+// changed to match data.json definition of RICH::tdc 
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
 	map<string, double> dgtz;
-
+	
         vector<identifier> identity = aHit->GetId();
         int idsector = identity[0].id;
-        int idpmt = identity[1].id;
 
+	// tdc bank expects tile number
+	int idpmt = identity[1].id;
+	int tile = richc.pmtToTile[idpmt-1];
+
+	// tdc bank: readout channel number
+	// pixel, order, tdc already set in processID
         int idpixel = identity[2].id;
+	int marocChannel = richc.anodeToMaroc[idpixel-1];
+	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
+	
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
 	
 	rejectHitConditions = false;
 	writeHit = true;
 
-	int pid  = aHit->GetPID();
-	//double stepzerotime = aHit->GetTime()[0];
-	
-	//cout << "step zero time: " << stepzerotime << endl;
-	// setting all values generically just to see how they get printed out
-	//cout << "intDgt pmt: " << idpmt << " pixel: " << idpixel << endl;
-	//cout << "intDgt order: " << order << " tdc " << tdc << endl;
-	
+	//int pid  = aHit->GetPID();	
+		
 	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = idsector;
-	dgtz["layer"] = idpmt;
-	dgtz["component"] = idpixel; // TODO: function for local position -> pixel #
+	dgtz["sector"] = idsector; 
+	dgtz["layer"] = tile;
+	dgtz["component"] = tileChannel;
 	dgtz["TDC_TDC"] = tdc;
-	dgtz["TDC_order"] = order; // 2: leading edge 3: trailing edge
+	dgtz["TDC_order"] = order; // 1: leading edge 0: trailing edge
 	return dgtz;
 }
 
@@ -124,7 +120,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 {  
         vector<identifier> yid = id;
         // id[0]: sector
-        // id[1]: pad
+        // id[1]: pmt
         // id[2]: pixel        
 	
         G4StepPoint   *prestep   = aStep->GetPreStepPoint();
@@ -161,13 +157,13 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[2].id = pixel;
 	  
 	yid[2].userInfos.clear();
-	yid[2].userInfos.push_back(double(2)); // TDC_order
+	yid[2].userInfos.push_back(double(1)); // TDC_order
 	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
 	yid[2].userInfos.push_back(double(pixel)); // pixel
 
 	yid[5].id = pixel; // just to see if this fixes anything
 	yid[5].userInfos.clear();
-	yid[5].userInfos.push_back(double(3)); // TDC_order
+	yid[5].userInfos.push_back(double(0)); // TDC_order
 	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
 	yid[5].userInfos.push_back(double(pixel));
 
