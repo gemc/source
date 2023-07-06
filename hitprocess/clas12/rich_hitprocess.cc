@@ -87,8 +87,12 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// tdc bank: readout channel number
 	// pixel, order, tdc already set in processID
         int idpixel = identity[2].id;
-	int marocChannel = richc.anodeToMaroc[idpixel-1] - 1;
+	int marocChannel = richc.anodeToMaroc[idpixel-1];
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
+
+	// to compare with what eventually gets pulled out by coatjava, make sure correct
+	cout << "pmt: " << idpmt << " pixel: " << idpixel << endl;
+	cout << endl;
 	
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
@@ -100,6 +104,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	int pid  = aHit->GetPID();	
 	//cout << "pid for hit: " << pid << endl;
+	if(aHit->isBackgroundHit == 1) {
+	  return dgtz;
+	}
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
