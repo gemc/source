@@ -17,6 +17,8 @@ using namespace CLHEP;
 
 static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
+        // TODO: with TDC simulation class from Marco M., time calibration information maybe not necessary
+
         richConstants richc;
 	if(runno == -1) return richc;
 
@@ -85,17 +87,20 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// tdc bank: readout channel number
 	// pixel, order, tdc already set in processID
         int idpixel = identity[2].id;
-	int marocChannel = richc.anodeToMaroc[idpixel-1];
+	int marocChannel = richc.anodeToMaroc[idpixel-1] - 1;
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
 	
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
-	
+
+	// TODO: quantum efficiency, photon energy
+	// discuss other effects needed
 	rejectHitConditions = false;
 	writeHit = true;
 
-	//int pid  = aHit->GetPID();	
-		
+	int pid  = aHit->GetPID();	
+	//cout << "pid for hit: " << pid << endl;
+	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
@@ -129,10 +134,13 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction                           
         ->GetTopTransform().TransformPoint(xyz);
 	
-	int pixel = getPixelNumber(Lxyz);	
+	int pixel = getPixelNumber(Lxyz);
 
+	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
+	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
+	
 	RichPixel richPixel(12700);
-	cout << "processID pmt: " << id[1].id << " pixel: " << pixel << endl;
+	
 	double stepTime = yid[0].time;
 	richPixel.Clear();
 	int t1 = -1;
@@ -160,8 +168,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[2].userInfos.push_back(double(1)); // TDC_order
 	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
 	yid[2].userInfos.push_back(double(pixel)); // pixel
-
-	yid[5].id = pixel; // just to see if this fixes anything
+	
+	yid[5].id = pixel;
 	yid[5].userInfos.clear();
 	yid[5].userInfos.push_back(double(0)); // TDC_order
 	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
@@ -232,6 +240,7 @@ double rich_HitProcess :: voltage(double charge, double time, double forTime)
 // this static function will be loaded first thing by the executable
 richConstants rich_HitProcess::richc = initializeRICHConstants(-1);
 
+
 // PMT local position to pixel number
 int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   // H8500:
@@ -245,25 +254,93 @@ int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   double edge_large = 6.25;
   double edge_small = 6.;
   
-  double xloc = Lxyz.x() + 24.5; //mm
-  double yloc = Lxyz.y() + 24.5;
-  //cout << "x: " << xloc << " y: " << yloc << endl;
-  int xpix = -1;
-  int ypix = -1;
-  if (xloc < edge_large){ xpix = 1; }
-  else if (xloc > edge_large+6*edge_small){ xpix = 8; }
-  else{ xpix = int((xloc-edge_large)/edge_small) + 1; }
-
-  if (yloc < edge_large){ ypix = 1;}
-  else if (yloc > edge_large+6*edge_small){ ypix = 8;}
-  else{ ypix = int((yloc-edge_large)/edge_small) + 1; 
+  double xloc = Lxyz.x(); //mm
+  double yloc = Lxyz.y();
+  
+  int nx = int(abs(xloc/edge_small));
+  int ny = int(abs(yloc/edge_small));
+  int direcx = (xloc/abs(xloc));
+  int direcy = (yloc/abs(yloc));
+  
+  if (nx>3) nx = 3;
+  if (nx<-3) nx = -3;
+  if (ny>3) ny = 3;
+  if (ny<-3) ny = -3;
+  
+  int xpix = 0;
+  int ypix = 0;
+  // TODO: simplify this, obviously
+  if( nx > 0 && direcx == 1){
+    xpix = (nx+1) + 4;
   }
-  //cout << "xpix: " << xpix << " ypix: " << ypix << endl;
+  if(nx == 0 && direcx == 1){
+    xpix = 5;
+  }
+  if(nx == 0 && direcx == -1){
+    xpix = 4;
+  }
+  if(nx > 0 && direcx == -1){
+    xpix = -1*(nx) + 4;
+  }
+  
+  if( ny > 0 && direcy == 1){
+    ypix = -1*ny + 4;
+  }
+  if(ny == 0 && direcy == 1){
+    ypix = 4;
+  }
+  if(ny == 0 && direcy == -1){
+    ypix = 5;
+  }
+  if(ny > 0 && direcy == -1){
+    ypix = (ny+1) + 4;
+  }
+
   return (int ((ypix-1)*8 + xpix));
 }
 
+G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
+  // center is (0,0)
+  // 1 should be -x, -y
+  int xpix = int((pixel-1)%8)+1;
+  int ypix = int((pixel-1)/8)+1;
+  double edge_large = 6.25;
+  double edge_small = 6.;
 
+  double xpos = 0;
+  double ypos = 0;
 
+  if(xpix == 1){
+    xpos -= (3*edge_small + 0.5*edge_large);
+  }
+  if(xpix == 8){
+    xpos += (3*edge_small + 0.5*edge_large);
+  }
+  if(ypix==1){
+    ypos += (3*edge_small + 0.5*edge_large);
+  }
+  if(ypix==8){
+    ypos -= (3*edge_small + 0.5*edge_large);
+  }
+
+  if( xpix > 1 && xpix <= 4){
+    xpos += (xpix-4 - 0.5)*edge_small;
+  }
+  if( xpix >= 5 && xpix < 8){
+    xpos += (xpix-5 + 0.5)*edge_small;
+  }
+
+  if( ypix > 1 && ypix <= 4){
+    ypos += -1*((ypix-4) - 0.5)*edge_small;
+  }
+  if( ypix >= 5 && ypix < 8){
+    ypos += -1*(ypix-5 + 0.5)*edge_small;
+  }
+
+  return G4ThreeVector(xpos,ypos,0.05);
+
+  
+}
 
 /* ---------------------------------------------------*/
 RichPixel::RichPixel(int t)
