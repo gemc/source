@@ -54,9 +54,9 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	  richc.timewalkCorr_m2[ipmt-1]	= data[row][5];
 	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];	  
 	}	
-	//cout << "timewalk test: " << richc.timewalkCorr_D0[0] << endl;
+
 	data.clear();
-	  
+	
         // read time offset
         snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
         calib->GetCalib(data,richc.database);
@@ -75,45 +75,46 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
+        
 	map<string, double> dgtz;
 	
         vector<identifier> identity = aHit->GetId();
         int idsector = identity[0].id;
-
+	
 	// tdc bank expects tile number
 	int idpmt = identity[1].id;
 	int tile = richc.pmtToTile[idpmt-1];
 
 	// tdc bank: readout channel number
 	// pixel, order, tdc already set in processID
-        int idpixel = identity[2].id;
+        int idpixel = identity[2].userInfos[2];//identity[2].id;
 	int marocChannel = richc.anodeToMaroc[idpixel-1];
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
-
-	// to compare with what eventually gets pulled out by coatjava, make sure correct
-	cout << "pmt: " << idpmt << " pixel: " << idpixel << endl;
-	cout << endl;
 	
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
+	
+	// getting quantum efficiency (taken from ltcc)
+	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
+        G4MaterialPropertyVector* efficiency = nullptr;
 
-	// TODO: quantum efficiency, photon energy
-	// discuss other effects needed
-	rejectHitConditions = false;
+	bool gotefficiency = false;
+        if( MPT != nullptr ) {
+                efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
+                if( efficiency != nullptr ) gotefficiency = true;
+        }	       
+	
 	writeHit = true;
+	rejectHitConditions = false;		
 
-	int pid  = aHit->GetPID();	
-	//cout << "pid for hit: " << pid << endl;
-	if(aHit->isBackgroundHit == 1) {
-	  return dgtz;
-	}
+	int pid  = aHit->GetPID();		
 	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
 	dgtz["TDC_TDC"] = tdc;
-	dgtz["TDC_order"] = order; // 1: leading edge 0: trailing edge
+	dgtz["TDC_order"] = order;
 	return dgtz;
 }
 
@@ -129,7 +130,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 #include "G4ParticleTable.hh"
 
 vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
-{  
+{
         vector<identifier> yid = id;
         // id[0]: sector
         // id[1]: pmt
@@ -142,20 +143,21 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
         ->GetTopTransform().TransformPoint(xyz);
 	
 	int pixel = getPixelNumber(Lxyz);
-
+	
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
+
 	
 	RichPixel richPixel(12700);
-	
-	double stepTime = yid[0].time;
+	double stepTime = yid[0].time;	       	
 	richPixel.Clear();
-	int t1 = -1;
-	int t2 = -1;
 	
+	int t1 = -1;
+	int t2 = -1;	
 	if(richPixel.GenerateTDC(1, stepTime)){
-	  t1 = richPixel.get_T1();
-	  t2 = richPixel.get_T2();		    
+	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[id[1].id],0.25);
+	  t1 = richPixel.get_T1() + offset;
+	  t2 = richPixel.get_T2() + offset;		    
 	}
 
 	for(int i = 0; i < 3; i++){
@@ -168,26 +170,26 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 
 	  yid.push_back(idtemp);
 	}
-
+	
+	double QEthrow = G4UniformRand();
 	yid[2].id = pixel;
 	  
 	yid[2].userInfos.clear();
 	yid[2].userInfos.push_back(double(1)); // TDC_order
 	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
 	yid[2].userInfos.push_back(double(pixel)); // pixel
+	yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
 	
 	yid[5].id = pixel;
 	yid[5].userInfos.clear();
-	yid[5].userInfos.push_back(double(0)); // TDC_order
-	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
+	yid[5].userInfos.push_back(double(0));
+	yid[5].userInfos.push_back(double(t2));
 	yid[5].userInfos.push_back(double(pixel));
-
-	//cout << "processID identifier size: " << yid.size() << endl;
-	//cout << "processID: lead time: " << t1 << " trail time: " << t2 << endl;
-	//cout << "processID pixel : " << yid[5].userInfos[2] << " order: " << yid[5].userInfos[0] <<  " tdc: " << yid[5].userInfos[1] << endl;
+	yid[5].userInfos.push_back(QEthrow); 
 	
 	yid[2].id_sharing = .5;
 	yid[5].id_sharing = .5;
+	
 	return yid;
 }
 
@@ -277,7 +279,7 @@ int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   int xpix = 0;
   int ypix = 0;
   // TODO: simplify this, obviously
-  if( nx > 0 && direcx == 1){
+  /*if( nx > 0 && direcx == 1){
     xpix = (nx+1) + 4;
   }
   if(nx == 0 && direcx == 1){
@@ -288,7 +290,20 @@ int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   }
   if(nx > 0 && direcx == -1){
     xpix = -1*(nx) + 4;
+    }*/
+  if( nx > 0 && direcx == 1){
+    xpix = -1*nx + 4;
   }
+  if(nx == 0 && direcx == 1){
+    xpix = 4;
+  }
+  if(nx == 0 && direcx == -1){
+    xpix = 5;
+  }
+  if(nx > 0 && direcx == -1){
+    xpix = (nx+1) + 4;
+  }
+
   
   if( ny > 0 && direcy == 1){
     ypix = -1*ny + 4;
@@ -317,12 +332,19 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
   double xpos = 0;
   double ypos = 0;
 
-  if(xpix == 1){
+  /*if(xpix == 1){
     xpos -= (3*edge_small + 0.5*edge_large);
   }
   if(xpix == 8){
     xpos += (3*edge_small + 0.5*edge_large);
+    }*/
+  if(xpix==1){
+    xpos += (3*edge_small + 0.5*edge_large);
   }
+  if(xpix==8){
+    xpos -= (3*edge_small + 0.5*edge_large);
+  }
+
   if(ypix==1){
     ypos += (3*edge_small + 0.5*edge_large);
   }
@@ -330,11 +352,19 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
     ypos -= (3*edge_small + 0.5*edge_large);
   }
 
+  /*
   if( xpix > 1 && xpix <= 4){
     xpos += (xpix-4 - 0.5)*edge_small;
   }
   if( xpix >= 5 && xpix < 8){
     xpos += (xpix-5 + 0.5)*edge_small;
+  }
+  */
+  if( xpix > 1 && xpix <= 4){
+    xpos += -1*((xpix-4) - 0.5)*edge_small;
+  }
+  if( xpix >= 5 && xpix < 8){
+    xpos += -1*(xpix-5 + 0.5)*edge_small;
   }
 
   if( ypix > 1 && ypix <= 4){
@@ -344,7 +374,7 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
     ypos += -1*(ypix-5 + 0.5)*edge_small;
   }
 
-  return G4ThreeVector(xpos,ypos,0.05);
+  return G4ThreeVector(xpos,ypos,-0.05);
 
   
 }
