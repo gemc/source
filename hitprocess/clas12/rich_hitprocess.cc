@@ -96,16 +96,18 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
 	
-	// getting quantum efficiency (taken from ltcc)
-	G4MaterialPropertiesTable* MPT = aHit->GetDetector().GetLogical()->GetMaterial()->GetMaterialPropertiesTable();
-        G4MaterialPropertyVector* efficiency = nullptr;
+	double energy = aHit->GetEs()[0]/electronvolt;
 
-	bool gotefficiency = false;
-        if( MPT != nullptr ) {
-                efficiency = (G4MaterialPropertyVector*) MPT->GetProperty("EFFICIENCY");
-                if( efficiency != nullptr ) gotefficiency = true;
-        }	       
-	
+	double qeff = 0;
+	for(int i = 0; i < richc.nQEbins; i++){
+	  if(energy < richc.Ene[i] && energy > richc.Ene[i+1]){
+	    qeff = richc.QE[i];
+	    break;	    
+	  }
+	}
+	cout << "qeff: " << qeff << " throw: " << identity[2].userInfos[3] << endl;
+
+	if( identity[2].userInfos[3] > qeff) return dgtz;
 	writeHit = true;
 	rejectHitConditions = false;		
 
