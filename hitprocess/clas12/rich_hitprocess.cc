@@ -95,6 +95,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int order = identity[2].userInfos[0];
 	int tdc = identity[2].userInfos[1];
+
+	writeHit = true;
+	rejectHitConditions = false;
 	
 	double energy = aHit->GetEs()[0]/electronvolt;
 
@@ -102,22 +105,22 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	for(int i = 0; i < richc.nQEbins; i++){
 	  if(energy < richc.Ene[i] && energy > richc.Ene[i+1]){
 	    qeff = richc.QE[i];
-	    break;	    
+	    break;	    	    
 	  }
 	}
 
-	if( identity[2].userInfos[3] > qeff) return dgtz;
-	writeHit = true;
-	rejectHitConditions = false;		
+	if( identity[2].userInfos[3] > qeff) {
+	  writeHit = false;
+	}	
 
-	int pid  = aHit->GetPID();		
-	//double startTime = aHit->GetTime()[0];
+	//int pid  = aHit->GetPID();
+	
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
-	dgtz["TDC_TDC"] = tdc;// + int(startTime);
-	dgtz["TDC_order"] = order;// + int(startTime);
+	dgtz["TDC_TDC"] = tdc;
+	dgtz["TDC_order"] = order;
 	return dgtz;
 }
 
