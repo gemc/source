@@ -105,7 +105,6 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	    break;	    
 	  }
 	}
-	cout << "qeff: " << qeff << " throw: " << identity[2].userInfos[3] << endl;
 
 	if( identity[2].userInfos[3] > qeff) return dgtz;
 	writeHit = true;
