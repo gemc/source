@@ -77,7 +77,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
         
 	map<string, double> dgtz;
-	
+
+	trueInfos tInfos(aHit);
+
         vector<identifier> identity = aHit->GetId();
         int idsector = identity[0].id;
 	
@@ -108,13 +110,13 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	rejectHitConditions = false;		
 
 	int pid  = aHit->GetPID();		
-	
+	//double startTime = aHit->GetTime()[0];
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
-	dgtz["TDC_TDC"] = tdc;
-	dgtz["TDC_order"] = order;
+	dgtz["TDC_TDC"] = tdc;// + int(startTime);
+	dgtz["TDC_order"] = order;// + int(startTime);
 	return dgtz;
 }
 
@@ -143,23 +145,25 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
         ->GetTopTransform().TransformPoint(xyz);
 	
 	int pixel = getPixelNumber(Lxyz);
-	
+
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
-
 	
 	RichPixel richPixel(12700);
 	double stepTime = yid[0].time;	       	
 	richPixel.Clear();
 	
 	int t1 = -1;
-	int t2 = -1;	
-	if(richPixel.GenerateTDC(1, stepTime)){
-	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[id[1].id],0.25);
-	  t1 = richPixel.get_T1() + offset;
-	  t2 = richPixel.get_T2() + offset;		    
-	}
+	int t2 = -1;
+	//cout << "pmt: " << id[1].id << " pixel: " << pixel << " global pos: (" << xyz.x() << "," << xyz.y() << "," << xyz.z() << ")" << " time: " << stepTime << endl;
 
+	if(richPixel.GenerateTDC(1, stepTime)){
+	  // generating TDC, correcting for offset here rather than in ccdb
+	  double offset = G4RandGauss::shoot(richc.timeOffsetMean,0.5);
+	  t1 = richPixel.get_T1() - offset;
+	  t2 = richPixel.get_T2() - offset;
+	}
+	
 	for(int i = 0; i < 3; i++){
 	  identifier idtemp;
 	  idtemp.name = id[i].name;

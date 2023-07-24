@@ -165,7 +165,7 @@ public:
   double timewalkCorr_m2[npmt];
   double timewalkCorr_T0[npmt];
   double timeOffsetCorr[npmt];
-
+  double timeOffsetMean = 49.5;
   // anode->maroc and pmt->board constants
 
   // anode->maroc
@@ -237,6 +237,8 @@ public:
 			     1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
 			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
 			     1, 2, 3, 1, 2, 3};
+  
+  double quantEffTable[]={};
   
 };
 
