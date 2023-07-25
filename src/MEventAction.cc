@@ -1154,9 +1154,9 @@ void MEventAction::setup_clas12_RF(int runno) {
 		
 		
 		rfvalue_strings = {to_string(clock), to_string(prescale)};
+		set_and_show_rf_setup();
 	}
 	
-	set_and_show_rf_setup();
 
 }
 
