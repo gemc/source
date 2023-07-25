@@ -722,16 +722,17 @@ void goptions::setGoptions()
 	optMap["RUN_WEIGHTS"].type  = 1;
 	optMap["RUN_WEIGHTS"].ctgr  = "control";
 
-	optMap["RFSETUP"].args = "no";
+	optMap["RFSETUP"].args = "clas12";
 	optMap["RFSETUP"].name = "Radio-frequency signal";
 	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
-	optMap["RFSETUP"].help += "      1. radioFrequency (GHz)\n";
-	optMap["RFSETUP"].help += "      2. radioInterval (number of bunches)\n";
+	optMap["RFSETUP"].help += "      1. radioFrequency period T (ns). The frequency in GHz is 1/T \n";
+	optMap["RFSETUP"].help += "      2. radioInterval (in number of bunches): distance between RF signals, or pre-scale factor.\n";
 	optMap["RFSETUP"].help += "     Any additional parameter (in ns) will add an RF signal with that time distance from the original.\n";
-	optMap["RFSETUP"].help += "     Example1:  250MHz (0.25 GHz) RF signal, 1 output, output frequency is 50 bunches: \n";
-	optMap["RFSETUP"].help += "      -RFSETUP=\"0.25, 50\" \n";
-	optMap["RFSETUP"].help += "     Example2: two 500MHz (0.5 GHz) RF signals, they are separated by 30 ns and both output frequency is 80 bunches: \n";
-	optMap["RFSETUP"].help += "      -RFSETUP=\"0.5, 80, 30\" \n";
+	optMap["RFSETUP"].help += "     Example1:  4.008 (0.2495 GHz) RF signal, 1 output, output frequency is 50 bunches: \n";
+	optMap["RFSETUP"].help += "      -RFSETUP=\"4.008, 50\" \n";
+	optMap["RFSETUP"].help += "     Example2: two (0.5 GHz) and 2 RF signals, separated by 30 ns and both output frequency is 80 bunches: \n";
+	optMap["RFSETUP"].help += "      -RFSETUP=\"2.004, 80, 30\" \n";
+	optMap["RFSETUP"].help += "     By default the RFSETUP is set to 'clas12': the above constants are to be read from the CCDB database, using as run: RUNNO and as variation the one specified in the option DIGITIZATION_VARIATION.\n";
 	optMap["RFSETUP"].type = 1;
 	optMap["RFSETUP"].ctgr = "control";
 

@@ -220,8 +220,7 @@ runWeights::runWeights(goptions opts)
 	if(nevts==0) return;
 	
 	// by default there is only 1 weight, the run number is defaultRunNumber for all events
-	if(fname == "no")
-	{
+	if(fname == "no") {
 		w[defaultRunNumber]  = 1;
 		n[defaultRunNumber]  = nevts;
 		return;
@@ -273,25 +272,21 @@ int runWeights::getRunNumber(int evn)
 	
 	double nn = 0;
 	
-	for(map<int, int>::iterator it = n.begin(); it != n.end(); it++)
-	{
+	// if run weight is given, return run number accordingly
+	for(map<int, int>::iterator it = n.begin(); it != n.end(); it++) {
 		nn += it->second;
-		if(dn < nn)
-		{
-			if(it->first != runNo)
-			{
+		if(dn < nn) {
+			if(it->first != runNo) {
 				isNewRun = TRUE;
 				runNo = it->first;
-			}
-			else
-			{
+			} else {
 				isNewRun = FALSE;
 			}
 			return it->first;
 		}
 	}
 	
-	// default comes from the option map
+	// else, return the default coming from the option RUNNO
 	runNo = defaultRunNumber;
 	
 	return runNo;

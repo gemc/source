@@ -165,6 +165,7 @@ public:
 	int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
 	long int requestedNevents;
 	int ntoskip;                      ///< Number of events to skip
+	vector<string> rfvalue_strings; ///< values from
 
 	// sampling time of electronics (typically FADC)
 	// and number of samplings
@@ -190,6 +191,9 @@ private:
 
 	vector<BackgroundHit*> getNextBackgroundEvent(string forSystem);
 
+	int last_runno;
+	void setup_clas12_RF(int runno);
+	void set_and_show_rf_setup();
 
 public:
 	void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
