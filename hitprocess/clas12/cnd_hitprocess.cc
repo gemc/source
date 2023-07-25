@@ -280,6 +280,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	double threshold = 0;
 	
+	double time_in_ns = 0;
+	
 	// LEFT PADDLE
 	if ( side == 1 ){
 		
@@ -452,12 +454,14 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		// MARK: TO delete later
 		if (etotUp > 0.) {
+			time_in_ns  = G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp));
 			TDCD = (int) ( (G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp)) ) / slope_D);
 			double npheD = G4Poisson(etotUp*pmtPEYldD);
 			double eneD = npheD/pmtPEYldD;
 			ADCD = (int) (eneD*adc_mip_D*2./(dEdxMIP*thickness));
 		}
 		if (etotDown > 0.) {
+			time_in_ns  = G4RandGauss::shoot(timeN, sigmaTD/sqrt(etotDown));
 			TDCN = (int) ( (G4RandGauss::shoot(timeN, sigmaTN/sqrt(etotDown)) ) / slope_N);
 			double npheN = G4Poisson(etotDown*pmtPEYldN);
 			double eneN = npheN/pmtPEYldN;
@@ -467,6 +471,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// Notice there are going to be small differences to the above quantities because
 		// of the shooting of random numbers
 		if ( eTotal > 0 ) {
+			time_in_ns  = G4RandGauss::shoot(eTime, sigma/sqrt(eTotal));
 			TDC = (int) ( (G4RandGauss::shoot(eTime, sigma/sqrt(eTotal)) ) / slope);
 			double nphe = G4Poisson(eTotal*pmtPEYld);
 			double ene  = nphe/pmtPEYld;
@@ -574,7 +579,10 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	}
 
-	int fadc_time = convert_to_precision(TDC*slope);
+
+	// standardizing fadc time and tdc info
+	int fadc_time = convert_to_precision(time_in_ns);
+
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;

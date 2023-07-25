@@ -264,7 +264,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	
 	// TDC conversion factors
 	double tdcconv = ctc.tdcconv[sector - 1][layer - 1][side][paddle - 1];
-	
+	double time_in_ns = 0;
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
@@ -272,18 +273,17 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		double stepTime = aHit->GetTime()[0];
 		
 		double adc  = totEdep * ctc.countsForMIP[sector - 1][layer - 1][0][paddle - 1] / ctc.dEMIP ; // no gain as that comes from data already
-		double tdc = stepTime/tdcconv;
-		
+				
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
 		dgtz["component"] = paddle;
 		dgtz["ADC_order"] = side;
 		dgtz["ADC_ADC"]   = (int) adc;
-		dgtz["ADC_time"]  = (tdc*24.0/1000);
+		dgtz["ADC_time"]  = convert_to_precision(stepTime);
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = side + 2;
-		dgtz["TDC_TDC"]   = (int) tdc;
+		dgtz["TDC_TDC"]   = (int) stepTime/tdcconv;
 		
 		return dgtz;
 	}
@@ -329,7 +329,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	double energyDepositedAttenuated = tInfos.eTot*att;
 	
 	double adc = 0.;
-	double tdc = 0.;
+	int    tdc = 0.;
 	// not used anymore
 	// double adcu = 0.;
 	// double tdcu = 0.;
@@ -357,9 +357,9 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		- ctc.toff_P2P[sector-1][layer-1][paddle-1]
 		+ timeWalk;
 		
-		double t = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
+		time_in_ns = (int) G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
 		// tdcu = tU / tdcconv;
-		tdc = t / tdcconv;
+		tdc = time_in_ns / tdcconv;
 	}
 	
 	if(accountForHardwareStatus) {
@@ -387,7 +387,8 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	int fadc_time = convert_to_precision(tdc*tdcconv);
+	// standardizing fadc time and tdc info
+	int fadc_time = convert_to_precision(time_in_ns);
 
 	
 	dgtz["hitn"]      = hitn;
@@ -400,7 +401,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = side + 2;
-	dgtz["TDC_TDC"]   = (int) tdc;
+	dgtz["TDC_TDC"]   = tdc;
 	
 	// reject hit if below threshold or efficiency
 	if ( energyDepositedAttenuated < ctc.threshold[sector - 1][layer - 1][side][paddle - 1] && applyThresholds ) {

@@ -33,7 +33,6 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
 	
-	ecc.TDC_time_to_evio    = 1.      ;
 	ecc.ADC_GeV_to_evio     = 1./10000.; // MIP based calibration is nominally 10 channels/MeV
 	ecc.pmtQE               = 0.27    ;
 	ecc.pmtDynodeGain       = 4.0     ;
@@ -177,6 +176,9 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	bool isPCAL = layer < 4 ;
 	
+	double time_in_ns = 0;
+
+	
 	// layer = 1, 2 stays the same
 	// subtract 3 from ec inner
 	// subtract 6 from ec outer
@@ -196,14 +198,16 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// pcal
 		pmtPEYld  = 11.5 ;
 	}
-	
+
+	double a1   = ecc.timing[sector-1][layer-1][1][strip-1]; // tdc conversion
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
 		double adc  = totEdep / ecc.ADC_GeV_to_evio ; // no gain as that comes from data already
-		double tdc = stepTime * ecc.TDC_time_to_evio ;
+		int tdc = stepTime / a1 ;
 		
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = sector;
@@ -211,11 +215,11 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["component"] = strip;
 		dgtz["ADC_order"] = 0;
 		dgtz["ADC_ADC"]   = (int) adc;
-		dgtz["ADC_time"]  = (int) tdc;
+		dgtz["ADC_time"]  = convert_to_precision(stepTime);
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = layer < 4 ? 2 : 1;  // 1 ECAL, 2 PCAL
-		dgtz["TDC_TDC"]   = (int) tdc;
+		dgtz["TDC_TDC"]   = tdc;
 		
 		return dgtz;
 	}
@@ -241,7 +245,6 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double C    = ecc.attlen[sector-1][layer-1][2][strip-1];
 	double G    = ecc.gain[sector-1][layer-1][strip-1];
 	double a0   = ecc.timing[sector-1][layer-1][0][strip-1];
-	double a1   = ecc.timing[sector-1][layer-1][1][strip-1];
 	double a2   = ecc.timing[sector-1][layer-1][2][strip-1];
 	double veff = ecc.veff[sector-1][layer-1][strip-1]*10;
 	
@@ -269,7 +272,6 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// initialize ADC and TDC
 	double ADC = 0;
-	double TDC = 0;
 	
 	// simulate the adc value.
 	if (Etota > 0) {
@@ -279,7 +281,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/pmtPEYld;
 			if (EC_GeV>0) {
 				ADC = EC_GeV;
-				TDC = (tInfos.time+Ttota/tInfos.nsteps)*ecc.TDC_time_to_evio + a0 + a2/sqrt(ADC) + ecc.tdc_global_offset;
+				time_in_ns = (tInfos.time+Ttota/tInfos.nsteps) + a0 + a2/sqrt(ADC) + ecc.tdc_global_offset;
 			}
 		}
 	}
@@ -293,10 +295,10 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				ADC = 0;
 				break;
 			case 2:
-				TDC = 0;
+				time_in_ns = 0;
 				break;
 			case 3:
-				ADC = TDC = 0;
+				ADC = time_in_ns = 0;
 				break;
 				
 			case 5:
@@ -311,9 +313,8 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
 	
-	float tdc2ns = 0.02345f;
-	
-	int fadc_time = convert_to_precision(tdc2ns*TDC/a1);
+	int fadc_time = convert_to_precision(time_in_ns);
+	int tdc = time_in_ns/a1;
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -324,7 +325,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = 2;
-	dgtz["TDC_TDC"]   = TDC/a1;
+	dgtz["TDC_TDC"]   = tdc;
 	
 	// cout << "sector = " << sector << " layer = " << view << " strip = " << strip << " ADC = " << ADC << " TDC = " << TDC << endl;
 	

@@ -187,6 +187,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double time = tInfos.time + timeOffset;
 	
 	int fadc_time = convert_to_precision(time);
+	// tdc conversion doesn't exist for htcc
 
 	
 	dgtz["hitn"]   = hitn;

@@ -291,6 +291,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double time = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 
 	int fadc_time = convert_to_precision(time);
+	// tdc conversion doesn't exist for htcc
 
 	
 	dgtz["hitn"]   = hitn;
@@ -304,7 +305,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = (int) time;
+	dgtz["TDC_TDC"]   = (int) time; // not used
 	
 	
 	// define conditions to reject hit
