@@ -178,7 +178,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	}
 	
 	
-	if(RFSETUP == "clas12") {
+	if(RFSETUP == "clas12_ccdb") {
 		setup_clas12_RF(rw.getRunNumber(evtN));
 		rfvalue_strings = {"4.008", "44", "22"};
 
@@ -558,7 +558,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		// getting start time of the event
 		rfsetup_string +=  to_string(gen_action->getStartTime() + additionalTime) + " " ;
 		
-		if(RFSETUP == "clas12"){
+		if(RFSETUP == "clas12_ccdb"){
 			setup_clas12_RF(rw.runNo);
 		}
 		

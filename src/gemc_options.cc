@@ -722,7 +722,7 @@ void goptions::setGoptions()
 	optMap["RUN_WEIGHTS"].type  = 1;
 	optMap["RUN_WEIGHTS"].ctgr  = "control";
 
-	optMap["RFSETUP"].args = "clas12";
+	optMap["RFSETUP"].args = "no";
 	optMap["RFSETUP"].name = "Radio-frequency signal";
 	optMap["RFSETUP"].help = "Radio-frequency signal. This are a minium of 2 parameters for one given RF signal:\n";
 	optMap["RFSETUP"].help += "      1. radioFrequency period T (ns). The frequency in GHz is 1/T \n";
