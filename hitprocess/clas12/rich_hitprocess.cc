@@ -84,7 +84,6 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<double> time = aHit->GetTime();
         int idsector = identity[0].id;
 
-	cout << "time in intDgt: " << time[0] << endl;
 	// tdc bank expects tile number
 	int idpmt = identity[1].id;
 	int tile = richc.pmtToTile[idpmt-1];
