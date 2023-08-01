@@ -47,9 +47,11 @@ public:
 	// are initialized in the initializeHTCCConstants(int runNo) method
 	double pedestal[nsect][nhalfes][nring] = {};
 	double pedestal_sigm[nsect][nhalfes][nring] = {};
-	
-	
-	// voltage signal parameters for the Pulse shape function
+
+    // tdcs conversion factor
+    double tdc_conv[nsect][nhalfes][nring] = {};
+
+    // voltage signal parameters for the Pulse shape function
 	double vpar[4];
 	
 };
@@ -93,8 +95,8 @@ private:
 	vector<MHit*> electronicNoise();
 	
 	double fadc_precision = 0.0625;  // 62 picoseconds resolution
-	int convert_to_precision(double tdc) {
-		return (int( tdc / fadc_precision ) / fadc_precision);
+	int convert_to_precision(double time) {
+		return (int( time / fadc_precision ) / fadc_precision);
 	}
 	
 

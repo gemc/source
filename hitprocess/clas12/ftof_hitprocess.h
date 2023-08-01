@@ -124,8 +124,8 @@ public:
 private:
 
 	double fadc_precision = 0.0625;  // 62 picoseconds resolution
-	int convert_to_precision(double tdc) {
-		return (int( tdc / fadc_precision ) / fadc_precision);
+	int convert_to_precision(double time) {
+		return (int( time / fadc_precision ) / fadc_precision);
 	}
 	
 
@@ -134,7 +134,3 @@ private:
 
 
 #endif
-
-
-
-

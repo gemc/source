@@ -48,33 +48,28 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		cout<<"HTCC:Getting status"<<endl;
 		snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/status:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear() ; calib->GetCalib(data,htccc.database);
-		for(unsigned row = 0; row < data.size(); row++)
-		{
+		for(unsigned row = 0; row < data.size(); row++) {
 			isec   = data[row][0]; ilay   = data[row][1];
 			htccc.status[isec-1][ilay-1].push_back(data[row][3]);
 		}
-	}
+
+    }
 	cout<<"HTCC:Getting mc_gain"<<endl;
 	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/mc_gain:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.mc_gain[isec-1][ilay-1].push_back(data[row][3]);
 	}
+
 	cout <<"HTCC:Getting mc_gain, mc_smearing" <<endl;
 	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/mc_smear:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.mc_smear[isec-1][ilay-1].push_back(data[row][3]);
 	}
-	
-	
-	
-	
-	
+
 	cout<<"HTCC:Getting time_offset"<<endl;
 	snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/time:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear() ; calib->GetCalib(data,htccc.database);
@@ -82,7 +77,15 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 		isec   = data[row][0]; ilay   = data[row][1];
 		htccc.tshift[isec-1][ilay-1].push_back(data[row][3]);
 	}
-	
+
+    cout<<"HTCC:Getting tdc_conv"<<endl;
+    snprintf(htccc.database, sizeof(htccc.database), "/calibration/htcc/tdc_conv:%d:%s%s", htccc.runNo, digiVariation.c_str(), timestamp.c_str());
+    data.clear() ; calib->GetCalib(data,htccc.database);
+    for(unsigned row = 0; row < data.size(); row++) {
+        isec   = data[row][0]; ilay   = data[row][1]; int icomp = data[row][2];
+        htccc.tdc_conv[isec-1][ilay-1][icomp-1] = data[row][3];
+    }
+
 	// we should read the database and and fill the Hardware object
 	string database   = "/daq/tt/htcc:1";
 	
@@ -90,8 +93,7 @@ static htccConstants initializeHTCCConstants(int runno, string digiVariation = "
 	cout << "  > " << htccc.TT.getName() << " TT Data loaded from CCDB with " << data.size() << " columns." << endl;
 	
 	// filling translation table
-	for(unsigned row = 0; row < data.size(); row++)
-	{
+	for(unsigned row = 0; row < data.size(); row++) {
 		int crate   = data[row][0];
 		int slot    = data[row][1];
 		int channel = data[row][2];
@@ -134,10 +136,14 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 	int idsector = identity[0].id;
+    int idhalf   = identity[2].id; // layer is half sector (1 or 2)
 	int idring   = identity[1].id;
-	int idhalf   = identity[2].id; // layer is half sector (1 or 2)
 	int thisPid  = aHit->GetPID();
-	
+
+    // TDC conversion factors
+    double tdcconv = htccc.tdc_conv[idsector - 1][idhalf - 1][idring - 1];
+    double time_in_ns = 0;
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the nphe in the charge infp. Time is also first step
@@ -151,11 +157,11 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["component"] = idring;
 		dgtz["ADC_order"] = 0;
 		dgtz["ADC_ADC"]   = (int) nphe*100;
-		dgtz["ADC_time"]  = (stepTime*24.0/1000);
+        dgtz["ADC_time"]  = convert_to_precision(stepTime);
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = 0;
-		dgtz["TDC_TDC"]   = (int) stepTime;
+		dgtz["TDC_TDC"]   = (int) stepTime / tdcconv;
 		
 		return dgtz;
 	}
@@ -196,11 +202,9 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// this needs to be optimized
 	// uaing the return value of insert is unnecessary
 	
-	for(unsigned int s=0; s<tids.size(); s++)
-	{
+	for(unsigned int s=0; s<tids.size(); s++) {
 		// selecting optical photons
-		if(pids[s] == MHit::OPTICALPHOTONPID)
-		{
+		if(pids[s] == MHit::OPTICALPHOTONPID) {
 			// insert this step into the set of track ids (set can only have unique values).
 			pair< set<int> ::iterator, bool> newtrack = TIDS.insert(tids[s]);
 			
@@ -225,11 +229,9 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if( efficiency != nullptr ) gotefficiency = true;
 	}
 	
-	for( unsigned int iphoton = 0; iphoton<TIDS.size(); iphoton++ )
-	{
+	for( unsigned int iphoton = 0; iphoton<TIDS.size(); iphoton++ ) {
 		//loop over all unique photons contributing to the hit:
-		if( gotefficiency )
-		{
+		if( gotefficiency ) {
 			// If the material of this detector has a material properties table
 			// with "EFFICIENCY" defined, then "detect" this photon with probability = efficiency
 			bool outofrange = false;
@@ -240,8 +242,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				ndetected++;
 			}
 			
-			if( verbosity > 4 )
-			{
+			if( verbosity > 4 ) {
 				cout << log_msg << " Found efficiency definition for material "
 				<< aHit->GetDetector().GetLogical()->GetMaterial()->GetName()
 				<< ": (Ephoton, efficiency)=(" << photon_energies[iphoton] << ", "
@@ -263,8 +264,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	//status flags
 	if(accountForHardwareStatus) {
 		
-		switch (htccc.status[idsector-1][idhalf-1][idring-1])
-		{
+		switch (htccc.status[idsector-1][idhalf-1][idring-1]) {
 			case 0:
 				break;
 			case 1:
@@ -288,10 +288,10 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	double adc  = 100 * G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
-	double time = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
+    time_in_ns = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 
-	int fadc_time = convert_to_precision(time);
-	// tdc conversion doesn't exist for htcc
+	int fadc_time = convert_to_precision(time_in_ns);
+    int tdc  = time_in_ns / tdcconv;
 
 	
 	dgtz["hitn"]   = hitn;
@@ -305,7 +305,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = (int) time; // not used
+	dgtz["TDC_TDC"]   = tdc;
 	
 	
 	// define conditions to reject hit
@@ -522,10 +522,3 @@ void htcc_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 htccConstants htcc_HitProcess::htccc = initializeHTCCConstants(-1);
-
-
-
-
-
-
-
