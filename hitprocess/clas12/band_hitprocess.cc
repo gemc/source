@@ -52,7 +52,7 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 	
 	// TODO: ADD Statustable in the future, F.H 02/08/2021
 	
-	//cout<<"BAND:Getting effective velocities"<<endl;
+	cout<<"BAND:Getting effective velocities"<<endl;
 	snprintf(bhc.database, sizeof(bhc.database), "/calibration/band/effective_velocity:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
@@ -64,7 +64,7 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 		//printf("%i \t %i \t %i \t %.2f \n", isector, ilayer, icomp, bhc.eff_vel[isector-1][ilayer-1][icomp-1]);
 	}
 	
-	//cout<<"BAND:Getting attenuation lengths"<<endl;
+	cout<<"BAND:Getting attenuation lengths"<<endl;
 	snprintf(bhc.database, sizeof(bhc.database), "/calibration/band/attenuation_lengths:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
@@ -75,7 +75,7 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 		//printf("%i \t %i \t %i \t %.2f \n", isector, ilayer, icomp, bhc.atten_len[isector-1][ilayer-1][icomp-1]);
 	}
 	
-	//cout<<"BAND:Getting TDC offsets and resolutions"<<endl;
+	cout<<"BAND:Getting TDC offsets and resolutions"<<endl;
     snprintf(bhc.database, sizeof(bhc.database), "/calibration/band/paddle_offsets_tdc:%d:%s%s",bhc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,bhc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
@@ -85,7 +85,14 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 		bhc.tdc_offset[isector-1][ilayer-1][icomp-1] = data[row][3];
 		bhc.tdc_resolution[isector-1][ilayer-1][icomp-1] = data[row][4];
 	}
-	
+
+
+    snprintf(bhc.database, sizeof(bhc.database),  "/calibration/band/tdc_conv:%d:%s%s", bhc.runNo, digiVariation.c_str(), timestamp.c_str());
+    cout << "BAND:Getting tdc_conv" << endl;
+    data.clear();
+    calib->GetCalib(data, bhc.database);
+    bhc.tdcconv = data[0][3];
+
 	// These are not in the CCDB
 	// Fill with constant values
 	//cout<<"BAND:Getting MeV->ADC conversions"<<endl;
@@ -96,7 +103,9 @@ static bandHitConstants initializeBANDHitConstants(int runno, string digiVariati
 			}
 		}
 	}
-	
+
+
+
 	// setting voltage signal parameters
 	bhc.vpar[0] = 20;  // delay, ns
 	bhc.vpar[1] = 10;  // rise time, ns
@@ -117,7 +126,10 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int layer     = identity[1].id;
 	int component = identity[2].id;
 	int side      = identity[3].id;  // left = 0 right = 1
-	
+
+    // TDC conversion factors
+    double tdcconv = bhc.tdcconv;
+    double time_in_ns = 0;
 	
 	// You can either loop over all the steps of the hit, or just take the
 	// Edep averaged quantities from the trueInfos object:
@@ -244,7 +256,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		/**** The following calculates the time based on energy-weighted average of all step times ****/
 		
-		tL_tdc = et_L_tdc / eTotL;      // sum(energy*time) /  sum(energy)
+		tL_tdc = et_L_tdc / eTotL;        // sum(energy*time) /  sum(energy)
 		tR_tdc = et_R_tdc / eTotR;
 		tL_fadc = et_L_fadc / eTotL;      // sum(energy*time) /  sum(energy)
 		tR_fadc = et_R_fadc / eTotR;
@@ -272,24 +284,25 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	double adcFactor = 1E4;
-	double tdcConv = 0.02345;
-	
+
 	int ADC       = (int) ( adcFactor*(side == 0 ? eTotL : eTotR) );
 	int amplitude = (int) ( adcFactor*(side == 0 ? xHit  : zHit)  );
-	double time   = (side == 0 ? tL_fadc : tR_fadc);
-	int TDC       = (int) ( adcFactor*(side == 0 ? tL_tdc : tR_tdc)/tdcConv );
+	time_in_ns   = (side == 0 ? tL_fadc : tR_fadc);
+    int fadc_time = convert_to_precision(time_in_ns);
+
+    int TDC       = (int) ( adcFactor*(side == 0 ? tL_tdc : tR_tdc)/tdcconv );
 	
-	dgtz["hitn"]      = (int) hitn;
-	dgtz["sector"]    = (int) sector;
-	dgtz["layer"]     = (int) layer;
-	dgtz["component"] = (int) component;
-	dgtz["ADC_order"] = side;
-	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = time;
+	dgtz["hitn"]          = (int) hitn;
+	dgtz["sector"]        = (int) sector;
+	dgtz["layer"]         = (int) layer;
+	dgtz["component"]     = (int) component;
+	dgtz["ADC_order"]     = side;
+	dgtz["ADC_ADC"]       = ADC;
+	dgtz["ADC_time"]      = fadc_time;
 	dgtz["ADC_amplitude"] = amplitude;
-	dgtz["ADC_ped"]   = 0;
-	dgtz["TDC_order"] = side + 2;
-	dgtz["TDC_TDC"]   = TDC;
+	dgtz["ADC_ped"]       = 0;
+	dgtz["TDC_order"]     = side + 2;
+	dgtz["TDC_TDC"]       = TDC;
 	
 	
 	//	dgtz["ADCL"]		= (int) (1E4 * eTotL);

@@ -29,7 +29,11 @@ public:
 	
 	//	voltage signal parameters, using double gaussian + delay (function DGauss, need documentation for it)
 	double vpar[4];
-	
+
+    // tdc conversion factor
+    double tdcconv;
+
+
 };
 
 
@@ -72,7 +76,11 @@ private:
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
-	
+
+    double fadc_precision = 0.0625;  // 62 picoseconds resolution
+    int convert_to_precision(double tdc) {
+        return (int( tdc / fadc_precision ) / fadc_precision);
+    }
 };
 
 #endif
