@@ -178,8 +178,14 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	vector<double>        times  = aHit->GetTime();
 	vector<double>        dx 	  = aHit->GetDx();      // step length
 	unsigned              nsteps = times.size();       // total number of steps in the hit
-	
-	double L         = BARLENGTHS[sector-1];				                 // length of the bar [cm]
+
+
+    // TODO: add volume length instead of hardcoded number
+    // check ftof code:
+    // Get the paddle half-length
+    // double length = aHit->GetDetector().dimensions[0];
+
+    double L         = BARLENGTHS[sector-1];				                 // length of the bar [cm]
 	double attenL    = bhc.atten_len[sector-1][layer-1][component-1];    // attenuation length of the bar [cm]
 	double vEff_fadc = bhc.eff_vel_fadc[sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
 	double vEff_tdc  = bhc.eff_vel_tdc [sector-1][layer-1][component-1]; // effective velocity of bar [cm/ns]
