@@ -6,7 +6,7 @@
 #include <cmath>
 #define _USE_MATH_DEFINES
 
-vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Edep, uRwellConstants uRwellc, double time)
+vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Edep, uRwellConstants uRwellc, double time, bool isProto)
 {
 	
 	vector<uRwell_strip_found> strip_found;
@@ -31,16 +31,16 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 	// strip reference frame
 	
 	
-	double x_real = xyz.x()*cos(M_PI*uRwellc.find_stereo_angle()/180) + xyz.y()*sin(M_PI*uRwellc.find_stereo_angle()/180);
-	double y_real = xyz.y()*cos(M_PI*uRwellc.find_stereo_angle()/180) - xyz.x()*sin(M_PI*uRwellc.find_stereo_angle()/180);
+	double x_real = xyz.x()*cos(M_PI*uRwellc.get_stereo_angle()/180) + xyz.y()*sin(M_PI*uRwellc.get_stereo_angle()/180);
+	double y_real = xyz.y()*cos(M_PI*uRwellc.get_stereo_angle()/180) - xyz.x()*sin(M_PI*uRwellc.get_stereo_angle()/180);
 	double z_real = xyz.z();
 	
 	
 	double time_dz = fabs(-uRwellc.Zhalf/cm + z_real/cm)/uRwellc.v_drift ;
 	
-	int ClosestStrip_ID = round((y_real)/uRwellc.find_strip_pitch());
+	int ClosestStrip_ID = round((y_real)/uRwellc.get_strip_pitch());
 	
-	double weight=Weight_td(ClosestStrip_ID, x_real, y_real, z_real, uRwellc);
+	double weight=Weight_td(ClosestStrip_ID, x_real, y_real, z_real, uRwellc, isProto);
 	double strip_length_toReadout =cal_length(strip_endpoint1, xyz);
 	double time_toReadout = strip_length_toReadout/uRwellc.v_eff_readout;
 	if(uRwellc.v_eff_readout ==0) time_toReadout=0;
@@ -58,13 +58,12 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 	double weight_next=1;
 	double weight_previous=1;
 	int clus =1;
-	// int cont =0;
 	
 	while(weight_next>=0. || weight_previous>=0.){
 		
 		//Look at the next strip
 		strip_num = ClosestStrip_ID + clus;
-		weight_next = Weight_td(strip_num, x_real, y_real, z_real, uRwellc);
+		weight_next = Weight_td(strip_num, x_real, y_real, z_real, uRwellc, isProto);
 		if(weight_next!=-1){
 			NextStrip.numberID = strip_num;
 			NextStrip.weight = weight_next;
@@ -77,7 +76,7 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 		
 		//Look at the previous strip
 		strip_num = ClosestStrip_ID - clus;
-		weight_previous = Weight_td(strip_num, x_real, y_real, z_real, uRwellc);
+	    weight_previous = Weight_td(strip_num, x_real, y_real, z_real, uRwellc, isProto);
 		if(weight_previous!=-1){
 			NextStrip.numberID = strip_num;
 			NextStrip.weight = weight_previous;
@@ -92,7 +91,7 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 	}
 	
 	
-	/* New strip ID numeration: 1.... Number_of_strips. Number of strips is the size of the vector strip_found_temp  */
+	/* New strip ID numeration: 1.... Number_of_strips. Number of involved strips is the size of the vector strip_found_temp  */
 	
 	auto max = std::max_element( strip_found_temp.begin(), strip_found_temp.end(),
 										 []( const uRwell_strip_found &a, const uRwell_strip_found &b )
@@ -106,11 +105,14 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 		return a.numberID < b.numberID;
 	} );
 	
-	int avg = (max->numberID + min->numberID)/2;
+	auto avg = round((max->numberID + min->numberID)/2);
 	//	auto number_of_strip = Number_of_strip(uRwellc);
 	
 	for (unsigned int i=0; i<strip_found_temp.size();i++){
+	//	cout <<"b: "<<strip_found_temp.at(i).numberID<<endl;
 		strip_found_temp.at(i).numberID = strip_found_temp.at(i).numberID - avg + strip_found_temp.size()/2 ;
+//		cout <<"a: "<<strip_found_temp.at(i).numberID<<endl;
+
 	}
 	
 	double Nel_left=N_el;
@@ -125,7 +127,6 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 		if (renorm!=1&&Nel_left!=0){
 			weight_this_strip=strip_found_temp.at(i).weight/(1-renorm);
 			Nel_this_strip=GetBinomial(Nel_left,weight_this_strip);
-			if (Nel_this_strip==-1) cout<<Nel_left<<" -1  "<<weight_this_strip<<endl;
 			renorm+=strip_found_temp.at(i).weight;
 			strip_found_temp.at(i).weight=Nel_this_strip;
 			Nel_left-=Nel_this_strip;
@@ -144,17 +145,18 @@ vector<uRwell_strip_found> uRwell_strip::FindStrip(G4ThreeVector xyz , double Ed
 		
 	}
 	
+
 	return strip_found;
 	
 }
 
 
-double uRwell_strip::Weight_td(int strip, double x, double y, double z, uRwellConstants uRwellc){
+double uRwell_strip::Weight_td(int strip, double x, double y, double z, uRwellConstants uRwellc, bool isProto){
 	double wght;
 	if(Build_strip(strip, uRwellc)){
-		wght=( erf((strip_y+uRwellc.find_strip_width()/2.-y)/uRwellc.sigma_td/sqrt(2))-erf((strip_y-uRwellc.find_strip_width()/2.-y)/uRwellc.sigma_td/sqrt(2)))*
-		(erf((strip_x+strip_length/2.-x)/uRwellc.sigma_td/sqrt(2))-erf((strip_x-strip_length/2.-x)/uRwellc.sigma_td/sqrt(2)))/2./2.;
-		if (wght<0) wght=-wght;
+	 wght=( erf((strip_y+uRwellc.get_strip_width(strip, isProto)/2.-y)/uRwellc.sigma_td/sqrt(2))-erf((strip_y-uRwellc.get_strip_width(strip, isProto)/2.-y)/uRwellc.sigma_td/sqrt(2)))*
+			 (erf((strip_x+strip_length/2.-x)/uRwellc.sigma_td/sqrt(2))-erf((strip_x-strip_length/2.-x)/uRwellc.sigma_td/sqrt(2)))/2./2.;
+	 if (wght<0) wght=-wght;
 	}else{
 		wght =-1;
 	}
@@ -164,16 +166,17 @@ double uRwell_strip::Weight_td(int strip, double x, double y, double z, uRwellCo
 bool uRwell_strip::Build_strip(int strip, uRwellConstants uRwellc ){
 	
 	//strip straight line -> y = mx +c;
-	double m = tan(M_PI*uRwellc.find_stereo_angle()/180);
-	double c = strip*uRwellc.find_strip_pitch()/cos(M_PI*uRwellc.find_stereo_angle()/180);
+	double m = tan(M_PI*uRwellc.get_stereo_angle()/180);
+	double c = strip*uRwellc.get_strip_pitch()/cos(M_PI*uRwellc.get_stereo_angle()/180);
+
+   // Trapezoid coordinates
+	G4ThreeVector A = {-uRwellc.Xhalf_base, -uRwellc.Yhalf, uRwellc.Zhalf};
+	G4ThreeVector B =  {uRwellc.Xhalf_base, -uRwellc.Yhalf, uRwellc.Zhalf};
+	G4ThreeVector C = {-uRwellc.Xhalf_Largebase, uRwellc.Yhalf, uRwellc.Zhalf};
+	G4ThreeVector D =  {uRwellc.Xhalf_Largebase, uRwellc.Yhalf, uRwellc.Zhalf};
 	
-	// Trapezoid coordinates
-	G4ThreeVector A = {uRwellc.Xhalf_base, -uRwellc.Yhalf, uRwellc.Zhalf};
-	G4ThreeVector B =  {-uRwellc.Xhalf_base, -uRwellc.Yhalf, uRwellc.Zhalf};
-	G4ThreeVector C = {uRwellc.Xhalf_Largebase, uRwellc.Yhalf, uRwellc.Zhalf};
-	G4ThreeVector D =  {-uRwellc.Xhalf_Largebase, uRwellc.Yhalf, uRwellc.Zhalf};
-	
-	
+
+
 	// C-------------D //
 	//  -------------  //
 	//   -----------   //
@@ -189,16 +192,15 @@ bool uRwell_strip::Build_strip(int strip, uRwellConstants uRwellc ){
 	
 	// geometrical characteristic
 	double length_strip=0;
-	// double lenght_strip_temp=0;
 	G4ThreeVector first_point;
 	G4ThreeVector second_point;
 	
 	// check if the intersection point is on the segment defined by two points (i.e A and B)
 	
-	if(uRwellc.find_strip_kind()=="strip_u"){
+	 if(uRwellc.get_strip_kind()=="strip_v"){
+
 		if(pointOnsegment(AC_strip, A, C)) {
 			first_point=AC_strip;
-			
 			if(pointOnsegment(BD_strip, B, D)) second_point = BD_strip;
 			if(pointOnsegment(CD_strip, C, D)) second_point = CD_strip;
 			
@@ -215,8 +217,8 @@ bool uRwell_strip::Build_strip(int strip, uRwellConstants uRwellc ){
 	
 	
 	
-	if(uRwellc.find_strip_kind()=="strip_v"){
-		
+	 if(uRwellc.get_strip_kind()=="strip_u"){
+
 		if(pointOnsegment(BD_strip, B, D)){
 			first_point=BD_strip;
 			
@@ -237,21 +239,29 @@ bool uRwell_strip::Build_strip(int strip, uRwellConstants uRwellc ){
 	strip_length = length_strip;
 	strip_endpoint1 = first_point;
 	strip_endpoint2 = second_point;
-	
+
+
 	G4ThreeVector strip_endpoint1_stripFrame = change_of_coordinates(strip_endpoint1, uRwellc );
 	G4ThreeVector strip_endpoint2_stripFrame = change_of_coordinates(strip_endpoint2, uRwellc );
 	
 	strip_y = strip_endpoint1_stripFrame.y();
 	strip_x = (strip_endpoint1_stripFrame.x() + strip_endpoint2_stripFrame.x())/2;
 	
+/*
+	cout << "strip: "<<strip<< endl;
+	cout << strip_endpoint1.x()<< " "<< strip_endpoint1.y()<<" "<<endl;
+	cout << strip_endpoint2.x()<< " "<< strip_endpoint2.y()<<" "<<endl;
+	cout <<"done"<<endl;
+*/
+
 	return true;
 }
 
 G4ThreeVector uRwell_strip::change_of_coordinates( G4ThreeVector A, uRwellConstants uRwellc){
 	
 	G4ThreeVector XYZ;
-	XYZ.setX(A.x()*cos(M_PI*uRwellc.find_stereo_angle()/180) + A.y()*sin(M_PI*uRwellc.find_stereo_angle()/180));
-	XYZ.setY(A.y()*cos(M_PI*uRwellc.find_stereo_angle()/180) - A.x()*sin(M_PI*uRwellc.find_stereo_angle()/180));
+	XYZ.setX(A.x()*cos(M_PI*uRwellc.get_stereo_angle()/180) + A.y()*sin(M_PI*uRwellc.get_stereo_angle()/180));
+    XYZ.setY(A.y()*cos(M_PI*uRwellc.get_stereo_angle()/180) - A.x()*sin(M_PI*uRwellc.get_stereo_angle()/180));
 	XYZ.setZ(A.z());
 	
 	return XYZ;
@@ -267,6 +277,8 @@ G4ThreeVector uRwell_strip::intersectionPoint(double m, double c, G4ThreeVector 
 	XY.setY( m*XY.x() +c);
 	XY.setZ(A.z());
 	
+
+
 	return XY;
 	
 }
@@ -310,20 +322,19 @@ int uRwell_strip::Number_of_strip(uRwellConstants uRwellc){
 	
 	/*** number of strip in AB***/
 	
-	int n_AB = abs(2*uRwellc.Xhalf_base/(uRwellc.stripU_pitch/sin(M_PI*uRwellc.find_stereo_angle()/180)));
-	
+	int n_AB = abs(2*uRwellc.Xhalf_base/(uRwellc.stripU_pitch/sin(M_PI*uRwellc.get_stereo_angle()/180)));
+
 	/** number of strip in CA **/
 	double AC = sqrt((pow((uRwellc.Xhalf_base-uRwellc.Xhalf_Largebase),2) + pow((uRwellc.Yhalf+uRwellc.Yhalf),2)));
-	double theta = acos(2*uRwellc.Yhalf/(AC));
-	int n_AC = AC/(uRwellc.stripU_pitch/cos(theta-abs(M_PI*uRwellc.find_stereo_angle())/180));
-	
+    double theta = acos(2*uRwellc.Yhalf/(AC));
+	int n_AC = AC/(uRwellc.stripU_pitch/cos(theta-abs(M_PI*uRwellc.get_stereo_angle())/180));
+
 	N = n_AB + n_AC+1;
-	return N;
+    return N;
 }
 
 int uRwell_strip::strip_id(int i, uRwellConstants uRwell ){
 	int ID = 0;
-	// int strip=0;
 	
 	ID = Number_of_strip(uRwell)/2+i;
 	

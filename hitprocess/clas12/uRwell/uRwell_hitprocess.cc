@@ -57,11 +57,29 @@ static uRwellConstants initializeuRwellConstants(int runno, string digiVariation
 	urwellC.number_of_strip = 1884; //Total number of strip
 	urwellC.stripU_stereo_angle = -10 ; // angle between strip and trapezoid base in degree
 	urwellC.stripU_pitch = 1.;  //mm
-	urwellC.stripU_width = 0.4;  // mm
-	
+
+	urwellC.stripU_width[0] = 0.4;
+	urwellC.stripU_width[1] = 0.4;
+	urwellC.stripU_width[2] = 0.4;
+	urwellC.stripU_width[3] = 0.4;
+
+	urwellC.stripU_width_proto[0] = 0.175;
+	urwellC.stripU_width_proto[1] = 0.350;
+	urwellC.stripU_width_proto[2] = 0.262;
+	urwellC.stripU_width_proto[3] = 0.350;
+
 	urwellC.stripV_stereo_angle = 10 ; // angle between strip and trapezoid base in degree
 	urwellC.stripV_pitch = 1.;  //mm
-	urwellC.stripV_width = 0.4;  // mm
+
+	urwellC.stripV_width[0] = 0.4;
+	urwellC.stripV_width[1] = 0.4;
+	urwellC.stripV_width[2] = 0.4;
+	urwellC.stripV_width[3] = 0.4;
+
+	urwellC.stripV_width_proto[0] = 0.355;
+	urwellC.stripV_width_proto[1] = 0.650;
+	urwellC.stripV_width_proto[2] = 0.5;
+	urwellC.stripV_width_proto[3] = 0.650;
 	
 	urwellC.w_i=25; //ionization potential assumed to be 25 eV
 	urwellC.sigma_td= 0.5;         // effective value to take into account transverse diffusion + charge dispersion
@@ -90,21 +108,19 @@ map<string, double>uRwell_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	
 	dgtz["hitn"]   = hitn;
-	dgtz["sector"] = identity[0].id;
-	dgtz["layer"]  = identity[2].id;
-	dgtz["component"]  = identity[3].id;
-	dgtz["ADC_order"] = 0;
-	if(identity[3].id ==-15000) {
-		dgtz["ADC_ADC"]  = 0;
-		dgtz["ADC_time"] = 0;
-	} 
-	else {
-		dgtz["ADC_ADC"]  = (int) (uRwellC.gain*1e6*tInfos.eTot/uRwellC.w_i);
-		dgtz["ADC_time"] = identity[3].time;
-	}
+	dgtz["sector"] = identity[1].id;
+	dgtz["layer"]  = identity[3].id;
+	dgtz["component"]  = identity[4].id;
+    if(identity[4].id ==-15000){
+    	dgtz["ADC"]  = 0;
+    	dgtz["time"]   = 0;
+    }else{
+    	dgtz["ADC"]  = (1.0*(int) (uRwellC.gain*1e6*tInfos.eTot/uRwellC.w_i));
+    	dgtz["time"]   = identity[4].time;
+    }
 	dgtz["ADC_ped"]   = 0;
 	
-	// cout<<dgtz["sector"]<<" "<< dgtz["layer"]<< " "<< dgtz["component"] << " "<< dgtz["ADC"]<< " "<< dgtz["time"]<<" "<< 1e6*tInfos.eTot<<endl;
+//	cout<<dgtz["sector"]<<" "<<dgtz["layer"]<<" "<<dgtz["component"]<<" "<<dgtz["ADC"]<<endl;
 	
 	// define conditions to reject hit
 	if (rejectHitConditions) {
@@ -134,6 +150,11 @@ vector<identifier> uRwell_HitProcess :: processID(vector<identifier> id, G4Step*
 	G4VTouchable* TH = (G4VTouchable*) aStep->GetPreStepPoint()->GetTouchable();
 	G4Trap *Trap = dynamic_cast<G4Trap*>(TH->GetSolid());
 	
+	//cout << Trap->GetName()<<endl;
+
+	 bool isProto = false;
+	 if(Trap->GetName().find("proto")!=std::string::npos) isProto = true;
+
 	uRwellC.Xhalf_base = Trap->GetXHalfLength1();
 	uRwellC.Xhalf_Largebase = Trap->GetXHalfLength2();
 	uRwellC.Yhalf = Trap->GetYHalfLength1();
@@ -166,63 +187,86 @@ vector<identifier> uRwell_HitProcess :: processID(vector<identifier> id, G4Step*
 	 }
 	 */
 	
-	uRwellC.kind_of_strip("strip_u");
-	vector<uRwell_strip_found> multi_hit_u = URwell_strip.FindStrip(lxyz, depe, uRwellC, time);
-	int n_multi_hits_u = multi_hit_u.size();
-	uRwellC.kind_of_strip("strip_v");
-	vector<uRwell_strip_found> multi_hit_v = URwell_strip.FindStrip(lxyz, depe, uRwellC, time);
+	/* STRIP U */
+    uRwellC.get_strip_info("strip_u", isProto);
+    vector<uRwell_strip_found> multi_hit_u = URwell_strip.FindStrip(lxyz, depe, uRwellC, time, isProto);
+    int n_multi_hits_u = multi_hit_u.size();
+
+
+    for(int h=0; h<n_multi_hits_u; h++){
+
+    		for(int j=0; j<5; j++)
+    		{
+    			// j=0 region ; j=1 sector; j2 chamber; j3 layer; j4 component
+
+    			identifier this_id;
+    			this_id.name       = id[j].name;
+    			this_id.rule       = id[j].rule;
+
+    			if(j==0) this_id.id = id[j].id;
+    			if(j==1) this_id.id = id[j].id;
+    			if(j==2) this_id.id = id[j].id;
+    			if(j==3) {
+    				this_id.id = 2*id[0].id-1;
+    			}
+    			this_id.time       = id[j].time;
+
+    			if(j==4){    //J==4 strip ID
+    				if(id[2].id>0) {
+					    if(multi_hit_u.at(h).numberID ==-15000){
+					    	this_id.id  = multi_hit_u.at(h).numberID ;
+					    } else {
+					    	this_id.id  = multi_hit_u.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[2].id-1,0);
+					    }
+    				}else this_id.id  = multi_hit_u.at(h).numberID;
+    					this_id.time       = multi_hit_u.at(h).time;
+
+    					}
+
+    			this_id.TimeWindow = id[j].TimeWindow;
+    			this_id.TrackId    = id[j].TrackId;
+    			this_id.id_sharing = multi_hit_u.at(h).weight/(uRwellC.gain*1e6*depe/uRwellC.w_i);
+
+    			yid.push_back(this_id);
+    		}
+
+    }
+
+	
+    /* STRIP V */
+    uRwellC.get_strip_info("strip_v", isProto);
+	vector<uRwell_strip_found> multi_hit_v = URwell_strip.FindStrip(lxyz, depe, uRwellC, time, isProto);
 	int n_multi_hits_v = multi_hit_v.size();
-	
-	for(int h=0; h<n_multi_hits_u; h++)
-	{
-		
-		for(int j=0; j<4; j++)
-		{
-			// j=0 sector ; j=1 chamber; j2 layer; j3 strip
-			
-			identifier this_id;
-			this_id.name       = id[j].name;
-			this_id.rule       = id[j].rule;
-			if(j==0) this_id.id = id[j].id;
-			if(j==1) this_id.id = id[j].id;
-			if(j==2) this_id.id = 1;
-			this_id.time       = id[j].time;
-			if(j==3){    //J==3 strip ID
-				if(id[1].id>0 && multi_hit_u.at(h).numberID>0) {
-					this_id.id  = multi_hit_u.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,0);
-				}else this_id.id  = multi_hit_u.at(h).numberID;
-				this_id.time       = multi_hit_u.at(h).time;
-			}
-			this_id.TimeWindow = id[j].TimeWindow;
-			this_id.TrackId    = id[j].TrackId;
-			this_id.id_sharing = multi_hit_u.at(h).weight/(uRwellC.gain*1e6*depe/uRwellC.w_i);
-			yid.push_back(this_id);
-		}
-	}
-	
-	for(int h=0; h<n_multi_hits_v; h++)
-	{
-		for(int j=0; j<4; j++)
-		{
-			identifier this_id;
-			this_id.name       = id[j].name;
-			this_id.rule       = id[j].rule;
-			if(j==0) this_id.id = id[j].id;
-			if(j==1) this_id.id = id[j].id;
-			if(j==2) this_id.id = 2;
-			this_id.time       = id[j].time;
-			if(j==3){    //J==3 strip ID
-				if(id[1].id>0 && multi_hit_v.at(h).numberID>0) {
-					this_id.id  = multi_hit_v.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[1].id-1,0);
-				}else this_id.id  = multi_hit_v.at(h).numberID;
-				this_id.time       = multi_hit_v.at(h).time;
-			}
-			this_id.TimeWindow = id[j].TimeWindow;
-			this_id.TrackId    = id[j].TrackId;
-			this_id.id_sharing = multi_hit_v.at(h).weight/(uRwellC.gain*1e6*depe/uRwellC.w_i);
-			yid.push_back(this_id);
-		}
-	}
+
+	 for(int h=0; h<n_multi_hits_v; h++){
+	 		for(int j=0; j<5; j++)
+	 		{
+	 			identifier this_id;
+				this_id.name       = id[j].name;
+				this_id.rule       = id[j].rule;
+				if(j==0) this_id.id = id[j].id;
+				if(j==1) this_id.id = id[j].id;
+				if(j==2) this_id.id = id[j].id;
+				if(j==3) this_id.id = 2*id[0].id;
+				this_id.time       = id[j].time;
+
+				if(j==4){    //J==4 strip ID
+				   if(id[2].id>0) {
+					    if(multi_hit_v.at(h).numberID ==-15000){
+					    	this_id.id  = multi_hit_v.at(h).numberID ;
+					    } else {
+					    	this_id.id  = multi_hit_v.at(h).numberID + std::accumulate(uRwellC.number_strip_chamber,uRwellC.number_strip_chamber +id[2].id-1,0);
+					    }
+
+				   }else this_id.id  = multi_hit_v.at(h).numberID;
+				   	   this_id.time       = multi_hit_v.at(h).time;
+				}
+				this_id.TimeWindow = id[j].TimeWindow;
+				this_id.TrackId    = id[j].TrackId;
+				this_id.id_sharing = multi_hit_v.at(h).weight/(uRwellC.gain*1e6*depe/uRwellC.w_i);
+				yid.push_back(this_id);
+	 	}
+	 		}
 	
 	
 	return yid;
