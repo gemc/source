@@ -108,10 +108,12 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  }
 	}
 
+	// applying quantum efficiency from thrown random value set in integrateDgt
 	if( identity[2].userInfos[3] > qeff) {
 	  writeHit = false;
 	}	
-	
+	// only time offset effects, duration calculated in intDgt,
+	// so adding hit time to tdc here
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
