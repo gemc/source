@@ -199,7 +199,7 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 	string toUpperS = schemaName;
 	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
 	string thisSchema = toUpperS + "::" + schemaType;
-	cout << "SCHEMA: " << thisSchema << endl;
+
 	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
 		return schemasToLoad[thisSchema];
 	} else if(schemaName == "ft_cal") {
