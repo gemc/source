@@ -18,7 +18,6 @@ using namespace CLHEP;
 static richConstants initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false)
 {
         // TODO: with TDC simulation class from Marco M., time calibration information maybe not necessary
-
         richConstants richc;
 	if(runno == -1) return richc;
 
@@ -47,7 +46,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
 	calib->GetCalib(data,richc.database);
 	
-	for(int row = 0; row<data.size(); row++){	  
+	for(unsigned int row = 0; row<data.size(); row++){	  
 	  int ipmt = data[row][1];
 	  richc.timewalkCorr_D0[ipmt-1] = data[row][3];
 	  richc.timewalkCorr_m1[ipmt-1]	= data[row][4];
@@ -61,7 +60,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
         calib->GetCalib(data,richc.database);
 
-        for(int row = 0; row<data.size(); row++){
+        for(unsigned int row = 0; row<data.size(); row++){
           int ipmt = data[row][1];
           richc.timeOffsetCorr[ipmt-1] = data[row][3];
         }
@@ -74,8 +73,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 // changed to match data.json definition of RICH::tdc 
 
 map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
-{
-        
+{        
 	map<string, double> dgtz;
 
 	trueInfos tInfos(aHit);
@@ -110,26 +108,20 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  }
 	}
 
+	// applying quantum efficiency from thrown random value set in integrateDgt
 	if( identity[2].userInfos[3] > qeff) {
 	  writeHit = false;
 	}	
-
-	//int pid  = aHit->GetPID();
-	
+	// only time offset effects, duration calculated in intDgt,
+	// so adding hit time to tdc here
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
-	dgtz["TDC_TDC"] = tdc+time[0];
+	dgtz["TDC_TDC"] = tdc+int(time[0]);
 	dgtz["TDC_order"] = order;
 	return dgtz;
 }
-
-
-// this routine needs to be modified
-// no point drawing should be made here, but in MHit
-// finding the PMT should be in a different function,
-// with parameters coming from DB
 
 #include "G4VVisManager.hh"
 #include "G4Circle.hh"
@@ -154,20 +146,19 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
 	
-	RichPixel richPixel(12700);
+
+        int pmt = yid[1].id;
+	RichPixel richPixel(richc.pmtType[pmt-1]);
 
 	richPixel.Clear();
 	
 	int t1 = -1;
 	int t2 = -1;
 
-	int pmt = yid[1].id;
-
 	if(richPixel.GenerateTDC(1, 0)){
-	  // generating TDC, correcting for offset here rather than in ccdb
-	  double offset = G4RandGauss::shoot(richc.timeOffsetMean,0.5);
-	  t1 = richPixel.get_T1() - offset;
-	  t2 = richPixel.get_T2() - offset;
+	  // generating TDC
+	  t1 = richPixel.get_T1();
+	  t2 = richPixel.get_T2();
 	}
 	
 	for(int i = 0; i < 3; i++){
@@ -177,7 +168,6 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	  idtemp.id = id[i].id;
 	  idtemp.TimeWindow = id[i].TimeWindow;
 	  idtemp.TrackId = id[i].TrackId;
-	  idtemp.time = id[i].time;
 	  
 	  yid.push_back(idtemp);
 	}
@@ -289,19 +279,6 @@ int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   
   int xpix = 0;
   int ypix = 0;
-  // TODO: simplify this, obviously
-  /*if( nx > 0 && direcx == 1){
-    xpix = (nx+1) + 4;
-  }
-  if(nx == 0 && direcx == 1){
-    xpix = 5;
-  }
-  if(nx == 0 && direcx == -1){
-    xpix = 4;
-  }
-  if(nx > 0 && direcx == -1){
-    xpix = -1*(nx) + 4;
-    }*/
   if( nx > 0 && direcx == 1){
     xpix = -1*nx + 4;
   }
@@ -343,12 +320,6 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
   double xpos = 0;
   double ypos = 0;
 
-  /*if(xpix == 1){
-    xpos -= (3*edge_small + 0.5*edge_large);
-  }
-  if(xpix == 8){
-    xpos += (3*edge_small + 0.5*edge_large);
-    }*/
   if(xpix==1){
     xpos += (3*edge_small + 0.5*edge_large);
   }
@@ -363,14 +334,6 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel){
     ypos -= (3*edge_small + 0.5*edge_large);
   }
 
-  /*
-  if( xpix > 1 && xpix <= 4){
-    xpos += (xpix-4 - 0.5)*edge_small;
-  }
-  if( xpix >= 5 && xpix < 8){
-    xpos += (xpix-5 + 0.5)*edge_small;
-  }
-  */
   if( xpix > 1 && xpix <= 4){
     xpos += -1*((xpix-4) - 0.5)*edge_small;
   }
