@@ -194,6 +194,7 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 			this_shit.TimeWindow = thisPID.TimeWindow;
 			this_shit.TrackId    = thisPID.TrackId;
 			this_shit.id_sharing = thisPID.id_sharing;
+			this_shit.userInfos = thisPID.userInfos;
 			mhPID.push_back(this_shit);
 		}
 		
