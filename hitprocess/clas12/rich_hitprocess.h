@@ -327,7 +327,10 @@ private:
 
         // RICH specific functions 
         int getPixelNumber(G4ThreeVector  Lxyz);
-        G4ThreeVector getPixelCenter(int pixel);        
+        G4ThreeVector getPixelCenter(int pixel);
+
+        // testing ccdb time paramters vs PMT simulation class
+        bool ccdbTiming = true;
 };
 
 #endif

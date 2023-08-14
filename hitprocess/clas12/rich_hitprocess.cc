@@ -51,7 +51,12 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	  richc.timewalkCorr_D0[ipmt-1] = data[row][3];
 	  richc.timewalkCorr_m1[ipmt-1]	= data[row][4];
 	  richc.timewalkCorr_m2[ipmt-1]	= data[row][5];
-	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];	  
+	  richc.timewalkCorr_T0[ipmt-1]	= data[row][6];
+	  //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
+          //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
+          //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
+          //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;
+
 	}	
 
 	data.clear();
@@ -63,6 +68,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         for(unsigned int row = 0; row<data.size(); row++){
           int ipmt = data[row][1];
           richc.timeOffsetCorr[ipmt-1] = data[row][3];
+	  //cout << "time offset pmt " << ipmt << " : " << richc.timeOffsetCorr[ipmt-1] << endl;
         }
 
 	return richc;
@@ -93,8 +99,40 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
 	
 	int order = identity[2].userInfos[0];
-	int tdc = identity[2].userInfos[1];
 
+	// timing: from ccdb or PMT simulation
+	int tdc;
+	if(ccdbTiming){
+	  double duration = identity[2].userInfos[1];
+	  // leading edge:
+	  if(order==1){ 
+	    tdc = 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
+	  }
+	  if(order==0){
+
+	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
+	    double f1 = richc.timewalkCorr_m1[idpmt-1] * duration + richc.timewalkCorr_T0[idpmt-1];
+	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
+	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (duration - richc.timewalkCorr_D0[idpmt-1]) + f1T;
+	    cout << "f1: " << f1 << " f1T: " << f1T << " f2: " << f2 << endl;
+	    if(duration < richc.timewalkCorr_D0[idpmt-1]){
+	      tdc = duration
+		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
+		- f1;
+	    }
+	    else{
+	      tdc = duration
+		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
+		- f2;
+	    }
+	  }
+	  
+	}
+	else{
+	  tdc = identity[2].userInfos[1] + int(time[0]);
+	}
+
+	cout << "order: " << order << " tdc: " << tdc << endl;
 	writeHit = true;
 	rejectHitConditions = false;
 	
@@ -118,7 +156,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
-	dgtz["TDC_TDC"] = tdc+int(time[0]);
+	dgtz["TDC_TDC"] = tdc;
 	dgtz["TDC_order"] = order;
 	return dgtz;
 }
@@ -146,7 +184,6 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
 	
-
         int pmt = yid[1].id;
 	RichPixel richPixel(richc.pmtType[pmt-1]);
 
@@ -154,11 +191,12 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	
 	int t1 = -1;
 	int t2 = -1;
-
+	double duration = -1;
 	if(richPixel.GenerateTDC(1, 0)){
 	  // generating TDC
 	  t1 = richPixel.get_T1();
 	  t2 = richPixel.get_T2();
+	  duration = richPixel.duration;
 	}
 	
 	for(int i = 0; i < 3; i++){
@@ -173,18 +211,27 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	}
 	
 	double QEthrow = G4UniformRand();
-	yid[2].id = pixel;
-	  
+	yid[2].id = pixel;	  
 	yid[2].userInfos.clear();
 	yid[2].userInfos.push_back(double(1)); // TDC_order
-	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
+	if(ccdbTiming){
+	  yid[2].userInfos.push_back(duration); // for time walk parameters from ccdb
+	}
+	else{
+	  yid[2].userInfos.push_back(double(t1)); // TDC_tdc
+	}
 	yid[2].userInfos.push_back(double(pixel)); // pixel
 	yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
 	
 	yid[5].id = pixel;
 	yid[5].userInfos.clear();
 	yid[5].userInfos.push_back(double(0));
-	yid[5].userInfos.push_back(double(t2));
+	if(ccdbTiming){
+	  yid[5].userInfos.push_back(duration);	// for time walk parameters from ccdb
+        }
+	else{
+          yid[5].userInfos.push_back(double(t2)); // TDC_tdc
+        }
 	yid[5].userInfos.push_back(double(pixel));
 	yid[5].userInfos.push_back(QEthrow); 
 	
@@ -194,7 +241,6 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	return yid;
 }
 
-// setting TDC information (need leading and trailing edge in rich reco)
 map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
@@ -490,7 +536,7 @@ int RichPixel::GenerateADC(int n0)
 {
 
   GenerateNpe(n0);
-
+  
   qadc = npe*Qe;
   ADC = Pedestal + (int)(DAC*qadc);
 
@@ -504,7 +550,7 @@ bool RichPixel::GenerateTDC(int n0, double t0)
   if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
 
   if (qtdc < MarocThrCharge) return false;
-
+  
   start_time = t0;
   ChargeToTime();
   ChargeToDuration();
@@ -562,7 +608,7 @@ void RichPixel::ChargeToTime()
   }
 
   true_t1 = time + TimeOffset + start_time;
-
+  
   /* gaussian smearing of t1 */
   double dt = G4RandGauss::shoot(TimeOffset, TimeResol);
 
