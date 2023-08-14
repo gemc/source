@@ -53,10 +53,10 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	  richc.timewalkCorr_m2[ipmt-1]	= data[row][6];
 	  richc.timewalkCorr_T0[ipmt-1]	= data[row][4];
 	  if(ipmt == 1){
-	    cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
-	    cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
-	    cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
-	    cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
+	    //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
+	    //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
+	    //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
+	    //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
 	  }
 	}	
 
@@ -70,7 +70,7 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
           int ipmt = data[row][1];
           richc.timeOffsetCorr[ipmt-1] = data[row][3];
 	  if(ipmt == 1){
-	    cout << "time offset pmt " << ipmt << " : " << richc.timeOffsetCorr[ipmt-1] << endl;
+	    //cout << "time offset pmt " << ipmt << " : " << richc.timeOffsetCorr[ipmt-1] << endl;
 	  }
         }
 
@@ -116,7 +116,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	    double f1 = richc.timewalkCorr_m1[idpmt-1] * duration + richc.timewalkCorr_T0[idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
 	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (duration - richc.timewalkCorr_D0[idpmt-1]) + f1T;
-	    cout << "f1: " << f1 << " f1T: " << f1T << " f2: " << f2 << endl;
+	    //cout << "f1: " << f1 << " f1T: " << f1T << " f2: " << f2 << endl;
 	    if(duration < richc.timewalkCorr_D0[idpmt-1]){
 	      tdc = int(time[0]) + duration
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
@@ -148,7 +148,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 
 	// applying quantum efficiency from thrown random value set in integrateDgt
-	if( identity[2].userInfos[3] > qeff) {
+	if( identity[2].userInfos[3] > qeff && !aHit->isElectronicNoise) {
 	  writeHit = false;
 	}	
 	// only time offset effects, duration calculated in intDgt,
@@ -264,15 +264,33 @@ void rich_HitProcess::initWithRunNumber(int runno)
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> rich_HitProcess :: electronicNoise()
 {
+        cout << "avg number dark hits: " << richc.avgNDarkHits << endl;
 	vector<MHit*> noiseHits;
-	
-	// first, identify the cells that would have electronic noise
-	// then instantiate hit with energy E, time T, identifier IDF:
-	//
-	// MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
-	
-	// push to noiseHits collection:
-	// noiseHits.push_back(thisNoiseHit)
+
+	int nHitThrow = (int) G4Poisson(richc.avgNDarkHits);
+
+        // id[0]: sector
+        // id[1]: pmt
+        // id[2]: pixel
+	cout << "nHitThrow: " << nHitThrow << endl;
+	for(int i = 0; i < nHitThrow; i++){
+	  
+	  int noisypmt = (int) (richc.npmt * G4UniformRand() + 1);
+	  int noisypixel = (int) (richc.npixel * G4UniformRand() + 1);
+	  double noisetime = G4UniformRand() * richc.timeWindowDefault;
+	  cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
+	  vector<identifier> idnoise;
+	  for(int j = 0; j < 3; j++){
+	    identifier idtemp;
+	    idnoise.push_back(idtemp);
+	  }
+	  idnoise[0].id = 4;
+	  idnoise[1].id = noisypmt;
+	  idnoise[2].id = noisypixel;
+		    
+	  MHit *hit = new MHit(3*eV,  noisetime, idnoise, 0); 
+	  noiseHits.push_back(hit);
+	}
 	
 	return noiseHits;
 }

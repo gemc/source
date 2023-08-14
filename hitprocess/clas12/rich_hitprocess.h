@@ -157,14 +157,26 @@ public:
   // translation table
   TranslationTable TT;
 
-  // add constants here
+
+
   const static int npmt = 391;
   const static int npixel = 64;
+  
+  // ccdb time constants
   double timewalkCorr_D0[npmt];
   double timewalkCorr_m1[npmt];
   double timewalkCorr_m2[npmt];
   double timewalkCorr_T0[npmt];
   double timeOffsetCorr[npmt];
+
+
+  // dark hit constants
+  double darkRate = 500*hertz;
+  double timeWindowDefault = 248.5*ns; // can we access this somehow?
+  double avgNDarkHits = darkRate*timeWindowDefault*npmt*npixel;
+
+  
+  // readout electronics translation constants
   // anode->maroc and pmt->board constants
 
   // anode->maroc
