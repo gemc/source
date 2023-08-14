@@ -106,22 +106,21 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double duration = identity[2].userInfos[1];
 	  // leading edge:
 	  if(order==1){ 
-	    tdc = 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
+	    tdc = int(time[0]) + 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
 	  }
 	  if(order==0){
-
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
 	    double f1 = richc.timewalkCorr_m1[idpmt-1] * duration + richc.timewalkCorr_T0[idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
 	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (duration - richc.timewalkCorr_D0[idpmt-1]) + f1T;
-	    cout << "f1: " << f1 << " f1T: " << f1T << " f2: " << f2 << endl;
+	    
 	    if(duration < richc.timewalkCorr_D0[idpmt-1]){
-	      tdc = duration
+	      tdc = int(time[0]) + duration
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
 		- f1;
 	    }
 	    else{
-	      tdc = duration
+	      tdc = int(time[0]) + duration
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
 		- f2;
 	    }
@@ -131,8 +130,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	else{
 	  tdc = identity[2].userInfos[1] + int(time[0]);
 	}
-
-	cout << "order: " << order << " tdc: " << tdc << endl;
+	
 	writeHit = true;
 	rejectHitConditions = false;
 	
