@@ -109,15 +109,15 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double duration = identity[2].userInfos[1];
 	  // leading edge:
 	  if(order==1){ 
-	    tdc = int(time[0]) + 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
+	    tdc = int(time[0]) + 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1.); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
 	  }
 	  if(order==0){
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
 	    double f1 = richc.timewalkCorr_m1[idpmt-1] * duration + richc.timewalkCorr_T0[idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
 	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (duration - richc.timewalkCorr_D0[idpmt-1]) + f1T;
-	    //cout << "f1: " << f1 << " f1T: " << f1T << " f2: " << f2 << endl;
-	    if(duration < richc.timewalkCorr_D0[idpmt-1]){
+
+	    if(duration < richc.D0pmtSim){
 	      tdc = int(time[0]) + duration
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
 		- f1;
@@ -187,6 +187,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	
         int pmt = yid[1].id;
 	RichPixel richPixel(richc.pmtType[pmt-1]);
+
+	cout << "pmt: " << pmt << " pixel: " << pixel << "pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
 
 	richPixel.Clear();
 	

@@ -169,6 +169,9 @@ public:
   double timewalkCorr_T0[npmt];
   double timeOffsetCorr[npmt];
 
+  // mean D0 (time walk parameter) from sim of PMT with RichPixel class
+  // determined by running time calibration suite over electrons thrown in RICH
+  double D0pmtSim = 55.0;   
 
   // dark hit constants
   double darkRate = 500*hertz;
