@@ -106,26 +106,30 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// timing: from ccdb or PMT simulation
 	int tdc;
 	if(ccdbTiming){
+	  // PMT sim throws reasonable duration dist., so using it to determine
+	  // timing region. Then scaling duration as it enters into parameterization
+	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
+	  double durationScaled = duration * richc.timewalkCorr_D0[idpmt-1] / richc.D0pmtSim;
 	  // leading edge:
 	  if(order==1){ 
 	    tdc = int(time[0]) + 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1.); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
 	  }
 	  if(order==0){
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
-	    double f1 = richc.timewalkCorr_m1[idpmt-1] * duration + richc.timewalkCorr_T0[idpmt-1];
+	    double f1 = richc.timewalkCorr_m1[idpmt-1] * durationScaled + richc.timewalkCorr_T0[idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
-	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (duration - richc.timewalkCorr_D0[idpmt-1]) + f1T;
+	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (durationScaled - richc.timewalkCorr_D0[idpmt-1]) + f1T;
 
 	    if(duration < richc.D0pmtSim){
-	      tdc = int(time[0]) + duration
+	      tdc = int(time[0]) + durationScaled
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
-		- f1;
+		+ f1;
 	    }
 	    else{
-	      tdc = int(time[0]) + duration
+	      tdc = int(time[0]) + durationScaled
 		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
-		- f2;
+		+ f2;
 	    }
 	  }
 	  
@@ -188,7 +192,7 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
         int pmt = yid[1].id;
 	RichPixel richPixel(richc.pmtType[pmt-1]);
 
-	cout << "pmt: " << pmt << " pixel: " << pixel << "pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
+	//cout << "pmt: " << pmt << " pixel: " << pixel << "pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
 
 	richPixel.Clear();
 	
@@ -266,7 +270,7 @@ void rich_HitProcess::initWithRunNumber(int runno)
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> rich_HitProcess :: electronicNoise()
 {
-        cout << "avg number dark hits: " << richc.avgNDarkHits << endl;
+  //cout << "avg number dark hits: " << richc.avgNDarkHits << endl;
 	vector<MHit*> noiseHits;
 
 	int nHitThrow = (int) G4Poisson(richc.avgNDarkHits);
@@ -274,13 +278,13 @@ vector<MHit*> rich_HitProcess :: electronicNoise()
         // id[0]: sector
         // id[1]: pmt
         // id[2]: pixel
-	cout << "nHitThrow: " << nHitThrow << endl;
+	//	cout << "nHitThrow: " << nHitThrow << endl;
 	for(int i = 0; i < nHitThrow; i++){
 	  
 	  int noisypmt = (int) (richc.npmt * G4UniformRand() + 1);
 	  int noisypixel = (int) (richc.npixel * G4UniformRand() + 1);
 	  double noisetime = G4UniformRand() * richc.timeWindowDefault;
-	  cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
+	  //cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
 	  vector<identifier> idnoise;
 	  for(int j = 0; j < 3; j++){
 	    identifier idtemp;
