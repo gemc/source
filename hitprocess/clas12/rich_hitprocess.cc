@@ -66,9 +66,11 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
         calib->GetCalib(data,richc.database);
 
+	//cout << "time off data size: " << data.size() << endl;
         for(unsigned int row = 0; row<data.size(); row++){
           int ipmt = data[row][1];
-          richc.timeOffsetCorr[ipmt-1] = data[row][3];
+	  int ianode = data[row][2];
+          richc.timeOffsetCorr[(ipmt-1)*64+(ianode-1)] = data[row][3];
 	  if(ipmt == 1){
 	    //cout << "time offset pmt " << ipmt << " : " << richc.timeOffsetCorr[ipmt-1] << endl;
 	  }
@@ -111,11 +113,13 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
 	  double durationScaled = duration * richc.timewalkCorr_D0[idpmt-1] / richc.D0pmtSim;
-	  // leading edge:
-	  if(order==1){ 
-	    tdc = int(time[0]) + 0 + G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1.); // 1ns time resol. smearing (SHOULD BE THE SAME FOR BOTH?)
+	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
+	  // trailing edge:
+	  if(order==0){ 
+	    tdc = int(time[0]) + durationScaled + offset;
 	  }
-	  if(order==0){
+	  // leading edge
+	  if(order==1){
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
 	    double f1 = richc.timewalkCorr_m1[idpmt-1] * durationScaled + richc.timewalkCorr_T0[idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
@@ -123,12 +127,12 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	    if(duration < richc.D0pmtSim){
 	      tdc = int(time[0]) + durationScaled
-		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
+		+ offset
 		+ f1;
 	    }
 	    else{
 	      tdc = int(time[0]) + durationScaled
-		+ G4RandGauss::shoot(richc.timeOffsetCorr[idpmt-1], 1)
+		+ offset
 		+ f2;
 	    }
 	  }

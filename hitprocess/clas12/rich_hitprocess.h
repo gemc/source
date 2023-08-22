@@ -167,7 +167,7 @@ public:
   double timewalkCorr_m1[npmt];
   double timewalkCorr_m2[npmt];
   double timewalkCorr_T0[npmt];
-  double timeOffsetCorr[npmt];
+  double timeOffsetCorr[npmt*npixel];
 
   // mean D0 (time walk parameter) from sim of PMT with RichPixel class
   // determined by running time calibration suite over electrons thrown in RICH
