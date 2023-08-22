@@ -126,12 +126,12 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (durationScaled - richc.timewalkCorr_D0[idpmt-1]) + f1T;
 
 	    if(duration < richc.D0pmtSim){
-	      tdc = int(time[0]) + durationScaled
+	      tdc = int(time[0])
 		+ offset
 		+ f1;
 	    }
 	    else{
-	      tdc = int(time[0]) + durationScaled
+	      tdc = int(time[0])
 		+ offset
 		+ f2;
 	    }
