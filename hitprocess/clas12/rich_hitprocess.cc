@@ -39,19 +39,18 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
 
 	vector<vector<double>> data;
+	// MODULE 1
 	data.clear();
-	// Eventually: not limited to module1
-
 	// read timewalk correction
 	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
 	calib->GetCalib(data,richc.database);
 	
 	for(unsigned int row = 0; row<data.size(); row++){	  
 	  int ipmt = data[row][1];
-	  richc.timewalkCorr_D0[ipmt-1] = data[row][3];
-	  richc.timewalkCorr_m1[ipmt-1]	= data[row][5];
-	  richc.timewalkCorr_m2[ipmt-1]	= data[row][6];
-	  richc.timewalkCorr_T0[ipmt-1]	= data[row][4];
+	  richc.timewalkCorr_D0[0][ipmt-1] = data[row][3];
+	  richc.timewalkCorr_m1[0][ipmt-1]	= data[row][5];
+	  richc.timewalkCorr_m2[0][ipmt-1]	= data[row][6];
+	  richc.timewalkCorr_T0[0][ipmt-1]	= data[row][4];
 	  if(ipmt == 1){
 	    //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
 	    //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
@@ -70,12 +69,51 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         for(unsigned int row = 0; row<data.size(); row++){
           int ipmt = data[row][1];
 	  int ianode = data[row][2];
-          richc.timeOffsetCorr[(ipmt-1)*64+(ianode-1)] = data[row][3];
-	  if(ipmt == 1){
-	    //cout << "time offset pmt " << ipmt << " : " << richc.timeOffsetCorr[ipmt-1] << endl;
-	  }
+          richc.timeOffsetCorr[0][(ipmt-1)*64+(ianode-1)] = data[row][3];
+	  
         }
 
+	// MODULE 2
+        data.clear();
+        // read timewalk correction                                                                                                                                                                        
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module2/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
+
+        for(unsigned int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+          richc.timewalkCorr_D0[1][ipmt-1] = data[row][3];
+          richc.timewalkCorr_m1[1][ipmt-1]      = data[row][5];
+          richc.timewalkCorr_m2[1][ipmt-1]      = data[row][6];
+          richc.timewalkCorr_T0[1][ipmt-1]      = data[row][4];
+        }
+
+        data.clear();
+
+        // read time offset
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
+	
+        for(unsigned int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+          int ianode = data[row][2];
+          richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
+
+        }
+	
+	data.clear();
+	// read setup table
+	snprintf(richc.database, sizeof(richc.database), "/geometry/rich/setup:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
+	
+	for(unsigned int row = 0; row<data.size(); row++){
+	  int sector = data[row][0];
+	  richc.geomSetup[sector-1] = data[row][3];
+	  if(data[row][3] != 0){
+	    richc.nRich++;
+	  }
+	}
+	cout << richc.nRich << " RICH sectors " << endl;
+	
 	return richc;
 }
 
@@ -112,8 +150,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // timing region. Then scaling duration as it enters into parameterization
 	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
-	  double durationScaled = duration * richc.timewalkCorr_D0[idpmt-1] / richc.D0pmtSim;
-	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
+	  double durationScaled = duration * richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1] / richc.D0pmtSim;
+	  
+	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[richc.geomSetup[idsector-1]-1][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
 	  // trailing edge:
 	  if(order==0){ 
 	    tdc = int(time[0]) + durationScaled + offset;
@@ -121,9 +160,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // leading edge
 	  if(order==1){
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
-	    double f1 = richc.timewalkCorr_m1[idpmt-1] * durationScaled + richc.timewalkCorr_T0[idpmt-1];
-	    double f1T = richc.timewalkCorr_m1[idpmt-1] * richc.timewalkCorr_D0[idpmt-1] + richc.timewalkCorr_T0[idpmt-1];	    
-	    double f2 = richc.timewalkCorr_m2[idpmt-1] * (durationScaled - richc.timewalkCorr_D0[idpmt-1]) + f1T;
+	    double f1 = richc.timewalkCorr_m1[richc.geomSetup[idsector-1]-1][idpmt-1] * durationScaled + richc.timewalkCorr_T0[richc.geomSetup[idsector-1]-1][idpmt-1];
+	    double f1T = richc.timewalkCorr_m1[richc.geomSetup[idsector-1]-1][idpmt-1] * richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1] + richc.timewalkCorr_T0[richc.geomSetup[idsector-1]-1][idpmt-1];	    
+	    double f2 = richc.timewalkCorr_m2[richc.geomSetup[idsector-1]-1][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1]) + f1T;
 
 	    if(duration < richc.D0pmtSim){
 	      tdc = int(time[0])
@@ -192,11 +231,14 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
-	
+
+	int sector = yid[0].id;
         int pmt = yid[1].id;
 	RichPixel richPixel(richc.pmtType[pmt-1]);
 
-	//cout << "pmt: " << pmt << " pixel: " << pixel << "pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
+	if(pmt == 10 || pmt == 11 || pmt == 9 ){
+	    cout << "sector: " << sector <<  " pmt: " << pmt << " pixel: " << pixel << " pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
+	  }
 
 	richPixel.Clear();
 	
@@ -274,32 +316,41 @@ void rich_HitProcess::initWithRunNumber(int runno)
 // - electronicNoise: returns a vector of hits generated / by electronics.
 vector<MHit*> rich_HitProcess :: electronicNoise()
 {
-  //cout << "avg number dark hits: " << richc.avgNDarkHits << endl;
-	vector<MHit*> noiseHits;
 
-	int nHitThrow = (int) G4Poisson(richc.avgNDarkHits);
+	vector<MHit*> noiseHits;
 
         // id[0]: sector
         // id[1]: pmt
         // id[2]: pixel
-	//	cout << "nHitThrow: " << nHitThrow << endl;
-	for(int i = 0; i < nHitThrow; i++){
-	  
-	  int noisypmt = (int) (richc.npmt * G4UniformRand() + 1);
-	  int noisypixel = (int) (richc.npixel * G4UniformRand() + 1);
-	  double noisetime = G4UniformRand() * richc.timeWindowDefault;
-	  //cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
-	  vector<identifier> idnoise;
-	  for(int j = 0; j < 3; j++){
-	    identifier idtemp;
-	    idnoise.push_back(idtemp);
+
+
+	for(int j = 0; j < richc.nRich; j++){
+	  int nHitThrow = (int) G4Poisson(richc.avgNDarkHits);
+	  int sector;
+	  if(j == 0){
+	    sector = 4;
 	  }
-	  idnoise[0].id = 4;
-	  idnoise[1].id = noisypmt;
-	  idnoise[2].id = noisypixel;
-		    
-	  MHit *hit = new MHit(3*eV,  noisetime, idnoise, 0); 
-	  noiseHits.push_back(hit);
+	  else{
+	    sector = 1;
+	  }
+	  for(int i = 0; i < nHitThrow; i++){
+	  
+	    int noisypmt = (int) (richc.npmt * G4UniformRand() + 1);
+	    int noisypixel = (int) (richc.npixel * G4UniformRand() + 1);
+	    double noisetime = G4UniformRand() * richc.timeWindowDefault;
+	    //cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
+	    vector<identifier> idnoise;
+	    for(int j = 0; j < 3; j++){
+	      identifier idtemp;
+	      idnoise.push_back(idtemp);
+	    }
+	    idnoise[0].id = sector;
+	    idnoise[1].id = noisypmt;
+	    idnoise[2].id = noisypixel;
+	    
+	    MHit *hit = new MHit(3*eV,  noisetime, idnoise, 0); 
+	    noiseHits.push_back(hit);
+	  }
 	}
 	
 	return noiseHits;
