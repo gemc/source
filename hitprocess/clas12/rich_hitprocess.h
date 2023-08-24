@@ -169,7 +169,7 @@ public:
   double timewalkCorr_T0[2][npmt];
   double timeOffsetCorr[2][npmt*npixel];
   int geomSetup[6]; // ccdb table for which sectors contain RICH
-  int nRich;
+  int nRich = 1;
   
   // mean D0 (time walk parameter) from sim of PMT with RichPixel class
   // determined by running time calibration suite over electrons thrown in RICH

@@ -101,19 +101,21 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         }
 	
 	data.clear();
+	/*
 	// read setup table
 	snprintf(richc.database, sizeof(richc.database), "/geometry/rich/setup:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-        calib->GetCalib(data,richc.database);
-	
-	for(unsigned int row = 0; row<data.size(); row++){
-	  int sector = data[row][0];
-	  richc.geomSetup[sector-1] = data[row][3];
-	  if(data[row][3] != 0){
+        unique_ptr<Assignment> richSectorSetup(calib->GetAssignment(richc.database));
+        for(size_t rowI = 0; rowI < richSectorSetup->GetRowsCount(); rowI++){
+	  int sector = richSectorSetup->GetValueInt(rowI,0);
+          richc.geomSetup[sector-1] = richSectorSetup->GetValueInt(rowI,3);
+	  if(richSectorSetup->GetValueInt(rowI,3)!=0){
 	    richc.nRich++;
 	  }
-	}
-	cout << richc.nRich << " RICH sectors " << endl;
+        }
+
 	
+	cout << richc.nRich << " RICH sectors " << endl;
+	*/
 	return richc;
 }
 
@@ -130,7 +132,11 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         vector<identifier> identity = aHit->GetId();
 	vector<double> time = aHit->GetTime();
         int idsector = identity[0].id;
-
+	int sectorindex = 0;
+	if(idsector==1){
+	  sectorindex = 1;
+	}
+	
 	// tdc bank expects tile number
 	int idpmt = identity[1].id;
 	int tile = richc.pmtToTile[idpmt-1];
@@ -142,7 +148,7 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
 	
 	int order = identity[2].userInfos[0];
-
+	
 	// timing: from ccdb or PMT simulation
 	int tdc;
 	if(ccdbTiming){
@@ -150,9 +156,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // timing region. Then scaling duration as it enters into parameterization
 	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
-	  double durationScaled = duration * richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1] / richc.D0pmtSim;
+	  double durationScaled = duration * richc.timewalkCorr_D0[sectorindex][idpmt-1] / richc.D0pmtSim;
 	  
-	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[richc.geomSetup[idsector-1]-1][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
+	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[sectorindex][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
 	  // trailing edge:
 	  if(order==0){ 
 	    tdc = int(time[0]) + durationScaled + offset;
@@ -160,9 +166,9 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // leading edge
 	  if(order==1){
 	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
-	    double f1 = richc.timewalkCorr_m1[richc.geomSetup[idsector-1]-1][idpmt-1] * durationScaled + richc.timewalkCorr_T0[richc.geomSetup[idsector-1]-1][idpmt-1];
-	    double f1T = richc.timewalkCorr_m1[richc.geomSetup[idsector-1]-1][idpmt-1] * richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1] + richc.timewalkCorr_T0[richc.geomSetup[idsector-1]-1][idpmt-1];	    
-	    double f2 = richc.timewalkCorr_m2[richc.geomSetup[idsector-1]-1][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[richc.geomSetup[idsector-1]-1][idpmt-1]) + f1T;
+	    double f1 = richc.timewalkCorr_m1[sectorindex][idpmt-1] * durationScaled + richc.timewalkCorr_T0[sectorindex][idpmt-1];
+	    double f1T = richc.timewalkCorr_m1[sectorindex][idpmt-1] * richc.timewalkCorr_D0[sectorindex][idpmt-1] + richc.timewalkCorr_T0[sectorindex][idpmt-1];	    
+	    double f2 = richc.timewalkCorr_m2[sectorindex][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[sectorindex][idpmt-1]) + f1T;
 
 	    if(duration < richc.D0pmtSim){
 	      tdc = int(time[0])
