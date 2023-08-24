@@ -162,13 +162,15 @@ public:
   const static int npmt = 391;
   const static int npixel = 64;
   
-  // ccdb time constants
-  double timewalkCorr_D0[npmt];
-  double timewalkCorr_m1[npmt];
-  double timewalkCorr_m2[npmt];
-  double timewalkCorr_T0[npmt];
-  double timeOffsetCorr[npmt*npixel];
-
+  // ccdb time constants (up to 2 rich sectors)
+  double timewalkCorr_D0[2][npmt];
+  double timewalkCorr_m1[2][npmt];
+  double timewalkCorr_m2[2][npmt];
+  double timewalkCorr_T0[2][npmt];
+  double timeOffsetCorr[2][npmt*npixel];
+  int geomSetup[6]; // ccdb table for which sectors contain RICH
+  int nRich;
+  
   // mean D0 (time walk parameter) from sim of PMT with RichPixel class
   // determined by running time calibration suite over electrons thrown in RICH
   double D0pmtSim = 57.33;   
