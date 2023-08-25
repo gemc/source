@@ -156,7 +156,10 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  // timing region. Then scaling duration as it enters into parameterization
 	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
-	  double durationScaled = duration * richc.timewalkCorr_D0[sectorindex][idpmt-1] / richc.D0pmtSim;
+	  double durationScaled = duration;
+	  if(richc.timewalkCorr_D0[sectorindex][idpmt-1] != 0){
+	    durationScaled *= (richc.timewalkCorr_D0[sectorindex][idpmt-1] / richc.D0pmtSim);
+	  }
 	  
 	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[sectorindex][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
 	  // trailing edge:
