@@ -326,9 +326,9 @@ void rich_HitProcess::initWithRunNumber(int runno)
 vector<MHit*> rich_HitProcess :: electronicNoise()
 {
 
-	vector<MHit*> noiseHits;
-
-        // id[0]: sector
+  vector<MHit*> noiseHits;
+  /*
+  // id[0]: sector
         // id[1]: pmt
         // id[2]: pixel
 
@@ -361,7 +361,7 @@ vector<MHit*> rich_HitProcess :: electronicNoise()
 	    noiseHits.push_back(hit);
 	  }
 	}
-	
+  */	
 	return noiseHits;
 }
 
