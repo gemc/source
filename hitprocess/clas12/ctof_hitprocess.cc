@@ -359,7 +359,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		
 		time_in_ns = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
 		// tdcu = tU / tdcconv;
-		tdc = (int)  time_in_ns / tdcconv;
+		tdc = (int)  ( time_in_ns / tdcconv );
 	}
 	
 	if(accountForHardwareStatus) {
