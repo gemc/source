@@ -357,9 +357,9 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 		- ctc.toff_P2P[sector-1][layer-1][paddle-1]
 		+ timeWalk;
 		
-		time_in_ns = (int) G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
+		time_in_ns = G4RandGauss::shoot(tU, sqrt(2) * ctc.tres[paddle - 1]);
 		// tdcu = tU / tdcconv;
-		tdc = time_in_ns / tdcconv;
+		tdc = (int)  time_in_ns / tdcconv;
 	}
 	
 	if(accountForHardwareStatus) {
@@ -634,7 +634,3 @@ void ctof_HitProcess::initWithRunNumber(int runno) {
 
 // this static function will be loaded first thing by the executable
 ctofConstants ctof_HitProcess::ctc = initializeCTOFConstants(-1);
-
-
-
-
