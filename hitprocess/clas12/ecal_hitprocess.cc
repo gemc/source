@@ -207,7 +207,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
 		double adc  = totEdep / ecc.ADC_GeV_to_evio ; // no gain as that comes from data already
-		int tdc = stepTime / a1 ;
+		int tdc = (stepTime / a1) ;
 		
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = sector;
@@ -527,4 +527,3 @@ void ecal_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ecConstants ecal_HitProcess::ecc = initializeECConstants(-1);
-

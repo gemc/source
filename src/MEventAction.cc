@@ -180,7 +180,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	
 	if(RFSETUP == "clas12_ccdb") {
 		setup_clas12_RF(rw.getRunNumber(evtN));
-		rfvalue_strings = {"4.008", "44", "22"};
+		//rfvalue_strings = {"4.008", "44", "22"};
 
 	} else if(RFSETUP != "no")  {
 		rfvalue_strings = getStringVectorFromString(RFSETUP);
@@ -1155,6 +1155,9 @@ void MEventAction::setup_clas12_RF(int runno) {
 		
 		rfvalue_strings = {to_string(clock), to_string(prescale)};
 		set_and_show_rf_setup();
+        for(auto& rfv: rfvalue_strings) {
+            cout << "    - " << rfv << endl;
+        }
 	}
 	
 
@@ -1163,10 +1166,11 @@ void MEventAction::setup_clas12_RF(int runno) {
 
 void MEventAction::set_and_show_rf_setup() {
 	double rf_frquency_from_period = 1.0 / get_number(rfvalue_strings[0]);
-	rfvalue_strings[0] = to_string(rf_frquency_from_period) + " ";
-	
-	cout << " RF Setup: Frequency [GHz], [prescales]" << endl;
-	for(auto& rfv: rfvalue_strings) {
-		cout << "    - " << rfv << endl;
-	}
+
+	cout << " RF Setup: Period, Frequency [GHz], [prescales]" << endl;
+    cout << "    - " << get_number(rfvalue_strings[0]) << endl;
+    rfvalue_strings[0] = to_string(rf_frquency_from_period) + " ";
+//	for(auto& rfv: rfvalue_strings) {
+//		cout << "    - " << rfv << endl;
+//	}
 }

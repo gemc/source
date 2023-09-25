@@ -181,6 +181,7 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["HTCC::tdc"]    = htccTDCSchema;
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
+	schemasToLoad["RICH::tdc"]    = richTDCSchema;
 	schemasToLoad["HEL::flip"]    = helFLIPSchema;
 	schemasToLoad["RASTER::adc"]  = rasterADCSchema;
 	schemasToLoad["URWELL::adc"]  = urwellADCSchema;
@@ -198,7 +199,7 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 	string toUpperS = schemaName;
 	transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
 	string thisSchema = toUpperS + "::" + schemaType;
-	
+
 	if(schemasToLoad.find(thisSchema) != schemasToLoad.end() ) {
 		return schemasToLoad[thisSchema];
 	} else if(schemaName == "ft_cal") {
@@ -210,6 +211,7 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 	} else {
 		// for non tdc detectors
 		if( !(schemaName == "dc"      && type == 0) &&
+             !(schemaName == "rich"    && type == 0) &&
 			 !(schemaName == "bmt"     && type == 1) &&
 			 !(schemaName == "fmt"     && type == 1) &&
 			 !(schemaName == "rtpc"    && type == 1) &&
@@ -217,7 +219,8 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 			 !(schemaName == "alrtdc"  && type == 1) &&
  			 !(schemaName == "alrttof" && type == 1) &&
 			 !(schemaName == "urwell"  && type == 1) &&
-			 !(schemaName == "flux"    && type == 1) ) {
+			 !(schemaName == "flux"    && type == 1)
+		    ) {
 			cout <<  " SCHEMA " <<  schemaName << " " << "not found" << endl;
 		}
 		return emptySchema;

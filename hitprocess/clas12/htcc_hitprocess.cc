@@ -161,7 +161,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = 0;
-		dgtz["TDC_TDC"]   = (int) stepTime / tdcconv;
+		dgtz["TDC_TDC"]   = (int) (stepTime / tdcconv);
 		
 		return dgtz;
 	}
