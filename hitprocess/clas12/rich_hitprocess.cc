@@ -65,7 +65,6 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
         snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
         calib->GetCalib(data,richc.database);
 
-	//cout << "time off data size: " << data.size() << endl;
         for(unsigned int row = 0; row<data.size(); row++){
           int ipmt = data[row][1];
 	  int ianode = data[row][2];
@@ -98,24 +97,9 @@ static richConstants initializeRICHConstants(int runno, string digiVariation = "
           int ianode = data[row][2];
           richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
 
-        }
-	
+        }	
 	data.clear();
-	/*
-	// read setup table
-	snprintf(richc.database, sizeof(richc.database), "/geometry/rich/setup:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-        unique_ptr<Assignment> richSectorSetup(calib->GetAssignment(richc.database));
-        for(size_t rowI = 0; rowI < richSectorSetup->GetRowsCount(); rowI++){
-	  int sector = richSectorSetup->GetValueInt(rowI,0);
-          richc.geomSetup[sector-1] = richSectorSetup->GetValueInt(rowI,3);
-	  if(richSectorSetup->GetValueInt(rowI,3)!=0){
-	    richc.nRich++;
-	  }
-        }
 
-	
-	cout << richc.nRich << " RICH sectors " << endl;
-	*/
 	return richc;
 }
 
@@ -143,20 +127,21 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 	// tdc bank: readout channel number
 	// pixel, order, tdc already set in processID
-        int idpixel = identity[2].userInfos[2];//identity[2].id;
+        int idpixel = identity[2].userInfos[2];
 	int marocChannel = richc.anodeToMaroc[idpixel-1];
 	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
 	
 	int order = identity[2].userInfos[0];
 	
 	// timing: from ccdb or PMT simulation
-	int tdc;
+	double tdc;
 	if(ccdbTiming){
 	  // PMT sim throws reasonable duration dist., so using it to determine
 	  // timing region. Then shifting duration as it enters into parameterization
 	  // of time walk effects.
 	  double duration = identity[2].userInfos[1];
 	  double durationScaled = duration;
+	  // shift duration based on D0 of PMT from ccdb
 	  if(richc.timewalkCorr_D0[sectorindex][idpmt-1] != 0){
 	    durationScaled += (richc.timewalkCorr_D0[sectorindex][idpmt-1] - richc.D0pmtSim);
 	  }
@@ -164,37 +149,34 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[sectorindex][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
 	  // trailing edge:
 	  if(order==0){ 
-	    tdc = int(time[0]) + durationScaled + offset;
+	    tdc = time[0] + durationScaled + offset;
 	  }
 	  // leading edge
-	  if(order==1){
-	    // should we smear time walk corrections a little, presumably? duration is already kinda smeared
+	  if(order==1){	    
 	    double f1 = richc.timewalkCorr_m1[sectorindex][idpmt-1] * durationScaled + richc.timewalkCorr_T0[sectorindex][idpmt-1];
 	    double f1T = richc.timewalkCorr_m1[sectorindex][idpmt-1] * richc.timewalkCorr_D0[sectorindex][idpmt-1] + richc.timewalkCorr_T0[sectorindex][idpmt-1];	    
 	    double f2 = richc.timewalkCorr_m2[sectorindex][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[sectorindex][idpmt-1]) + f1T;
 
 	    if(duration < richc.D0pmtSim){
-	      tdc = int(time[0])
+	      tdc = time[0]
 		+ offset
 		+ f1;
 	    }
 	    else{
-	      tdc = int(time[0])
+	      tdc = time[0]
 		+ offset
 		+ f2;
 	    }
-	  }
-	  
+	  }         
 	}
 	else{
-	  tdc = identity[2].userInfos[1] + int(time[0]);
+	  tdc = identity[2].userInfos[1] + time[0];
 	}
 	
 	writeHit = true;
 	rejectHitConditions = false;
 	
 	double energy = aHit->GetEs()[0]/electronvolt;
-
 	double qeff = 0;
 	for(int i = 0; i < richc.nQEbins; i++){
 	  if(energy < richc.Ene[i] && energy > richc.Ene[i+1]){
@@ -207,13 +189,11 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	if( identity[2].userInfos[3] > qeff && !aHit->isElectronicNoise) {
 	  writeHit = false;
 	}	
-	// only time offset effects, duration calculated in intDgt,
-	// so adding hit time to tdc here
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
 	dgtz["component"] = tileChannel;
-	dgtz["TDC_TDC"] = tdc;
+	dgtz["TDC_TDC"] = convert_to_precision(tdc);
 	dgtz["TDC_order"] = order;
 	return dgtz;
 }
@@ -241,14 +221,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
 
-	int sector = yid[0].id;
         int pmt = yid[1].id;
 	RichPixel richPixel(richc.pmtType[pmt-1]);
-
-	if(pmt == 10 || pmt == 11 || pmt == 9 ){
-	    cout << "sector: " << sector <<  " pmt: " << pmt << " pixel: " << pixel << " pixel center global: " << pixelCenterGlobal.x() << " " << pixelCenterGlobal.y() << " " << pixelCenterGlobal.z() << endl;
-	  }
-
 	richPixel.Clear();
 	
 	int t1 = -1;
@@ -395,8 +369,7 @@ int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
   // 6mm for small
   // 6.25mm for large
   // test: treating all as H12700
-  // Pixel 1 is top left: -max x, +max y ?
-  double edge_large = 6.25;
+  // Pixel 1 is top left: -max x, +max y ?  
   double edge_small = 6.;
   
   double xloc = Lxyz.x(); //mm

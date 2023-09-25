@@ -348,6 +348,13 @@ private:
 
         // testing ccdb time paramters vs PMT simulation class
         bool ccdbTiming = true;
+
+        // just converting double tdc to int for 1ns tdc precision
+	double tdc_precision = 1.; 
+        int convert_to_precision(double time) {
+          return int( time / tdc_precision );
+        }
+
 };
 
 #endif
