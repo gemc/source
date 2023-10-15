@@ -269,7 +269,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = pmt + 2;
-		dgtz["TDC_TDC"]   = (int) stepTime/tdcconv;
+		dgtz["TDC_TDC"]   = (int) (stepTime/tdcconv);
 		
 		return dgtz;
 	}
@@ -669,7 +669,3 @@ void ftof_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(-1);
-
-
-
-
