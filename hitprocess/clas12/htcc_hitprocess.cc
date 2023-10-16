@@ -290,7 +290,7 @@ map<string, double> htcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double adc  = 100 * G4RandGauss::shoot(ndetected*htccc.mc_gain[idsector-1][idhalf-1][idring-1], ndetected*htccc.mc_smear[idsector-1][idhalf-1][idring-1]);
     time_in_ns = tInfos.time + htccc.tshift[idsector-1][idhalf-1][idring-1];
 
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
     int tdc  = time_in_ns / tdcconv;
 
 	

@@ -294,7 +294,7 @@ map<string, double> band_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int ADC       = (int) ( adcFactor*(side == 0 ? eTotL : eTotR) );
 	int amplitude = (int) ( adcFactor*(side == 0 ? xHit  : zHit)  );
 	time_in_ns   = (side == 0 ? tL_fadc : tR_fadc);
-    int fadc_time = convert_to_precision(time_in_ns);
+    double fadc_time = convert_to_precision(time_in_ns);
 
     int TDC       = (int) ( adcFactor*(side == 0 ? tL_tdc : tR_tdc)/tdcconv );
 	

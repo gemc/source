@@ -581,7 +581,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 
 	// standardizing fadc time and tdc info
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
 
 	
 	dgtz["hitn"]      = hitn;
@@ -714,4 +714,3 @@ vector<MHit*> cnd_HitProcess :: electronicNoise()
 
 // this static function will be loaded first thing by the executable
 cndConstants cnd_HitProcess::cndc = initializeCNDConstants(-1);
-

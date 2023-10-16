@@ -201,7 +201,7 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double timeOffset = G4RandGauss::shoot(ltccc.timeOffset[idsector-1][idside-1][idsegment-1], ltccc.timeRes[idsector-1][idside-1][idsegment-1]);
 	time_in_ns = tInfos.time + timeOffset;
 	
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
     int tdc  = time_in_ns / tdcconv;
 
 	
