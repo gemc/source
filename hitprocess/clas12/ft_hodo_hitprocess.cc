@@ -169,15 +169,17 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// initialize ADC and TDC
 	int ADC = 0;
-	int TDC = 8191;
-	
+	//int TDC = 8191;
+    double FADC_TIME = 8191;
+    
 	if(tInfos.eTot>0)
 	{
 		// adding shift and spread on time
 		double time=tInfos.time+fthc.time_offset[isector-1][ilayer-1][icomponent-1]+G4RandGauss::shoot(0., fthc.time_rms[isector-1][ilayer-1][icomponent-1]);
-		TDC=int(time*fthc.time_to_tdc);
-		if(TDC>fthc.tdc_max) TDC=(int)fthc.tdc_max;
-		
+		//TDC=int(time*fthc.time_to_tdc);
+		//if(TDC>fthc.tdc_max) TDC=(int)fthc.tdc_max;
+        FADC_TIME = time;
+        
 		// calculate charge and amplitude
 		double charge    = tInfos.eTot*fthc.mips_charge[isector-1][ilayer-1][icomponent-1]/fthc.mips_energy[isector-1][ilayer-1][icomponent-1];
 		double npe_mean  = charge/fthc.gain_pc[isector-1][ilayer-1][icomponent-1];
@@ -198,7 +200,8 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			case 1:
 				break;
 			case 3:
-				ADC = TDC = 0;
+				ADC = 0;
+                FADC_TIME = 0;
 				break;
 				
 			case 5:
@@ -212,7 +215,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
-	int fadc_time = convert_to_precision(TDC/25);
+	//int fadc_time = convert_to_precision(TDC/25);
 
 	
 	dgtz["hitn"]      = hitn;
@@ -221,7 +224,7 @@ map<string, double> ft_hodo_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = icomponent;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = fadc_time;
+	dgtz["ADC_time"]  = convert_to_precision(FADC_TIME);
 	dgtz["ADC_ped"]   = 0;
 	
 	// define conditions to reject hit
