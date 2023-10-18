@@ -23,106 +23,181 @@ initializeRICHConstants(int runno, string digiVariation = "default", string digi
     richConstants richc;
     if (runno == -1) return richc;
 
-    string timestamp = "";
-    if (digiSnapshotTime != "no") {
-        timestamp = ":" + digiSnapshotTime;
-    }
+        string timestamp = "";
+        if(digiSnapshotTime != "no") {
+                timestamp = ":"+digiSnapshotTime;
+        }
+	
+	// database
+	richc.runNo = runno;
+	
+	//	richc.date       = "2016-03-15";
+	if(getenv ("CCDB_CONNECTION") != nullptr)
+	  richc.connection = (string) getenv("CCDB_CONNECTION");
+	else
+	  richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	
+        richc.variation  = "main";
+	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
 
-    // database
-    richc.runNo = runno;
+	vector<vector<double>> data;
+	// MODULE 1
+	data.clear();
+	// read timewalk correction
+	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+	calib->GetCalib(data,richc.database);
+	
+	for(unsigned int row = 0; row<data.size(); row++){	  
+	  int ipmt = data[row][1];
+	  richc.timewalkCorr_D0[0][ipmt-1] = data[row][3];
+	  richc.timewalkCorr_m1[0][ipmt-1]	= data[row][5];
+	  richc.timewalkCorr_m2[0][ipmt-1]	= data[row][6];
+	  richc.timewalkCorr_T0[0][ipmt-1]	= data[row][4];
+	  if(ipmt == 1){
+	    //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
+	    //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
+	    //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
+	    //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
+	  }
+	}	
 
-    //	richc.date       = "2016-03-15";
-    if (getenv("CCDB_CONNECTION") != nullptr)
-        richc.connection = (string) getenv("CCDB_CONNECTION");
-    else
-        richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+	data.clear();
+	
+        // read time offset
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
 
-    richc.variation = "main";
-    unique_ptr <Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+        for(unsigned int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+	  int ianode = data[row][2];
+          richc.timeOffsetCorr[0][(ipmt-1)*64+(ianode-1)] = data[row][3];
+	  
+        }
 
-    vector <vector<double>> data;
-    data.clear();
-    // Eventually: not limited to module1
+	// MODULE 2
+        data.clear();
+        // read timewalk correction                                                                                                                                                                        
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module2/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
 
-    // read timewalk correction
-    snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-    calib->GetCalib(data, richc.database);
+        for(unsigned int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+          richc.timewalkCorr_D0[1][ipmt-1] = data[row][3];
+          richc.timewalkCorr_m1[1][ipmt-1]      = data[row][5];
+          richc.timewalkCorr_m2[1][ipmt-1]      = data[row][6];
+          richc.timewalkCorr_T0[1][ipmt-1]      = data[row][4];
+        }
 
-    for (unsigned int row = 0; row < data.size(); row++) {
-        int ipmt = data[row][1];
-        richc.timewalkCorr_D0[ipmt - 1] = data[row][3];
-        richc.timewalkCorr_m1[ipmt - 1] = data[row][4];
-        richc.timewalkCorr_m2[ipmt - 1] = data[row][5];
-        richc.timewalkCorr_T0[ipmt - 1] = data[row][6];
-    }
+        data.clear();
 
-    data.clear();
+        // read time offset
+        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+        calib->GetCalib(data,richc.database);
+	
+        for(unsigned int row = 0; row<data.size(); row++){
+          int ipmt = data[row][1];
+          int ianode = data[row][2];
+          richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
 
-    // read time offset
-    snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-    calib->GetCalib(data, richc.database);
+        }	
+	data.clear();
 
-    for (unsigned int row = 0; row < data.size(); row++) {
-        int ipmt = data[row][1];
-        richc.timeOffsetCorr[ipmt - 1] = data[row][3];
-    }
-
-    return richc;
+	return richc;
 }
 
 
 // digitized info integrated over hit
 // changed to match data.json definition of RICH::tdc 
 
-map<string, double> rich_HitProcess::integrateDgt(MHit *aHit, int hitn) {
-    map<string, double> dgtz;
+map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
+{        
+	map<string, double> dgtz;
 
-    trueInfos tInfos(aHit);
+	trueInfos tInfos(aHit);
 
-    vector <identifier> identity = aHit->GetId();
-    vector<double> time = aHit->GetTime();
-    int idsector = identity[0].id;
+        vector<identifier> identity = aHit->GetId();
+	vector<double> time = aHit->GetTime();
+        int idsector = identity[0].id;
+	int sectorindex = 0;
+	if(idsector==1){
+	  sectorindex = 1;
+	}
+	
+	// tdc bank expects tile number
+	int idpmt = identity[1].id;
+	int tile = richc.pmtToTile[idpmt-1];
 
-    // tdc bank expects tile number
-    int idpmt = identity[1].id;
-    int tile = richc.pmtToTile[idpmt - 1];
+	// tdc bank: readout channel number
+	// pixel, order, tdc already set in processID
+        int idpixel = identity[2].userInfos[2];
+	int marocChannel = richc.anodeToMaroc[idpixel-1];
+	int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt-1]-1)*64;
+	
+	int order = identity[2].userInfos[0];
+	
+	// timing: from ccdb or PMT simulation
+	double tdc;
+	if(ccdbTiming){
+	  // PMT sim throws reasonable duration dist., so using it to determine
+	  // timing region. Then shifting duration as it enters into parameterization
+	  // of time walk effects.
+	  double duration = identity[2].userInfos[1];
+	  double durationScaled = duration;
+	  // shift duration based on D0 of PMT from ccdb
+	  if(richc.timewalkCorr_D0[sectorindex][idpmt-1] != 0){
+	    durationScaled += (richc.timewalkCorr_D0[sectorindex][idpmt-1] - richc.D0pmtSim);
+	  }
+	  
+	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[sectorindex][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
+	  // trailing edge:
+	  if(order==0){ 
+	    tdc = time[0] + durationScaled + offset;
+	  }
+	  // leading edge
+	  if(order==1){	    
+	    double f1 = richc.timewalkCorr_m1[sectorindex][idpmt-1] * durationScaled + richc.timewalkCorr_T0[sectorindex][idpmt-1];
+	    double f1T = richc.timewalkCorr_m1[sectorindex][idpmt-1] * richc.timewalkCorr_D0[sectorindex][idpmt-1] + richc.timewalkCorr_T0[sectorindex][idpmt-1];	    
+	    double f2 = richc.timewalkCorr_m2[sectorindex][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[sectorindex][idpmt-1]) + f1T;
 
-    // tdc bank: readout channel number
-    // pixel, order, tdc already set in processID
-    int idpixel = identity[2].userInfos[2];//identity[2].id;
-    int marocChannel = richc.anodeToMaroc[idpixel - 1];
-    int tileChannel = marocChannel + (richc.pmtToTilePosition[idpmt - 1] - 1) * 64;
+	    if(duration < richc.D0pmtSim){
+	      tdc = time[0]
+		+ offset
+		+ f1;
+	    }
+	    else{
+	      tdc = time[0]
+		+ offset
+		+ f2;
+	    }
+	  }         
+	}
+	else{
+	  tdc = identity[2].userInfos[1] + time[0];
+	}
+	
+	writeHit = true;
+	rejectHitConditions = false;
+	
+	double energy = aHit->GetEs()[0]/electronvolt;
+	double qeff = 0;
+	for(int i = 0; i < richc.nQEbins; i++){
+	  if(energy < richc.Ene[i] && energy > richc.Ene[i+1]){
+	    qeff = richc.QE[i];
+	    break;	    	    
+	  }
+	}
 
-    int order = identity[2].userInfos[0];
-    int tdc = identity[2].userInfos[1];
-
-    writeHit = true;
-    rejectHitConditions = false;
-
-    double energy = aHit->GetEs()[0] / electronvolt;
-
-    double qeff = 0;
-    for (int i = 0; i < richc.nQEbins; i++) {
-        if (energy < richc.Ene[i] && energy > richc.Ene[i + 1]) {
-            qeff = richc.QE[i];
-            break;
-        }
-    }
-
-    // applying quantum efficiency from thrown random value set in integrateDgt
-    if (identity[2].userInfos[3] > qeff) {
-        writeHit = false;
-    }
-
-    // only time offset effects, duration calculated in intDgt,
-    // so adding hit time to tdc here
-    dgtz["hitn"] = hitn;
-    dgtz["sector"] = idsector;
-    dgtz["layer"] = tile;
-    dgtz["component"] = tileChannel;
-    dgtz["TDC_TDC"] = tdc + int(time[0]);
-    dgtz["TDC_order"] = order;
-    return dgtz;
+	// applying quantum efficiency from thrown random value set in integrateDgt
+	if( identity[2].userInfos[3] > qeff && !aHit->isElectronicNoise) {
+	  writeHit = false;
+	}	
+	dgtz["hitn"]   = hitn;
+	dgtz["sector"] = idsector; 
+	dgtz["layer"] = tile;
+	dgtz["component"] = tileChannel;
+	dgtz["TDC_TDC"] = convert_to_precision(tdc);
+	dgtz["TDC_order"] = order;
+	return dgtz;
 }
 
 #include "G4VVisManager.hh"
@@ -130,75 +205,84 @@ map<string, double> rich_HitProcess::integrateDgt(MHit *aHit, int hitn) {
 #include "G4VisAttributes.hh"
 #include "G4ParticleTable.hh"
 
-vector <identifier> rich_HitProcess::processID(vector <identifier> id, G4Step *aStep, detector Detector) {
-    vector <identifier> yid = id;
-    // id[0]: sector
-    // id[1]: pmt
-    // id[2]: pixel
+vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* aStep, detector Detector)
+{
+        vector<identifier> yid = id;
+        // id[0]: sector
+        // id[1]: pmt
+        // id[2]: pixel        
+	
+        G4StepPoint   *prestep   = aStep->GetPreStepPoint();
+        G4StepPoint   *poststep  = aStep->GetPostStepPoint();
+        G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction                          
+	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction                           
+        ->GetTopTransform().TransformPoint(xyz);
+	
+	int pixel = getPixelNumber(Lxyz);
 
-    G4StepPoint *prestep = aStep->GetPreStepPoint();
-    G4StepPoint *poststep = aStep->GetPostStepPoint();
-    G4ThreeVector xyz = poststep->GetPosition();                                        ///< Global Coordinates of interaction
-    G4ThreeVector Lxyz = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
-            ->GetTopTransform().TransformPoint(xyz);
+	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
+	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
 
-    int pixel = getPixelNumber(Lxyz);
-
-    G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
-    G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
-
-
-    int pmt = yid[1].id;
-    RichPixel richPixel(richc.pmtType[pmt - 1]);
-
-    richPixel.Clear();
-
-    int t1 = -1;
-    int t2 = -1;
-
-    if (richPixel.GenerateTDC(1, 0)) {
-        // generating TDC
-        t1 = richPixel.get_T1();
-        t2 = richPixel.get_T2();
-    }
-
-    for (int i = 0; i < 3; i++) {
-        identifier idtemp;
-        idtemp.name = id[i].name;
-        idtemp.rule = id[i].rule;
-        idtemp.id = id[i].id;
-        idtemp.TimeWindow = id[i].TimeWindow;
-        idtemp.TrackId = id[i].TrackId;
-
-        yid.push_back(idtemp);
-    }
-
-    double QEthrow = G4UniformRand();
-    yid[2].id = pixel;
-
-    yid[2].userInfos.clear();
-    yid[2].userInfos.push_back(double(1)); // TDC_order
-    yid[2].userInfos.push_back(double(t1)); // TDC_tdc
-    yid[2].userInfos.push_back(double(pixel)); // pixel
-    yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
-
-    yid[5].id = pixel;
-    yid[5].userInfos.clear();
-    yid[5].userInfos.push_back(double(0));
-    yid[5].userInfos.push_back(double(t2));
-    yid[5].userInfos.push_back(double(pixel));
-    yid[5].userInfos.push_back(QEthrow);
-
-    yid[2].id_sharing = .5;
-    yid[5].id_sharing = .5;
-
-    return yid;
+        int pmt = yid[1].id;
+	RichPixel richPixel(richc.pmtType[pmt-1]);
+	richPixel.Clear();
+	
+	int t1 = -1;
+	int t2 = -1;
+	double duration = -1;
+	if(richPixel.GenerateTDC(1, 0)){
+	  // generating TDC
+	  t1 = richPixel.get_T1();
+	  t2 = richPixel.get_T2();
+	  duration = richPixel.duration;
+	}
+	
+	for(int i = 0; i < 3; i++){
+	  identifier idtemp;
+	  idtemp.name = id[i].name;
+	  idtemp.rule = id[i].rule;
+	  idtemp.id = id[i].id;
+	  idtemp.TimeWindow = id[i].TimeWindow;
+	  idtemp.TrackId = id[i].TrackId;
+	  
+	  yid.push_back(idtemp);
+	}
+	
+	double QEthrow = G4UniformRand();
+	yid[2].id = pixel;	  
+	yid[2].userInfos.clear();
+	yid[2].userInfos.push_back(double(1)); // TDC_order
+	if(ccdbTiming){
+	  yid[2].userInfos.push_back(duration); // for time walk parameters from ccdb
+	}
+	else{
+	  yid[2].userInfos.push_back(double(t1)); // TDC_tdc
+	}
+	yid[2].userInfos.push_back(double(pixel)); // pixel
+	yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
+	
+	yid[5].id = pixel;
+	yid[5].userInfos.clear();
+	yid[5].userInfos.push_back(double(0));
+	if(ccdbTiming){
+	  yid[5].userInfos.push_back(duration);	// for time walk parameters from ccdb
+        }
+	else{
+          yid[5].userInfos.push_back(double(t2)); // TDC_tdc
+        }
+	yid[5].userInfos.push_back(double(pixel));
+	yid[5].userInfos.push_back(QEthrow); 
+	
+	yid[2].id_sharing = .5;
+	yid[5].id_sharing = .5;
+	
+	return yid;
 }
 
-// setting TDC information (need leading and trailing edge in rich reco)
-map <string, vector<int>> rich_HitProcess::multiDgt(MHit *aHit, int hitn) {
-    map <string, vector<int>> MH;
-    return MH;
+map< string, vector <int> >  rich_HitProcess :: multiDgt(MHit* aHit, int hitn)
+{
+	map< string, vector <int> > MH;
+	return MH;
 }
 
 
@@ -214,18 +298,46 @@ void rich_HitProcess::initWithRunNumber(int runno) {
 }
 
 // - electronicNoise: returns a vector of hits generated / by electronics.
-vector<MHit *> rich_HitProcess::electronicNoise() {
-    vector < MHit * > noiseHits;
+vector<MHit*> rich_HitProcess :: electronicNoise()
+{
 
-    // first, identify the cells that would have electronic noise
-    // then instantiate hit with energy E, time T, identifier IDF:
-    //
-    // MHit* thisNoiseHit = new MHit(E, T, IDF, pid);
+  vector<MHit*> noiseHits;
+  /*
+  // id[0]: sector
+        // id[1]: pmt
+        // id[2]: pixel
 
-    // push to noiseHits collection:
-    // noiseHits.push_back(thisNoiseHit)
 
-    return noiseHits;
+	for(int j = 0; j < richc.nRich; j++){
+	  int nHitThrow = (int) G4Poisson(richc.avgNDarkHits);
+	  int sector;
+	  if(j == 0){
+	    sector = 4;
+	  }
+	  else{
+	    sector = 1;
+	  }
+	  for(int i = 0; i < nHitThrow; i++){
+	  
+	    int noisypmt = (int) (richc.npmt * G4UniformRand() + 1);
+	    int noisypixel = (int) (richc.npixel * G4UniformRand() + 1);
+	    double noisetime = G4UniformRand() * richc.timeWindowDefault;
+	    //cout << "noisy i: " << i << " pmt: " << noisypmt << " pixel: " << noisypixel << endl;
+	    vector<identifier> idnoise;
+	    for(int j = 0; j < 3; j++){
+	      identifier idtemp;
+	      idnoise.push_back(idtemp);
+	    }
+	    idnoise[0].id = sector;
+	    idnoise[1].id = noisypmt;
+	    idnoise[2].id = noisypixel;
+	    
+	    MHit *hit = new MHit(3*eV,  noisetime, idnoise, 0); 
+	    noiseHits.push_back(hit);
+	  }
+	}
+  */	
+	return noiseHits;
 }
 
 
@@ -247,61 +359,60 @@ richConstants rich_HitProcess::richc = initializeRICHConstants(-1);
 
 
 // PMT local position to pixel number
-int rich_HitProcess::getPixelNumber(G4ThreeVector Lxyz) {
-    // H8500:
-    // 6.08mm for small
-    // 6.26mm for large
-    // H12700:
-    // 6mm for small
-    // 6.25mm for large
-    // test: treating all as H12700
-    // Pixel 1 is top left: -max x, +max y ?
-   // double edge_large = 6.25;
-    double edge_small = 6.;
+int rich_HitProcess::getPixelNumber(G4ThreeVector  Lxyz){
+  // H8500:
+  // 6.08mm for small
+  // 6.26mm for large
+  // H12700:
+  // 6mm for small
+  // 6.25mm for large
+  // test: treating all as H12700
+  // Pixel 1 is top left: -max x, +max y ?  
+  double edge_small = 6.;
+  
+  double xloc = Lxyz.x(); //mm
+  double yloc = Lxyz.y();
+  
+  int nx = int(abs(xloc/edge_small));
+  int ny = int(abs(yloc/edge_small));
+  int direcx = (xloc/abs(xloc));
+  int direcy = (yloc/abs(yloc));
+  
+  if (nx>3) nx = 3;
+  if (nx<-3) nx = -3;
+  if (ny>3) ny = 3;
+  if (ny<-3) ny = -3;
+  
+  int xpix = 0;
+  int ypix = 0;
+  if( nx > 0 && direcx == 1){
+    xpix = -1*nx + 4;
+  }
+  if(nx == 0 && direcx == 1){
+    xpix = 4;
+  }
+  if(nx == 0 && direcx == -1){
+    xpix = 5;
+  }
+  if(nx > 0 && direcx == -1){
+    xpix = (nx+1) + 4;
+  }
 
-    double xloc = Lxyz.x(); //mm
-    double yloc = Lxyz.y();
+  
+  if( ny > 0 && direcy == 1){
+    ypix = -1*ny + 4;
+  }
+  if(ny == 0 && direcy == 1){
+    ypix = 4;
+  }
+  if(ny == 0 && direcy == -1){
+    ypix = 5;
+  }
+  if(ny > 0 && direcy == -1){
+    ypix = (ny+1) + 4;
+  }
 
-    int nx = int(abs(xloc / edge_small));
-    int ny = int(abs(yloc / edge_small));
-    int direcx = (xloc / abs(xloc));
-    int direcy = (yloc / abs(yloc));
-
-    if (nx > 3) nx = 3;
-    if (nx < -3) nx = -3;
-    if (ny > 3) ny = 3;
-    if (ny < -3) ny = -3;
-
-    int xpix = 0;
-    int ypix = 0;
-    if (nx > 0 && direcx == 1) {
-        xpix = -1 * nx + 4;
-    }
-    if (nx == 0 && direcx == 1) {
-        xpix = 4;
-    }
-    if (nx == 0 && direcx == -1) {
-        xpix = 5;
-    }
-    if (nx > 0 && direcx == -1) {
-        xpix = (nx + 1) + 4;
-    }
-
-
-    if (ny > 0 && direcy == 1) {
-        ypix = -1 * ny + 4;
-    }
-    if (ny == 0 && direcy == 1) {
-        ypix = 4;
-    }
-    if (ny == 0 && direcy == -1) {
-        ypix = 5;
-    }
-    if (ny > 0 && direcy == -1) {
-        ypix = (ny + 1) + 4;
-    }
-
-    return (int((ypix - 1) * 8 + xpix));
+  return (int ((ypix-1)*8 + xpix));
 }
 
 G4ThreeVector rich_HitProcess::getPixelCenter(int pixel) {
@@ -479,28 +590,29 @@ void RichPixel::Clear() {
 /* ---------------------------------------------------*/
 int RichPixel::GenerateADC(int n0) {
 
-    GenerateNpe(n0);
-
-    qadc = npe * Qe;
-    ADC = Pedestal + (int) (DAC * qadc);
+  GenerateNpe(n0);
+  
+  qadc = npe*Qe;
+  ADC = Pedestal + (int)(DAC*qadc);
 
     return 0;
 }
 
 /* ---------------------------------------------------*/
-bool RichPixel::GenerateTDC(int n0, double t0) {
-    GenerateNpe(n0);
-    qtdc = npe * Qe * MarocG;
-    if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
+bool RichPixel::GenerateTDC(int n0, double t0)
+{
+  GenerateNpe(n0);  
+  qtdc = npe * Qe * MarocG;
+  if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
 
-    if (qtdc < MarocThrCharge) return false;
-
-    start_time = t0;
-    ChargeToTime();
-    ChargeToDuration();
-    t2 = t1 + duration;
-
-    return true;
+  if (qtdc < MarocThrCharge) return false;
+  
+  start_time = t0;
+  ChargeToTime();
+  ChargeToDuration();
+  t2 = t1 + duration;
+  
+  return true;
 }
 
 /* ---------------------------------------------------*/
@@ -550,10 +662,10 @@ void RichPixel::ChargeToTime() {
         time = q_t + m_t * qeff;
     }
 
-    true_t1 = time + TimeOffset + start_time;
-
-    /* gaussian smearing of t1 */
-    double dt = G4RandGauss::shoot(TimeOffset, TimeResol);
+  true_t1 = time + TimeOffset + start_time;
+  
+  /* gaussian smearing of t1 */
+  double dt = G4RandGauss::shoot(TimeOffset, TimeResol);
 
     t1 = time + dt + start_time;
 

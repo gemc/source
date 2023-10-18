@@ -157,14 +157,31 @@ public:
   // translation table
   TranslationTable TT;
 
-  // add constants here
+
+
   const static int npmt = 391;
   const static int npixel = 64;
-  double timewalkCorr_D0[npmt];
-  double timewalkCorr_m1[npmt];
-  double timewalkCorr_m2[npmt];
-  double timewalkCorr_T0[npmt];
-  double timeOffsetCorr[npmt];
+  
+  // ccdb time constants (up to 2 rich sectors)
+  double timewalkCorr_D0[2][npmt];
+  double timewalkCorr_m1[2][npmt];
+  double timewalkCorr_m2[2][npmt];
+  double timewalkCorr_T0[2][npmt];
+  double timeOffsetCorr[2][npmt*npixel];
+  int geomSetup[6]; // ccdb table for which sectors contain RICH
+  int nRich = 1;
+  
+  // mean D0 (time walk parameter) from sim of PMT with RichPixel class
+  // determined by running time calibration suite over electrons thrown in RICH
+  double D0pmtSim = 57.33;   
+
+  // dark hit constants
+  double darkRate = 500*hertz;
+  double timeWindowDefault = 248.5*ns; // can we access this somehow?
+  double avgNDarkHits = darkRate*timeWindowDefault*npmt*npixel;
+
+  
+  // readout electronics translation constants
   // anode->maroc and pmt->board constants
 
   // anode->maroc
@@ -327,7 +344,17 @@ private:
 
         // RICH specific functions 
         int getPixelNumber(G4ThreeVector  Lxyz);
-        G4ThreeVector getPixelCenter(int pixel);        
+        G4ThreeVector getPixelCenter(int pixel);
+
+        // testing ccdb time paramters vs PMT simulation class
+        bool ccdbTiming = true;
+
+        // just converting double tdc to int for 1ns tdc precision
+	double tdc_precision = 1.; 
+        int convert_to_precision(double time) {
+          return int( time / tdc_precision );
+        }
+
 };
 
 #endif
