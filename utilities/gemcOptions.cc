@@ -136,15 +136,55 @@ void goptions::scanGcard(string file)
 	}
 }
 
+void goptions::print_version() {
+    cout << "  > gemc version: " << VERSION << endl << endl;
+    cout << "  > Environment:" << endl << endl;
+
+    // print the env variables FIELD_DIR and GEMC_DATA_DIR
+    char *field_dir = getenv("FIELD_DIR");
+    if(field_dir) {
+        cout << "  > FIELD_DIR: " << field_dir << endl;
+    } else {
+        cout << "  > FIELD_DIR: not set" << endl;
+    }
+    char *gemc_data_dir = getenv("GEMC_DATA_DIR");
+    if(gemc_data_dir) {
+        cout << "  > GEMC_DATA_DIR: " << gemc_data_dir << endl;
+    } else {
+        cout << "  > GEMC_DATA_DIR: not set" << endl;
+    }
+    // print env variables G4DATA_DIR, G4_VERSION, G4INSTALL
+    char *g4data_dir = getenv("G4DATA_DIR");
+    if(g4data_dir) {
+        cout << "  > G4DATA_DIR: " << g4data_dir << endl;
+    } else {
+        cout << "  > G4DATA_DIR: not set" << endl;
+    }
+    char *g4_version = getenv("G4_VERSION");
+    if(g4_version) {
+        cout << "  > G4_VERSION: " << g4_version << endl;
+    } else {
+        cout << "  > G4_VERSION: not set" << endl;
+    }
+    char *g4_install = getenv("G4INSTALL");
+    if(g4_install) {
+        cout << "  > G4INSTALL: " << g4_install << endl;
+    } else {
+        cout << "  > G4INSTALL: not set" << endl;
+    }
 
 
-int goptions::setOptMap(int argc, char **argv)
+    cout << endl;
+}
+
+int goptions::setOptMap(int argc, char **argv, const char *version)
 {
 	// Check the command line for the -gcard=file option.
 	// Then call the parser for the gcard file that reads all the options.
 	// This must be done BEFORE the commandline is parsed, so that command line
 	// options override the options in the file.
-	
+
+    VERSION = version;
 	
 	// Look for -gcard special option:
 	size_t pos;
@@ -180,7 +220,21 @@ int goptions::setOptMap(int argc, char **argv)
 			category.insert(itm->second.ctgr);
 		}
 	}
-	
+
+    // -v, -version, --v, --version
+    cout << endl;
+    for(int i=1; i<argc; i++) {
+        string arg = argv[i];
+        string com1 = "-v";
+        string com2 = "-version";
+        string com3 = "--v";
+        string com4 = "--version";
+        if(arg == com1 || arg == com2 || arg == com3 || arg == com4) {
+            print_version();
+            exit(0);
+        }
+    }
+
 	// -help-all
 	cout << endl;
 	for(int i=1; i<argc; i++) {
@@ -551,4 +605,3 @@ vector<aopt> goptions::getOptionsFromCategory(string c) {
 
 	return coptions;
 }
-

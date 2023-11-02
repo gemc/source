@@ -89,11 +89,11 @@ public:
 	virtual void setGoptions();                 ///< Function to fill optMap
 	void setOptions();                          ///< Define option Map
 	void scanGcard(string file);                ///< Scan option file for options
-	int setOptMap(int argc, char **args);       ///< Sets map from command line arguments
-	int setOptMap(int argc, char **args, int i) ///< Sets map from command line arguments - include ignoreNotFound
+	int setOptMap(int argc, char **args, const char *version);       ///< Sets map from command line arguments
+	int setOptMap(int argc, char **args, const char *version, int i) ///< Sets map from command line arguments - include ignoreNotFound
 	{
 		ignoreNotFound = i;
-		return setOptMap(argc, args);
+		return setOptMap(argc, args, version);
 	}
 	
 	map<string, aopt> optMap;              ///< Options map
@@ -106,12 +106,12 @@ public:
 														///  the case that options are not found in the current application
 	string jSonOptions();                  ///< returns a string describing the enabled json options
 	vector<aopt> getOptionsFromCategory(string c); ///< returns all options within a category
+
+
+private:
+    const char *VERSION;                   ///< Version of the application
+    void print_version();                  ///< Prints version of the application
 };
 
 
 #endif
-
-
-
-
-
