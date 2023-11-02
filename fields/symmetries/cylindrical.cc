@@ -29,12 +29,12 @@ void asciiField::loadFieldMap_Cylindrical(gMappedField* map, double verbosity)
 
 	// Allocate memory. [LONGI][TRANSVERSE]
 	// as initialized in the map
-	map->B1_2D = new double*[map->np[0]];
-	map->B2_2D = new double*[map->np[0]];
+	map->B1_2D = new float*[map->np[0]];
+	map->B2_2D = new float*[map->np[0]];
 	for (unsigned int i = 0; i < map->np[0]; ++i)
 	{
-		map->B1_2D[i] = new double[map->np[1]];
-		map->B2_2D[i] = new double[map->np[1]];
+		map->B1_2D[i] = new float[map->np[1]];
+		map->B2_2D[i] = new float[map->np[1]];
 	}
 
 	double unit1 = get_number("1*" + map->getCoordinateWithSpeed(0).unit);
@@ -225,9 +225,3 @@ void gMappedField::GetFieldValue_Cylindrical( const double x[3], double *Bfield,
 		cout << "B = ("   << Bfield[0]/gauss << ",  " << Bfield[1]/gauss << ",  " << Bfield[2]/gauss << ") gauss " << endl;
 	}
 }
-
-
-
-
-
-
