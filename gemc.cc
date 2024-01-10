@@ -125,11 +125,9 @@ int main( int argc, char **argv )
 	// The screen log verbosity is controlled by LOG_VERBOSITY
 	gui_splash gemc_splash(gemcOpt);
 	gemc_splash.message(" Initializing GEant4 MonteCarlo version " + string(GEMC_VERSION));
-	
+
 	
 	// random seed initialization
-	// notice MTwistEngine cannot print 2 seeds, it only print the whole engine status which is huge
-//	G4Random::setTheEngine(new CLHEP::MTwistEngine);
 	G4Random::setTheEngine(new CLHEP::MixMaxRng);
 
 	G4int seed;
@@ -149,7 +147,7 @@ int main( int argc, char **argv )
 	
 	CLHEP::HepRandom::setTheSeed(seed);
 	gemc_splash.message(" Seed initialized to: " + stringify(seed));
-	
+
 	// Construct the default G4 run manager
 	gemc_splash.message(" Instantiating Run Manager...");
 	G4RunManager *runManager = new G4RunManager;
