@@ -34,7 +34,8 @@ HipoSchema :: HipoSchema()
 	// detectors
 	//alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
 	//alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
-	alertAhdcADCchema = hipo::schema("AHDC::tdc",	 22400, 11);
+	alertAhdcTDCchema = hipo::schema("AHDC::tdc",	 22400, 11);
+	alertAhdcADCchema = hipo::schema("AHDC::adc",	 22400, 11);
 	alertAtofADCchema = hipo::schema("ATOF::adc",	 22500, 11);
 	bandADCSchema     = hipo::schema("BAND::adc",    22100, 11);
 	bandTDCSchema     = hipo::schema("BAND::tdc",    22100, 12);
@@ -96,8 +97,8 @@ HipoSchema :: HipoSchema()
 
 	
 	// detectors
-	//alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
-	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
+	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	alertAhdcTDCchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
 	alertAtofADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
 	bandADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
@@ -163,7 +164,8 @@ HipoSchema :: HipoSchema()
 	// The names corresponds to the hit process routine names, capitalized
 	//schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
 	//schemasToLoad["ALRTTOF::adc"] = alertAtofADCchema;
-	schemasToLoad["AHDC::tdc"]  = alertAhdcADCchema;
+	schemasToLoad["AHDC::adc"]  = alertAhdcADCchema;
+	schemasToLoad["AHDC::tdc"]  = alertAhdcTDCchema;
 	schemasToLoad["ATOF::adc"] = alertAtofADCchema;
 	schemasToLoad["BAND::adc"]    = bandADCSchema;
 	schemasToLoad["BAND::tdc"]    = bandTDCSchema;
