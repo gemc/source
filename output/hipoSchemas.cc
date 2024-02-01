@@ -32,8 +32,10 @@ HipoSchema :: HipoSchema()
 
 	
 	// detectors
-	alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
-	alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
+	//alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
+	//alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
+	alertAhdcADCchema = hipo::schema("AHDC::tdc",	 22400, 11);
+	alertAtofADCchema = hipo::schema("ATOF::adc",	 22500, 11);
 	bandADCSchema     = hipo::schema("BAND::adc",    22100, 11);
 	bandTDCSchema     = hipo::schema("BAND::tdc",    22100, 12);
 	bmtADCSchema      = hipo::schema("BMT::adc",     20100, 11);
@@ -94,7 +96,8 @@ HipoSchema :: HipoSchema()
 
 	
 	// detectors
-	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	//alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
 	alertAtofADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
 	bandADCSchema.parse(    "sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
@@ -158,8 +161,10 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["FLUX::adc"]    = fluxADCSchema;
 
 	// The names corresponds to the hit process routine names, capitalized
-	schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
-	schemasToLoad["ALRTTOF::adc"] = alertAtofADCchema;
+	//schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
+	//schemasToLoad["ALRTTOF::adc"] = alertAtofADCchema;
+	schemasToLoad["AHDC::tdc"]  = alertAhdcADCchema;
+	schemasToLoad["ATOF::adc"] = alertAtofADCchema;
 	schemasToLoad["BAND::adc"]    = bandADCSchema;
 	schemasToLoad["BAND::tdc"]    = bandTDCSchema;
 	schemasToLoad["BMT::adc"]     = bmtADCSchema;
@@ -215,8 +220,8 @@ hipo::schema HipoSchema :: getSchema(string schemaName, int type) {
 			 !(schemaName == "fmt"     && type == 1) &&
 			 !(schemaName == "rtpc"    && type == 1) &&
 			 !(schemaName == "bst"     && type == 1) &&
-			 !(schemaName == "alrtdc"  && type == 1) &&
- 			 !(schemaName == "alrttof" && type == 1) &&
+			 !(schemaName == "ahdc"    && type == 1) &&
+ 			 !(schemaName == "atof"    && type == 1) &&
 			 !(schemaName == "urwell"  && type == 1) &&
 			 !(schemaName == "flux"    && type == 1)
 		    ) {
