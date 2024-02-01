@@ -269,7 +269,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = pmt + 2;
-		dgtz["TDC_TDC"]   = (int) stepTime/tdcconv;
+		dgtz["TDC_TDC"]   = (int) (stepTime/tdcconv);
 		
 		return dgtz;
 	}
@@ -396,7 +396,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][0][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left: " << adcl << endl;
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][1][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " right:  " << adcr << endl;
 	
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
 	tdc  = time_in_ns / tdcconv;
 	
 	dgtz["sector"]    = sector;
@@ -669,7 +669,3 @@ void ftof_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(-1);
-
-
-
-

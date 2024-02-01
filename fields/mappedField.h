@@ -82,13 +82,13 @@ public:
 	int verbosity;              ///< map verbosity
 	
 	// field depending on 3D map
-	double ***B1_3D;
-	double ***B2_3D;
-	double ***B3_3D;
+	float ***B1_3D;
+    float ***B2_3D;
+    float ***B3_3D;
 	
 	// field depending on 2D map
-	double **B1_2D;
-	double **B2_2D;
+    float **B1_2D;
+    float **B2_2D;
 	
 	// these are initialized based on the map
 	// symmetry and coordinates
@@ -131,10 +131,3 @@ public:
 };
 
 #endif
-
-
-
-
-
-
-

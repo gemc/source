@@ -11,6 +11,7 @@
 // mlibrary
 #include "frequencySyncSignal.h"
 
+// c++
 #include <iostream>
 using namespace std;
 
@@ -180,7 +181,6 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	
 	if(RFSETUP == "clas12_ccdb") {
 		setup_clas12_RF(rw.getRunNumber(evtN));
-		rfvalue_strings = {"4.008", "44", "22"};
 
 	} else if(RFSETUP != "no")  {
 		rfvalue_strings = getStringVectorFromString(RFSETUP);
@@ -551,17 +551,33 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				if(firstParticleVertex.z() > referenceRFPosition.z()) additionalTime = -additionalTime;
 			}
 		}
-		
+
+        CLHEP::HepRandomEngine* currentEngine = CLHEP::HepRandom::getTheEngine();
+        const long *engineStatus = currentEngine->getSeeds();
+
+        // find the number of elements in engineStatus. This assumes the values are greater than 100
+        int nelements = 0;
+        while (engineStatus[nelements] > 100) {
+            nelements++;
+        }
+
+        if (nelements < 3) {
+            cout << "Error: engineStatus has less than 3 elements" << endl;
+            exit(1);
+        }
+
+        int g4rseed = engineStatus[2];
+
 		// getting time window
-		string rfsetup_string = to_string(gen_action->getTimeWindow()) + " " ;
+		string rfsetup_string = to_string(g4rseed) + " " + to_string(gen_action->getTimeWindow()) + " " ;
 		
 		// getting start time of the event
-		rfsetup_string +=  to_string(gen_action->getStartTime() + additionalTime) + " " ;
+		rfsetup_string += to_string(gen_action->getStartTime() + additionalTime) + " " ;
 		
 		if(RFSETUP == "clas12_ccdb"){
 			setup_clas12_RF(rw.runNo);
 		}
-		
+
 		for(unsigned i=0; i<rfvalue_strings.size(); i++) {
 			rfsetup_string += rfvalue_strings[i] + " " ;
 		}
@@ -1155,6 +1171,9 @@ void MEventAction::setup_clas12_RF(int runno) {
 		
 		rfvalue_strings = {to_string(clock), to_string(prescale)};
 		set_and_show_rf_setup();
+        for(auto& rfv: rfvalue_strings) {
+            cout << "    - " << rfv << endl;
+        }
 	}
 	
 
@@ -1163,10 +1182,11 @@ void MEventAction::setup_clas12_RF(int runno) {
 
 void MEventAction::set_and_show_rf_setup() {
 	double rf_frquency_from_period = 1.0 / get_number(rfvalue_strings[0]);
-	rfvalue_strings[0] = to_string(rf_frquency_from_period) + " ";
-	
-	cout << " RF Setup: Frequency [GHz], [prescales]" << endl;
-	for(auto& rfv: rfvalue_strings) {
-		cout << "    - " << rfv << endl;
-	}
+
+	cout << " RF Setup: Period, Frequency [GHz], [prescales]" << endl;
+    cout << "    - " << get_number(rfvalue_strings[0]) << endl;
+    rfvalue_strings[0] = to_string(rf_frquency_from_period) + " ";
+//	for(auto& rfv: rfvalue_strings) {
+//		cout << "    - " << rfv << endl;
+//	}
 }

@@ -33,17 +33,17 @@ void asciiField::loadFieldMap_cartesian3d(gMappedField* map, double verbosity)
 
 	// Allocate memory. [AZI][TRANSVERSE][LONGI]
 	// as initialized in the map
-	map->B1_3D = new double**[map->np[0]];
-	map->B2_3D = new double**[map->np[0]];
-	map->B3_3D = new double**[map->np[0]];
+	map->B1_3D = new float**[map->np[0]];
+	map->B2_3D = new float**[map->np[0]];
+	map->B3_3D = new float**[map->np[0]];
 	for (unsigned i = 0; i < map->np[0]; ++i) {
-		map->B1_3D[i] = new double*[map->np[1]];
-		map->B2_3D[i] = new double*[map->np[1]];
-		map->B3_3D[i] = new double*[map->np[1]];
+		map->B1_3D[i] = new float*[map->np[1]];
+		map->B2_3D[i] = new float*[map->np[1]];
+		map->B3_3D[i] = new float*[map->np[1]];
 		for (unsigned j = 0; j < map->np[1]; ++j) {
-			map->B1_3D[i][j] = new double[map->np[2]];
-			map->B2_3D[i][j] = new double[map->np[2]];
-			map->B3_3D[i][j] = new double[map->np[2]];
+			map->B1_3D[i][j] = new float[map->np[2]];
+			map->B2_3D[i][j] = new float[map->np[2]];
+			map->B3_3D[i][j] = new float[map->np[2]];
 
 		}
 	}
