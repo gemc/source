@@ -34,7 +34,7 @@ HipoSchema :: HipoSchema()
 	// detectors
 	//alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
 	//alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
-	alertAhdcTDCchema = hipo::schema("AHDC::tdc",	 22400, 11);
+	alertAhdcTDCchema = hipo::schema("AHDC::tdc",	 22400, 12);
 	alertAhdcADCchema = hipo::schema("AHDC::adc",	 22400, 11);
 	alertAtofADCchema = hipo::schema("ATOF::adc",	 22500, 11);
 	bandADCSchema     = hipo::schema("BAND::adc",    22100, 11);
