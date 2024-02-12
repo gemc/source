@@ -68,8 +68,10 @@ map<string, HitProcess_Factory> HitProcess_Map(string experiments)
 		
 		// CLAS12
 		if(EXP == "clas12") {
-			hitMap["alrttof"]   = &atof_HitProcess::createHitClass;
-			hitMap["alrtdc"]    = &ahdc_HitProcess::createHitClass;
+			// hitMap["alrttof"]   = &atof_HitProcess::createHitClass;
+			// hitMap["alrtdc"]    = &ahdc_HitProcess::createHitClass;
+			hitMap["atof"]   = &atof_HitProcess::createHitClass;
+			hitMap["ahdc"]    = &ahdc_HitProcess::createHitClass;
 			//hitMap["alertshell"] = &alertshell_HitProcess::createHitClass;
 			hitMap["band"]	     = &band_HitProcess::createHitClass;
 			hitMap["bmt"]       = &BMT_HitProcess::createHitClass;
