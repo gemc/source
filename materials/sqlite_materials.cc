@@ -94,8 +94,6 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
             mymats[thisMat.name] = thisMat;
 
-            cout << " AAAAA " << thisMat.name << " " << thisMat.density << " " << thisMat.ncomponents << " " << thisMat.components.size() << endl;
-
         }
     }
 
