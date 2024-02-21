@@ -732,7 +732,7 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v)
 	for( map<string, detector>::iterator i =  hallMap->begin(); i!=hallMap->end(); i++)
 	{
 		// don't build anything if the exist flag is not set
-		if(i->second.exist == 0 || i->second.scanned == 1 || i->second.factory != "TEXT") continue;
+		if(i->second.exist == 0 || i->second.scanned == 1 ) continue;
 
 		// put the volume in relatives to fill it
 		// if everything is good, it will be built right away
@@ -1029,5 +1029,3 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v)
 	
 	
 }
-
-

@@ -5,6 +5,7 @@
 #include "material_factory.h"
 #include "cpp_materials.h"
 #include "mysql_materials.h"
+#include "sqlite_materials.h"
 #include "text_materials.h"
 #include "string_utilities.h"
 
@@ -40,8 +41,11 @@ map<string, materialFactory> registerMaterialFactories()
 	
 	// MYSQL initialization
 	materialMethodMap["MYSQL"] = &mysql_materials::createMaterials;
-	
-	// TEXT initialization
+
+    // SQLITE initialization
+    materialMethodMap["SQLITE"] = &sqlite_materials::createMaterials;
+
+    // TEXT initialization
 	materialMethodMap["TEXT"] = &text_materials::createMaterials;
 
 	return materialMethodMap;
@@ -549,5 +553,3 @@ map<string, G4Material*>  materialsWithIsotopes()
 	
 	return mats;
 }
-
-

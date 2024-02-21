@@ -54,7 +54,7 @@ class detectorCondition
 			factory    = f;
 			is_present = 0;
 			variation  = "main";
-			run_number = 1;
+			run_number = -1;
 			presentFlag = false;
 		}
 		~detectorCondition(){;}
@@ -140,9 +140,3 @@ class runWeights
 
 
 #endif
-
-
-
-
-
-

@@ -189,7 +189,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 
-	double raster_r   = G4UniformRand();
+	double raster_r   = sqrt(G4UniformRand());
 	double raster_phi = 2.0*pi*G4UniformRand();
 	double rasterx    = rvdx * raster_r * cos(raster_phi);
 	double rastery    = rvdy * raster_r * sin(raster_phi);
@@ -298,16 +298,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				}
 
 				double PHI = 2.0*pi*G4UniformRand();
-				double Vx = vx/mm + VR*cos(PHI) + rasterx /cm + beamSpot_x /cm;
-				double Vy = vy/mm + VR*sin(PHI) + rastery /cm + beamSpot_y /cm;
-				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm;
+				double Vx = vx + VR*cos(PHI) + rasterx  + beamSpot_x ;
+				double Vy = vy + VR*sin(PHI) + rastery  + beamSpot_y ;
+				double Vz = vz + (2.0*G4UniformRand()-1.0)*dvz + displaceZ;
 
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm + beamSpot_x /cm;
-					Vy = rastery /cm + beamSpot_y /cm;
+					Vx = rasterx  + beamSpot_x ;
+					Vy = rastery  + beamSpot_y ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ / cm;
+					Vz = displaceZ ;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -316,20 +316,20 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx, Vy, Vz;
 
 				if(gaussOrFlatV == 1) {
-					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx /cm  + beamSpot_x /cm ;
-					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery /cm  + beamSpot_y /cm ;
-					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm) + displaceZ /cm ;
+					Vx  = G4RandGauss::shoot(vx, dvx) + rasterx   + beamSpot_x  ;
+					Vy  = G4RandGauss::shoot(vy, dvy) + rastery   + beamSpot_y  ;
+					Vz  = G4RandGauss::shoot(vz, dvz) + displaceZ ;
 				} else {
-					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx /cm + beamSpot_x /cm ;
-					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery /cm + beamSpot_y /cm ;
-					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm ;
+					Vx = vx + (2.0*G4UniformRand()-1.0)*dvx  + rasterx  + beamSpot_x  ;
+					Vy = vy + (2.0*G4UniformRand()-1.0)*dvy  + rastery  + beamSpot_y  ;
+					Vz = vz + (2.0*G4UniformRand()-1.0)*dvz + displaceZ  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm  + beamSpot_x /cm ;
-					Vy = rastery /cm  + beamSpot_y /cm ;
+					Vx = rasterx   + beamSpot_x  ;
+					Vy = rastery   + beamSpot_y  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm ;
+					Vz = displaceZ ;
 				}
 
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
@@ -555,15 +555,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm + beamSpot_x/cm;
-				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = thisParticleInfo.infos[13] + svz/cm + displaceZ / cm ;
+				double Vx     = thisParticleInfo.infos[11] + svx + rasterx + beamSpot_x;
+				double Vy     = thisParticleInfo.infos[12] + svy + rastery + beamSpot_y;
+				double Vz     = thisParticleInfo.infos[13] + svz + displaceZ ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm  + beamSpot_x /cm ;
-					Vy = rastery /cm  + beamSpot_y /cm ;
+					Vx = rasterx   + beamSpot_x  ;
+					Vy = rastery   + beamSpot_y  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm ;
+					Vz = displaceZ ;
 				}
 
 				
@@ -676,15 +676,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[12] + svx/cm + rasterx/cm + beamSpot_x/cm;
-				double Vy     = thisParticleInfo.infos[13] + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = thisParticleInfo.infos[14] + svz/cm ;
+				double Vx     = thisParticleInfo.infos[12] + svx + rasterx + beamSpot_x;
+				double Vy     = thisParticleInfo.infos[13] + svy + rastery + beamSpot_y;
+				double Vz     = thisParticleInfo.infos[14] + svz ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm + beamSpot_x /cm;
-					Vy = rastery /cm + beamSpot_y /cm;
+					Vx = rasterx  + beamSpot_x ;
+					Vy = rastery  + beamSpot_y ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm;
+					Vz = displaceZ ;
 				}
 
 				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent, A, Z);
@@ -772,12 +772,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					else
 					{
 						// vertex smear and offset
-						double VR  = sqrt(G4UniformRand())*dvr/mm;
+						double VR  = sqrt(G4UniformRand())*dvr;
 						double PHI = 2.0*pi*G4UniformRand();
 
-						beam_vrt = G4ThreeVector(stdhep_reader->X(p)*cm + vx/mm + VR*cos(PHI),
-														 stdhep_reader->Y(p)*cm + vy/mm + VR*sin(PHI),
-														 stdhep_reader->Z(p)*cm + vz/mm +  (2.0*G4UniformRand()-1.0)*dvz/mm);
+						beam_vrt = G4ThreeVector(stdhep_reader->X(p)*cm + vx + VR*cos(PHI),
+														 stdhep_reader->Y(p)*cm + vy + VR*sin(PHI),
+														 stdhep_reader->Z(p)*cm + vz +  (2.0*G4UniformRand()-1.0)*dvz);
 
 					}
 					particleGun->SetParticlePosition(beam_vrt);
@@ -956,7 +956,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L2_Phi/rad)*sin(L2_Theta/rad), sin(L2_Phi/rad)*sin(L2_Theta/rad), cos(L2_Theta/rad)));
 
 			// luminosity vertex 2
-			double L2_VR  = sqrt(G4UniformRand())*L2_dvr/mm;
+			double L2_VR  = sqrt(G4UniformRand())*L2_dvr;
 			double L2_PHI = 2.0*pi*G4UniformRand();
 			L2_vx += L2_VR*cos(L2_PHI);
 			L2_vy += L2_VR*sin(L2_PHI);
@@ -1663,8 +1663,3 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
 	}
 }
-
-
-
-
-
