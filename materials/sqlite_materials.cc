@@ -18,17 +18,17 @@ using namespace gstring;
 #include "G4OpBoundaryProcess.hh"
 
 
-map<string, G4Material *> sqlitel_materials::initMaterials(runConditions rc, goptions opts) {
+map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, goptions opts) {
 
     string hd_msg = opts.optMap["LOG_MSG"].args + " SQLITE Materials Factory: >> ";
     double verbosity = opts.optMap["MATERIAL_VERBOSITY"].arg;
 
-    double runno_arg = gemcOpt.optMap["RUNNO"].arg;
+    double runno_arg = opts.optMap["RUNNO"].arg;
 
     map <string, material> mymats;                        // material map
 
     // first check if there's at least one detector with MYSQL factory
-    if (!check_if_factory_is_needed(rc.detectorConditionsMap, "MYSQL"))
+    if (!check_if_factory_is_needed(rc.detectorConditionsMap, "SQLITE"))
         return materialsFromMap(mymats);
 
     // connection to the DB
@@ -58,7 +58,7 @@ map<string, G4Material *> sqlitel_materials::initMaterials(runConditions rc, gop
         // executing query - will exit if not successfull.
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
-            cout << hd_msg << "  Failed to execute MYSQL query " << dbexecute << ". This is a fatal error. Exiting." << endl;
+            cout << hd_msg << "  Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;
             qDebug() << q.lastError();
             exit(1);
         }
@@ -93,6 +93,8 @@ map<string, G4Material *> sqlitel_materials::initMaterials(runConditions rc, gop
             thisMat.birkConstant = q.value(18).toDouble(); // yieldratio
 
             mymats[thisMat.name] = thisMat;
+
+            cout << " AAAAA " << thisMat.name << " " << thisMat.density << " " << thisMat.ncomponents << " " << thisMat.components.size() << endl;
 
         }
     }

@@ -3,14 +3,14 @@
 
 #include "material_factory.h"
 
-class sqlitel_materials : public materials {
+class sqlite_materials : public materials {
 public:
-    ~sqlitel_materials() {}
+    ~sqlite_materials() {}
 
     map<string, G4Material *> initMaterials(runConditions, goptions);  // Method to define the G4 Materials
 
     static materials *createMaterials() {
-        return new sqlitel_materials;
+        return new sqlite_materials;
     }
 
 };

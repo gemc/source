@@ -7,7 +7,7 @@
 
 map <string, detector> sqlite_det_factory::loadDetectors() {
 
-    string hd_msg =  opts.optMap["LOG_MSG"].args + "  > SQLITE Detector Factory: >> ";
+    string hd_msg =  gemcOpt.optMap["LOG_MSG"].args + "  > SQLITE Detector Factory: >> ";
     double verbosity = gemcOpt.optMap["GEO_VERBOSITY"].arg;
 
     double runno_arg = gemcOpt.optMap["RUNNO"].arg;
