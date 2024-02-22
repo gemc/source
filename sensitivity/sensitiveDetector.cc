@@ -43,7 +43,7 @@ sensitiveDetector::sensitiveDetector(G4String name, goptions opt, string factory
 		skipSensitivity = true;
 	}
 	
-	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system);
+	SDID = sensitiveID(HCname, gemcOpt, factory, variation, system, run);
 	
 }
 
@@ -426,5 +426,3 @@ int sensitiveDetector::processID(string procName)
 	
 	return 999;
 }
-
-

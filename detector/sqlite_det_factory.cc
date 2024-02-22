@@ -19,7 +19,6 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
     if (!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType))
         return dets;
 
-
     // connection to the DB
     QSqlDatabase db = openGdb(gemcOpt);
 
@@ -34,7 +33,7 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
         string variation = get_variation(it->second.get_variation());
         int run = it->second.get_run_number();
         if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
-        int run_number = get_sql_run_number(db, dname, variation, run);
+        int run_number = get_sql_run_number(db, dname, variation, run, "geometry");
 
         // if run number is -1, the detector is not in the DB. exit with error
         if (run_number == -1) {
@@ -93,8 +92,7 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
         }
     }
 
-    // closing DB connection
-    closeGdb(db);
+
     cout << endl;
 
     return dets;

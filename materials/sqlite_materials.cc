@@ -48,12 +48,14 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
         string variation = get_variation(it->second.get_variation());
         int run = it->second.get_run_number();
         if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
-        int run_number = get_sql_run_number(db, dname, variation, run);
+        int run_number = get_sql_run_number(db, dname, variation, run, "materials");
 
         string dbexecute = "select name, description, density, ncomponents, components, photonEnergy, indexOfRefraction, ";
         dbexecute += "absorptionLength, reflectivity, efficiency, fastcomponent, slowcomponent, ";
-        dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio from materials" ;
+        dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio from materials";
         dbexecute += " where variation ='" + variation + "'";
+        dbexecute += " and run = " + stringify(run_number);
+        dbexecute += " and system = '" + dname + "'";
 
         // executing query - will exit if not successfull.
         QSqlQuery q;
@@ -69,10 +71,10 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
         while (q.next()) {
             material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
-            thisMat.desc = qv_tostring(q.value(1));           // description
-            thisMat.density = q.value(2).toDouble(); // density
-            thisMat.ncomponents = q.value(3).toInt();    // number of components
-            thisMat.componentsFromString(qv_tostring(q.value(4)));          // component + quantity list
+            thisMat.desc = qv_tostring(q.value(1));                                   // description
+            thisMat.density = q.value(2).toDouble();                                  // density
+            thisMat.ncomponents = q.value(3).toInt();                                 // number of components
+            thisMat.componentsFromString(qv_tostring(q.value(4)));                    // component + quantity list
             thisMat.opticalsFromString(qv_tostring(q.value(5)), "photonEnergy");
             thisMat.opticalsFromString(qv_tostring(q.value(6)), "indexOfRefraction");
             thisMat.opticalsFromString(qv_tostring(q.value(7)), "absorptionLength");
@@ -82,23 +84,21 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
             // scintillation
             thisMat.opticalsFromString(qv_tostring(q.value(10)), "fastcomponent");
             thisMat.opticalsFromString(qv_tostring(q.value(11)), "slowcomponent");
-            thisMat.scintillationyield = q.value(12).toDouble(); // scintillationyield
-            thisMat.resolutionscale = q.value(13).toDouble(); // resolutionscale
-            thisMat.fasttimeconstant = q.value(14).toDouble(); // fasttimeconstant
-            thisMat.slowtimeconstant = q.value(15).toDouble(); // slowtimeconstant
-            thisMat.yieldratio = q.value(16).toDouble(); // yieldratio
+            thisMat.scintillationyield = q.value(12).toDouble();
+            thisMat.resolutionscale = q.value(13).toDouble();
+            thisMat.fasttimeconstant = q.value(14).toDouble();
+            thisMat.slowtimeconstant = q.value(15).toDouble();
+            thisMat.yieldratio = q.value(16).toDouble();
             thisMat.opticalsFromString(qv_tostring(q.value(17)), "rayleigh");
 
             // Birk Constant
-            thisMat.birkConstant = q.value(18).toDouble(); // yieldratio
+            thisMat.birkConstant = q.value(18).toDouble();
 
             mymats[thisMat.name] = thisMat;
 
         }
     }
 
-    // closing DB connection
-    closeGdb(db);
     cout << endl;
 
     map < string, G4Material * > returnMap = materialsFromMap(mymats);
