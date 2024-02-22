@@ -553,20 +553,16 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		}
 
         CLHEP::HepRandomEngine* currentEngine = CLHEP::HepRandom::getTheEngine();
+
+        // this should be an array of longs describing the engine status
+        // the first two elements are
         const long *engineStatus = currentEngine->getSeeds();
 
-        // find the number of elements in engineStatus. This assumes the values are greater than 100
-        int nelements = 0;
-        while (engineStatus[nelements] > 100) {
-            nelements++;
-        }
-
-        if (nelements < 3) {
-            cout << "Error: engineStatus has less than 3 elements" << endl;
+        int g4rseed = engineStatus[2];
+        if (g4rseed == 0) {
+            cout << "Error: engineStatus third element is 0" << endl;
             exit(1);
         }
-
-        int g4rseed = engineStatus[2];
 
 		// getting time window
 		string rfsetup_string = to_string(g4rseed) + " " + to_string(gen_action->getTimeWindow()) + " " ;

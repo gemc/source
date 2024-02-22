@@ -97,7 +97,7 @@ class gtable
 };
 
 // gets last id from table, variation, run number
-int getLastId(QSqlDatabase db, string t, string v, int r);
+int get_sql_run_number(QSqlDatabase db, string detector_name, string v, int r);
 
 // open and close gemc mysql database
 QSqlDatabase openGdb(goptions);
@@ -117,8 +117,3 @@ string bestValueUnits(double, string);
 vector<double> convertVintVdouble(vector<int> input);
 
 #endif
-
-
-
-
-

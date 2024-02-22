@@ -15,7 +15,6 @@ using namespace std;
 
 class material
 {
-	
 	public:
 		material(){;}
 		material(string n){name = n;}
@@ -78,4 +77,3 @@ map<string, G4Material*> materialsWithIsotopes();
 void printMaterials(map<string, G4Material*> matMap);
 
 #endif
-
