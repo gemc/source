@@ -685,7 +685,9 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v) {
 
     for (map<string, detector>::iterator i = hallMap->begin(); i != hallMap->end(); i++) {
         // don't build anything if the exist flag is not set
-        if (i->second.exist == 0 || i->second.scanned == 1) continue;
+        // if the volume is already scanned
+        // or if the volume not from TEXT or SQLITE factory
+        if (i->second.exist == 0 || i->second.scanned == 1 || (i->second.factory != "TEXT" && i->second.factory != "SQLITE")) continue;
 
         // put the volume in relatives to fill it
         // if everything is good, it will be built right away
