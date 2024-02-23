@@ -186,9 +186,8 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
         // loading hit definitions from DB
         while (q.next()) {
             // Reading variables
-            // 0 is system name, 1 is variation, 2 is run number
-
-
+            // 0 is system name
+            name = qv_tostring(q.value(0));
 
             // 1: description
             description = qv_tostring(q.value(1));

@@ -62,7 +62,7 @@ void gui_splash::message(string msg) {
     if (qt) {
         splash->showMessage(msg.c_str(), Qt::AlignLeft, Qt::white);
         qApp->processEvents();
-    } else if (verbosity > 0)
+    } else
         cout << header << msg << endl;
 }
 
