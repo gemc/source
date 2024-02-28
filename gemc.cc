@@ -28,7 +28,7 @@
 /// \author \n &copy; Maurizio Ungaro
 /// \author e-mail: ungaro@jlab.org\n\n\n
 
-const char *GEMC_VERSION = "gemc 2.11";
+const char *GEMC_VERSION = "gemc 2.12";
 
 // G4 headers
 #include "G4RunManager.hh"
