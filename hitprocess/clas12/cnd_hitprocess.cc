@@ -43,7 +43,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	
 	if(accountForHardwareStatus) {
 		cout<<"CND:Getting status" << endl;
-		sprintf(cndc.database,"/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Status_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,cndc.database);
 		for(unsigned row = 0; row < data.size(); row++)
 		{
@@ -54,7 +54,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting thresholds" << endl;
-	sprintf(cndc.database,"/calibration/cnd/Thresholds:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Thresholds:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -66,7 +66,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting TDC slope"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TDC_conv:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -76,7 +76,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting attenuation"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Attenuation:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Attenuation:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -86,7 +86,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting effective_velocity"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/EffV:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/EffV:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -96,7 +96,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting energy calibration"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/Energy:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/Energy:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -108,7 +108,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting u-turn delay"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/UturnTloss:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/UturnTloss:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -117,7 +117,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset LR"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TimeOffsets_LR:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -126,7 +126,7 @@ static cndConstants initializeCNDConstants(int runno, string digiVariation = "de
 	}
 	
 	cout<<"CND:Getting time offset layer"<<endl;
-	sprintf(cndc.database,"/calibration/cnd/TimeOffsets_layer:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(cndc.database, sizeof(cndc.database), "/calibration/cnd/TimeOffsets_layer:%d:%s%s", cndc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,cndc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -268,7 +268,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int status_D     = 0; // MARK: TO DELETE LATER
 	int status_N     = 0; // MARK: TO DELETE LATER
-	int status       = 0;
+	// int status       = 0;
 	
 	double adc_mip_D = 0.; // MARK: TO DELETE LATER
 	double adc_mip_N = 0.; // MARK: TO DELETE LATER
@@ -279,6 +279,8 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double t_offset_layer = cndc.time_offset_layer[sector-1][layer-1][0];
 	
 	double threshold = 0;
+	
+	double time_in_ns = 0;
 	
 	// LEFT PADDLE
 	if ( side == 1 ){
@@ -299,12 +301,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_L[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_L[sector-1][layer-1][0];
 		}
@@ -330,12 +332,12 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 
 		if ( direct == 0 ) {
 			slope   = cndc.slope_R[sector-1][layer-1][0];
-			status  = cndc.status_R[sector-1][layer-1][0];
+			// status  = cndc.status_R[sector-1][layer-1][0];
 			v_eff   = cndc.veff_R[sector-1][layer-1][0];
 			adc_mip = cndc.mip_dir_R[sector-1][layer-1][0];
 		} else {
 			slope   = cndc.slope_L[sector-1][layer-1][0];
-			status  = cndc.status_L[sector-1][layer-1][0];
+			// status  = cndc.status_L[sector-1][layer-1][0];
 			v_eff   = cndc.veff_L[sector-1][layer-1][0];
 			adc_mip = cndc.mip_indir_R[sector-1][layer-1][0];
 		}
@@ -452,12 +454,14 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		
 		// MARK: TO delete later
 		if (etotUp > 0.) {
+			time_in_ns  = G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp));
 			TDCD = (int) ( (G4RandGauss::shoot(timeD, sigmaTD/sqrt(etotUp)) ) / slope_D);
 			double npheD = G4Poisson(etotUp*pmtPEYldD);
 			double eneD = npheD/pmtPEYldD;
 			ADCD = (int) (eneD*adc_mip_D*2./(dEdxMIP*thickness));
 		}
 		if (etotDown > 0.) {
+			time_in_ns  = G4RandGauss::shoot(timeN, sigmaTD/sqrt(etotDown));
 			TDCN = (int) ( (G4RandGauss::shoot(timeN, sigmaTN/sqrt(etotDown)) ) / slope_N);
 			double npheN = G4Poisson(etotDown*pmtPEYldN);
 			double eneN = npheN/pmtPEYldN;
@@ -467,6 +471,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		// Notice there are going to be small differences to the above quantities because
 		// of the shooting of random numbers
 		if ( eTotal > 0 ) {
+			time_in_ns  = G4RandGauss::shoot(eTime, sigma/sqrt(eTotal));
 			TDC = (int) ( (G4RandGauss::shoot(eTime, sigma/sqrt(eTotal)) ) / slope);
 			double nphe = G4Poisson(eTotal*pmtPEYld);
 			double ene  = nphe/pmtPEYld;
@@ -575,6 +580,9 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 
 
+	// standardizing fadc time and tdc info
+	double fadc_time = convert_to_precision(time_in_ns);
+
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -582,7 +590,7 @@ map<string, double> cnd_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = 1;
 	dgtz["ADC_order"] = adc_order ; // 0 = left 1 = right
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = TDC;   // no conversion
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = adc_order + 2; // 2 = left 3 = right
 	dgtz["TDC_TDC"]   = TDC;
@@ -706,4 +714,3 @@ vector<MHit*> cnd_HitProcess :: electronicNoise()
 
 // this static function will be loaded first thing by the executable
 cndConstants cnd_HitProcess::cndc = initializeCNDConstants(-1);
-

@@ -68,6 +68,9 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
+		
+		dgtz["TDC_order"] = 0;
+		dgtz["TDC_TDC"]   = tdc;
 
 		return dgtz;
 
@@ -327,6 +330,9 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_ADC"]   = (int) 100000*adc_energy;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = doca*1000;
+	
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = time;
 
 	
 	// define conditions to reject hit

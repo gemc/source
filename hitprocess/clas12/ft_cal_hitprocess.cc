@@ -47,7 +47,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	if(accountForHardwareStatus) {
 		
 		cout<<"FT-Cal:Getting status"<<endl;
-		sprintf(ftcc.database,"/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/status:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear(); calib->GetCalib(data,ftcc.database);
 		for(unsigned row = 0; row < data.size(); row++)
 		{
@@ -57,7 +57,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting noise"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/noise:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/noise:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -70,7 +70,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting charge_to_energy"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/charge_to_energy:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/charge_to_energy:%d:%s%s",ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -83,7 +83,7 @@ static ftCalConstants initializeFTCALConstants(int runno, string digiVariation =
 	}
 	
 	cout<<"FT-Cal:Getting time_offsets"<<endl;
-	sprintf(ftcc.database,"/calibration/ft/ftcal/time_offsets:%d:%s%s", ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftcc.database, sizeof(ftcc.database), "/calibration/ft/ftcal/time_offsets:%d:%s%s", ftcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ftcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
@@ -193,8 +193,8 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// initialize ADC and TDC
 	int ADC = 0;
-	int TDC = 8191;
-	
+	//int TDC = 8191;
+    double FADC_TIME = 8191;
 	
 	if(tInfos.eTot>0)
 	{
@@ -213,10 +213,12 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		double timeR  = tInfos.time + dRight/ftcc.light_speed;  // arrival time of the signal at the end of the crystal (speed of light in the crystal=15 cm/ns)
 		// adding shift and spread on time
 		timeR=timeR+ftcc.time_offset[iCrystal]+G4RandGauss::shoot(0., ftcc.time_rms[iCrystal]);
-		
-		TDC=int(timeR*ftcc.time_to_tdc);
-		if(TDC>ftcc.tdc_max) TDC=(int)ftcc.tdc_max;
-		
+        
+        FADC_TIME = timeR;
+		//TDC=int(timeR*ftcc.time_to_tdc);
+        //if(TDC>ftcc.tdc_max) TDC=(int)ftcc.tdc_max;
+        
+        
 		// calculate number of photoelectrons detected by the APD considering the light yield, the q.e., and the size of the sensor
 		//old!!		double npe=G4Poisson(tInfos.eTot*PbWO4_light_yield*0.5*APD_qe*APD_size/width/width);
 		// for PMT, an addition factor of 0.5625 is needed to reproduce the 13.5 photoelectrons with a 20% QE
@@ -253,7 +255,8 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			case 1:
 				break;
 			case 3:
-				ADC = TDC = 0;
+				ADC = 0;
+                FADC_TIME = 0;
 				break;
 				
 			case 5:
@@ -264,13 +267,15 @@ map<string, double> ft_cal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		}
 	}
 	
+	//int fadc_time = convert_to_precision(TDC/25);
+	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = 1;
 	dgtz["layer"]     = 1;
 	dgtz["component"] = iCrystal;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = ADC;
-	dgtz["ADC_time"]  = (int) TDC/25;
+	dgtz["ADC_time"]  = convert_to_precision(FADC_TIME);
 	dgtz["ADC_ped"]   = 0;
 	
 	

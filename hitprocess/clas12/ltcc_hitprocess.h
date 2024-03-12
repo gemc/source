@@ -19,10 +19,14 @@ public:
 	TranslationTable TT;
 	
 	// add constants here
-	double speMean[6][2][18];
-	double speSigma[6][2][18];
-	double timeOffset[6][2][18];
-	double timeRes[6][2][18];
+	double speMean[6][2][18] = {};
+	double speSigma[6][2][18] = {};
+	double timeOffset[6][2][18] = {};
+	double timeRes[6][2][18] = {};
+
+    // tdcs conversion factor
+    double tdc_conv[6][2][18] = {};
+
 };
 
 
@@ -62,6 +66,13 @@ private:
 	
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
+	
+	double fadc_precision = 0.0625;  // 62 picoseconds resolution
+	double convert_to_precision(double time) {
+		return (int( time / fadc_precision ) * fadc_precision);
+	}
+	
+
 };
 
 #endif

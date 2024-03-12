@@ -22,13 +22,8 @@ using namespace gstring;
 
 bool clas12BinField::isEligible(string compositeFieldsName)
 {
-	if (compositeFieldsName ==  TorusSymmSolenoid2018 ) {
-		return 1;
-	} else if ( compositeFieldsName == TorusASymmSolenoid2018 ) {
-		return 1;
-	} else {
-		return 0;
-	}
+	// we assume the files specified in the gcard exist
+	return 1;
 }
 
 
@@ -48,11 +43,10 @@ gfield clas12BinField::loadField(string file, goptions opts)
 
 	if(gf.bc12map == nullptr) {
 		gf.bc12map = new gclas12BinaryMappedField(file);
+		
 		if(getenv("FIELD_DIR") != nullptr) {
 			string fieldDir=getenv("FIELD_DIR");
-			gf.bc12map->symmetricTorusFileName = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][1];
-			gf.bc12map->solenoidFileName       = fieldDir + "/" + validC12MapNames[TorusSymmSolenoid2018][0];
-			gf.bc12map->fullTorusFileName      = fieldDir + "/" + validC12MapNames[TorusASymmSolenoid2018][1];
+			gf.bc12map->defineNamesAndType(fieldDir);
 		}
 	}
 	
@@ -63,6 +57,38 @@ gfield clas12BinField::loadField(string file, goptions opts)
 		setAlgorithm(NEAREST_NEIGHBOR);
 	} else {
 		setAlgorithm(INTERPOLATION);
+	}
+
+	
+	string hardcodedBinaryTorusOptionName = "binary_torus";
+	string hardcodedBinarySolenOptionName = "binary_solenoid";
+
+	vector<aopt> FIELD_SCALES_OPTION = opts.getArgs("SCALE_FIELD");
+	for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
+		vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
+		if(scales.size() == 2) {
+			if (scales[0].find(hardcodedBinaryTorusOptionName) != string::npos) {
+				torusScale = get_number(scales[1]);
+			} else if (scales[0].find(hardcodedBinarySolenOptionName) != string::npos) {
+				solenoidScale = get_number(scales[1]);
+			}
+		}
+	}
+	
+	vector<aopt> FIELD_DISPLACEMENT_OPTION = opts.getArgs("DISPLACE_FIELDMAP");
+	for (unsigned int f = 0; f < FIELD_DISPLACEMENT_OPTION.size(); f++) {
+		vector < string > displacement = getStringVectorFromStringWithDelimiter(FIELD_DISPLACEMENT_OPTION[f].args, ",");
+		if(displacement.size() == 4) {
+			if (displacement[0].find(hardcodedBinaryTorusOptionName) != string::npos) {
+				torusOrigin[0] = get_number(displacement[1]);
+				torusOrigin[1] = get_number(displacement[2]);
+				torusOrigin[2] = get_number(displacement[3]);
+			} else if (displacement[0].find(hardcodedBinarySolenOptionName) != string::npos) {
+				solenoidOrigin[0] = get_number(displacement[1]);
+				solenoidOrigin[1] = get_number(displacement[2]);
+				solenoidOrigin[2] = get_number(displacement[3]);
+			}
+		}
 	}
 
 	
@@ -81,16 +107,21 @@ void clas12BinField::loadFieldMap(gclas12BinaryMappedField* b12map, double v) {
 
 	// initialize map pointers
 	b12map->combinedValuePtr = (FieldValuePtr) malloc(sizeof (FieldValue));
-	if (b12map->identifier == TorusSymmSolenoid2018 ) {
-	
-		b12map->solenoid       = initializeSolenoid(b12map->solenoidFileName.c_str());
-		b12map->symmetricTorus = initializeTorus(b12map->symmetricTorusFileName.c_str());
+
+	b12map->solenoidPtr = initializeSolenoid(b12map->solenoidMapFileName.c_str());
+	b12map->torusPtr    = initializeTorus(b12map->torusMapFileName.c_str());
+
+	b12map->solenoidPtr->scale = solenoidScale;
+	b12map->torusPtr->scale    = torusScale;
+
+	b12map->solenoidPtr->shiftX = solenoidOrigin[0]/cm;
+	b12map->solenoidPtr->shiftY = solenoidOrigin[1]/cm;
+	b12map->solenoidPtr->shiftZ = solenoidOrigin[2]/cm;
+
+	b12map->torusPtr->shiftX  = torusOrigin[0]/cm;
+	b12map->torusPtr->shiftY  = torusOrigin[1]/cm;
+	b12map->torusPtr->shiftZ  = torusOrigin[2]/cm;
 		
-	} else if (b12map->identifier == TorusASymmSolenoid2018 ) {
-	
-		b12map->solenoid  = initializeSolenoid(b12map->solenoidFileName.c_str());
-		b12map->fullTorus = initializeTorus(b12map->fullTorusFileName.c_str());
-	}
 
 	cout << endl << "  ####  Binary Field Maps for " << b12map->identifier << " loading complete." << endl << endl;
 

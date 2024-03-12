@@ -45,7 +45,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	
 	
 	// reading efficiency parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/inefficiency:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(dcc.database, sizeof(dcc.database), "/calibration/dc/signal_generation/inefficiency:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	vector<vector<double> > data;
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -60,7 +60,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	}
 	
 	// reading smearing parameters
-	sprintf(dcc.database, "/calibration/dc/signal_generation/doca_smearing:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(dcc.database, sizeof(dcc.database),  "/calibration/dc/signal_generation/doca_smearing:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, dcc.database);
 	for(unsigned row = 0; row < data.size(); row++)
@@ -77,7 +77,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	
 	//********************************************
 	//calculating distance to time:
-	sprintf(dcc.database, "/calibration/dc/time_to_distance/time2dist:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(dcc.database, sizeof(dcc.database),  "/calibration/dc/time_to_distance/time2dist:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, dcc.database);
 	
@@ -101,7 +101,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	
 	
 	// T0 corrections: a delay to be introduced (plus sign) to the TDC timing
-	sprintf(dcc.database, "/calibration/dc/time_corrections/T0Corrections:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(dcc.database, sizeof(dcc.database),  "/calibration/dc/time_corrections/T0Corrections:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data,  dcc.database);
 	
@@ -117,7 +117,7 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	
 	
 	// reading DC core parameters
-	sprintf(dcc.database, "/geometry/dc/superlayer:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(dcc.database, sizeof(dcc.database),  "/geometry/dc/superlayer:%d:%s%s", dcc.runNo, digiVariation.c_str(), timestamp.c_str());
 	unique_ptr<Assignment> dcCoreModel(calib->GetAssignment(dcc.database));
 	for(size_t rowI = 0; rowI < dcCoreModel->GetRowsCount(); rowI++){
 		dcc.dLayer[rowI] = dcCoreModel->GetValueDouble(rowI, 6);
@@ -579,8 +579,9 @@ void dc_HitProcess::initWithRunNumber(int runno)
 	string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
 	string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
 	
-	string hardcodedTorusMapName = "TorusSymmetric";
-	
+	string hardcodedAsciiTorusMapName  = "TorusSymmetric";
+	string hardcodedBinaryTorusMapName = "binary_torus";
+
 	if(dcc.runNo != runno) {
 		
 		dcc = initializeDCConstants(runno, digiVariation, digiSnapshotTime, accountForHardwareStatus);
@@ -591,7 +592,9 @@ void dc_HitProcess::initWithRunNumber(int runno)
 		for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
 			vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
 			if(scales.size() == 2) {
-				if (scales[0].find(hardcodedTorusMapName) != string::npos) {
+				if (scales[0].find(hardcodedAsciiTorusMapName) != string::npos) {
+					scaleFactor = get_number(scales[1]);
+				} else 	if (scales[0].find(hardcodedBinaryTorusMapName) != string::npos) {
 					scaleFactor = get_number(scales[1]);
 				}
 			}
@@ -599,7 +602,7 @@ void dc_HitProcess::initWithRunNumber(int runno)
 		dcc.fieldPolarity = scaleFactor;
 		
 		string nofield = gemcOpt.optMap["NO_FIELD"].args;
-		if(nofield == "all" || nofield.find(hardcodedTorusMapName) != string::npos ) {
+		if(nofield == "all") {
 			dcc.fieldPolarity = 1;
 		}
 		

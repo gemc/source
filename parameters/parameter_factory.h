@@ -22,7 +22,7 @@ class parametersFactory
 
 		void initFactory(string ft)
 		{
-			cout << "  > gemc Init: " << ft << " Parameters Factory is Initialized "  << endl;
+			cout << "  > gemc Init:  " << ft << " Parameters Factory is Initialized "  << endl;
 			factoryType = ft;
 		}
 };

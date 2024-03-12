@@ -27,12 +27,11 @@ void Lorentz::Initialize(int runno){
 	vector<vector<double> > data;
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
 	
-	sprintf(database,"/calibration/mvt/lorentz");
+	snprintf(database, 80, "/calibration/mvt/lorentz");
 	data.clear(); calib->GetCalib(data,database);
 	
 	float pe=0;
 	float pb=0;
-	int i = 0;
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		Lor_grid.push_back(data[row][2]);
@@ -44,7 +43,6 @@ void Lorentz::Initialize(int runno){
 			bmin = data[row][1];
 			bmax = data[row][1];
 			
-			i++;
 			Ne++;
 			Nb++;
 			pe = data[row][0];

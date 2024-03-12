@@ -80,16 +80,10 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 			
 		}
 	}
-	
-	// closing DB connection
-	closeGdb(db);
+
 	cout << endl;
 	
  	if(verbosity>0) printMirrors(mymirs);
 
 	return mymirs;
 }
-
-
-
-

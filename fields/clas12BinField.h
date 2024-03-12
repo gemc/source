@@ -3,6 +3,9 @@
 
 #include "fieldFactory.h"
 
+// uses David's Heddle cmag: https://github.com/JeffersonLab/clas12-cmag
+// example of fields used in real data:
+// https://github.com/JeffersonLab/clas12-offline-software/blob/development/etc/services/data.yaml
 
 class clas12BinField : public fieldFactory
 {
@@ -11,16 +14,9 @@ public:
 
 	// save map list for loadFieldMap
 	map<string, vector<string> > validC12MapNames;
-	
-	// constructor:  create map list with hardcoded names
-	// hardcoding names here
-	clas12BinField() {
-		validC12MapNames[TorusSymmSolenoid2018]  = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Symm_torus_r2501_phi16_z251_24Apr2018.dat"};
-		validC12MapNames[TorusASymmSolenoid2018] = {"Symm_solenoid_r601_phi1_z1201_13June2018.dat", "Full_torus_r251_phi181_z251_03March2020.dat"};
-	}
 
-	// check if the binary map filename is a match for a pre-defined list
-	// also set the map filenames
+
+	// implementing virtual method
 	bool isEligible(string);
 
 	// load field definitions
@@ -43,6 +39,13 @@ public:
 		return new clas12BinField;
 	}
 	
+	double solenoidScale = 1;
+	double torusScale    = 1;
+
+	double solenoidOrigin[3] = {0, 0, 0};
+	double torusOrigin[3]    = {0, 0, 0};
+
+
 };
 
 

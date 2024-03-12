@@ -40,8 +40,9 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 	// layer = left or right side
 	// component = segment number
 	int sector, layer, component;
-	
-	sprintf(ltccc.database,"/calibration/ltcc/spe:%d:%s%s",ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
+
+    cout<<"LTCC: Getting single photo-electron constants"<<endl;
+	snprintf(ltccc.database, sizeof(ltccc.database), "/calibration/ltcc/spe:%d:%s%s",ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
@@ -54,8 +55,9 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
-	
-	sprintf(ltccc.database,"/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
+
+    cout<<"LTCC: Getting time_offsets"<<endl;
+	snprintf(ltccc.database, sizeof(ltccc.database), "/calibration/ltcc/time_offsets:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ltccc.database);
 	for(unsigned row = 0; row < data.size(); row++) {
 		sector    = data[row][0] - 1;
@@ -68,6 +70,22 @@ static ltccConstants initializeLTCCConstants(int runno, string digiVariation = "
 		//		cout << " Loading ltcc sector " << sector << "  side " << layer << "  segment " << component;
 		//		cout << "  spe mean: " << ltccc.speMean[sector][layer][component] << "  spe sigma: " <<  ltccc.speSigma[sector][layer][component] << endl;
 	}
+
+    cout<<"LTCC: Getting tdc_conv"<<endl;
+    snprintf(ltccc.database, sizeof(ltccc.database), "/calibration/ltcc/tdc_conv:%d:%s%s", ltccc.runNo, digiVariation.c_str(), timestamp.c_str());
+    data.clear(); calib->GetCalib(data,ltccc.database);
+    for(unsigned row = 0; row < data.size(); row++) {
+        sector    = data[row][0] - 1;
+        layer     = data[row][1] - 1;
+        component = data[row][2] - 1;
+
+        ltccc.tdc_conv[sector][layer][component]  = data[row][3];
+
+//        		cout << " Loading ltcc sector " << sector + 1 << "  side " << layer + 1 << "  segment " << component + 1;
+//        		cout << "  tdc_conv: " << ltccc.tdc_conv[sector][layer][component]  << endl;
+    }
+
+
 	
 	return ltccc;
 }
@@ -83,7 +101,11 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int idside    = identity[1].id;
 	int idsegment = identity[2].id;
 	int thisPid   = aHit->GetPID();
-	
+
+    // TDC conversion factors
+    double tdcconv = ltccc.tdc_conv[idsector - 1][idside - 1][idsegment - 1];
+    double time_in_ns = 0;
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the nphe in the charge infp. Time is also first step
@@ -96,14 +118,13 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		dgtz["layer"]     = idside;
 		dgtz["component"] = idsegment;
 		dgtz["ADC_order"] = 0;
-		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];;
-		dgtz["ADC_time"]  = (int) (stepTime*24.0/1000);
+		dgtz["ADC_ADC"]   = nphe*ltccc.speMean[idsector-1][idside-1][idsegment-1];
+		dgtz["ADC_time"]  = convert_to_precision(stepTime);
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = 0;
-		dgtz["TDC_TDC"]   = (int) (stepTime*24.0/1000);
-		
-		
+		dgtz["TDC_TDC"]   = (int) (stepTime/tdcconv);
+
 		return dgtz;
 	}
 	
@@ -131,15 +152,14 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	map<int, double> penergy;  // key is track id
 	
-	for(unsigned int s=0; s<tids.size(); s++)
-	{
+	for(unsigned int s=0; s<tids.size(); s++) {
 		// only insert the first step of each track
 		// (i.e. if the map is empty
 		if(penergy.find(tids[s]) == penergy.end())
 			penergy[tids[s]] = Energies[s];
 	}
 	
-	int narrived  = 0;
+	//int narrived  = 0;
 	int ndetected = 0;
 	
 	// If the detector corresponding to this hit has a material properties table with "Efficiency" defined:
@@ -152,30 +172,25 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		if( efficiency != nullptr ) gotefficiency = true;
 	}
 	
-	for( unsigned int iphoton = 0; iphoton<penergy.size(); iphoton++ )
-	{
+	for( unsigned int iphoton = 0; iphoton<penergy.size(); iphoton++ ) {
 		//loop over all unique photons contributing to the hit:
-		if( gotefficiency )
-		{
+		if( gotefficiency ) {
 			// If the material of this detector has a material properties table
 			// with "EFFICIENCY" defined, then "detect" this photon with probability = efficiency
 			bool outofrange = false;
 			if( G4UniformRand() <= efficiency->GetValue( penergy[tids[iphoton]], outofrange ) )
 				ndetected++;
 			
-			narrived++;
+			//narrived++;
 			
-			if( verbosity > 4 )
-			{
+			if( verbosity > 4 ) {
 				cout << log_msg << " Found efficiency definition for material "
 				<< aHit->GetDetector().GetLogical()->GetMaterial()->GetName()
 				<< ": (Ephoton, efficiency)=(" << penergy[tids[iphoton]] << ", "
 				<< ( (G4MaterialPropertyVector*) efficiency )->GetValue( penergy[tids[iphoton]], outofrange )
 				<< ")" << endl;
 			}
-		}
-		else
-		{
+		} else {
 			// No efficiency definition, "detect" all photons
 			ndetected++;
 		}
@@ -184,7 +199,11 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double adc = G4RandGauss::shoot(ndetected*ltccc.speMean[idsector-1][idside-1][idsegment-1], ndetected*ltccc.speSigma[idsector-1][idside-1][idsegment-1]);
 	
 	double timeOffset = G4RandGauss::shoot(ltccc.timeOffset[idsector-1][idside-1][idsegment-1], ltccc.timeRes[idsector-1][idside-1][idsegment-1]);
-	double time = tInfos.time + timeOffset;
+	time_in_ns = tInfos.time + timeOffset;
+	
+	double fadc_time = convert_to_precision(time_in_ns);
+    int tdc  = time_in_ns / tdcconv;
+
 	
 	dgtz["hitn"]   = hitn;
 	
@@ -193,11 +212,11 @@ map<string, double> ltcc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["component"] = idsegment;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = adc;
-	dgtz["ADC_time"]  = time;
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = (int) time;
+	dgtz["TDC_TDC"]   = tdc;
 	
 	
 	// define conditions to reject hit
@@ -271,8 +290,3 @@ void ltcc_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ltccConstants ltcc_HitProcess::ltccc = initializeLTCCConstants(-1);
-
-
-
-
-

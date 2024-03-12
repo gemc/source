@@ -41,7 +41,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(fmtc.connection));
 	vector<vector<double> > data;
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_global:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(fmtc.database, sizeof(fmtc.database), "/geometry/fmt/fmt_global:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	// all dimensions are in mm
 	
@@ -56,7 +56,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	
 	
 	//Load the geometrical constant for all layers
-	sprintf(fmtc.database,"/geometry/fmt/fmt_layer_noshim:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
+    snprintf(fmtc.database, sizeof(fmtc.database), "/geometry/fmt/fmt_layer_noshim:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Z0.resize(data.size());
 	fmtc.alpha.resize(data.size());
@@ -80,7 +80,7 @@ static fmtConstants initializeFMTConstants(int runno, string digiVariation = "de
 	fmtc.Lor_Angle.Initialize(runno);
 	
 	// get hit time distribution parameters
-	sprintf(fmtc.database,"/calibration/mvt/fmt_time:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(fmtc.database, sizeof(fmtc.database), "/calibration/mvt/fmt_time:%d:%s%s", fmtc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,fmtc.database);
 	fmtc.Twindow  = data[0][4]*ns;
 	fmtc.Tmean    = data[0][4]*ns;

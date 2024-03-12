@@ -61,6 +61,28 @@ void hipo_output :: recordSimConditions(outputContainer* output, map<string, str
 					}
 				}
 			}
+			
+			string hardcodedBinaryTorusOptionName = "binary_torus";
+			string hardcodedBinarySolenOptionName = "binary_solenoid";
+			double scaleFactor = 1;
+			vector<aopt> FIELD_SCALES_OPTION = output->gemcOpt.getArgs("SCALE_FIELD");
+			for (unsigned int f = 0; f < FIELD_SCALES_OPTION.size(); f++) {
+				vector < string > scales = getStringVectorFromStringWithDelimiter(FIELD_SCALES_OPTION[f].args, ",");
+				if(scales.size() == 2) {
+					if (scales[0].find(hardcodedBinaryTorusOptionName) != string::npos) {
+						scaleFactor = get_number(scales[1]);
+						// scale to 1 unless set below
+						fieldScales[trimSpacesFromString(hardcodedBinaryTorusOptionName)] = scaleFactor;
+						data.push_back("field" + trimSpacesFromString(hardcodedBinaryTorusOptionName) + " scale:  " + to_string(scaleFactor));
+					} else if (scales[0].find(hardcodedBinarySolenOptionName) != string::npos) {
+						scaleFactor = get_number(scales[1]);
+						// scale to 1 unless set below
+						fieldScales[trimSpacesFromString(hardcodedBinarySolenOptionName)] = scaleFactor;
+						data.push_back("field" + trimSpacesFromString(hardcodedBinaryTorusOptionName) + " scale:  " + to_string(scaleFactor));
+					}
+				}
+			}
+			
 		}
 	}
 
@@ -141,11 +163,15 @@ void hipo_output :: writeHeader(outputContainer* output, map<string, double> dat
 	if(fieldScales.find("TorusSymmetric") != fieldScales.end()) {
 		runConfigBank.putFloat("torus",      0, fieldScales["TorusSymmetric"]);
 		//		cout << "TorusSymmetric scaled by: " << fieldScales["TorusSymmetric"] << endl;
+	} else if(fieldScales.find("binary_torus") != fieldScales.end()) {
+		runConfigBank.putFloat("torus",      0, fieldScales["binary_torus"]);
 	} else {
 		runConfigBank.putFloat("torus",      0, 0);
 	}
 	if(fieldScales.find("clas12-newSolenoid") != fieldScales.end()) {
 		runConfigBank.putFloat("solenoid",      0, fieldScales["clas12-newSolenoid"]);
+	} else if(fieldScales.find("binary_solenoid") != fieldScales.end()) {
+		runConfigBank.putFloat("solenoid",      0, fieldScales["binary_solenoid"]);
 	} else {
 		runConfigBank.putFloat("solenoid",      0, 0);
 	}
@@ -307,7 +333,22 @@ void hipo_output :: writeGenerated(outputContainer* output, vector<generatedPart
 	vector<double> btime;
 	
 	for(unsigned i=0; i<MAXP && i<MGP.size(); i++) {
-		pid.push_back(MGP[i].PID);
+		
+		int my_pid = MGP[i].PID;
+		
+		// more user friendly values
+		if (my_pid == 1000010020 ) {
+			my_pid = 45;  // deuteron
+		} else if (my_pid == 1000010030 ) {
+			my_pid = 46;  // triton
+		} else if (my_pid == 1000020040 ) {
+			my_pid = 47;  // alpha
+		} else if (my_pid == 1000020030 ) {
+			my_pid = 49;  // He3
+		}
+		
+		pid.push_back(my_pid);
+		
 		px.push_back(MGP[i].momentum.getX()/MeV);
 		py.push_back(MGP[i].momentum.getY()/MeV);
 		pz.push_back(MGP[i].momentum.getZ()/MeV);

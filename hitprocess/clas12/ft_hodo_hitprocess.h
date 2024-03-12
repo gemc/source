@@ -96,6 +96,12 @@ private:
 	// - electronicNoise: returns a vector of hits generated / by electronics.
 	vector<MHit*> electronicNoise();
 	
+	double fadc_precision = 0.0625;  // 62 picoseconds resolution
+	double convert_to_precision(double time) {
+		return (int( time / fadc_precision ) * fadc_precision);
+	}
+	
+
 };
 
 #endif

@@ -102,6 +102,7 @@ MPrimaryGeneratorAction::MPrimaryGeneratorAction(goptions *opts)
 		cout << endl << hd_msg << " Number of Luminosity Particles: " << NP << endl;
 		cout << hd_msg << " Luminosity Time Window: " << TWINDOW/ns << " nanoseconds." << endl ;
 		cout << hd_msg << " Luminosity Time Between Bunches: " << TBUNCH/ns << " nanoseconds." << endl;
+		cout << hd_msg << " Primary Beam Particle Bunch Time: " << TSIGNAL/ns << " nanoseconds." << endl;
 	}
 
 	if(NP2>0) {
@@ -188,7 +189,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		}
 	}
 
-	double raster_r   = G4UniformRand();
+	double raster_r   = sqrt(G4UniformRand());
 	double raster_phi = 2.0*pi*G4UniformRand();
 	double rasterx    = rvdx * raster_r * cos(raster_phi);
 	double rastery    = rvdy * raster_r * sin(raster_phi);
@@ -297,16 +298,16 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				}
 
 				double PHI = 2.0*pi*G4UniformRand();
-				double Vx = vx/mm + VR*cos(PHI) + rasterx /cm + beamSpot_x /cm;
-				double Vy = vy/mm + VR*sin(PHI) + rastery /cm + beamSpot_y /cm;
-				double Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm;
+				double Vx = vx + VR*cos(PHI) + rasterx  + beamSpot_x ;
+				double Vy = vy + VR*sin(PHI) + rastery  + beamSpot_y ;
+				double Vz = vz + (2.0*G4UniformRand()-1.0)*dvz + displaceZ;
 
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm + beamSpot_x /cm;
-					Vy = rastery /cm + beamSpot_y /cm;
+					Vx = rasterx  + beamSpot_x ;
+					Vy = rastery  + beamSpot_y ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ / cm;
+					Vz = displaceZ ;
 				}
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
 
@@ -315,20 +316,20 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				double Vx, Vy, Vz;
 
 				if(gaussOrFlatV == 1) {
-					Vx  = G4RandGauss::shoot(vx/mm, dvx/mm) + rasterx /cm  + beamSpot_x /cm ;
-					Vy  = G4RandGauss::shoot(vy/mm, dvy/mm) + rastery /cm  + beamSpot_y /cm ;
-					Vz  = G4RandGauss::shoot(vz/mm, dvz/mm) + displaceZ /cm ;
+					Vx  = G4RandGauss::shoot(vx, dvx) + rasterx   + beamSpot_x  ;
+					Vy  = G4RandGauss::shoot(vy, dvy) + rastery   + beamSpot_y  ;
+					Vz  = G4RandGauss::shoot(vz, dvz) + displaceZ ;
 				} else {
-					Vx = vx/mm + (2.0*G4UniformRand()-1.0)*dvx/mm  + rasterx /cm + beamSpot_x /cm ;
-					Vy = vy/mm + (2.0*G4UniformRand()-1.0)*dvy/mm  + rastery /cm + beamSpot_y /cm ;
-					Vz = vz/mm + (2.0*G4UniformRand()-1.0)*dvz/mm + displaceZ /cm ;
+					Vx = vx + (2.0*G4UniformRand()-1.0)*dvx  + rasterx  + beamSpot_x  ;
+					Vy = vy + (2.0*G4UniformRand()-1.0)*dvy  + rastery  + beamSpot_y  ;
+					Vz = vz + (2.0*G4UniformRand()-1.0)*dvz + displaceZ  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm  + beamSpot_x /cm ;
-					Vy = rastery /cm  + beamSpot_y /cm ;
+					Vx = rasterx   + beamSpot_x  ;
+					Vy = rastery   + beamSpot_y  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm ;
+					Vz = displaceZ ;
 				}
 
 				beam_vrt = G4ThreeVector(Vx, Vy, Vz);
@@ -346,8 +347,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			double polZ = partPol * cos( polTheta/rad );
 			particleGun->SetParticlePolarization(G4ThreeVector( polX, polY, polZ ));
 
-			// Primary particle generated int the middle of Time window
-			particleGun->SetParticleTime(TWINDOW/2);
+			// Primary particle generated at the chosen start time
+			particleGun->SetParticleTime(TSIGNAL);
 			particleGun->SetNumberOfParticles(1);
 			particleGun->GeneratePrimaryVertex(anEvent);
 			if(GEN_VERBOSITY > 3) {
@@ -554,15 +555,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[11] + svx/cm + rasterx/cm + beamSpot_x/cm;
-				double Vy     = thisParticleInfo.infos[12] + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = thisParticleInfo.infos[13] + svz/cm + displaceZ / cm ;
+				double Vx     = thisParticleInfo.infos[11] + svx + rasterx + beamSpot_x;
+				double Vy     = thisParticleInfo.infos[12] + svy + rastery + beamSpot_y;
+				double Vz     = thisParticleInfo.infos[13] + svz + displaceZ ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm  + beamSpot_x /cm ;
-					Vy = rastery /cm  + beamSpot_y /cm ;
+					Vx = rasterx   + beamSpot_x  ;
+					Vy = rastery   + beamSpot_y  ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm ;
+					Vz = displaceZ ;
 				}
 
 				
@@ -675,15 +676,15 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 				// vertex is already received in cm from LUND
 				// need to pass it in cm
-				double Vx     = thisParticleInfo.infos[12] + svx/cm + rasterx/cm + beamSpot_x/cm;
-				double Vy     = thisParticleInfo.infos[13] + svy/cm + rastery/cm + beamSpot_y/cm;
-				double Vz     = thisParticleInfo.infos[14] + svz/cm ;
+				double Vx     = thisParticleInfo.infos[12] + svx + rasterx + beamSpot_x;
+				double Vy     = thisParticleInfo.infos[13] + svy + rastery + beamSpot_y;
+				double Vz     = thisParticleInfo.infos[14] + svz ;
 				if ( resetVertex || resetBeamSpot) {
-					Vx = rasterx /cm + beamSpot_x /cm;
-					Vy = rastery /cm + beamSpot_y /cm;
+					Vx = rasterx  + beamSpot_x ;
+					Vy = rastery  + beamSpot_y ;
 				}
 				if ( resetVertex || resetBeamSpot) {
-					Vz = displaceZ /cm;
+					Vz = displaceZ ;
 				}
 
 				setParticleFromPars(p, pindex, type, pdef, px, py, pz,  Vx, Vy, Vz, anEvent, A, Z);
@@ -771,12 +772,12 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 					else
 					{
 						// vertex smear and offset
-						double VR  = sqrt(G4UniformRand())*dvr/mm;
+						double VR  = sqrt(G4UniformRand())*dvr;
 						double PHI = 2.0*pi*G4UniformRand();
 
-						beam_vrt = G4ThreeVector(stdhep_reader->X(p)*cm + vx/mm + VR*cos(PHI),
-														 stdhep_reader->Y(p)*cm + vy/mm + VR*sin(PHI),
-														 stdhep_reader->Z(p)*cm + vz/mm +  (2.0*G4UniformRand()-1.0)*dvz/mm);
+						beam_vrt = G4ThreeVector(stdhep_reader->X(p)*cm + vx + VR*cos(PHI),
+														 stdhep_reader->Y(p)*cm + vy + VR*sin(PHI),
+														 stdhep_reader->Z(p)*cm + vz +  (2.0*G4UniformRand()-1.0)*dvz);
 
 					}
 					particleGun->SetParticlePosition(beam_vrt);
@@ -789,8 +790,8 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 						particleGun->SetParticlePolarization(G4ThreeVector( 0, 0, beamPol ));
 					}
 
-					// Primary particle generated int the middle of Time window
-					particleGun->SetParticleTime(TWINDOW/2);
+					// Primary particle generated at the chosen start time
+					particleGun->SetParticleTime(TSIGNAL);
 					particleGun->GeneratePrimaryVertex(anEvent);
 					if(GEN_VERBOSITY > 3)
 						cout << hd_msg << " Particle Number:  " << p << ", id=" << stdhep_reader->pid(p) << "(" << Particle->GetParticleName() << ")"
@@ -859,15 +860,10 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles
 	int NBUNCHES   = (int) floor(TWINDOW/TBUNCH);
-	int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
+	//int PBUNCH     = (int) floor((double)NP/NBUNCHES) - 1;
+	vector<int> BUNCHES = setBunches(NP,NBUNCHES);
 
-
-	// there will be some remaining particles, these will be added at the last bunch
-	int NREMAINING = NP - NBUNCHES*PBUNCH;
-
-	// cout << PBUNCH << " " << NBUNCHES <<  " " << NBUNCHES*PBUNCH << " " << NREMAINING << endl;
-
-	if(PBUNCH > 0)
+	if(NP > 0)
 	{
 		particleGun->SetParticleDefinition(L_Particle);
 
@@ -916,11 +912,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				lvz = L_vz + (2.0*G4UniformRand()-1.0)*L_dvz;
 			}
 
-			particleGun->SetNumberOfParticles(PBUNCH);
-
-			if(b == NBUNCHES-1) {
-				particleGun->SetNumberOfParticles(PBUNCH + NREMAINING);
-			}
+			particleGun->SetNumberOfParticles(BUNCHES[b]);
 
 			// cout << " bunch " << b << " " << PBUNCH << endl;
 
@@ -932,13 +924,13 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	// Luminosity Particles2
 	int NBUNCHES2   = (int) floor(TWINDOW/TBUNCH2);
-	int PBUNCH2     = (int) floor((double)NP2/NBUNCHES2);
+	vector<int> BUNCHES2 = setBunches(NP2,NBUNCHES2);
 
 
-	if(PBUNCH2 > 0)
+	if(NP2 > 0)
 	{
 		particleGun->SetParticleDefinition(L2_Particle);
-		particleGun->SetNumberOfParticles(PBUNCH);
+		//		particleGun->SetNumberOfParticles(PBUNCH);
 
 		// getting kinematics
 		double L2_mass  = L2_Particle->GetPDGMass();
@@ -949,6 +941,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 		// all particles in a bunch are identical
 		for(int b=0; b<NBUNCHES2; b++) {
+  		        particleGun->SetNumberOfParticles(BUNCHES2[b]);
 			particleGun->SetParticleTime(TBUNCH2*b);
 			// spread momentum if requested
 			if(L2_dmom > 0) {
@@ -963,7 +956,7 @@ void MPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			particleGun->SetParticleMomentumDirection(G4ThreeVector(cos(L2_Phi/rad)*sin(L2_Theta/rad), sin(L2_Phi/rad)*sin(L2_Theta/rad), cos(L2_Theta/rad)));
 
 			// luminosity vertex 2
-			double L2_VR  = sqrt(G4UniformRand())*L2_dvr/mm;
+			double L2_VR  = sqrt(G4UniformRand())*L2_dvr;
 			double L2_PHI = 2.0*pi*G4UniformRand();
 			L2_vx += L2_VR*cos(L2_PHI);
 			L2_vy += L2_VR*sin(L2_PHI);
@@ -1352,8 +1345,10 @@ void MPrimaryGeneratorAction::setBeam()
 	NP       = (int) get_number(values[0]);
 	TWINDOW  = get_number(values[1]);
 	TBUNCH   = get_number(values[2]);
-
-
+	TSIGNAL  = TWINDOW/2;
+	if(values.size()==4) TSIGNAL = get_number(values[3]);
+	TSIGNAL  = TBUNCH*floor(TSIGNAL/TBUNCH); // rounding to previous bunch
+	
 
 	// %%%%%%%%%%%%%%%%%
 	// Luminosity Beam 2
@@ -1411,6 +1406,19 @@ void MPrimaryGeneratorAction::setBeam()
 
 }
 
+
+vector<int> MPrimaryGeneratorAction::setBunches(int nparticle, int nbunch)
+{
+        vector<int> bunches;
+	if(nparticle>0) {
+	   for(int i=0; i<nbunch; i++) bunches.push_back(0);
+           for(int i=0; i<nparticle; i++) {
+               int ib = (int) floor(G4UniformRand()*nbunch);
+               bunches[ib]++;
+           }
+	}   
+        return bunches;
+}
 
 MPrimaryGeneratorAction::~MPrimaryGeneratorAction()
 {
@@ -1498,9 +1506,9 @@ void MPrimaryGeneratorAction::setParticleFromPars(int p, int pindex, int type, i
 			cout << hd_msg << " Particle n. " << p+1 << ", id=" << pdef << " (" << Particle->GetParticleName() << ")"
 			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 
-		// Primary particle generated int the middle of Time window
+		// Primary particle generated at the chosen start time
 		if(eventIndex > ntoskip) {
-			particleGun->SetParticleTime(TWINDOW/2);
+		        particleGun->SetParticleTime(TSIGNAL);
 			particleGun->SetNumberOfParticles(1);
 			particleGun->GeneratePrimaryVertex(anEvent);
 		}
@@ -1579,7 +1587,7 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 			<< "  Vertex=" << beam_vrt/cm << "cm,  momentum=" << pmom/GeV << " GeV" << endl;
 		}
 		
-		// Primary particle generated in the middle of Time window, while non primary particles have a time offset
+		// Primary particle generated in the middle of Time windowat the chosen time, while non primary particles have a time offset
 		if(eventIndex > ntoskip) {
 			double timeoffset = 0;
 			//determine if the particle has an inactive parent
@@ -1643,7 +1651,7 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 
 			}
 
-			particleGun->SetParticleTime(TWINDOW/2 + timeoffset);
+			particleGun->SetParticleTime(TSIGNAL + timeoffset);
 			particleGun->SetNumberOfParticles(1);
 			particleGun->GeneratePrimaryVertex(anEvent);
 
@@ -1655,8 +1663,3 @@ void MPrimaryGeneratorAction::setParticleFromParsPropagateTime(int p, vector<use
 			cout << hd_msg << " Warning: file particle index " << pindex << " does not match read particle index " << p+1 << endl;
 	}
 }
-
-
-
-
-

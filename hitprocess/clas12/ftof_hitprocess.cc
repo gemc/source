@@ -56,7 +56,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	cout << "Connecting to " << ftc.connection << "/calibration/ftof" << endl;
 	
 	cout << "FTOF:Getting attenuation" << endl;
-	sprintf(ftc.database, "/calibration/ftof/attenuation:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/attenuation:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -67,7 +67,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting effective_velocity" << endl;
-	sprintf(ftc.database, "/calibration/ftof/effective_velocity:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/effective_velocity:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -79,7 +79,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	if(accountForHardwareStatus) {
 		cout << "FTOF:Getting status" << endl;
-		sprintf(ftc.database, "/calibration/ftof/status:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+		snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/status:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 		data.clear();
 		calib->GetCalib(data, ftc.database);
 		for (unsigned row = 0; row < data.size(); row++) {
@@ -91,7 +91,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting threshold" << endl;
-	sprintf(ftc.database, "/calibration/ftof/threshold:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/threshold:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -102,7 +102,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting efficiency" << endl;
-	sprintf(ftc.database, "/calibration/ftof/efficiency:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/efficiency:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -113,7 +113,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting gain_balance" << endl;
-	sprintf(ftc.database, "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/gain_balance:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -124,7 +124,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting time_walk" << endl;
-	sprintf(ftc.database, "/calibration/ftof/time_walk:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/time_walk:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -140,7 +140,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	
 	cout << "FTOF:Getting time_offset" << endl;
 	
-	sprintf(ftc.database,"/calibration/ftof/time_offsets:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database), "/calibration/ftof/time_offsets:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -154,7 +154,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting tdc_conv" << endl;
-	sprintf(ftc.database, "/calibration/ftof/tdc_conv:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/tdc_conv:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	for (unsigned row = 0; row < data.size(); row++) {
@@ -165,7 +165,7 @@ static ftofConstants initializeFTOFConstants(int runno, string digiVariation = "
 	}
 	
 	cout << "FTOF:Getting resolutions" << endl;
-	sprintf(ftc.database, "/calibration/ftof/tres:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ftc.database, sizeof(ftc.database),  "/calibration/ftof/tres:%d:%s%s", ftc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear();
 	calib->GetCalib(data, ftc.database);
 	
@@ -250,14 +250,14 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	// TDC conversion factors
 	double tdcconv = ftc.tdcconv[sector - 1][panel - 1][pmt][paddle - 1];
-	
+	double time_in_ns = 0;
+
 	if(aHit->isBackgroundHit == 1) {
 		
 		// background hit has all the energy in the first step. Time is also first step
 		double totEdep = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
 		double adc = totEdep * ftc.countsForMIP[sector - 1][panel - 1][pmt][paddle - 1] / ftc.dEMIP[panel - 1] ; // no gain as that comes from data already
-		double tdc = stepTime/tdcconv;
 		
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = sector;
@@ -265,11 +265,11 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["component"] = paddle;
 		dgtz["ADC_order"] = pmt;
 		dgtz["ADC_ADC"]   = (int) adc;
-		dgtz["ADC_time"]  = (tdc*24.0/1000);
+		dgtz["ADC_time"]  = convert_to_precision(stepTime);
 		dgtz["ADC_ped"]   = 0;
 		
 		dgtz["TDC_order"] = pmt + 2;
-		dgtz["TDC_TDC"]   = (int) tdc;
+		dgtz["TDC_TDC"]   = (int) (stepTime/tdcconv);
 		
 		return dgtz;
 	}
@@ -324,7 +324,7 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 	
 	double adc = 0;
-	double tdc = 0;
+	int tdc = 0;
 	// not used anymore
 	//	double adcu = 0;
 	//	double tdcu = 0;
@@ -364,7 +364,8 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		// cout << " FTOF Unsmeared Time after p2p subtraction: " << tU << endl;
 		
 		//		tdcu = (tU + timeWalkU) / tdcconv;
-		tdc  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) / tdcconv;
+		time_in_ns  = G4RandGauss::shoot(tU+ timeWalk, sqrt(2) * ftc.tres[sector - 1][panel - 1][paddle - 1]) ;
+	//	tdc  = time / tdcconv;
 		
 	}
 	
@@ -395,16 +396,19 @@ map<string, double> ftof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][0][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " left: " << adcl << endl;
 	//	cout << " > FTOF status: " << ftc.status[sector-1][panel-1][1][paddle-1] << " for sector " << sector << ",  panel " << panel << ", paddle " << paddle << " right:  " << adcr << endl;
 	
+	double fadc_time = convert_to_precision(time_in_ns);
+	tdc  = time_in_ns / tdcconv;
+	
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = panel;
 	dgtz["component"] = paddle;
 	dgtz["ADC_order"] = pmt;
 	dgtz["ADC_ADC"]   = (int) adc;
-	dgtz["ADC_time"]  = (tdc*tdcconv);
+	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	
 	dgtz["TDC_order"] = pmt + 2;
-	dgtz["TDC_TDC"]   = (int) tdc;
+	dgtz["TDC_TDC"]   = tdc;
 
 
 
@@ -665,7 +669,3 @@ void ftof_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ftofConstants ftof_HitProcess::ftc = initializeFTOFConstants(-1);
-
-
-
-

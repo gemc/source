@@ -253,7 +253,7 @@ void gsignal::createSignalsTree()
 						for(int i=0; i<nsteps; i++) {
 							EneItems = new QTreeWidgetItem(EneI);
 							char etext[200];
-							sprintf(etext, "      %4.1f             %d        %5.4f     ", lambda[i], pid[i], time[i]);
+							snprintf(etext, 200, "      %4.1f             %d        %5.4f     ", lambda[i], pid[i], time[i]);
 							EneItems->setText(0, QString(etext));
 							EneItems->setTextAlignment(1, Qt::AlignJustify);
 							EneItems->setTextAlignment(2, Qt::AlignJustify);
@@ -415,7 +415,7 @@ void gsignal::createSignalsTree()
 						
 						QTreeWidgetItem * signalI = new QTreeWidgetItem(newHit);
 						char ttext[200];
-						sprintf(ttext, "%s    pid   Time[ns] ", signalChoice.c_str());
+						snprintf(ttext, 200, "%s    pid   Time[ns] ", signalChoice.c_str());
 						signalI->setText(0, QString(ttext));
 						signalI->setExpanded(1);
 						
@@ -424,7 +424,7 @@ void gsignal::createSignalsTree()
 						{
 							signalItems = new QTreeWidgetItem(signalI);
 							char etext[200];
-							sprintf(etext, "%6.5f      %d       %5.4f", signal[i], pid[i], time[i]);
+							snprintf(etext, 200, "%6.5f      %d       %5.4f", signal[i], pid[i], time[i]);
 							signalItems->setText(0, QString(etext));
 							signalItems->setTextAlignment(1, Qt::AlignJustify);
 							signalItems->setTextAlignment(2, Qt::AlignJustify);

@@ -98,9 +98,7 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 			
 		}
 	}
-	
-	// closing DB connection
-	closeGdb(db);
+
 	cout << endl;
 	
 	map<string, G4Material*> returnMap = materialsFromMap(mymats);
@@ -108,7 +106,3 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 	
 	return returnMap;
 }
-
-
-
-

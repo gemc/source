@@ -29,7 +29,7 @@ vector<string> init_dmesg(goptions gemcOpt)
 	  SAVE_ALL_MOTHERS = 1;
 	
 	char phi_verb[2];
-	sprintf(phi_verb, "%d", (int) PHI_VERB);
+	snprintf(phi_verb, 2, "%d", (int) PHI_VERB);
 	string proc_verb1 = "/process/setVerbose ";
 	string proc_verb2 = "/process/verbose ";
 	proc_verb1.append(phi_verb);
@@ -40,7 +40,7 @@ vector<string> init_dmesg(goptions gemcOpt)
 	// Geant4 Tracking Verbosity
 	double TRACK_VERB =  gemcOpt.optMap["G4TRACK_VERBOSITY"].arg ;
 	char track_verb[2];
-	sprintf(track_verb, "%d", (int) TRACK_VERB);
+	snprintf(track_verb, 2, "%d", (int) TRACK_VERB);
 	string tra_verb = "/tracking/verbose ";
 	tra_verb.append(track_verb);
 	commands.push_back(tra_verb);

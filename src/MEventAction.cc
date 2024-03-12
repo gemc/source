@@ -11,6 +11,7 @@
 // mlibrary
 #include "frequencySyncSignal.h"
 
+// c++
 #include <iostream>
 using namespace std;
 
@@ -18,6 +19,11 @@ using namespace std;
 #include "CLHEP/Units/PhysicalConstants.h"
 using namespace CLHEP;
 
+// ccdb
+#include <CCDB/Calibration.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/CalibrationGenerator.h>
+using namespace ccdb;
 
 // return original track id of a vector of tid
 vector<int> MEventAction::vector_otids(vector<int> tids)
@@ -107,6 +113,7 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	
 	requestedNevents = (long int) gemcOpt.optMap["N"].arg ;
 	ntoskip        = gemcOpt.optMap["SKIPNGEN"].arg;
+	last_runno     = -99;
 
 	
 	// fastMC mode will set SAVE_ALL_MOTHERS to 1
@@ -142,15 +149,13 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 	
 	// SAVE_SELECTED parameters
 	string arg = gemcOpt.optMap["SAVE_SELECTED"].args;
-	if (arg == "" || arg == "no")
+	if (arg == "" || arg == "no") {
 		ssp.enabled = false;
-	else
-	{
+	} else {
 		vector<string> values;
 		string units;
 		values       = get_info(gemcOpt.optMap["SAVE_SELECTED"].args, string(",\""));
-		if (values.size() == 5 || values.size() == 6)
-		{
+		if (values.size() == 5 || values.size() == 6) {
 			ssp.enabled = true;
 			ssp.targetId  = values[0];
 			ssp.tIdsize   = ssp.targetId.size();
@@ -171,6 +176,15 @@ MEventAction::MEventAction(goptions opts, map<string, double> gpars)
 			G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 			G4RunManager::GetRunManager()->SetRandomNumberStoreDir(ssp.dir);
 		}
+	}
+	
+	
+	if(RFSETUP == "clas12_ccdb") {
+		setup_clas12_RF(rw.getRunNumber(evtN));
+
+	} else if(RFSETUP != "no")  {
+		rfvalue_strings = getStringVectorFromString(RFSETUP);
+		set_and_show_rf_setup();
 	}
 	
 }
@@ -294,21 +308,17 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	}
 	
 	// if FILTER_HIGHMOM is set, checking if there is  any high mom hits
-	if (FILTER_HIGHMOM != 0)
-	{
+	if (FILTER_HIGHMOM != 0) {
 		int foundHighmom = 0;
-		for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
-		{
+		for (map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
 			MHC = it->second->GetMHitCollection();
 			if (MHC) nhits = MHC->GetSize();
 			else nhits = 0;
-			for (int h=0; h<nhits; h++)
-			{
-				vector<G4ThreeVector>           mmts = (*MHC)[h]->GetMoms();
-				for(unsigned int t=0; t<mmts.size(); t++){
+			for (int h=0; h<nhits; h++) {
+				vector<G4ThreeVector> mmts = (*MHC)[h]->GetMoms();
+				for(unsigned int t=0; t<mmts.size(); t++) {
 					// 		      	cout << "mom " << mmts[t].mag() << endl;
-					if (mmts[t].mag()>FILTER_HIGHMOM)
-					{
+					if (mmts[t].mag()>FILTER_HIGHMOM) {
 						// 		      	cout << "mom " << mmts[t].mag() << endl;
 						foundHighmom = 1;
 						break;
@@ -330,14 +340,12 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	// if SAVE_ALL_MOTHERS is set
 	set<int> track_db;
 	if(SAVE_ALL_MOTHERS) {
-		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++)
-		{
+		for(map<string, sensitiveDetector*>::iterator it = SeDe_Map.begin(); it!= SeDe_Map.end(); it++) {
 			MHC = it->second->GetMHitCollection();
 			if (MHC) nhits = MHC->GetSize();
 			else nhits = 0;
 			
-			for(int h=0; h<nhits; h++)
-			{
+			for(int h=0; h<nhits; h++) {
 				vector<int> tids = (*MHC)[h]->GetTIds();
 				
 				for(unsigned int t=0; t<tids.size(); t++) {
@@ -345,8 +353,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 						track_db.insert(tids[t]);
 				}
 				
-				if(SAVE_ALL_MOTHERS>1)
-				{
+				if(SAVE_ALL_MOTHERS>1) {
 					vector<int>           pids = (*MHC)[h]->GetPIDs();
 					// getting the position of the hit, not vertex of track
 					vector<G4ThreeVector> vtxs = (*MHC)[h]->GetPos();
@@ -371,8 +378,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	G4TrajectoryContainer *trajectoryContainer = nullptr;
 	
 	set<int> track_db2 = track_db;
-	if(SAVE_ALL_MOTHERS)
-	{
+	if(SAVE_ALL_MOTHERS) {
 		trajectoryContainer = evt->GetTrajectoryContainer();
 		momDaughter.clear();
 		
@@ -409,30 +415,25 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		
 		// building the hierarchy map
 		// for all secondary tracks
-		for(map<int, int>::iterator itm = momDaughter.begin(); itm != momDaughter.end(); itm++)
-		{
+		for(map<int, int>::iterator itm = momDaughter.begin(); itm != momDaughter.end(); itm++) {
 			int ancestor = itm->first;
 			if(momDaughter[ancestor] == 0)
 				hierarchy[itm->first] = itm->first;
 			
-			while (momDaughter[ancestor] != 0)
-			{
+			while (momDaughter[ancestor] != 0) {
 				hierarchy[itm->first] = momDaughter[ancestor];
 				ancestor = momDaughter[ancestor];
 			}
 		}
 		
 		// now accessing the mother particle infos
-		for(map<int, TInfos>::iterator itm = tinfos.begin(); itm != tinfos.end(); itm++)
-		{
+		for(map<int, TInfos>::iterator itm = tinfos.begin(); itm != tinfos.end(); itm++) {
 			int mtid = (*itm).second.mtid;
 			// looking for mtid infos in the trajectoryContainer
-			for(unsigned int i=0; i< trajectoryContainer->size() && mtid != 0; i++)
-			{
+			for(unsigned int i=0; i< trajectoryContainer->size() && mtid != 0; i++) {
 				G4Trajectory* trj = (G4Trajectory*)(*(evt->GetTrajectoryContainer()))[i];
 				int tid = trj->GetTrackID();
-				if(tid == mtid)
-				{
+				if(tid == mtid) {
 					tinfos[(*itm).first].mpid   = trj->GetPDGEncoding();
 					tinfos[(*itm).first].mv     = trj->GetPoint(0)->GetPosition();
 				}
@@ -440,25 +441,21 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 		}
 		
 		// removing daughter tracks if mother also gave hits
-		if(SAVE_ALL_MOTHERS>2)
-		{
+		if(SAVE_ALL_MOTHERS>2) {
 			vector<int> bgtIDs;
 			for(map<int, BGParts>::iterator it = bgMap.begin(); it != bgMap.end(); it++)
 				bgtIDs.push_back(it->first);
 			
-			for(unsigned i=0; i<bgtIDs.size(); i++)
-			{
+			for(unsigned i=0; i<bgtIDs.size(); i++) {
 				int daughter = bgtIDs[i];
 				int momCheck = 0;
 				if(momDaughter.find(daughter) != momDaughter.end()) {
 					momCheck = momDaughter[daughter];
 				}
 
-				while(momCheck != 0)
-				{
+				while(momCheck != 0) {
 					// mom has a hit
-					if(bgMap.find(momCheck) != bgMap.end())
-					{
+					if(bgMap.find(momCheck) != bgMap.end()) {
 						// so if daughter is found, delete it
 						// daughter may already be deleted before
 						if(bgMap.find(daughter) != bgMap.end())
@@ -554,21 +551,34 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 				if(firstParticleVertex.z() > referenceRFPosition.z()) additionalTime = -additionalTime;
 			}
 		}
-		
+
+        CLHEP::HepRandomEngine* currentEngine = CLHEP::HepRandom::getTheEngine();
+
+        // this should be an array of longs describing the engine status
+        // the first two elements are
+        const long *engineStatus = currentEngine->getSeeds();
+
+        int g4rseed = engineStatus[2];
+        if (g4rseed == 0) {
+            cout << "Error: engineStatus third element is 0" << endl;
+            exit(1);
+        }
+
 		// getting time window
-		string rfsetup = to_string(gen_action->getTimeWindow()) + " " ;
+		string rfsetup_string = to_string(g4rseed) + " " + to_string(gen_action->getTimeWindow()) + " " ;
 		
 		// getting start time of the event
-		rfsetup +=  to_string(gen_action->getStartTime() + additionalTime) + " " ;
+		rfsetup_string += to_string(gen_action->getStartTime() + additionalTime) + " " ;
 		
+		if(RFSETUP == "clas12_ccdb"){
+			setup_clas12_RF(rw.runNo);
+		}
+
+		for(unsigned i=0; i<rfvalue_strings.size(); i++) {
+			rfsetup_string += rfvalue_strings[i] + " " ;
+		}
 		
-		vector<string> rfvalues = getStringVectorFromString(RFSETUP);
-		
-		
-		for(unsigned i=0; i<rfvalues.size(); i++)
-			rfsetup += rfvalues[i] + " " ;
-		
-		FrequencySyncSignal rfs(rfsetup);
+		FrequencySyncSignal rfs(rfsetup_string);
 		processOutputFactory->writeRFSignal(outContainer, rfs, getBankFromMap("rf", banksMap));
 		
 		if(VERB > 1) {
@@ -1034,8 +1044,7 @@ void MEventAction::EndOfEventAction(const G4Event* evt)
 	
 	// Save RNG; can't use G4RunManager::GetRunManager()->rndmSaveThisEvent()
 	// because GEANT doesn't know about GEMC run/event numbers
-	if (ssp.decision)
-	{
+	if (ssp.decision) {
 		G4String fileIn  = ssp.dir + "currentEvent.rndm";
 		
 		std::ostringstream os;
@@ -1117,4 +1126,63 @@ vector<BackgroundHit*> MEventAction::getNextBackgroundEvent(string forSystem)
 
 
 
+void MEventAction::setup_clas12_RF(int runno) {
+	
+	if(last_runno != runno) {
+		string digiVariation    = gemcOpt.optMap["DIGITIZATION_VARIATION"].args;
+		string digiSnapshotTime = gemcOpt.optMap["DIGITIZATION_TIMESTAMP"].args;
+		string timestamp = "";
+		if(digiSnapshotTime != "no") {
+			timestamp = ":"+digiSnapshotTime;
+		}
+		vector<vector<double> > data;
+		// int isec, ilay, istr;
 
+		cout << " RF Setup: Run Number change detected:  " << runno << endl;
+		last_runno = runno;
+		
+		string connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+		if(getenv ("CCDB_CONNECTION") != nullptr) {
+			connection = (string) getenv("CCDB_CONNECTION");
+		}
+						
+		unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(connection));
+		char   database[80];
+
+		snprintf(database, sizeof(database), "%s:%d:%s%s", "/calibration/eb/rf/config", runno, digiVariation.c_str(), timestamp.c_str());
+		cout << " Connecting to " << database << endl;
+
+		data.clear(); calib->GetCalib(data, database);
+		
+		double clock, prescale;
+		
+		// taking first entry only
+		for(unsigned row = 0; row < 1; row++) {
+//		for(unsigned row = 0; row < data.size(); row++) {
+//			isec   = data[row][0]; ilay   = data[row][1]; istr   = data[row][2];
+			clock = data[row][4];
+			prescale =  data[row][5];
+		}
+		
+		
+		rfvalue_strings = {to_string(clock), to_string(prescale)};
+		set_and_show_rf_setup();
+        for(auto& rfv: rfvalue_strings) {
+            cout << "    - " << rfv << endl;
+        }
+	}
+	
+
+}
+
+
+void MEventAction::set_and_show_rf_setup() {
+	double rf_frquency_from_period = 1.0 / get_number(rfvalue_strings[0]);
+
+	cout << " RF Setup: Period, Frequency [GHz], [prescales]" << endl;
+    cout << "    - " << get_number(rfvalue_strings[0]) << endl;
+    rfvalue_strings[0] = to_string(rf_frquency_from_period) + " ";
+//	for(auto& rfv: rfvalue_strings) {
+//		cout << "    - " << rfv << endl;
+//	}
+}
