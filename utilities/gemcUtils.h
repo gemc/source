@@ -13,6 +13,7 @@
 // C++ headers
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 // G4 headers
@@ -26,36 +27,36 @@ using namespace std;
 
 // mlibrary
 #include "gstring.h"
+
 using namespace gstring;
 
-class gui_splash
-{
-	public:
-		gui_splash(goptions);
-		
-		bool  qt;
-		double verbosity;
-		string header;
-		
-		QPixmap       *splash_i ;
-		QSplashScreen *splash ;
-		
-		
-	public:
-		void message(string);
-		
-		~gui_splash();
+class gui_splash {
+public:
+    gui_splash(goptions);
+
+    bool qt;
+    double verbosity;
+    string header;
+
+    QPixmap *splash_i;
+    QSplashScreen *splash;
+
+
+public:
+    void message(string);
+
+    ~gui_splash();
 };
 
 // merging two <string, string>
-void mergeMaps(map<string, string>& lhs, const map<string, string>& rhs);
+void mergeMaps(map <string, string> &lhs, const map <string, string> &rhs);
 
 
 // calculate rotation matrix from input string (MYSQL version)
 G4RotationMatrix calc_rotation(string, string);
 
 // calculate shift from input string (MYSQL version)
-G4ThreeVector    calc_position(string);
+G4ThreeVector calc_position(string);
 
 
 // returns a G4Colour from a string
@@ -65,47 +66,46 @@ G4Colour gcol(string);
 // utility class used as interface between the various factories
 // and the gemc classes
 // All leading and trailing spaces are removed
-class gtable
-{
-	public:
-		gtable(vector<string> d)
-		{
-			for(unsigned int i=0; i<d.size(); i++)
-				data.push_back(trimSpacesFromString(d[i]));
-		}
-		gtable(){data.clear();}
-		~gtable(){;}
-		
-		vector<string> data;
-		
-		void add_data(QVariant input)
-		{
-			data.push_back(trimSpacesFromString(qv_tostring(input)));
-		}
+class gtable {
+public:
+    gtable(vector <string> d) {
+        for (unsigned int i = 0; i < d.size(); i++)
+            data.push_back(trimSpacesFromString(d[i]));
+    }
 
-		// notice: char* and QVariant will confuse the compiler
-		// so add_data("bah") won't work. Need to cast it to string first
-		void add_data(string input)
-		{
-			data.push_back(trimSpacesFromString(input));
-		}
+    gtable() { data.clear(); }
+
+    ~gtable() { ; }
+
+    vector <string> data;
+
+    void add_data(QVariant input) {
+        data.push_back(trimSpacesFromString(qv_tostring(input)));
+    }
+
+    // notice: char* and QVariant will confuse the compiler
+    // so add_data("bah") won't work. Need to cast it to string first
+    void add_data(string input) {
+        data.push_back(trimSpacesFromString(input));
+    }
 
 
-	// Overloaded "<<" for gtable class. Dumps infos on screen.
-	friend ostream &operator<<(ostream &stream, gtable);                          
+    // Overloaded "<<" for gtable class. Dumps infos on screen.
+    friend ostream &operator<<(ostream &stream, gtable);
 
 };
 
 // gets last id from table, variation, run number
-int get_sql_run_number(QSqlDatabase db, string detector_name, string v, int r);
+int get_sql_run_number(QSqlDatabase db, string system_name, string v, int r, string table_name);
 
 // open and close gemc mysql database
 QSqlDatabase openGdb(goptions);
-void closeGdb(QSqlDatabase db);
+
+void closeGdb();
 
 
 // returns a map of files (name is key) and their types (value)
-map<string, string> getFilesInDirectory(string);
+map <string, string> getFilesInDirectory(string);
 
 // returns a string with the current time
 string timeStamp();

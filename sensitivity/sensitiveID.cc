@@ -11,9 +11,10 @@
 using namespace CLHEP;
 
 
-sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string variation, string s) {
+sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string variation, string s, int run) {
     double verbosity = gemcOpt.optMap["HIT_VERBOSITY"].arg;
-    int fastmcMode = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+    int fastmcMode   = gemcOpt.optMap["FASTMCMODE"].arg;  // fast mc = 2 will increase prodThreshold and maxStep to 5m
+    double runno_arg = gemcOpt.optMap["RUNNO"].arg;
 
     name = SD;
     thisFactory = factory + " " + variation;
@@ -140,7 +141,6 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
             pedestal = 100;
             delay = 100;
 
-
             if (fastmcMode > 0) {
                 prodThreshold = 5000;
                 maxStep = 5000;
@@ -156,23 +156,24 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 
 
 
-    // MYSQL sensitivity infos
-    if (factory == "MYSQL") {
+    // SQLITE sensitivity infos
+    if (factory == "SQLITE") {
         // connection to the DB
         QSqlDatabase db = openGdb(gemcOpt);
-        string tname = system + "__hit";
+        if (verbosity > 1) cout << "   > Loading SQLITE definitions for <" << system << ">." << endl;
 
-        if (verbosity > 1) cout << "   > Loading MYSQL definitions for <" << SD << ">...";
+        if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
+        int run_number = get_sql_run_number(db, system, variation, run, "hits");
 
         string dbexecute =
-                "select name, description, identifiers, signalThreshold, timeWindow, prodThreshold, maxStep, riseTime, fallTime, mvToMeV, pedestal, delay from " +
-                tname;
+                "select name, description, identifiers, signalThreshold, timeWindow, prodThreshold, maxStep, riseTime, fallTime, mvToMeV, pedestal, delay from hits";
         dbexecute += " where variation ='" + variation + "'";
-        dbexecute += " and name = '" + SD + "'";
+        dbexecute += " and run = " + stringify(run_number) ;
+        dbexecute += " and system = '" + system  + "'";
 
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
-            cout << " !!! Failed to execute MYSQL query " << dbexecute << ". This is a fatal error. Exiting." << endl;
+            cout << " !!! Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;
             qDebug() << q.lastError();
             exit(1);
         }
@@ -182,10 +183,11 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
                  << " for variation " << variation << endl << endl;
         }
 
-        // else loading parameters from DB
+        // loading hit definitions from DB
         while (q.next()) {
             // Reading variables
-            // 0 is system name, by construction is SD
+            // 0 is system name
+            name = qv_tostring(q.value(0));
 
             // 1: description
             description = qv_tostring(q.value(1));
@@ -224,8 +226,6 @@ sensitiveID::sensitiveID(string SD, goptions gemcOpt, string factory, string var
 
         }
 
-        // closing DB connection
-        closeGdb(db);
         if (verbosity > 3)
             cout << *this << endl;
 

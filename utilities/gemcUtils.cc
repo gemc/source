@@ -62,7 +62,7 @@ void gui_splash::message(string msg) {
     if (qt) {
         splash->showMessage(msg.c_str(), Qt::AlignLeft, Qt::white);
         qApp->processEvents();
-    } else if (verbosity > 0)
+    } else
         cout << header << msg << endl;
 }
 
@@ -200,11 +200,11 @@ G4Colour gcol(string cvar) {
 
 
 // gets last id from table, variation, run number
-int get_sql_run_number(QSqlDatabase db, string detector_name, string v, int run) {
+int get_sql_run_number(QSqlDatabase db, string system_name, string v, int run, string table_name) {
 
-    string dbexecute = " select DISTINCT run from geometry" ;
+    string dbexecute = " select DISTINCT run from " + table_name;
     dbexecute += " where variation = '" + v;
-    dbexecute += "' and system = '" + detector_name + "'";
+    dbexecute += "' and system = '" + system_name + "'";
 
     vector<int> run_numbers;
 
@@ -216,7 +216,7 @@ int get_sql_run_number(QSqlDatabase db, string detector_name, string v, int run)
     }
     // Warning if nothing is found
     if (q.size() == 0) {
-        cout << endl << "         >> WARNING: nothing found on  \"" <<  detector_name
+        cout << endl << "         >> WARNING: nothing found on table \"" << table_name << "\" for system \"" << system_name
              << "\" with variation \"" << v << endl << endl;
         return 0;
     } else {
@@ -242,11 +242,19 @@ int get_sql_run_number(QSqlDatabase db, string detector_name, string v, int run)
 QSqlDatabase openGdb(goptions gemcOpt) {
 
     string database = gemcOpt.optMap["DATABASE"].args;
+    QSqlDatabase db;
 
     // if database ends with '.sqlite' or 'db' it's a file
     if (database.find(".sqlite") != string::npos || database.find(".db") != string::npos) {
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+
+        if (QSqlDatabase::contains("qt_sql_default_connection")) {
+            return db;
+        }
+
+        db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(database.c_str());
+
+
         if (!db.open()) {
             cout << "   Error! Cannot connect to SQLITE database " << database << ". Exiting." << endl;
             exit(401);
@@ -256,8 +264,13 @@ QSqlDatabase openGdb(goptions gemcOpt) {
     } // else if there is 'http' it's a mysql server
     else if (database.find("http") != string::npos) {
 
-        QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+        if (QSqlDatabase::contains("qt_sql_default_connection")) {
+            return db;
+        }
+
+        db = QSqlDatabase::addDatabase("QMYSQL");
         db.setDatabaseName(database.c_str());
+
 
         string dbhost = gemcOpt.optMap["DBHOST"].args;
         string dbUser = gemcOpt.optMap["DBUSER"].args;
@@ -284,13 +297,14 @@ QSqlDatabase openGdb(goptions gemcOpt) {
 }
 
 
-void closeGdb(QSqlDatabase db) {
-    // closing db
+void closeGdb() {
+    QSqlDatabase db = QSqlDatabase::database();
     db.close();
 
-    // remove connection
-    QSqlDatabase::removeDatabase("QMYSQL");
-    QSqlDatabase::removeDatabase("SQLITE");
+    if (db.isOpen()) {
+        cout << "   Error! Cannot close database. Exiting." << endl;
+        exit(401);
+    }
 
 }
 
