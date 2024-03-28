@@ -340,7 +340,8 @@ map <string, string> getFilesInDirectory(string directory) {
         solenoidMapNames.push_back("Full_transsolenoid_x161_y161_z321_March2021");
         torusMapNames.push_back("Full_torus_r251_phi181_z251_25Jan2021");
         torusMapNames.push_back("Full_torus_r251_phi181_z251_03March2020");
-        torusMapNames.push_back("Symm_torus_r2501_phi16_z251_24Apr2018");
+        torusMapNames.push_back("Full_torus_r251_phi181_z251_03March2020");
+        torusMapNames.push_back("Full_torus_r251_phi181_z251_08May2018");
 
         for (auto &smap: solenoidMapNames) {
             for (auto &tmap: torusMapNames) {
