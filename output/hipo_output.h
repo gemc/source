@@ -118,8 +118,8 @@ public:
 		{"rtpc",    19},
 		{"band",    21},
 		{"urwell",  23},
-		{"alrttof", 24},
-		{"alrtdc",  25},
+		{"atof",    24},
+		{"ahdc",    25},
 		{"flux",   100}
 	};
 

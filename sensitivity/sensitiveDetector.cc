@@ -164,7 +164,6 @@ G4bool sensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	if(fmanager) {
 		fmanager->GetDetectorField()->GetFieldValue(point, fieldValue);
 		hitFieldValue = sqrt(fieldValue[0]*fieldValue[0] + fieldValue[1]*fieldValue[1] + fieldValue[2]*fieldValue[2]);
-		
 	}
 	
 	///< Process VID: getting Identifier at the ProcessHitRoutine level
