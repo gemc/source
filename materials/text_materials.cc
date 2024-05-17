@@ -110,7 +110,16 @@ map<string, G4Material *> text_materials::initMaterials(runConditions rc, goptio
             if (gt.data.size() > 18) {
                 thisMat.birkConstant = get_number(gt.data[18]);
             }
-
+            // this condition is for backward compatibility,
+            // Birk Constant were added with gemc 2.6
+            // 23 exact quantities
+            if (gt.data.size() > 19) {
+	      thisMat.opticalsFromString(gt.data[19], "mie");
+	      thisMat.mieforward = get_number(gt.data[20]);
+	      thisMat.miebackward = get_number(gt.data[21]);
+	      thisMat.mieratio = get_number(gt.data[22]);
+            }
+	    
             mymats[thisMat.name] = thisMat;
 
         }
