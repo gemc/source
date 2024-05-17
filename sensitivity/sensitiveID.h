@@ -37,10 +37,10 @@ class sensitiveID
 		double         pedestal;         ///< pedestal
 		double         delay;            ///< time from PMT face to signal
 		string         thisFactory;      ///< Factory used to generate the sensitive detector
-		string         system;           ///< Factory used to generate the sensitive detector
-	
+		string         system;           ///< system used to generate the sensitive detector
+
 		// class constructor
-		sensitiveID(string name, goptions, string factory, string variation, string system);
+		sensitiveID(string name, goptions, string factory, string variation, string system, int runno);
 		sensitiveID(){;}
 
 		friend ostream &operator<<(ostream &stream, sensitiveID SD);       ///< Overloaded "<<" for the class 'sensitiveID'
@@ -48,13 +48,3 @@ class sensitiveID
 
 
 #endif
-
-
-
-
-
-
-
-
-
-

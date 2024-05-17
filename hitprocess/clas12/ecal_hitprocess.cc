@@ -313,7 +313,7 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
 	
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
 	int tdc = time_in_ns/a1;
 	
 	dgtz["hitn"]      = hitn;

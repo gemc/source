@@ -112,15 +112,15 @@ map<string, double>uRwell_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	dgtz["layer"]  = identity[3].id;
 	dgtz["component"]  = identity[4].id;
     if(identity[4].id ==-15000){
-    	dgtz["ADC"]  = 0;
-    	dgtz["time"]   = 0;
+    	dgtz["ADC_ADC"]  = 0;
+    	dgtz["ADC_time"] = 0;
     }else{
-    	dgtz["ADC"]  = (1.0*(int) (uRwellC.gain*1e6*tInfos.eTot/uRwellC.w_i));
-    	dgtz["time"]   = identity[4].time;
+    	dgtz["ADC_ADC"]  = (1.0*(int) (uRwellC.gain*1e6*tInfos.eTot/uRwellC.w_i));
+    	dgtz["ADC_time"] = identity[4].time;
     }
 	dgtz["ADC_ped"]   = 0;
 	
-//	cout<<dgtz["sector"]<<" "<<dgtz["layer"]<<" "<<dgtz["component"]<<" "<<dgtz["ADC"]<<endl;
+//	cout<<dgtz["sector"]<<" "<<dgtz["layer"]<<" "<<dgtz["component"]<<" "<<dgtz["ADC_ADC"]<<endl;
 	
 	// define conditions to reject hit
 	if (rejectHitConditions) {

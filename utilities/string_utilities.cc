@@ -64,7 +64,7 @@ double scan_number(const char *str)
 
 	// checking if the number is a valid digit, w/o commas (for example 1,000 is not valid). Exiting if something is wrong, except if the string is "none"
 	while(char c=str[i++]) if(!(isdigit(c) || c=='.' || c=='-' || c=='+' || c=='e' || c=='E')) {
-		cout << "WARNING: Unexpected alphanumberic character found in number string:" << str << endl;
+		cout << "WARNING: Unexpected alphanumeric character found in number string:" << str << endl;
 		cout << "Exiting " << endl; exit(4);
 	}
 
@@ -164,8 +164,3 @@ ostream &operator<<(ostream &stream, map<string, string> smap)
 	
 	return stream;
 }
-
-
-
-
-

@@ -137,9 +137,9 @@ map<string, string> runConditions::getDetectorConditionsMap()
 	for(map<string, detectorCondition>::iterator it = detectorConditionsMap.begin(); it != detectorConditionsMap.end(); it++) {
 
 		detmap["detector " + it->first] = " is loaded with factory " +  it->second.get_factory()
-		+ ", variation "     + it->second.get_variation()
-		+ " and run number " + stringify(it->second.get_run_number());
-		
+		+ ", variation "     + it->second.get_variation();
+        if (it->second.get_factory() == "SQLITE") { detmap["detector " + it->first] += " and run number " + stringify(it->second.get_run_number()); }
+
 		if(it->second.get_position().mag2() != 0) {
 			string key = "local shift for " + it->first;
 			detmap[key] = "(" + stringify(it->second.get_position().x()/mm) + ", "
@@ -291,15 +291,3 @@ int runWeights::getRunNumber(int evn)
 	
 	return runNo;
 }
-
-
-
-
-
-
-
-
-
-
-
-

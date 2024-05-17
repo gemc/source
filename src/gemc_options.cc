@@ -704,7 +704,7 @@ void goptions::setGoptions()
 	optMap["RECORD_MIRRORS"].type = 0;
 	optMap["RECORD_MIRRORS"].ctgr = "control";
 
-	optMap["RUNNO"].arg  = 1;
+	optMap["RUNNO"].arg  = -1;
 	optMap["RUNNO"].name = "Run Number. Controls the geometry and calibration parameters";
 	optMap["RUNNO"].help = "Run Number. Controls the geometry and calibration parameters. Default is 1\n";
 	optMap["RUNNO"].type = 0;
@@ -1005,7 +1005,7 @@ void goptions::setGoptions()
 	optMap["PHYS_VERBOSITY"].type = 0;
 	optMap["PHYS_VERBOSITY"].ctgr = "fields";
 	
-	// by default set max field step to 1 cm. Notice: it has to be greater than the min!
+	// by default set max field step in geant4 is 100m
 	optMap["MAX_FIELD_STEP"].arg =  0;
 	optMap["MAX_FIELD_STEP"].help = "Sets Maximum Acceptable Step in Magnetic Field (in mm).\n";
 	optMap["MAX_FIELD_STEP"].name = "Sets Maximum Acceptable Step in Magnetic Field (in mm) ";
@@ -1139,5 +1139,3 @@ void goptions::setGoptions()
 	optMap["DF"].repe  = 1;
 
 }
-
-

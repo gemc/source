@@ -388,7 +388,7 @@ map<string, double> ctof_HitProcess::integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	// standardizing fadc time and tdc info
-	int fadc_time = convert_to_precision(time_in_ns);
+	double fadc_time = convert_to_precision(time_in_ns);
 
 	
 	dgtz["hitn"]      = hitn;
