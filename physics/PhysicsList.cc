@@ -386,7 +386,10 @@ void PhysicsList::cookPhysics()
 		// see G4OpticalPhysics.hh
 
 		G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-
+		// enable Mie scattering (do not think it is enabled by default)
+		// make this optional?
+		opticalPhysics->Configure(kMieHG, true);
+		
 		// this was deprecated?
 		// Method G4OpticalPhysics::SetWLSTimeProfile is deprecated.
 		// Use G4OpticalParameters::SetWLSTimeProfile(G4String) instead.
