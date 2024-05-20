@@ -266,7 +266,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
                 double driftP2=24.81;
                 double docasig = 337.3-210.3*doca+34.7*pow(doca,2);
                 std::default_random_engine dseed(time(0)); //seed
-                std::normal_distribution<double> doca_r(doca, docasig); //a resuolution affect is added to doca. 
+                std::normal_distribution<double> docadist(doca, docasig); //a resuolution affect is added to doca. 
+		double doca_r =docadist(dseed);
 	        driftVelocity = 1./(driftP1+2.*driftP2*doca_r);  // mm/ns // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is then extracted from dx/dt, d/dt(p0+p1*x+p2*x^2)=p1+2*p2*x.
 		signal_tTimesEdep = signal_tTimesEdep + (stepTime[s] + H_abh/driftVelocity) * E_wire;
 		// cout << "signal_tTimesEdep: " << signal_tTimesEdep << endl;
