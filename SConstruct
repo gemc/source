@@ -3,7 +3,15 @@ from init_env import init_environment
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
 env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh hipo c12bfields")
-env.Append(CXXFLAGS=['-std=c++14'])
+env.Append(CXXFLAGS=['-std=c++17'])
+
+# addressing shortcoming of geant4-config 10.7.4 not returning all libraries
+additional_libs = []
+additional_libs.append('pthread')
+additional_libs.append('G4ptl')
+additional_libs.append('G4tasking')
+additional_libs.append('ccdb_sqlite')
+env.Append(LIBS  = additional_libs)
 
 # added because clhep is still behind clang (5/2015)
 if env['PLATFORM'] == 'darwin':
