@@ -390,7 +390,7 @@ map<string, G4Material *> materials::materialsFromMap(map <string, material> mma
 
                         optTable.back()->AddProperty("MIEHG", penergy, mie, nopts);
                     }
-		    
+
 
 
                     // in the API -1 is the default
@@ -421,13 +421,13 @@ map<string, G4Material *> materials::materialsFromMap(map <string, material> mma
 
                     // additional mie scattering constants
                     if (it->second.miebackward != -1)
-		        optTable.back()->AddConstProperty("MIEHG_BACKWARD", it->second.miebackward);
-		    
-		    if (it->second.mieforward != -1)
-		        optTable.back()->AddConstProperty("MIEHG_FORWARD", it->second.mieforward);
-		    
-		    if (it->second.mieratio != -1)
-		        optTable.back()->AddConstProperty("MIEHG_FORWARD_RATIO", it->second.mieratio);		    
+                        optTable.back()->AddConstProperty("MIEHG_BACKWARD", it->second.miebackward);
+
+                    if (it->second.mieforward != -1)
+                        optTable.back()->AddConstProperty("MIEHG_FORWARD", it->second.mieforward);
+
+                    if (it->second.mieratio != -1)
+                        optTable.back()->AddConstProperty("MIEHG_FORWARD_RATIO", it->second.mieratio);
 
                     mats[it->first]->SetMaterialPropertiesTable(optTable.back());
                 }

@@ -71,7 +71,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
         }
 
         while (q.next()) {
-	    material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
+            material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
             thisMat.desc = qv_tostring(q.value(1));                                   // description
             thisMat.density = q.value(2).toDouble();                                  // density
             thisMat.ncomponents = q.value(3).toInt();                                 // number of components
@@ -95,7 +95,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
             // Birk Constant
             thisMat.birkConstant = q.value(18).toDouble();
 
-	    // Mie scattering
+            // Mie scattering
             thisMat.opticalsFromString(qv_tostring(q.value(19)), "mie");
             thisMat.mieforward = q.value(20).toDouble();
             thisMat.miebackward = q.value(21).toDouble();

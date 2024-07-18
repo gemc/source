@@ -2,7 +2,7 @@ from init_env import init_environment
 
 # adding ccdb as temporary dependency
 # will be removed once the hit process routines are plugins
-env = init_environment("qt5 geant4 clhep evio xercesc ccdb mlibrary cadmesh hipo c12bfields")
+env = init_environment("qt5 geant4 clhep xercesc ccdb mlibrary cadmesh hipo c12bfields")
 env.Append(CXXFLAGS=['-std=c++17'])
 
 # addressing shortcoming of geant4-config 10.7.4 not returning all libraries
@@ -160,7 +160,7 @@ env.Library(source = hitp_sources, target = "lib/ghitprocess")
 env.Append(CPPPATH = 'output')
 output_sources = Split("""
 	output/outputFactory.cc
-	output/evio_output.cc
+	
 	output/hipo_output.cc
 	output/hipoSchemas.cc
 	output/txt_output.cc
