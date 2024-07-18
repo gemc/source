@@ -52,7 +52,8 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
         string dbexecute = "select name, description, density, ncomponents, components, photonEnergy, indexOfRefraction, ";
         dbexecute += "absorptionLength, reflectivity, efficiency, fastcomponent, slowcomponent, ";
-        dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio from materials";
+        dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio, rayleigh, birkconstant, "; // rayleigh and birk constant were not here?
+        dbexecute += "mie, mieforward, miebackward, mieratio from materials";
         dbexecute += " where variation ='" + variation + "'";
         dbexecute += " and run = " + stringify(run_number);
         dbexecute += " and system = '" + dname + "'";
@@ -70,7 +71,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
         }
 
         while (q.next()) {
-            material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
+	    material thisMat(trimSpacesFromString(qv_tostring( q.value(0))));         // name
             thisMat.desc = qv_tostring(q.value(1));                                   // description
             thisMat.density = q.value(2).toDouble();                                  // density
             thisMat.ncomponents = q.value(3).toInt();                                 // number of components
@@ -93,6 +94,12 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
             // Birk Constant
             thisMat.birkConstant = q.value(18).toDouble();
+
+	    // Mie scattering
+            thisMat.opticalsFromString(qv_tostring(q.value(19)), "mie");
+            thisMat.mieforward = q.value(20).toDouble();
+            thisMat.miebackward = q.value(21).toDouble();
+            thisMat.mieratio = q.value(22).toDouble();
 
             mymats[thisMat.name] = thisMat;
 

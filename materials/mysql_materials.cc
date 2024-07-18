@@ -52,7 +52,8 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 
 		string dbexecute  = "select name, description, density, ncomponents, components, photonEnergy, indexOfRefraction, ";
 				 dbexecute += "absorptionLength, reflectivity, efficiency, fastcomponent, slowcomponent, ";
-				 dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio from " + tname;
+				 dbexecute += "scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio, rayleigh, birkConstant, ";
+				 dbexecute += "mie, mieforward, miebackward, mieratio from " + tname;
 				 dbexecute += " where variation ='" + variation + "'";
 				
 		// executing query - will exit if not successfull.
@@ -93,6 +94,12 @@ map<string, G4Material*> mysql_materials::initMaterials(runConditions rc, goptio
 
 			// Birk Constant
 			thisMat.birkConstant       =             q.value(18).toDouble(); // yieldratio
+
+			// Mie scattering
+			thisMat.opticalsFromString(qv_tostring(  q.value(19)), "mie");
+			thisMat.mieforward       =             q.value(20).toDouble(); // mie forward scattering
+			thisMat.miebackward       =             q.value(21).toDouble(); // mie backward scattering
+			thisMat.mieratio       =             q.value(22).toDouble(); // mie forward/backward scattering ratio
 
 			mymats[thisMat.name] = thisMat;
 			

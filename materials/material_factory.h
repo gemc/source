@@ -33,6 +33,12 @@ class material
 		vector<double> absorptionLength;
 		vector<double> reflectivity;
 		vector<double> efficiency;
+		
+		// mie scattering
+		vector<double> mie;
+		double mieforward;
+		double miebackward;
+		double mieratio;
 
 		// scintillation
 		vector<double> fastcomponent;

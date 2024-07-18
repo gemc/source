@@ -126,6 +126,18 @@ void material::opticalsFromString(string property, string what) {
             if (what == "rayleigh")
                 rayleigh.push_back(get_number(trimmedC));
 
+            if (what == "mie")
+                mie.push_back(get_number(trimmedC));
+
+            if (what == "mieforward")
+                mieforward = get_number(trimmedC);
+
+            if (what == "miebackward")
+                miebackward = get_number(trimmedC);
+
+            if (what == "mieratio")
+                mieratio = get_number(trimmedC);
+
             if (what == "birkConstant")
                 birkConstant = get_number(trimmedC);
         }
@@ -141,6 +153,7 @@ void material::opticalsFromString(string property, string what) {
             if (fastcomponent.size() != photonEnergy.size()) fastcomponent.clear();
             if (slowcomponent.size() != photonEnergy.size()) slowcomponent.clear();
             if (rayleigh.size() != photonEnergy.size()) rayleigh.clear();
+            if (mie.size() != photonEnergy.size()) mie.clear();
         }
 
     }
@@ -369,6 +382,15 @@ map<string, G4Material *> materials::materialsFromMap(map <string, material> mma
                         optTable.back()->AddProperty("RAYLEIGH", penergy, ray, nopts);
                     }
 
+                    // mie scattering
+                    if (it->second.mie.size() == nopts) {
+                        double mie[nopts];
+                        for (unsigned i = 0; i < nopts; i++)
+                            mie[i] = it->second.mie[i];
+
+                        optTable.back()->AddProperty("MIEHG", penergy, mie, nopts);
+                    }
+		    
 
 
                     // in the API -1 is the default
@@ -396,6 +418,16 @@ map<string, G4Material *> materials::materialsFromMap(map <string, material> mma
                     // birkConstant - must be in mm / MeV
                     if (it->second.birkConstant != -1)
                         mats[it->first]->GetIonisation()->SetBirksConstant(it->second.birkConstant);
+
+                    // additional mie scattering constants
+                    if (it->second.miebackward != -1)
+		        optTable.back()->AddConstProperty("MIEHG_BACKWARD", it->second.miebackward);
+		    
+		    if (it->second.mieforward != -1)
+		        optTable.back()->AddConstProperty("MIEHG_FORWARD", it->second.mieforward);
+		    
+		    if (it->second.mieratio != -1)
+		        optTable.back()->AddConstProperty("MIEHG_FORWARD_RATIO", it->second.mieratio);		    
 
                     mats[it->first]->SetMaterialPropertiesTable(optTable.back());
                 }
