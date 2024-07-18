@@ -189,6 +189,8 @@ HipoSchema :: HipoSchema()
 	schemasToLoad["LTCC::adc"]    = ltccADCSchema;
 	schemasToLoad["LTCC::tdc"]    = ltccTDCSchema;
 	schemasToLoad["RICH::tdc"]    = richTDCSchema;
+	schemasToLoad["RTPC::adc"]    = rtpcADCSchema;
+	schemasToLoad["RTPC::pos"]    = rtpcPOSSchema;
 	schemasToLoad["HEL::flip"]    = helFLIPSchema;
 	schemasToLoad["RASTER::adc"]  = rasterADCSchema;
 	schemasToLoad["URWELL::adc"]  = urwellADCSchema;
