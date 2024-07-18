@@ -256,6 +256,19 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		// time calculation
 		// signal_t = stepTime[s] + (H_abh/driftVelocity);
 		// cout << "signal_t: " << signal_t << ", stepTime: " << stepTime[s] << endl;
+            
+                // docasig is a fit to sigma vs distance plot. A second order pol used for the fit (p0+p1*x+p2*x*x).
+                // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is derived from the fit (1/(dt/dx)).
+                // both sig vs dist and t vs dist plots are taken from  Lucien Causse's PhD thesis ("Development of a stereo drift chamber for the Jefferson Laboratory ALERT Experiment."). 
+                // plots were digitized and then fitted to a pol2. 
+
+                double driftP1=-16.17;
+                double driftP2=24.81;
+                double docasig = 337.3-210.3*doca+34.7*pow(doca,2);
+                std::default_random_engine dseed(time(0)); //seed
+                std::normal_distribution<double> ddist(doca, docasig); //a resuolution affect is added to doca.
+                double doca_r =ddist(dseed);
+	        driftVelocity = 1./(driftP1+2.*driftP2*doca_r);  // mm/ns // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is then extracted from dx/dt, d/dt(p0+p1*x+p2*x^2)=p1+2*p2*x.
 		signal_tTimesEdep = signal_tTimesEdep + (stepTime[s] + H_abh/driftVelocity) * E_wire;
 		// cout << "signal_tTimesEdep: " << signal_tTimesEdep << endl;
 		
@@ -271,7 +284,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	// Just to test, time is linear with doca
 	double a = 5.0;
 	double b = 5.0;
-	double time = a*doca+b + signal_tTimesEdep/E_tot_wire;
+	//double time = a*doca+b + signal_tTimesEdep/E_tot_wire;
+	double time = signal_tTimesEdep/E_tot_wire;
 //	double signal = 0.0;
 //	signal = signal_tTimesEdep/E_tot_wire;
 	
