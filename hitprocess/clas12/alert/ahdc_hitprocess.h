@@ -84,6 +84,117 @@ public:
 	
 };
 
+#include <string>
+#include "Math/PdfFuncMathCore.h"
+
+namespace futils {
+	bool cart2polar3D(double x, double y, double z, double & rho, double & theta, double & phi); // angles in radians
+}
+
+class ahdcSignal {
+	// MHit identifiers
+	public : 
+		int hitn;
+		int sector;
+		int layer;
+		int component;
+		int nsteps;
+	// vectors
+	private :
+		std::vector<double> Edep; // keV
+		std::vector<double> G4Time; // ns
+		std::vector<double> Doca; //mm
+		std::vector<double> DriftTime; // ns
+		void ComputeDocaAndTime(MHit * aHit);
+		std::vector<double> Dgtz; 
+		std::vector<double> Noise;
+	// setting parameters for digitization
+	private : 
+		double tmin = 0; 
+		double tmax = 6000; 
+		double delay = 1000;
+		double samplingTime = 44;      // ns
+		double electronYield = 9500;   // ADC_gain
+		int    adc_max = 4095; // 12 digits : 2^12-1
+	// public methods
+	public :
+		ahdcSignal() = default;
+		ahdcSignal(MHit * aHit, int hitn_){
+			// read identifiers
+			hitn = hitn_;
+			vector<identifier> identity = aHit->GetId();
+			sector = 0;
+			layer = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
+			component = identity[2].id;
+			pid = aHit->GetPID();
+			G4ThreeVector mom = aHit->GetMom(); // momentum_xyz
+			futils::cart2polar3D(mom.x(),mom.y(),mom.z(),p,theta,phi);
+			// fill vectors
+			Edep = aHit->GetEdep();
+			nsteps = Edep.size();
+			for (int s=0;s<nsteps;s++){Edep.at(s) = Edep.at(s)*1000;} // convert MeV to keV
+			G4Time = aHit->GetTime();
+			this->ComputeDocaAndTime(aHit); // fills Doca and DriftTime
+		}
+
+		~ahdcSignal(){;}
+		int  					Get_hitn() {return hitn;}
+		int  					Get_sector() {return sector;}
+		int 					Get_layer() {return layer;}
+		int 					Get_component() {return component;}
+		int 					Get_nsteps() {return nsteps;}
+
+		double 					GetSamplingTime()	 {return samplingTime;}
+		double                                  GetElectronYield()	 {return electronYield;}
+		int	                                GetAdcMax()		 {return adc_max;}
+		double 					GetTmin()                {return tmin;}
+		double                                  GetTmax()                {return tmax;}
+		double 					GetDelay()               {return delay;}
+		std::vector<double>                     GetNoise()               {return Noise;}
+
+		void SetSamplingTime(double samplingTime_)		{samplingTime = samplingTime_;}
+		void SetElectronYield(double electronYield_)		{electronYield = electronYield_;}
+		void SetAdcMax(int adc_)				{adc_max = adc_;}
+		void SetTmin(double tmin_)				{tmin = tmin_;}
+		void SetTmax(double tmax_)                              {tmax = tmax_;}
+		void SetDelay(double delay_) 				{delay = delay_;}
+		void SetNoise(std::vector<double> Noise_)               {Noise = Noise_;}
+
+		double operator()(double t){
+			double res = 0;
+			for (int s=0; s<nsteps; s++){
+				res += Edep.at(s)*ROOT::Math::landau_pdf(t-delay,600/2.5,DriftTime.at(s)); // landau width parameter = 600/2.5; think to create a new para.
+			}
+			return res;
+		}
+
+		void Digitize();
+		void GenerateNoise(double mean, double stdev);
+
+		void PrintBeforeProcessing();
+		void PrintAllShapes();
+		void PrintAfterProcessing();
+		void PrintSignal(); 
+		void PrintNoise();
+		// Decoding
+		void Decode(double & t_start, double & t_ovr, double & t_max_value, double & max_value, double & integral);
+		std::map<std::string,double> Decode();
+		void ShowDecoding();
+		
+		public :
+		int pid;
+		double p, theta, phi;
+		std::map<int,std::string> pid2name = {
+			{2212,"proton"},
+			{2112, "neutron"},
+			{1000020040,"alpha"},
+			{1000010030,"triton"},
+			{1000010020,"deuteron"},
+			{1000020030,"He3"}
+		};
+};
+
+
 
 
 #endif

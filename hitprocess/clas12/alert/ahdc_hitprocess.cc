@@ -75,267 +75,49 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		return dgtz;
 
 	}
-	
-	double doca = 100.0;
 
-	// true information
-	
-	trueInfos tInfos(aHit);
-	
-	vector<int>           stepTrackId = aHit->GetTIds();
-	vector<double>        stepTime    = aHit->GetTime();
-	vector<double>        mgnf        = aHit->GetMgnf();
-	vector<G4double>      Edep        = aHit->GetEdep();
-	vector<G4ThreeVector> pos         = aHit->GetPos(); // local position variable for each step
-	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-	vector<G4ThreeVector> mom         = aHit->GetMoms();
-	vector<double>        E           = aHit->GetEs();
-	
-	
-//	double signal_t = 0.0;
-	double signal_tTimesEdep = 0.0;
-	
-	
-	double LposX=0.;
-	double LposY=0.;
-	double LposZ=0.;
-	
-	double driftVelocity = 0.026;  // mm/ns // drift velocity is 26 um/ns, taken from DC
-	
-	//vector<double> CellVertex;
-	// double CellVertex = 0.0;
-	
-	double xV0 = 0.0;
-	double yV0 = 0.0;
-	double xV3 = 0.0;
-	double yV3 = 0.0;
-	double xV4 = 0.0;
-	double yV4 = 0.0;
-	double xV7 = 0.0;
-	double yV7 = 0.0;
-	
-	double Y_sigwire_top = 0.0; // z=-150 mm
-	double X_sigwire_top = 0.0;
-	double Z_sigwire_top = -150.0;// Global coordiantes = -22.3 mm // Local coordinates = -150.0 mm!
-	double Y_sigwire_bot = 0.0; // z=+150 mm
-	double X_sigwire_bot = 0.0;
-	double Z_sigwire_bot = 150.0;// Global coordiantes = 277.7 mm // Local coordinates = 150.0 mm!
-	
-	double dim_id_2, dim_id_8;
-	// int subcell = 0; // subcell value = 1 or 2, for one same cell, 1 is to the right of the signal wire, 2 is to the left of the signal wire.
-
-	// Vertices #0 and #3 are always the first/last ones to define the top face of G4 generic trapezoide
-	// Vertices #6 and #9 are always the first/last ones to define the bottom face of G4 generic trapezoide
-	
-	//	double SigWireRadiusTop = 0.0;
-	//	double SigWireRadiusBottom = 0.0;
-	// int wirealigned = 0;
-	// double SigWireAlphaTop = 0.0;
-	// double SigWireAlphaBottom = 0.0;
-	// double SigWireDeltaAlpha = 0.0;
-	
-	// this is to find the distance from the hit to the signal wire and that is perpendicular to the wire! mm!
-	double L_ab, L_ah, L_bh, H_abh; // for a triangle abh with: a = top sig. wire coordinates, b = bottom sig. wire coordinates, h = hit coordinates (mm);
-	
-	// this is for additional calculations for check
-	// double HitRadius;
-	//, AlphaHit;
-	
-	// this is for energy deposit calculation
-	double E_wire = 0.0;
-	double E_tot_wire = 0.0;
-	double attenuation = 10.0; // mm!!!
-	double adc_energy = 0.0;
-	double EYld = 10.0;
-	
-	double totEdepMC = 0.0;
-	
-//	for(int p=0; p<17; p++)
-//	{
-//		CellVertex = aHit->GetDetector().dimensions[p]; // G4 Generic Trapezoide dimensions G4 Generic Trapezoide dimensions
-//		cout << "Hitted cell parameter" << p << " value = " << CellVertex << endl;
-//	}
-	
-	//	dim_id_1 = aHit->GetDetector().dimensions[1];
-	
-	 dim_id_2 = aHit->GetDetector().dimensions[2];
-	 dim_id_8 = aHit->GetDetector().dimensions[8];
-	
-	yV3 = aHit->GetDetector().dimensions[8];
-	xV3 = aHit->GetDetector().dimensions[7];
-	yV0 = aHit->GetDetector().dimensions[2];
-	xV0 = aHit->GetDetector().dimensions[1];
-	
-	yV7 = aHit->GetDetector().dimensions[16];
-	xV7 = aHit->GetDetector().dimensions[15];
-	yV4 = aHit->GetDetector().dimensions[10];
-	xV4 = aHit->GetDetector().dimensions[9];
-
-
-	if ( abs(dim_id_2) > abs(dim_id_8)) {
-		// subcell = 1;
-
-		X_sigwire_top = xV3 + (xV0 - xV3)/2;
-		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
-		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
-		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
-
-	} else {
-		// subcell = 2;
-
-		X_sigwire_top = xV0 + (xV3 - xV0)/2;
-		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
-		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
-		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
+	ahdcSignal *Signal = new ahdcSignal(aHit,hitn);
+	int nsteps = Signal->Get_nsteps();
+	// Set parameters for digitization
+	Signal->SetTmin(0);
+	Signal->SetTmax(6000);
+	Signal->SetDelay(1000);
+	Signal->SetSamplingTime(44); // ns
+	Signal->SetElectronYield(100000);
+	//Signal->SetAdcMax(10000);
+	Signal->Digitize();
+	std::map<std::string,double> output;
+	if (nsteps >= 0) {
+		//Signal->PrintBeforeProcessing();
+		//Signal->PrintAllShapes();
+		//Signal->PrintAfterProcessing();
+		//Signal->PrintNoise();
+		//Signal->PrintSignal();
+		//Signal->ShowDecoding();
+		output = Signal->Decode();
+		//int pid = (*Signal).pid;
+		//std::cout << "   ===>  pid : " << pid << " " <<  (*Signal).pid2name[pid] << std::endl;
 	}
 
+	// data to add in the bank ADC
+	//double t_start, t_ovr, t_max_value, max_value, integral;
+	//Signal->Decode(t_start, t_ovr, t_max_value, max_value, integral);
+	delete Signal;
 
-	//cout << " shared side defined by points: (" << dim_id_1 << "," <<dim_id_2 << ") and ("  << "," <<dim_id_8 << ") for the 1rst face; " << endl;
-	//cout << " and  by points: (" << xV4 << "," << yV4 << ") and (" << xV7 << "," << yV7 << ") for the 2nd face; all in mm!!!" << endl;
-	//cout << "sub-cell number = "  << "; hitted cell wire coord.: top face = (" << X_sigwire_top << ", " << Y_sigwire_top << "); bottom face = (" << X_sigwire_bot << ", " << Y_sigwire_bot << ");" << endl;
-	
-	//	SigWireRadiusTop = sqrt(pow(X_sigwire_top,2) + pow(Y_sigwire_top,2)); // mm!
-	//	SigWireRadiusBottom = sqrt(pow(X_sigwire_bot,2) + pow(Y_sigwire_bot,2)); // mm!
-	// SigWireAlphaTop = acos(X_sigwire_top/SigWireRadiusTop); // * 180.0 / PI to pass into degrees, acos() gives the value in radians:
-	// SigWireAlphaBottom = acos(X_sigwire_bot/SigWireRadiusBottom); // * 180.0 / PI;
-	// SigWireDeltaAlpha = SigWireAlphaTop - SigWireAlphaBottom;
-	
-	// Plan ZX for a cell, signal wire orientation
-	
-	
-	//	if ( SigWireRadiusTop == SigWireRadiusBottom )
-	//	{
-	//		wirealigned = 1;
-	//	}
-	
-	//cout << " Signal wire radius (top face) = " << SigWireRadiusTop << "; Signal wire radius (bottom face) = " << SigWireRadiusBottom << "; sig. wire aligned = " << wirealigned << endl;
-	//cout << " Signal wire alpha (top face) degrees = " << (SigWireAlphaTop * 180.0 / PI)  << "; Signal wire alpha (bottom face) degrees = " << (SigWireAlphaBottom * 180.0 / PI) << "; sig. wire Delta Alpha (top - bot.) = " << (SigWireDeltaAlpha * 180.0 / PI) << endl;
-	
-	// cout << " ************** Hit started! **************** " << endl;
-	//cout << "First loop on steps begins" << endl;
-	
-	L_ab = sqrt( pow((X_sigwire_bot - X_sigwire_top),2) + pow((Y_sigwire_bot - Y_sigwire_top),2) + pow((Z_sigwire_bot - Z_sigwire_top),2) );
-	// int local = 0;
-	for(unsigned int s=0; s<tInfos.nsteps; s++)
-	{
-		LposX = Lpos[s].x();
-		LposY = Lpos[s].y();
-		LposZ = Lpos[s].z();
-		
-//		if (LposZ>150.0) cout << " ######### Global coordinate is seen in Z!!! ########## " << endl;
-//		if (LposZ<-22.3)
-//		{
-//			cout << " ######### Local coordinate is seen in Z!!! ########## " << endl;
-//			local = local + 1;
-//		}
-		
-		// HitRadius = sqrt(pow(LposX,2) + pow(LposY,2)); // mm!
-		// AlphaHit = acos(LposX/HitRadius); // radians! and for a precize Z_hit = LposZ (mm)
-		
-		// Calculation of distance from hit to signal wire and perpendicular to the wire!
-		L_ah = sqrt( pow((X_sigwire_top - LposX),2) + pow((Y_sigwire_top - LposY),2) + pow((Z_sigwire_top - LposZ), 2) );
-		L_bh = sqrt( pow((X_sigwire_bot - LposX),2) + pow((Y_sigwire_bot - LposY),2) + pow((Z_sigwire_bot - LposZ), 2) );
-		H_abh = L_ah * sqrt( 1 - pow(((L_ah*L_ah + L_ab*L_ab - L_bh*L_bh)/(2*L_ab*L_ah)), 2) );
-		
-		// variables check for doca calculation
-//		cout << "Hit (X,Y,Z) location (mm) (" << LposX << ", " << LposY << ", " <<  LposZ << ")" << endl;
-//		cout << "Signal wire length (mm) = " << L_ab << endl;
-//		cout << "distance hit->signal wire &perpendicular to wire (mm) = " << H_abh << endl;
-//		cout << "Hit radius (mm) and alpha (deg.) = (" << HitRadius << ", " << (AlphaHit) * 180.0 / PI << ")" << endl;
-		
-		if ( H_abh <= doca ) {
-			doca = H_abh; // mm!!!
-		}
-		
-		// energy deposit calculation
-		E_wire = Edep[s] *exp(-H_abh/attenuation);
-		E_tot_wire = E_tot_wire + E_wire;
-		
-		totEdepMC = totEdepMC+Edep[s];
-		
-		// time calculation
-		// signal_t = stepTime[s] + (H_abh/driftVelocity);
-		// cout << "signal_t: " << signal_t << ", stepTime: " << stepTime[s] << endl;
-            
-                // docasig is a fit to sigma vs distance plot. A second order pol used for the fit (p0+p1*x+p2*x*x).
-                // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is derived from the fit (1/(dt/dx)).
-                // both sig vs dist and t vs dist plots are taken from  Lucien Causse's PhD thesis ("Development of a stereo drift chamber for the Jefferson Laboratory ALERT Experiment."). 
-                // plots were digitized and then fitted to a pol2. 
-
-                double driftP1=-16.17;
-                double driftP2=24.81;
-                double docasig = 337.3-210.3*doca+34.7*pow(doca,2);
-                std::default_random_engine dseed(time(0)); //seed
-                std::normal_distribution<double> ddist(doca, docasig); //a resuolution affect is added to doca.
-                double doca_r =ddist(dseed);
-	        driftVelocity = 1./(driftP1+2.*driftP2*doca_r);  // mm/ns // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is then extracted from dx/dt, d/dt(p0+p1*x+p2*x^2)=p1+2*p2*x.
-		signal_tTimesEdep = signal_tTimesEdep + (stepTime[s] + H_abh/driftVelocity) * E_wire;
-		// cout << "signal_tTimesEdep: " << signal_tTimesEdep << endl;
-		
-		//time = stepTime[s]++;
-		//adc = Edep[s]++;
-		
-	}
-	//cout << "First loop on steps ends" << endl;
-	
-	// energy adc value
-	adc_energy = E_tot_wire * EYld;
-	
-	// Just to test, time is linear with doca
-	double a = 5.0;
-	double b = 5.0;
-	//double time = a*doca+b + signal_tTimesEdep/E_tot_wire;
-	double time = signal_tTimesEdep/E_tot_wire;
-//	double signal = 0.0;
-//	signal = signal_tTimesEdep/E_tot_wire;
-	
-	
-	// Here are the dgtz varibles that we want to calculate using MC true info of a hit
-	// They are visible in the gemc simulation output: integrated digitized bank (2302,0)
-//	dgtz["superlayer"]  = identity[0].id;	//(2302,1)
-//	dgtz["layer"]       = identity[1].id;		//(2302,2)
-//	dgtz["wire"]        = identity[2].id;	//(2302,3)
-//	dgtz["doca"]        = doca;		//(2302,4)
-//	dgtz["adc_energy"]  = adc_energy;		//(2302,5)
-//	dgtz["wire_energy"] = E_tot_wire;		//(2302,5)
-//	dgtz["totEdep_MC"]  = totEdepMC;
-//	dgtz["signal"]      = signal;
-//	dgtz["time"]        = time;		//(2302,6)
-//	dgtz["hitn"]        = hitn;		//(2302,99)
-	
-	//cout << " start of the AHDC hit " << endl;
-	//cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;
-	//cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
-	//cout << " value in identity[2].id = wire var: " << identity[2].id << endl;
-	//cout << " value in identity[3].id var: " << identity[3].id << endl;
-	//cout << " doca value = dist. hit->sig.wire & perpendicular to signal wire) (mm!!!): " << doca << endl;
-	//cout << " value in doca output: " << doca << endl;
-	//cout << " value in MC totEdep: " << totEdepMC << endl;
-	//cout << " value in wire energy deposit: " << E_tot_wire << endl;
-	//cout << " value in adc energy deposit: " << adc_energy << endl;
-	//cout << " value in signal var: " << signal << endl;
-	//cout << " value in time var: " << time << endl;
-	//cout << " value in hitn var: " << hitn << endl;
-	//cout << " if local <> 0 than hit in local reference; local = " << local << endl;
-	// cout << " ************** Hit ended! **************** " << endl;
-	
-	//cout << " value in superlayer var: " << identity[0].id << endl;
-	//cout << " value in layer var: " << identity[1].id << endl;
-	//cout << " value in wireNum var: " << identity[2].id << endl;
-	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
 	dgtz["ADC_order"] = 0;
-	dgtz["ADC_ADC"]   = (int) 100000*adc_energy;
-	dgtz["ADC_time"]  = time;
-	dgtz["ADC_ped"]   = doca*1000;
-	
-	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = time;
+	dgtz["ADC_ADC"]   = (int) output["max_value"]; // adc
+	dgtz["ADC_time"]  = (float) output["t_ovr"]; // ns
+	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
+	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
+	dgtz["ADC_timestamp"] = (long) output["t_start"]; // ns
 
-	
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = output["t_start"];
+		
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;
@@ -408,5 +190,616 @@ void ahdc_HitProcess::initWithRunNumber(int runno)
 ahdcConstants ahdc_HitProcess::atc = initializeAHDCConstants(-1);
 
 
+// -------------
+// ahdcSignal
+// -------------
 
+
+#include "TCanvas.h"
+#include "TGraph.h"
+#include "TAxis.h"
+#include "TStyle.h"
+#include "TString.h"
+#include "TH1.h"
+#include "TGraphPolar.h"
+#include "TGaxis.h"
+#include <time.h>
+#include "TLine.h"
+#include "TGaxis.h"
+#include "TLatex.h"
+#include "TLegend.h"
+#include "TArrow.h"
+
+
+void ahdcSignal::ComputeDocaAndTime(MHit * aHit){
+	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+	int nsteps = Lpos.size();
+	double LposX, LposY, LposZ;
+	
+	// ALERT geometry
+	double X_sigwire_top = 0; // [mm]
+	double Y_sigwire_top = 0;
+	double Z_sigwire_top = -150; 
+	double X_sigwire_bot = 0; // [mm]
+	double Y_sigwire_bot = 0;
+	double Z_sigwire_bot = 150;
+	
+	// Compute Y_sigwire_top, Z_sigwire_top, Y_sigwire_bot, Z_sigwire_bot
+	
+	double xV0 = 0.0;
+	double yV0 = 0.0;
+	double xV3 = 0.0;
+	double yV3 = 0.0;
+	double xV4 = 0.0;
+	double yV4 = 0.0;
+	double xV7 = 0.0;
+	double yV7 = 0.0;
+	double dim_id_2, dim_id_8;
+	
+	// ******** cout alert geometry ***********
+	// 
+	// ****************************************
+	/*if (nsteps > 10) {
+		std::cout << "     ===> alert geometry, geant4 type :   " << aHit->GetDetector().type << std::endl;
+		std::cout << "     ===> alert geometry, geant4 type :   " << aHit->GetDetector().dimensions.size() << std::endl;
+		for (int i=0;i< (int) aHit->GetDetector().dimensions.size() ;i++) {
+		std::cout << "     dim_%d" << i << " : "  << aHit->GetDetector().dimensions[i] << std::endl;
+		}
+	}*/
+	// ******** end cout *********************
+
+	dim_id_2 = aHit->GetDetector().dimensions[2];
+	dim_id_8 = aHit->GetDetector().dimensions[8];
+
+	yV3 = aHit->GetDetector().dimensions[8];
+	xV3 = aHit->GetDetector().dimensions[7];
+	yV0 = aHit->GetDetector().dimensions[2];
+	xV0 = aHit->GetDetector().dimensions[1];
+
+	yV7 = aHit->GetDetector().dimensions[16];
+	xV7 = aHit->GetDetector().dimensions[15];
+	yV4 = aHit->GetDetector().dimensions[10];
+	xV4 = aHit->GetDetector().dimensions[9];
+
+	if ( abs(dim_id_2) > abs(dim_id_8)) {
+		// subcell = 1;
+		X_sigwire_top = xV3 + (xV0 - xV3)/2;
+		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
+		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
+		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
+	}
+	else {
+		// subcell = 2;
+		X_sigwire_top = xV0 + (xV3 - xV0)/2;
+		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
+		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
+		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
+	}
+	// std::cout << "=======> Inside ComputeDocaAndTime" << std::endl;
+	// std::cout << "   X_sigwire_top : " << X_sigwire_top << std::endl;
+	// std::cout << "   X_sigwire_bot : " << X_sigwire_bot << std::endl;
+	// std::cout << "   Y_sigwire_top : " << Y_sigwire_top << std::endl;
+	// std::cout << "   Y_sigwire_bot : " << Y_sigwire_bot << std::endl;
+
+	// Triangle abh
+	// a (sigwire_top), b (sigwire_bot), h (hit position)
+	// H_abh is the distance between hit and the wire and perpendicular to the wire
+	double L_ab, L_ah, L_bh, H_abh;
+	// Compute the distance between top and bottom of the wire
+	L_ab = sqrt(pow(X_sigwire_top-X_sigwire_bot,2) + pow(Y_sigwire_top-Y_sigwire_bot,2) + pow(Z_sigwire_top-Z_sigwire_bot,2));
+	// std::cout << "   L_ab : " << L_ab << std::endl;
+	// double doca = DBL_MAX;
+	for (int s=0;s<nsteps;s++) {
+		// Load current hit positions
+		LposX = Lpos[s].x();
+		LposY = Lpos[s].y();
+		LposZ = Lpos[s].z();
+		// Compute distance
+		L_ah = sqrt(pow(X_sigwire_top-LposX,2) + pow(Y_sigwire_top-LposY,2) + pow(Z_sigwire_top-LposZ,2));
+		L_bh = sqrt(pow(X_sigwire_bot-LposX,2) + pow(Y_sigwire_bot-LposY,2) + pow(Z_sigwire_bot-LposZ,2));
+		// Compute the height of a triangular (see documentation for the demonstration of the formula)
+		H_abh = L_ah*sqrt(1 - pow((L_ah*L_ah + L_ab*L_ab - L_bh*L_bh)/(2*L_ah*L_ab),2)); // this is the d.o.c.a of a given hit (!= MHit)
+		//if (doca > H_abh) doca = H_abh; 
+		//Height.at(s) = H_abh;
+		Doca.push_back(H_abh);
+		// Add a resolution on doca
+		double docasig = 337.3-210.3*H_abh+34.7*pow(H_abh,2); // um // fit sigma vs distance // Fig 4.14 (right), L. Causse's thesis
+		docasig = docasig/1000; // mm
+		std::default_random_engine dseed(time(0)); //seed
+		std::normal_distribution<double> docadist(H_abh, docasig);
+		// Compute time
+		double driftTime = 7*H_abh + 7*pow(H_abh,2) + 4*pow(H_abh,3); // fit t vs distance //  Fig 4.12 (right), L. Causse's thesis
+		//Time.at(s) = driftTime; // ns
+		DriftTime.push_back(driftTime);
+
+		 // if ((s==0) and (nsteps > 10)) {
+		 //	 std::cout << "=======> Inside ComputeDocaAndTime" << std::endl;		 	
+		 //      LposX = Lpos[s].x();
+		 //      LposY = Lpos[s].y();
+		 //      LposZ = Lpos[s].z();
+		 //      std::cout << "      L_ah  : " << L_ah << std::endl;
+		 //      std::cout << "      L_bh  : " << L_bh << std::endl;
+		 //      std::cout << "      H_abh : " << H_abh << std::endl;
+		 //	 std::cout << "      docasig : " << docasig << std::endl;
+		 // }
+
+	}
+}
+
+namespace futils {
+	bool cart2polar3D(double x, double y, double z, double & rho, double & theta, double & phi){
+		rho = sqrt(x*x+y*y+z*z);
+		if (rho <= __DBL_EPSILON__) {return false;} // if rho == 0
+		theta = acos(z/rho);
+		if (y >= 0){
+			phi = acos(x/(rho*sin(theta)));
+		} 
+		else {
+			phi = 2*PI - acos(x/(rho*sin(theta)));			
+		}
+		return true;
+	}
+
+}
+
+
+void ahdcSignal::PrintBeforeProcessing(){
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	// Draw stems 
+	TGraph* gr1 = new TGraph(nsteps);
+	for (int s=0;s<nsteps;s++){
+		// Draw points
+		gr1->SetPoint(s,DriftTime.at(s),Edep.at(s));
+	}
+	// Draw graph
+	//gr1->SetTitle("Deposited energy in each steps");
+	gr1->SetTitle("");
+	gr1->GetXaxis()->SetTitle("G4Time (ns)");
+	gr1->GetYaxis()->SetTitle("Edep (keV)");
+	gr1->SetMarkerStyle(20);
+	gr1->SetMarkerColor(kRed);
+	gr1->SetMarkerSize(2);
+	gr1->Draw("AP");
+	for (int s=0;s<nsteps;s++){
+		// Draw lines
+		TLine* line = new TLine(DriftTime.at(s),0,DriftTime.at(s),Edep.at(s));
+		line->SetLineWidth(1);
+		line->SetLineColor(kBlack);
+		line->Draw();
+	}
+	
+	canvas1->Print(TString::Format("./output/SignalBeforeProcessing_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete gr1; 
+	delete canvas1;
+}
+
+void ahdcSignal::PrintAllShapes(){
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	TLegend* legend = new TLegend();
+	// Draw all shapes
+	int Npts = 1000;
+	double ymax=0;
+	int s_ref=0;
+	// Define ymax and s_ref
+	for (int s=0;s<nsteps;s++){ 
+		double xRange[Npts], yRange[Npts];
+		for (int i=0;i<Npts;i++){
+			xRange[i] = tmin + i*(tmax-tmin)/Npts;
+			yRange[i] =  Edep.at(s)*ROOT::Math::landau_pdf(xRange[i]-delay,600/2.5,DriftTime.at(s))*1000; // normalisation constant for better
+		    	if (ymax < yRange[i]) {ymax = yRange[i]; s_ref = s;}
+		}
+	}
+	for (int s=0;s<nsteps;s++){
+		if (ymax < Edep.at(s)) 
+			ymax = Edep.at(s);
+	}
+	// plot each distribation
+	{ 	// In s_ref
+		TGraph* gr2 = new TGraph(Npts);
+		double xRange[Npts], yRange[Npts];
+		for (int i=0;i<Npts;i++){
+			xRange[i] = tmin + i*(tmax-tmin)/Npts;
+			yRange[i] =  Edep.at(s_ref)*ROOT::Math::landau_pdf(xRange[i]-delay,600/2.5,DriftTime.at(s_ref))*1000; // normalisation constant for a better view
+			gr2->SetPoint(i,xRange[i],yRange[i]);
+		}
+		gr2->SetLineColor(s_ref+1);
+		gr2->SetFillColorAlpha(2+s_ref%38,1.0);
+		gr2->SetFillStyle(3001);
+		//gr2->SetTitle("Spreed of each Edep over the time using a Landau distribution");
+		gr2->SetTitle("");
+		gr2->GetXaxis()->SetTitle("Time (ns)");
+		gr2->GetYaxis()->SetTitle("#frac{d Edep}{dt} (keV/ns)");
+		gr2->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
+		gr2->Draw("AL"); // we use the axis of s_ref as reference
+
+	}
+	for (int s=0;s<nsteps;s++){ 
+		if (s == s_ref) continue;
+		else {
+			TGraph* gr2 = new TGraph(Npts);
+			double xRange[Npts], yRange[Npts];
+			for (int i=0;i<Npts;i++){
+				xRange[i] = tmin + i*(tmax-tmin)/Npts;
+				yRange[i] =  Edep.at(s)*ROOT::Math::landau_pdf(xRange[i]-delay,600/2.5,DriftTime.at(s))*1000; // normalisation constant for a better view
+				gr2->SetPoint(i,xRange[i],yRange[i]);
+			}
+			gr2->SetLineColor(s+1);
+			gr2->SetFillColorAlpha(2+s%38,1.0);
+			gr2->SetFillStyle(3001);
+			gr2->Draw("L");
+			legend->AddEntry(gr2,TString::Format("Shape %d",s),"l");
+	      	}
+	}
+	// Draw stems
+	TGraph* gr1 = new TGraph(nsteps);
+	for (int s=0;s<nsteps;s++){
+		// Draw points
+		gr1->SetPoint(s,DriftTime.at(s)+delay,Edep.at(s));
+	}
+	gr1->SetMarkerStyle(20);
+	gr1->SetMarkerColor(kRed);
+	gr1->SetMarkerSize(2);
+	gr1->Draw("P");
+	for (int s=0;s<nsteps;s++){
+		// Draw lines
+		TLine* line = new TLine(DriftTime.at(s)+delay,0,DriftTime.at(s)+delay,Edep.at(s));
+		line->SetLineWidth(1);
+		line->SetLineColor(kBlack);
+		line->Draw();
+	}
+       	// Draw text
+	TLatex latex2;
+	latex2.SetTextSize(0.025);
+	latex2.SetTextAlign(13);
+	//latex2.DrawLatex(tmax/2, 2*ymax/3,"#bf{#splitline{All shapes are nomalised x 2000}{for a better view}}");
+	latex2.DrawLatex(tmax/2, 2*ymax/3,TString::Format("#bf{#splitline{All shapes are nomalised x 1000}{A delay of #bf{%.1lf ns} as been added}}",delay).Data());
+	// Draw legend
+	legend->SetX1(0.82);
+	legend->SetY1(0.3); 
+	legend->SetX2(0.95);
+	legend->SetY2(0.95);
+	legend->AddEntry(gr1,"Edep in each steps","p");
+	legend->Draw();
+	// Print file
+	canvas1->Print(TString::Format("./output/SignalAllShapes_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete gr1; delete legend;
+	delete canvas1;
+}
+
+void ahdcSignal::PrintAfterProcessing(){
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768); 
+	// Draw graph
+	double ymax = 0;
+	int Npts = 1000;
+    	TGraph* gr1 = new TGraph(Npts);
+    	for (int i=0;i<Npts;i++){
+		double x_ = tmin + i*(tmax-tmin)/Npts;
+		double y_ = this->operator()(x_);
+		if (ymax < y_) ymax = y_;
+		gr1->SetPoint(i,x_,y_);
+    	}
+	gr1->SetLineColor(kBlue);
+	gr1->SetFillColorAlpha(kBlue,1.0);
+	gr1->SetFillStyle(3001);
+	//gr1->SetTitle("");
+	gr1->SetTitle(TString::Format("%s : p = □  MeV, #theta = □  deg, #phi = □  deg",pid2name[pid].data()));
+	gr1->GetXaxis()->SetTitle("Time (ns)");
+	gr1->GetYaxis()->SetTitle("#frac{d Edep}{dt} (keV/ns)");
+	//gr1->Draw("ALF"); 
+	gr1->Draw("AL");
+	// Draw text
+	TLatex latex2;
+	latex2.SetTextSize(0.03);
+	latex2.SetTextAlign(13);
+	//latex2.DrawLatex(tmax/2, 2*ymax/3,TString::Format("#bf{A delay of #bf{%.1lf ns} as been added}",delay).Data());
+	// Print file
+	canvas1->Print(TString::Format("./output/SignalAfterProcessing_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete gr1; 
+	delete canvas1;
+}
+
+void ahdcSignal::GenerateNoise(double mean, double stdev){
+	int Npts = (int) floor( (tmax-tmin)/samplingTime );
+	// define de 1st value
+	//std::default_random_engine dseed(time(0)); //seed
+	std::random_device rd;      // Create a random device to seed the generator
+	std::mt19937 gen(rd());     // Create a random number engine (e.g., Mersenne Twister)
+	std::normal_distribution<double> draw1(mean,stdev);
+	// double value = draw1(dseed);
+	double value = draw1(gen);
+	if (value < 0) value = 0;
+	Noise.push_back(value);
+	for (int i=1;i<Npts;i++){
+		//std::normal_distribution<double> draw(Noise.at(i-1),stdev);
+		std::normal_distribution<double> draw(mean,stdev);
+		value = draw(gen);
+		if (value < 0) value = 0;
+		Noise.push_back(value);
+	}
+}
+
+void ahdcSignal::Digitize(){
+	this->GenerateNoise(300,30);
+	int Npts = (int) floor( (tmax-tmin)/samplingTime );
+	for (int i=0;i<Npts;i++) {
+		double value = this->operator()(tmin + i*samplingTime); //in keV/ns
+		value = (int) floor(electronYield*value + Noise.at(i)); //convert in ADC +  noise
+		int adc = (value < adc_max) ? value : adc_max; // saturation effect 
+		Dgtz.push_back(adc);
+	}
+}
+
+void ahdcSignal::PrintNoise(){
+	//int Npts = Noise.size();
+	int Npts = 100;
+	// Define canvas
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	// Draw graph
+	double dt = (tmax-tmin)/Npts;
+	TGraph* gr1 = new TGraph(Npts);
+	for (int i=0;i<Npts;i++){
+		gr1->SetPoint(i,tmin + i*dt,Noise.at(i));
+	}
+	gr1->SetLineColor(kBlue);
+	gr1->SetMarkerColor(kRed);
+	gr1->SetMarkerStyle(20);
+	gr1->SetMarkerSize(1);
+	gr1->SetTitle("");
+	gr1->GetXaxis()->SetTitle("Time (ns)");
+	gr1->GetYaxis()->SetTitle("Noise (adc)");
+	gr1->Draw("APL");
+	// Print file
+	canvas1->Print(TString::Format("./output/SignalNoise_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete gr1;
+	delete canvas1;
+}
+
+void ahdcSignal::PrintSignal(){
+	int Npts = Dgtz.size(); 
+	// Histogram
+	TH1D * hist = new TH1D("hist_adc","hist_adc",Npts,tmin,tmax);
+	TGraph* gr1 = new TGraph(Npts);
+	double ymax = 0;
+	for (int i=0;i<Npts;i++){
+		int adc = Dgtz.at(i); // in ADC
+		for (int j=0;j<adc;j++)
+			hist->Fill(tmin + i*samplingTime);
+		if (ymax < adc) ymax = adc;
+		gr1->SetPoint(i,tmin + i*samplingTime,adc);
+	}
+	
+	// Plot graph 
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	/*gStyle->SetOptStat("nemruo");
+	hist->GetXaxis()->SetTitle("Time (ns)");
+	hist->GetXaxis()->SetTitleSize(0.05);
+	hist->GetYaxis()->SetTitle("Charge (adc)");
+	hist->GetYaxis()->SetTitleSize(0.05);
+	hist->Draw();*/
+	
+	//gr1->SetTitle("");
+	gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
+	gr1->GetXaxis()->SetTitle("Time (ns)");
+	gr1->GetYaxis()->SetTitle("Charge (adc)");
+	//gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
+	gr1->SetLineColor(kBlue);
+	gr1->SetMarkerStyle(1);
+	gr1->SetMarkerSize(5);
+	gr1->SetMarkerColor(kRed);
+	//gr1->SetFillColorAlpha(kBlue,1.0);
+	//gr1->SetFillStyle(3001);
+	gr1->Draw("APL");
+
+	// Draw text
+	TLatex latex1;
+	latex1.SetTextSize(0.04);
+	latex1.SetTextAlign(23);
+	//latex1.DrawLatex(tmax/2, 2*ymax/3,TString::Format("#bf{A delay of #bf{%.1lf ns} as been added}",delay).Data());
+	// Print file
+	canvas1->Print(TString::Format("./output/SignalDigitized_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete hist;
+	delete gr1;
+	delete canvas1;
+
+}
+
+
+//void ahdcSignal::Decode(double & t_start, double & t_ovr, double & t_max_value, double & max_value, double & integral){
+std::map<std::string,double> ahdcSignal::Decode(){
+
+	double t_start, t_ovr, t_max_value, max_value, integral;
+
+	int Npts = Dgtz.size();
+	max_value = Dgtz.at(0);
+	int i_max = 0;
+	integral = 0;
+	//std::cout << "     ====> i_max (before processing) : 0" << std::endl;
+	// compute max_value
+	for (int i=0;i<Npts;i++){
+		if (max_value < Dgtz.at(i)) {
+			max_value = Dgtz.at(i);
+			i_max = i; // useful
+		}
+	}
+	if (max_value == adc_max) { // there is a  plateau
+		//std::cout << "     ====> i_max (  if  )" << std::endl;
+		int i_max2 = i_max;
+		while (i_max2 < Npts-1){
+			if (Dgtz.at(i_max2) == adc_max) {
+				i_max2++;
+			} 
+			else {break;}
+		}
+		i_max = (int) (i_max+i_max2-1)/2;
+	}
+	else {
+		// averaging of max_value
+		//std::cout << "     ====> i_max (  else  )" << std::endl;
+		if ((i_max > 2) and (i_max < Npts-2)){
+			max_value = 0;
+			for (int i=-2;i<=2;i++){ max_value += Dgtz.at(i_max+i);}
+			max_value = max_value/5; // done
+		}
+	}
+	//std::cout << "     ====> i_max : " << i_max << std::endl;
+	t_max_value = i_max*samplingTime; // done
+	
+	// define noise threshold
+	double noise = 0;
+	for (int i=0;i<5;i++){ noise += Noise.at(i);}
+	noise = noise/5;
+	double threshold = (max_value+noise)/2.0;
+	
+	// compute t_start
+	int i_start = 0;
+	for (int i=0;i<i_max;i++){
+		if (Dgtz.at(i) < threshold) {
+			i_start = i; // last pass below threshold before max_value
+		}
+	}	// at this stage : i_start*samplingTime < t_start < (i_start+1)*samplingTime
+	//std::cout << "     ====> i_start : " << i_start << std::endl;
+	int i1 = i_start; // 1 index below 
+	int i2 = i_start+1; // 1 index above
+	if (i1 < 0) {i1 = 0; } 
+	if (i2 >= Npts) {i2 = Npts-1;}
+	double slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2); 
+	t_start = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope); // done
+	
+	// compute t_ovr
+	int i_ovr = i_max;
+	while (i_ovr < Npts-1) {
+		if (Dgtz.at(i_ovr) > threshold){
+			i_ovr++; // first pass below threshold after max_value
+		}
+		else { break;}
+	}      // at this stage : (i_ovr-1)*samplingTime < t_start+t_ovr < i_ovr*samplingTime
+	//std::cout << "     ====> i_ovr : " << i_ovr << std::endl;
+	if (i_ovr < Npts-2) {
+		i1 = i_ovr-1; 
+		i2 = i_ovr;
+		if (i1 < 1) {i1 = 0; }
+		slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2);
+		t_ovr = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope) - t_start; // done
+	}
+	else { t_ovr = samplingTime*i_ovr;}
+
+	// compute integral
+	int di = (int)  t_ovr/(2*samplingTime);
+	i1 = i_max - di;
+	i2 = i_max + di;
+	if (i1 <0) {i1 = 0;}
+	if (i2 >= Npts) {i2 = Npts-1;}
+	double i_inf = t_start/samplingTime;
+	double i_sup = (t_start+t_ovr)/samplingTime;
+	integral = 0;
+	int Npts2=0;
+	for (int i=0;i<Npts;i++){
+		if ((i >= i_inf) and (i <= i_sup)){
+			integral += (Dgtz.at(i)-noise);
+			Npts2++;
+		}
+	}
+	integral = integral/1; // done // adc/44 ns
+
+	// output
+	std::map<std::string,double> output;
+	output["t_start"] = t_start;
+	output["t_ovr"] = t_ovr;
+	output["integral"] = integral;
+	output["max_value"] = max_value;
+	output["t_max_value"] = t_max_value;
+	output["threshold"] = threshold;
+	output["noise_level"] = noise;
+
+//}
+
+// ***********************************
+// Plotting part
+// ***********************************
+
+//void ahdcSignal::ShowDecoding(){
+//	int Npts = Dgtz.size(); 
+	// Histogram
+	TH1D * hist = new TH1D("hist_adc","hist_adc",Npts,tmin,tmax);
+	double ymax = 0;
+	TGraph* gr1 = new TGraph(Npts);
+	for (int i=0;i<Npts;i++){
+		int adc = Dgtz.at(i); // in ADC
+		for (int j=0;j<adc;j++)
+			hist->Fill(tmin + i*samplingTime);
+		if (ymax < adc) ymax = adc;
+		gr1->SetPoint(i,tmin + i*samplingTime,adc);
+	}
+	TGraph* gr2 = new TGraph(Npts2+2);
+	gr2->SetPoint(0,t_start,threshold);
+	gr2->SetPoint(Npts2+1,t_start+t_ovr, threshold);
+	for (int i=1;i<=Npts2;i++){
+		gr2->SetPoint(i,tmin+samplingTime*(i+(int) i_inf),Dgtz.at(i+(int) i_inf));
+	}
+
+	// Plot graph 
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	//gStyle->SetOptStat("nemruo");
+	//gStyle->SetOptStat("");
+	//hist->SetTitle("");
+	//hist->SetTitle(pid2name[pid].data());
+	//gr1->SetTitle(TString::Format("%s : p = %.2lf MeV, #theta = %.2lf deg, #phi = %.2lf deg",pid2name[pid].data(),p,theta*180/PI,phi*180/PI));
+	gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
+	//gr1->SetTitleSize(0.10);
+	gr1->GetXaxis()->SetTitle("Time (ns)");
+	gr1->GetXaxis()->SetTitleSize(0.05);
+	gr1->GetYaxis()->SetTitle("Charge (adc)");
+	gr1->GetYaxis()->SetTitleSize(0.05);
+	gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
+	//gr1->SetFillColorAlpha(kGreen, 1.0);
+	//gr1->SetFillStyle(3002);
+	gr1->SetMarkerColor(kBlack);
+	gr1->SetMarkerSize(5);
+	gr1->SetLineColor(kBlue);
+	
+	gr1->Draw("APL");
+	gr2->SetFillColorAlpha(kGreen, 1.0); gr2->Draw("F");
+	// Decoding 
+	//double t_start, t_ovr, t_max_value, max_value, integral;
+	//this->Decode(t_start,t_ovr,t_max_value,max_value,integral);
+	//double noise = 0;
+	//for (int i=0;i<5;i++){ noise += Noise.at(i);}
+	//noise = noise/5;
+	//double threshold = (max_value + noise)/2;
+	
+	TLine* line1 = new TLine(t_start,0,t_start,threshold); line1->SetLineWidth(1); line1->SetLineColor(kRed); line1->SetLineStyle(2); line1->Draw(); // t_start
+	TLine* line2 = new TLine(0,threshold,t_start,threshold); line2->SetLineWidth(1); line2->SetLineColor(kRed); line2->SetLineStyle(2); line2->Draw(); // t_start
+	TLine* line3 = new TLine(t_start+t_ovr,0,t_start+t_ovr,threshold); line3->SetLineWidth(1); line3->SetLineColor(kRed); line3->SetLineStyle(2); line3->Draw(); // t_ovr
+	TArrow* arrow1 = new TArrow(t_start,threshold,t_start+t_ovr,threshold,0.02,"<>"); arrow1->SetLineWidth(1); arrow1->SetLineColor(kRed); arrow1->Draw(); // t_ovr
+	TLine* line4 = new TLine(tmin,noise,tmax,noise); line4->SetLineWidth(1); line4->SetLineColor(kRed); line4->SetLineStyle(2); line4->Draw(); // noise level
+	TLine* line5 = new TLine(0,max_value,t_max_value,max_value); line5->SetLineWidth(1); line5->SetLineColor(kRed); line5->SetLineStyle(2); line5->Draw(); // max_value
+	TLine* line6 = new TLine(t_max_value,0,t_max_value,max_value); line6->SetLineWidth(1); line6->SetLineColor(kRed); line6->SetLineStyle(2); line6->Draw(); // max_value
+
+	TLatex data;
+	data.SetTextSize(0.03);
+	data.SetTextAlign(13);
+	data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{t_start} =  %.0lf ns}",t_start).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{t_ovr} =  %.0lf ns}",t_ovr).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05*2,TString::Format("#bf{#bf{max_value} =  %.0lf adc }",max_value).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc/44 ns}",integral).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05*4,TString::Format("#bf{#bf{noise level} =  %.0lf adc}",noise).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05*5,"#bf{1 adc =  10^{-5} keV/ns }");
+	data.SetTextAlign(11);	
+	data.DrawLatex(t_start,0+max_value*0.02,"t_start");
+	data.DrawLatex(t_max_value,max_value+max_value*0.02,"max_value");
+	data.DrawLatex(t_max_value,threshold,"t_ovr");
+	data.DrawLatex(0+tmax*0.02,threshold,"threshold");
+	data.DrawLatex(tmax, noise+max_value*0.02,"noise level");
+
+
+	canvas1->Print(TString::Format("./output/SignalDecoded_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete line1; delete line2; delete line3; delete line5;
+	delete hist;
+	delete gr1; // delete arrow1;
+	delete canvas1;
+	delete gr2;
+	
+	// output
+	return output;
+}
 
