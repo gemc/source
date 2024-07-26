@@ -93,7 +93,7 @@ namespace futils {
 
 class ahdcSignal {
 	// MHit identifiers
-	public : 
+	private : 
 		int hitn;
 		int sector;
 		int layer;
@@ -127,8 +127,6 @@ class ahdcSignal {
 			layer = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 			component = identity[2].id;
 			pid = aHit->GetPID();
-			G4ThreeVector mom = aHit->GetMom(); // momentum_xyz
-			futils::cart2polar3D(mom.x(),mom.y(),mom.z(),p,theta,phi);
 			// fill vectors
 			Edep = aHit->GetEdep();
 			nsteps = Edep.size();
@@ -177,13 +175,14 @@ class ahdcSignal {
 		void PrintSignal(); 
 		void PrintNoise();
 		// Decoding
-		void Decode(double & t_start, double & t_ovr, double & t_max_value, double & max_value, double & integral);
-		std::map<std::string,double> Decode();
-		void ShowDecoding();
+		std::map<std::string,double> Decode(bool printFigure=false);
+		void ShowDecoding(std::map<std::string,double> output);
+		//double Apply_CFD(double cfd_fraction, double cfd_delay);
+		double Apply_CFD(double cfd_fraction, int cfd_delay, bool printFigure=false);
+		void Show_CFD();
 		
 		public :
 		int pid;
-		double p, theta, phi;
 		std::map<int,std::string> pid2name = {
 			{2212,"proton"},
 			{2112, "neutron"},

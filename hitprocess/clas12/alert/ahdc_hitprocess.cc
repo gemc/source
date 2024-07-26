@@ -77,7 +77,6 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 
 	ahdcSignal *Signal = new ahdcSignal(aHit,hitn);
-	int nsteps = Signal->Get_nsteps();
 	// Set parameters for digitization
 	Signal->SetTmin(0);
 	Signal->SetTmax(6000);
@@ -86,22 +85,17 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	Signal->SetElectronYield(100000);
 	//Signal->SetAdcMax(10000);
 	Signal->Digitize();
-	std::map<std::string,double> output;
-	if (nsteps >= 0) {
+	std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() > 10);
+	Signal->Apply_CFD(0.3,60,(Signal->Get_nsteps() > 10));
+	//if (Signal->Get_nsteps() >= 10) {
 		//Signal->PrintBeforeProcessing();
 		//Signal->PrintAllShapes();
 		//Signal->PrintAfterProcessing();
 		//Signal->PrintNoise();
 		//Signal->PrintSignal();
 		//Signal->ShowDecoding();
-		output = Signal->Decode();
-		//int pid = (*Signal).pid;
-		//std::cout << "   ===>  pid : " << pid << " " <<  (*Signal).pid2name[pid] << std::endl;
-	}
-
-	// data to add in the bank ADC
-	//double t_start, t_ovr, t_max_value, max_value, integral;
-	//Signal->Decode(t_start, t_ovr, t_max_value, max_value, integral);
+	//	output = Signal->Decode();
+	//}
 	delete Signal;
 
 	dgtz["hitn"]      = hitn;
@@ -110,10 +104,11 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["component"] = component;
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = (int) output["max_value"]; // adc
-	dgtz["ADC_time"]  = (float) output["t_ovr"]; // ns
+	dgtz["ADC_time"]  = output["t_ovr"]; // ns
 	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
 	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
-	dgtz["ADC_timestamp"] = (long) output["t_start"]; // ns
+	dgtz["ADC_timestamp"] = output["t_start"]; // ns
+	dgtz["ADC_t_cfd"] = 999;
 
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = output["t_start"];
@@ -604,16 +599,14 @@ void ahdcSignal::PrintSignal(){
 }
 
 
-//void ahdcSignal::Decode(double & t_start, double & t_ovr, double & t_max_value, double & max_value, double & integral){
-std::map<std::string,double> ahdcSignal::Decode(){
+std::map<std::string,double> ahdcSignal::Decode(bool printFigure){
 
 	double t_start, t_ovr, t_max_value, max_value, integral;
-
-	int Npts = Dgtz.size();
 	max_value = Dgtz.at(0);
-	int i_max = 0;
 	integral = 0;
-	//std::cout << "     ====> i_max (before processing) : 0" << std::endl;
+	int Npts = Dgtz.size();
+	int i_max = 0;
+	
 	// compute max_value
 	for (int i=0;i<Npts;i++){
 		if (max_value < Dgtz.at(i)) {
@@ -621,8 +614,7 @@ std::map<std::string,double> ahdcSignal::Decode(){
 			i_max = i; // useful
 		}
 	}
-	if (max_value == adc_max) { // there is a  plateau
-		//std::cout << "     ====> i_max (  if  )" << std::endl;
+	if (max_value == adc_max) { // there is a  plateau (saturation)
 		int i_max2 = i_max;
 		while (i_max2 < Npts-1){
 			if (Dgtz.at(i_max2) == adc_max) {
@@ -632,32 +624,29 @@ std::map<std::string,double> ahdcSignal::Decode(){
 		}
 		i_max = (int) (i_max+i_max2-1)/2;
 	}
-	else {
+	else {  // normal case
 		// averaging of max_value
-		//std::cout << "     ====> i_max (  else  )" << std::endl;
 		if ((i_max > 2) and (i_max < Npts-2)){
 			max_value = 0;
 			for (int i=-2;i<=2;i++){ max_value += Dgtz.at(i_max+i);}
 			max_value = max_value/5; // done
 		}
 	}
-	//std::cout << "     ====> i_max : " << i_max << std::endl;
 	t_max_value = i_max*samplingTime; // done
 	
-	// define noise threshold
+	// define noise and threshold
 	double noise = 0;
-	for (int i=0;i<5;i++){ noise += Noise.at(i);}
-	noise = noise/5;
+	for (int i=0;i<5;i++){ noise += Noise.at(i);} 
+	noise = noise/5; 
 	double threshold = (max_value+noise)/2.0;
 	
 	// compute t_start
 	int i_start = 0;
 	for (int i=0;i<i_max;i++){
 		if (Dgtz.at(i) < threshold) {
-			i_start = i; // last pass below threshold before max_value
+			i_start = i; // last pass below threshold and before max_value
 		}
-	}	// at this stage : i_start*samplingTime < t_start < (i_start+1)*samplingTime
-	//std::cout << "     ====> i_start : " << i_start << std::endl;
+	}	// at this stage : i_start < t_start/samplingTime < i_start+1
 	int i1 = i_start; // 1 index below 
 	int i2 = i_start+1; // 1 index above
 	if (i1 < 0) {i1 = 0; } 
@@ -669,26 +658,20 @@ std::map<std::string,double> ahdcSignal::Decode(){
 	int i_ovr = i_max;
 	while (i_ovr < Npts-1) {
 		if (Dgtz.at(i_ovr) > threshold){
-			i_ovr++; // first pass below threshold after max_value
+			i_ovr++; // first pass below threshold starting from max_value
 		}
 		else { break;}
-	}      // at this stage : (i_ovr-1)*samplingTime < t_start+t_ovr < i_ovr*samplingTime
-	//std::cout << "     ====> i_ovr : " << i_ovr << std::endl;
+	}      // at this stage : i_ovr-1 < t_ovr/samplingTime < i_ovr
 	if (i_ovr < Npts-2) {
 		i1 = i_ovr-1; 
 		i2 = i_ovr;
 		if (i1 < 1) {i1 = 0; }
 		slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2);
-		t_ovr = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope) - t_start; // done
+		t_ovr = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope) - t_start; // done // it's a time interval
 	}
 	else { t_ovr = samplingTime*i_ovr;}
 
 	// compute integral
-	int di = (int)  t_ovr/(2*samplingTime);
-	i1 = i_max - di;
-	i2 = i_max + di;
-	if (i1 <0) {i1 = 0;}
-	if (i2 >= Npts) {i2 = Npts-1;}
 	double i_inf = t_start/samplingTime;
 	double i_sup = (t_start+t_ovr)/samplingTime;
 	integral = 0;
@@ -699,7 +682,7 @@ std::map<std::string,double> ahdcSignal::Decode(){
 			Npts2++;
 		}
 	}
-	integral = integral/1; // done // adc/44 ns
+	integral = integral/1; // done // adc per 44 ns
 
 	// output
 	std::map<std::string,double> output;
@@ -710,63 +693,57 @@ std::map<std::string,double> ahdcSignal::Decode(){
 	output["t_max_value"] = t_max_value;
 	output["threshold"] = threshold;
 	output["noise_level"] = noise;
+	output["Npts2"] = Npts2;
+	
+	if (printFigure) this->ShowDecoding(output);
+	return output;
 
-//}
+}
 
-// ***********************************
-// Plotting part
-// ***********************************
+void ahdcSignal::ShowDecoding(std::map<std::string,double> output){
+	int Npts = Dgtz.size(); 
+	int Npts2 = output["Npts2"];
+	double t_start = output["t_start"];
+	double t_ovr = output["t_ovr"];
+	double integral = output["integral"];
+	double max_value = output["max_value"];
+	double t_max_value = output["t_max_value"];
+	double threshold = output["threshold"];
+	double noise = output["noise_level"];
+	int i_inf = (int) t_start/samplingTime;
 
-//void ahdcSignal::ShowDecoding(){
-//	int Npts = Dgtz.size(); 
-	// Histogram
-	TH1D * hist = new TH1D("hist_adc","hist_adc",Npts,tmin,tmax);
+	// Main graph
 	double ymax = 0;
 	TGraph* gr1 = new TGraph(Npts);
 	for (int i=0;i<Npts;i++){
-		int adc = Dgtz.at(i); // in ADC
-		for (int j=0;j<adc;j++)
-			hist->Fill(tmin + i*samplingTime);
+		int adc = Dgtz.at(i); 
 		if (ymax < adc) ymax = adc;
 		gr1->SetPoint(i,tmin + i*samplingTime,adc);
 	}
+	// Graph for filling
 	TGraph* gr2 = new TGraph(Npts2+2);
 	gr2->SetPoint(0,t_start,threshold);
 	gr2->SetPoint(Npts2+1,t_start+t_ovr, threshold);
 	for (int i=1;i<=Npts2;i++){
-		gr2->SetPoint(i,tmin+samplingTime*(i+(int) i_inf),Dgtz.at(i+(int) i_inf));
+		gr2->SetPoint(i,tmin+samplingTime*(i_inf+i),Dgtz.at(i_inf+i));
 	}
 
 	// Plot graph 
 	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
-	//gStyle->SetOptStat("nemruo");
-	//gStyle->SetOptStat("");
-	//hist->SetTitle("");
-	//hist->SetTitle(pid2name[pid].data());
-	//gr1->SetTitle(TString::Format("%s : p = %.2lf MeV, #theta = %.2lf deg, #phi = %.2lf deg",pid2name[pid].data(),p,theta*180/PI,phi*180/PI));
 	gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
-	//gr1->SetTitleSize(0.10);
 	gr1->GetXaxis()->SetTitle("Time (ns)");
 	gr1->GetXaxis()->SetTitleSize(0.05);
 	gr1->GetYaxis()->SetTitle("Charge (adc)");
 	gr1->GetYaxis()->SetTitleSize(0.05);
 	gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
-	//gr1->SetFillColorAlpha(kGreen, 1.0);
-	//gr1->SetFillStyle(3002);
 	gr1->SetMarkerColor(kBlack);
 	gr1->SetMarkerSize(5);
 	gr1->SetLineColor(kBlue);
-	
 	gr1->Draw("APL");
-	gr2->SetFillColorAlpha(kGreen, 1.0); gr2->Draw("F");
-	// Decoding 
-	//double t_start, t_ovr, t_max_value, max_value, integral;
-	//this->Decode(t_start,t_ovr,t_max_value,max_value,integral);
-	//double noise = 0;
-	//for (int i=0;i<5;i++){ noise += Noise.at(i);}
-	//noise = noise/5;
-	//double threshold = (max_value + noise)/2;
+	gr2->SetFillColorAlpha(kGreen, 1.0); 
+	gr2->Draw("F");
 	
+	// View decoding 
 	TLine* line1 = new TLine(t_start,0,t_start,threshold); line1->SetLineWidth(1); line1->SetLineColor(kRed); line1->SetLineStyle(2); line1->Draw(); // t_start
 	TLine* line2 = new TLine(0,threshold,t_start,threshold); line2->SetLineWidth(1); line2->SetLineColor(kRed); line2->SetLineStyle(2); line2->Draw(); // t_start
 	TLine* line3 = new TLine(t_start+t_ovr,0,t_start+t_ovr,threshold); line3->SetLineWidth(1); line3->SetLineColor(kRed); line3->SetLineStyle(2); line3->Draw(); // t_ovr
@@ -781,7 +758,7 @@ std::map<std::string,double> ahdcSignal::Decode(){
 	data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{t_start} =  %.0lf ns}",t_start).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{t_ovr} =  %.0lf ns}",t_ovr).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*2,TString::Format("#bf{#bf{max_value} =  %.0lf adc }",max_value).Data());
-	data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc/44 ns}",integral).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc per 44 ns}",integral).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*4,TString::Format("#bf{#bf{noise level} =  %.0lf adc}",noise).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*5,"#bf{1 adc =  10^{-5} keV/ns }");
 	data.SetTextAlign(11);	
@@ -791,15 +768,57 @@ std::map<std::string,double> ahdcSignal::Decode(){
 	data.DrawLatex(0+tmax*0.02,threshold,"threshold");
 	data.DrawLatex(tmax, noise+max_value*0.02,"noise level");
 
-
 	canvas1->Print(TString::Format("./output/SignalDecoded_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
 	delete line1; delete line2; delete line3; delete line5;
-	delete hist;
-	delete gr1; // delete arrow1;
+	delete gr1; delete gr2; delete arrow1;
 	delete canvas1;
-	delete gr2;
-	
-	// output
-	return output;
 }
 
+
+
+double ahdcSignal::Apply_CFD(double cfd_fraction, int cfd_delay, bool printFigure){
+	int Npts = Dgtz.size();
+	std::vector<double> signal(Npts,0.0);
+	for (int i=0;i<Npts;i++){
+		signal[i] += -cfd_fraction*Dgtz.at(i);
+		if (i >= cfd_delay) {
+			signal[i] += Dgtz.at(i-cfd_delay);
+		}
+	}
+	
+	if (printFigure) {
+		TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+		TGraph* gr1 = new TGraph(Npts);
+		TGraph* gr2 = new TGraph(Npts);
+		for (int i=0;i<Npts;i++){
+			gr1->SetPoint(i,tmin + i*samplingTime,Dgtz.at(i));
+			gr2->SetPoint(i,tmin + i*samplingTime,signal.at(i));
+		}
+		gr1->SetTitle(TString::Format("CFD,  fraction = %lf, delay = %d unité d'indice",cfd_fraction,cfd_delay));
+		gr1->GetXaxis()->SetTitle("Time (ns)");
+		gr1->GetXaxis()->SetTitleSize(0.05);
+		gr1->GetYaxis()->SetTitle("Charge (adc)");
+		gr1->GetYaxis()->SetTitleSize(0.05);
+		gr1->SetMarkerColor(kBlue);
+		gr1->SetMarkerSize(5);
+		gr1->SetLineColor(kBlue);
+		//gr1->SetLineStyle(2);
+		gr1->Draw("APL");
+		
+		//gr2->SetLineStyle(1);
+		gr2->SetLineColor(kRed);
+		gr2->SetMarkerColor(kRed);
+		gr2->SetMarkerSize(5);
+		gr2->Draw("LP");
+
+		canvas1->Print(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	delete gr1; delete gr2; delete canvas1;
+	}
+	return 0;
+}
+
+
+//void ahdcSignal::Show_CFD(){
+//
+//
+//}
