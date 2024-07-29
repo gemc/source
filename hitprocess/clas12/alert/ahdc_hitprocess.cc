@@ -86,7 +86,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//Signal->SetAdcMax(10000);
 	Signal->Digitize();
 	std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() > 10);
-	Signal->Apply_CFD(0.3,60,(Signal->Get_nsteps() > 10));
+	//std::map<std::string,double> output = Signal->Decode(false);
+
 	//if (Signal->Get_nsteps() >= 10) {
 		//Signal->PrintBeforeProcessing();
 		//Signal->PrintAllShapes();
@@ -108,7 +109,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
 	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
 	dgtz["ADC_timestamp"] = output["t_start"]; // ns
-	dgtz["ADC_t_cfd"] = 999;
+	dgtz["ADC_t_cfd"] = output["t_cfd"];
 
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = output["t_start"];
@@ -204,8 +205,7 @@ ahdcConstants ahdc_HitProcess::atc = initializeAHDCConstants(-1);
 #include "TLatex.h"
 #include "TLegend.h"
 #include "TArrow.h"
-
-
+#include <fstream>
 void ahdcSignal::ComputeDocaAndTime(MHit * aHit){
 	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
 	int nsteps = Lpos.size();
@@ -683,7 +683,8 @@ std::map<std::string,double> ahdcSignal::Decode(bool printFigure){
 		}
 	}
 	integral = integral/1; // done // adc per 44 ns
-
+	// constant fraction discriminator 
+	double t_cfd = this->Apply_CFD(0.3,60,printFigure);
 	// output
 	std::map<std::string,double> output;
 	output["t_start"] = t_start;
@@ -694,6 +695,7 @@ std::map<std::string,double> ahdcSignal::Decode(bool printFigure){
 	output["threshold"] = threshold;
 	output["noise_level"] = noise;
 	output["Npts2"] = Npts2;
+	output["t_cfd"] = t_cfd;
 	
 	if (printFigure) this->ShowDecoding(output);
 	return output;
@@ -711,6 +713,7 @@ void ahdcSignal::ShowDecoding(std::map<std::string,double> output){
 	double threshold = output["threshold"];
 	double noise = output["noise_level"];
 	int i_inf = (int) t_start/samplingTime;
+	double t_cfd = output["t_cfd"];
 
 	// Main graph
 	double ymax = 0;
@@ -755,12 +758,13 @@ void ahdcSignal::ShowDecoding(std::map<std::string,double> output){
 	TLatex data;
 	data.SetTextSize(0.03);
 	data.SetTextAlign(13);
-	data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{t_start} =  %.0lf ns}",t_start).Data());
-	data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{t_ovr} =  %.0lf ns}",t_ovr).Data());
+	data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{t_start} =  %.2lf ns}",t_start).Data());
+	data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{t_ovr} =  %.2lf ns}",t_ovr).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*2,TString::Format("#bf{#bf{max_value} =  %.0lf adc }",max_value).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc per 44 ns}",integral).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*4,TString::Format("#bf{#bf{noise level} =  %.0lf adc}",noise).Data());
 	data.DrawLatexNDC(0.5,0.8-0.05*5,"#bf{1 adc =  10^{-5} keV/ns }");
+	data.DrawLatexNDC(0.5,0.8-0.05*6,TString::Format("#bf{#bf{t_cfd} = %.2lf ns}",t_cfd));
 	data.SetTextAlign(11);	
 	data.DrawLatex(t_start,0+max_value*0.02,"t_start");
 	data.DrawLatex(t_max_value,max_value+max_value*0.02,"max_value");
@@ -776,17 +780,47 @@ void ahdcSignal::ShowDecoding(std::map<std::string,double> output){
 
 
 
-double ahdcSignal::Apply_CFD(double cfd_fraction, int cfd_delay, bool printFigure){
+double ahdcSignal::Apply_CFD(double CFD_fraction, int CFD_delay, bool printFigure){
 	int Npts = Dgtz.size();
+	std::vector<double> Data = Dgtz;
+	// Remove noise 
+	double noise = 0;
+	for (int i=0;i<5;i++){
+		noise += Data.at(i);
+	}
+	noise = noise/5;
+	for (int i=0;i<Npts;i++){
+		Data[i] = Data.at(i) - noise;
+	}
+	// Start CFD
 	std::vector<double> signal(Npts,0.0);
 	for (int i=0;i<Npts;i++){
-		signal[i] += -cfd_fraction*Dgtz.at(i);
-		if (i >= cfd_delay) {
-			signal[i] += Dgtz.at(i-cfd_delay);
+		signal[i] += -1*CFD_fraction*Data.at(i);
+		if (i >= CFD_delay) {
+			signal[i] += Data.at(i-CFD_delay);
 		}
 	}
+	// Deternine t_cfd
+	int i_ref = 0;
+	for (int i=0;i<Npts-1;i++){
+		if (signal.at(i) < 0){
+			i_ref = i;
+		}
+	} // last pass below zero
+	int i1 = i_ref; // 1 index below
+	int i2 = i_ref+1; // 1 index above
+	if (i1 < 0) {i1 = 0; }
+	if (i2 >= Npts) {i2 = Npts-1;}
+	double slope = (signal.at(i1) - signal.at(i2))/(i1-i2);
+	double i_cfd;
+	i_cfd = i1 + (0-signal.at(i1))/slope; // DONE
+	double t_cfd = tmin + i_cfd*samplingTime; // DONE
 	
 	if (printFigure) {
+		std::cout << "--------------------------------------" << std::endl;
+		std::cout << "|       t_CFD  :  "  << t_cfd << std::endl;
+		std::cout << "--------------------------------------" << std::endl;
+		
 		TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
 		TGraph* gr1 = new TGraph(Npts);
 		TGraph* gr2 = new TGraph(Npts);
@@ -794,29 +828,54 @@ double ahdcSignal::Apply_CFD(double cfd_fraction, int cfd_delay, bool printFigur
 			gr1->SetPoint(i,tmin + i*samplingTime,Dgtz.at(i));
 			gr2->SetPoint(i,tmin + i*samplingTime,signal.at(i));
 		}
-		gr1->SetTitle(TString::Format("CFD,  fraction = %lf, delay = %d unité d'indice",cfd_fraction,cfd_delay));
-		gr1->GetXaxis()->SetTitle("Time (ns)");
-		gr1->GetXaxis()->SetTitleSize(0.05);
-		gr1->GetYaxis()->SetTitle("Charge (adc)");
-		gr1->GetYaxis()->SetTitleSize(0.05);
-		gr1->SetMarkerColor(kBlue);
-		gr1->SetMarkerSize(5);
-		gr1->SetLineColor(kBlue);
-		//gr1->SetLineStyle(2);
-		gr1->Draw("APL");
-		
+		gr2->SetTitle(TString::Format("#bf{CFD},  fraction = %.0lf, delay = %d index units",CFD_fraction,CFD_delay));
+		gr2->GetXaxis()->SetTitle("Time (ns)");
+		gr2->GetXaxis()->SetTitleSize(0.05);
+		gr2->GetYaxis()->SetTitle("Charge (adc)");
+		gr2->GetYaxis()->SetTitleSize(0.05);
 		//gr2->SetLineStyle(1);
 		gr2->SetLineColor(kRed);
 		gr2->SetMarkerColor(kRed);
 		gr2->SetMarkerSize(5);
-		gr2->Draw("LP");
+		gr2->Draw("ALP");
 
+		gr1->SetMarkerColor(kBlue);
+		gr1->SetMarkerSize(5);
+		gr1->SetLineColor(kBlue);
+		//gr1->SetLineStyle(2);
+		gr1->Draw("PL");
+
+		TGaxis* axis1 = new TGaxis(0,0,tmax,0,0,tmax,510,"");
+		axis1->SetLineColor(kGreen);
+		axis1->SetLabelColor(kGreen);
+		axis1->Draw();
+
+		TLatex data;
+		data.SetTextSize(0.04);
+		data.SetTextAlign(13);
+		data.DrawLatexNDC(0.7,0.8,TString::Format("#bf{#bf{t_cfd} =  %.2lf ns}",t_cfd).Data());
+		
 		canvas1->Print(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
-	delete gr1; delete gr2; delete canvas1;
+		delete gr1; delete gr2; delete canvas1;
+		delete axis1;
+		
+		//std::ofstream fichier(TString::Format("./output/Data_CFD_%d_%d_%d_%d.txt",hitn,sector,layer,component));
+		//if (fichier.is_open()) {
+		//	fichier << Npts << std::endl;
+		//	for (int i=0;i<Npts;i++){
+		//		fichier << Dgtz.at(i) << " ";
+		//	}
+		//	fichier.close();
+		//}
 	}
-	return 0;
+	
+	return t_cfd;
 }
 
+//double ahdcSignal::Apply_CFD(double CFD_fraction, double CFD_delay, bool printFigure){ // CFD_delay in ns
+//	int i_CFD_delay = (int) CFD_delay/samplingTime;
+//	return this->Apply_CFD(CFD_fraction,i_CFD_delay,printFigure);
+//}
 
 //void ahdcSignal::Show_CFD(){
 //

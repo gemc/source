@@ -178,7 +178,8 @@ class ahdcSignal {
 		std::map<std::string,double> Decode(bool printFigure=false);
 		void ShowDecoding(std::map<std::string,double> output);
 		//double Apply_CFD(double cfd_fraction, double cfd_delay);
-		double Apply_CFD(double cfd_fraction, int cfd_delay, bool printFigure=false);
+		double Apply_CFD(double CFD_fraction, int CFD_delay, bool printFigure=false);
+		//double Apply_CFD(double CFD_fraction, double CFD_delay, bool printFigure=false);
 		void Show_CFD();
 		
 		public :
