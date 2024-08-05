@@ -86,7 +86,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	//Signal->SetAdcMax(10000);
 	Signal->Digitize();
 	//std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() > 10);
-	std::map<std::string,double> output = Signal->Decode(true);
+	std::map<std::string,double> output = Signal->Decode(false);
+	//Signal->PrintBeforeProcessing();
 
 	//if (Signal->Get_nsteps() >= 10) {
 		//Signal->PrintBeforeProcessing();
@@ -111,9 +112,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_timestamp"] = output["t_start"]; // ns
 	dgtz["ADC_t_cfd"] = output["t_cfd"]; // ns
 	dgtz["ADC_mctime"] = Signal->GetMCTime(); // ns
-	std::cout << "-------------------------------------------" << std::endl;
-	std::cout << "|      mctime : " << Signal->GetMCTime() << std::endl;
-	std::cout << "-------------------------------------------" << std::endl;
+	dgtz["ADC_nsteps"] = Signal->Get_nsteps(); 
 
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = output["t_start"];
@@ -346,18 +345,21 @@ void ahdcSignal::PrintBeforeProcessing(){
 	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
 	// Draw stems 
 	TGraph* gr1 = new TGraph(nsteps);
+	double ymax = 0;
 	for (int s=0;s<nsteps;s++){
 		// Draw points
 		gr1->SetPoint(s,DriftTime.at(s),Edep.at(s));
+		if (ymax < Edep.at(s)) ymax = Edep.at(s);
 	}
 	// Draw graph
 	//gr1->SetTitle("Deposited energy in each steps");
 	gr1->SetTitle("");
-	gr1->GetXaxis()->SetTitle("G4Time (ns)");
+	gr1->GetXaxis()->SetTitle("DriftTime (ns)");
 	gr1->GetYaxis()->SetTitle("Edep (keV)");
 	gr1->SetMarkerStyle(20);
 	gr1->SetMarkerColor(kRed);
 	gr1->SetMarkerSize(2);
+	gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
 	gr1->Draw("AP");
 	for (int s=0;s<nsteps;s++){
 		// Draw lines
@@ -906,11 +908,18 @@ double ahdcSignal::Apply_CFD(double CFD_fraction, int CFD_delay, bool printFigur
 //}
 
 double ahdcSignal::GetMCTime(){
+	if (nsteps == 0){ return 0; }
 	double mctime = 0;
 	double Etot = 0;
 	for (int s=0;s<nsteps;s++){
 		mctime += DriftTime.at(s)*Edep.at(s);
 		Etot += Edep.at(s);
 	}
-	return mctime/Etot;
+	mctime = mctime/Etot;
+	//std::cout << "-------------------------------------------" << std::endl;
+	//std::cout << "|      Etot   : " << Etot << "  keV" << std::endl;
+	//std::cout << "|      mctime : " << DriftTime.at(0) << "  ns" << std::endl;
+	//std::cout << "-------------------------------------------" << std::endl;
+
+	return mctime;
 }
