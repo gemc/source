@@ -87,7 +87,6 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	Signal->Digitize();
 	//std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() > 10);
 	std::map<std::string,double> output = Signal->Decode(false);
-	//Signal->PrintBeforeProcessing();
 
 	//if (Signal->Get_nsteps() >= 10) {
 		//Signal->PrintBeforeProcessing();
@@ -98,7 +97,6 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		//Signal->ShowDecoding();
 	//	output = Signal->Decode();
 	//}
-	delete Signal;
 
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -116,7 +114,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = output["t_start"];
-		
+	
+	delete Signal;
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;
@@ -918,7 +917,7 @@ double ahdcSignal::GetMCTime(){
 	mctime = mctime/Etot;
 	//std::cout << "-------------------------------------------" << std::endl;
 	//std::cout << "|      Etot   : " << Etot << "  keV" << std::endl;
-	//std::cout << "|      mctime : " << DriftTime.at(0) << "  ns" << std::endl;
+	//std::cout << "|      mctime : " << mctime << "  ns" << std::endl;
 	//std::cout << "-------------------------------------------" << std::endl;
 
 	return mctime;
