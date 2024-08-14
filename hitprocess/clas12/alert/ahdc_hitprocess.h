@@ -193,7 +193,7 @@ class ahdcSignal {
 		};
 };
 
-
+void ShowMHitContent(MHit* aHit, int hitn);
 
 
 #endif

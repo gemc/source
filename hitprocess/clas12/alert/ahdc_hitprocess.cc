@@ -85,18 +85,17 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	Signal->SetElectronYield(100000);
 	//Signal->SetAdcMax(10000);
 	Signal->Digitize();
-	//std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() > 10);
-	std::map<std::string,double> output = Signal->Decode(false);
+	std::map<std::string,double> output = Signal->Decode(Signal->Get_nsteps() >= 0);
+	//std::map<std::string,double> output = Signal->Decode(false);
 
-	//if (Signal->Get_nsteps() >= 10) {
-		//Signal->PrintBeforeProcessing();
-		//Signal->PrintAllShapes();
-		//Signal->PrintAfterProcessing();
-		//Signal->PrintNoise();
-		//Signal->PrintSignal();
-		//Signal->ShowDecoding();
-	//	output = Signal->Decode();
-	//}
+	/*if (Signal->Get_nsteps() >= 10) {
+		Signal->PrintBeforeProcessing();
+		Signal->PrintAllShapes();
+		Signal->PrintAfterProcessing();
+		Signal->PrintNoise();
+		Signal->PrintSignal();
+		ShowMHitContent(aHit,hitn);
+	}*/
 
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
@@ -481,8 +480,8 @@ void ahdcSignal::PrintAfterProcessing(){
 	gr1->SetLineColor(kBlue);
 	gr1->SetFillColorAlpha(kBlue,1.0);
 	gr1->SetFillStyle(3001);
-	//gr1->SetTitle("");
-	gr1->SetTitle(TString::Format("%s : p = □  MeV, #theta = □  deg, #phi = □  deg",pid2name[pid].data()));
+	gr1->SetTitle("");
+	//gr1->SetTitle(TString::Format("%s : p = □  MeV, #theta = □  deg, #phi = □  deg",pid2name[pid].data()));
 	gr1->GetXaxis()->SetTitle("Time (ns)");
 	gr1->GetYaxis()->SetTitle("#frac{d Edep}{dt} (keV/ns)");
 	//gr1->Draw("ALF"); 
@@ -577,8 +576,8 @@ void ahdcSignal::PrintSignal(){
 	hist->GetYaxis()->SetTitleSize(0.05);
 	hist->Draw();*/
 	
-	//gr1->SetTitle("");
-	gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
+	gr1->SetTitle("");
+	//gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
 	gr1->GetXaxis()->SetTitle("Time (ns)");
 	gr1->GetYaxis()->SetTitle("Charge (adc)");
 	//gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
@@ -683,7 +682,7 @@ std::map<std::string,double> ahdcSignal::Decode(bool printFigure){
 	int Npts2=0;
 	for (int i=0;i<Npts;i++){
 		if ((i >= i_inf) and (i <= i_sup)){
-			integral += (Dgtz.at(i)-noise);
+			integral += (Dgtz.at(i)-threshold);
 			Npts2++;
 		}
 	}
@@ -738,7 +737,8 @@ void ahdcSignal::ShowDecoding(std::map<std::string,double> output){
 
 	// Plot graph 
 	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
-	gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
+	gr1->SetTitle("");
+	//gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
 	gr1->GetXaxis()->SetTitle("Time (ns)");
 	gr1->GetXaxis()->SetTitleSize(0.05);
 	gr1->GetYaxis()->SetTitle("Charge (adc)");
@@ -921,4 +921,222 @@ double ahdcSignal::GetMCTime(){
 	//std::cout << "-------------------------------------------" << std::endl;
 
 	return mctime;
+}
+
+
+
+
+void ShowMHitContent(MHit* aHit, int hitn){
+	
+	// define a unique identifier, assume that 2 hits cannot have the same {hitn, sector, layer, component}
+	// (of course it is false, it allows 60% of hits to be different : I will do a statistic for this but it is not really important)
+	vector<identifier> identity = aHit->GetId();
+	int sector    = 0;
+	int layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
+	int component = identity[2].id;
+	TString MyUniqueId;
+	MyUniqueId.Form("%d_%d_%d_%d",hitn,sector,layer,component);
+
+	vector<G4double>      Edep        = aHit->GetEdep();
+	vector<double>        stepTime    = aHit->GetTime();
+
+	double edep_max = Edep.at(0), tmax = stepTime.at(0);
+	double edep_min = edep_max, tmin = tmax;
+	int Edep_size = Edep.size(), tsize = stepTime.size();
+
+	for (int i=0;i<Edep_size;i++){
+		double tmp = Edep.at(i);
+		if (edep_max < tmp) edep_max = tmp;
+		if (edep_min > tmp) edep_min = tmp;
+	}
+	for (int i=0;i<tsize;i++){
+		double tmp = stepTime.at(i);
+		if (tmax < tmp) tmax = tmp;
+		if (tmin > tmp) tmin = tmp;
+	}
+
+	TH1D* hist_Edep = new TH1D("hist_Edep","Edep",100, edep_min*1000,edep_max*1000);
+	for (int i=0;i<Edep_size;i++) hist_Edep->Fill(Edep.at(i)*1000);
+
+	TH1D* hist_stepTime = new TH1D("hist_stepTime","stepTime",100, tmin,tmax);
+        for (int i=0;i<tsize;i++) hist_stepTime->Fill(stepTime.at(i));
+
+	// **************************
+	// Plot hist_Edep
+	// **************************
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_Edep->GetXaxis()->SetTitle("Edep [keV]");
+	hist_Edep->GetXaxis()->SetTitleSize(0.05);
+	hist_Edep->GetYaxis()->SetTitle("#nstep");
+	hist_Edep->GetYaxis()->SetTitleSize(0.05);
+	hist_Edep->Draw();
+	canvas1->Print(TString::Format("./output/hist_Edep_%s.pdf",MyUniqueId.Data()));
+	delete hist_Edep; delete canvas1;
+
+	// **************************
+	// plot hist_stepTime
+	// **************************
+	TCanvas* canvas2 = new TCanvas("c2","c2 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_stepTime->GetXaxis()->SetTitle("stepTime [ns]");
+	hist_stepTime->GetXaxis()->SetTitleSize(0.05);
+	hist_stepTime->GetYaxis()->SetTitle("#nstep");
+	hist_stepTime->GetYaxis()->SetTitleSize(0.05);
+	hist_stepTime->Draw();
+	canvas2->Print(TString::Format("./output/hist_stepTime_%s.pdf",MyUniqueId.Data()));
+	delete hist_stepTime; delete canvas2;
+
+	// *********************************************************
+	// 2D view of hit positions
+	// all steps(~hits in a given cell) have the same idenfier : that is why vector<>.size() can be > 1
+	// *********************************************************
+	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+	int nsteps = Lpos.size();
+	double x[nsteps], y[nsteps], z[nsteps]; // cartesian coordinates
+	double rho[nsteps], theta[nsteps], phi[nsteps]; // spherical coordinates
+	double radius[nsteps]; // radial coordinate in (x,y) plan
+
+	double xmin = Lpos[0].x();
+	double xmax = xmin;
+	double ymin = Lpos[0].y();
+	double ymax = ymin;
+	double zmin = Lpos[0].z();
+	double zmax = zmin;
+	for (int i=0;i<nsteps;i++){
+		x[i] = Lpos[i].x();
+		y[i] = Lpos[i].y();
+		z[i] = Lpos[i].z();
+		if (!futils::cart2polar3D(x[i],y[i],z[i],rho[i],theta[i],phi[i])){
+			rho[i] = 0; theta[i] = 0; phi[i] = 0; // convention
+		}
+		radius[i] = rho[i]*sin(theta[i]);
+		if (xmax < x[i]) xmax = x[i];
+		if (ymax < y[i]) ymax = y[i];
+		if (zmax < z[i]) zmax = z[i];
+		if (xmin > x[i]) xmin = x[i];
+		if (ymin > y[i]) ymin = y[i];
+		if (zmin > z[i]) zmin = z[i];
+	}
+	double xabs = (abs(xmax) > abs(xmin)) ? abs(xmax) : abs(xmin); // the greater in absolute value
+	double yabs = (abs(ymax) > abs(ymin)) ? abs(ymax) : abs(ymin);
+	double xpad = (xabs > yabs) ? xabs : yabs;
+	double margin=0.1*(2*xpad); // 10% of th efull width
+
+	// *****************
+	// In cartesian plan
+	// *****************
+	TCanvas* canvas3 = new TCanvas("c3","c3 title",0,0,1500,1500);
+	canvas3->Range(-xpad-margin,-xpad-margin,xpad+margin,xpad+margin);
+	// Draw graph in (x,y)
+	TGraph* graph1 = new TGraph(nsteps,x,y);
+	graph1->SetTitle("");
+	graph1->SetMarkerStyle(21);
+        graph1->SetMarkerColor(kRed);
+	graph1->SetMarkerSize(2);
+        graph1->Draw("P");
+	// Draw the axis
+	TGaxis* ox = new TGaxis(-xpad,0,xpad,0,-xpad,xpad,510,"+-S>");
+        ox->SetTickSize(0.009);
+        ox->SetLabelFont(42);
+        ox->SetLabelSize(0.025);
+        ox->SetTitle("x [mm]");
+	ox->SetTitleSize(0.03);
+        ox->Draw();
+	TGaxis* oy = new TGaxis(0,-xpad,0,xpad,-xpad,xpad,510,"+-S>");
+        oy->SetTickSize(0.009);
+        oy->SetLabelFont(42);
+        oy->SetLabelSize(0.025);
+        oy->SetTitle("y [mm]");
+	oy->SetTitleSize(0.03);
+        oy->Draw();
+	canvas3->Print(TString::Format("./output/Lpos_cart_%s.pdf",MyUniqueId.Data()));
+	delete graph1; delete ox; delete oy; delete canvas3;
+	// *****************
+	// In  polar plan
+	// *****************
+	TCanvas* canvas4 = new TCanvas("c4","c4 title",1500,1500);
+	TGraphPolar* grP = new TGraphPolar(nsteps,phi,radius,0,0);
+	grP->SetTitle("");
+	grP->SetMarkerStyle(20);
+	grP->SetMarkerSize(4);
+	grP->SetMarkerColor(kRed);
+	grP->Draw("PE");
+	canvas4->Update();
+	grP->GetPolargram()->SetToRadian();
+	grP->GetPolargram()->SetRadialLabelSize(0.03);
+	grP->GetPolargram()->SetPolarLabelSize(0.04);
+	grP->SetMinRadial(0);
+	canvas4->Print(TString::Format("./output/Lpos_polar_%s.pdf",MyUniqueId.Data()));
+	delete grP; delete canvas4;
+	// ***************************
+	// hist_z
+	// ***************************
+	TH1D* hist_z = new TH1D("hist_z","hist_z",100, zmin,zmax);
+	for (int i=0;i<nsteps;i++) hist_z->Fill(z[i]);
+	TCanvas* canvas5 = new TCanvas("c5","c5 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_z->GetXaxis()->SetTitle("z [mm]");
+	hist_z->GetXaxis()->SetTitleSize(0.05);
+	hist_z->GetYaxis()->SetTitle("");
+	hist_z->GetYaxis()->SetTitleSize(0.05);
+	hist_z->Draw();
+	canvas5->Print(TString::Format("./output/hist_z_%s.pdf",MyUniqueId.Data()));
+	delete hist_z; delete canvas5;
+	// ***************************
+	// hist_x
+	// ***************************
+	TH1D* hist_x = new TH1D("hist_x","hist_x",100, xmin,xmax);
+	for (int i=0;i<nsteps;i++) hist_x->Fill(x[i]);
+	TCanvas* canvas6 = new TCanvas("c6","c6 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_x->GetXaxis()->SetTitle("x [mm]");
+	hist_x->GetXaxis()->SetTitleSize(0.05);
+	hist_x->GetYaxis()->SetTitle("");
+	hist_x->GetYaxis()->SetTitleSize(0.05);
+	hist_x->Draw();
+	canvas6->Print(TString::Format("./output/hist_x_%s.pdf",MyUniqueId.Data()));
+	delete hist_x; delete canvas6;
+	// ***************************
+	// hist_y
+	// ***************************
+	TH1D* hist_y = new TH1D("hist_y","hist_y",100, ymin,ymax);
+	for (int i=0;i<nsteps;i++) hist_y->Fill(y[i]);
+	TCanvas* canvas7 = new TCanvas("c7","c7 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_y->GetXaxis()->SetTitle("y [mm]");
+	hist_y->GetXaxis()->SetTitleSize(0.05);
+	hist_y->GetYaxis()->SetTitle("");
+	hist_y->SetTitleSize(0.05);
+	hist_y->Draw();
+	canvas7->Print(TString::Format("./output/hist_y_%s.pdf",MyUniqueId.Data()));
+	delete hist_y; delete canvas7;
+	// ***************************
+	// hist_radius
+	// ***************************
+	TH1D* hist_r = new TH1D("hist_r","hist_r",100, 0, 50);
+	for (int i=0;i<nsteps;i++) hist_r->Fill(radius[i]);
+	TCanvas* canvas8 = new TCanvas("c8","c8 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_r->GetXaxis()->SetTitle("radius [mm]");
+	hist_r->GetXaxis()->SetTitleSize(0.05);
+	hist_r->GetYaxis()->SetTitle("");
+	hist_r->SetTitleSize(0.05);
+	hist_r->Draw();
+	canvas8->Print(TString::Format("./output/hist_r_%s.pdf",MyUniqueId.Data()));
+	delete hist_r; delete canvas8;
+	// ***************************
+	// hist_phi
+	// ***************************
+	TH1D* hist_phi = new TH1D("hist_phi","hist_phi",100, 0,2*PI);
+	for (int i=0;i<nsteps;i++) hist_phi->Fill(phi[i]);
+	TCanvas* canvas9 = new TCanvas("c9","c9 title",1366,768);
+	gStyle->SetOptStat("nemruo");
+	hist_phi->GetXaxis()->SetTitle("phi [rads]");
+	hist_phi->GetXaxis()->SetTitleSize(0.05);
+	hist_phi->GetYaxis()->SetTitle("");
+	hist_phi->SetTitleSize(0.05);
+	hist_phi->Draw();
+	canvas9->Print(TString::Format("./output/hist_phi_%s.pdf",MyUniqueId.Data()));
+	delete hist_phi; delete canvas9;
 }
