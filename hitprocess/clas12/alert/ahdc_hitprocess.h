@@ -85,11 +85,7 @@ public:
 };
 
 #include <string>
-#include "Math/PdfFuncMathCore.h"
-
-namespace futils {
-	bool cart2polar3D(double x, double y, double z, double & rho, double & theta, double & phi); // angles in radians
-}
+#include "CLHEP/GenericFunctions/Landau.hh"
 
 class ahdcSignal {
 	// MHit identifiers
@@ -116,6 +112,7 @@ class ahdcSignal {
 		double samplingTime = 44;      // ns
 		double electronYield = 9500;   // ADC_gain
 		int    adc_max = 4095; // 12 digits : 2^12-1
+		double Landau_width = 240; // 600/2.5;
 	// public methods
 	public :
 		ahdcSignal() = default;
@@ -126,7 +123,6 @@ class ahdcSignal {
 			sector = 0;
 			layer = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 			component = identity[2].id;
-			pid = aHit->GetPID();
 			// fill vectors
 			Edep = aHit->GetEdep();
 			nsteps = Edep.size();
@@ -142,58 +138,53 @@ class ahdcSignal {
 		int 					Get_component() {return component;}
 		int 					Get_nsteps() {return nsteps;}
 
-		double 					GetSamplingTime()	 {return samplingTime;}
-		double                                  GetElectronYield()	 {return electronYield;}
-		int	                                GetAdcMax()		 {return adc_max;}
-		double 					GetTmin()                {return tmin;}
-		double                                  GetTmax()                {return tmax;}
-		double 					GetDelay()               {return delay;}
-		std::vector<double>                     GetNoise()               {return Noise;}
+		double 					GetSamplingTime()	{return samplingTime;}
+		double                                  GetElectronYield()	{return electronYield;}
+		int	                                GetAdcMax()		{return adc_max;}
+		double 					GetTmin()               {return tmin;}
+		double                                  GetTmax()               {return tmax;}
+		double 					GetDelay()              {return delay;}
+		double 					GetLandauWidth() 	{return Landau_width;}
 
+		std::vector<double>                     GetEdep() 		{return Edep;}
+		std::vector<double>                     GetG4Time()		{return G4Time;}
+		std::vector<double>                     GetDoca()		{return Doca;}
+		std::vector<double>                     GetDriftTime()		{return DriftTime;}
+		std::vector<double>                     GetNoise()              {return Noise;}
+		std::vector<double> 			GetDgtz()		{return Dgtz;}
+		
+		// can be set, but only relevant before using the method "Digitize()"
 		void SetSamplingTime(double samplingTime_)		{samplingTime = samplingTime_;}
 		void SetElectronYield(double electronYield_)		{electronYield = electronYield_;}
 		void SetAdcMax(int adc_)				{adc_max = adc_;}
 		void SetTmin(double tmin_)				{tmin = tmin_;}
 		void SetTmax(double tmax_)                              {tmax = tmax_;}
 		void SetDelay(double delay_) 				{delay = delay_;}
+		void SetLandauWith(double Landau_width_)		{Landau_width = Landau_width_;} 
 		void SetNoise(std::vector<double> Noise_)               {Noise = Noise_;}
 
 		double operator()(double t){
+			using namespace Genfun;
 			double res = 0;
 			for (int s=0; s<nsteps; s++){
-				res += Edep.at(s)*ROOT::Math::landau_pdf(t-delay,600/2.5,DriftTime.at(s)); // landau width parameter = 600/2.5; think to create a new para.
+				// setting Landau's parameters
+				Landau L;
+				L.peak() = Parameter("Peak",DriftTime.at(s),tmin,tmax); 
+				L.width() = Parameter("Width",Landau_width,0,400); 
+				res += Edep.at(s)*L(t-delay);
 			}
 			return res;
 		}
 
 		void Digitize();
 		void GenerateNoise(double mean, double stdev);
-
-		void PrintBeforeProcessing();
-		void PrintAllShapes();
-		void PrintAfterProcessing();
-		void PrintSignal(); 
-		void PrintNoise();
-		// Decoding
-		std::map<std::string,double> Decode(bool printFigure=false);
-		void ShowDecoding(std::map<std::string,double> output);
-		double Apply_CFD(double CFD_fraction, int CFD_delay, bool printFigure=false);
-		void Show_CFD();
-		double GetMCTime();
 		
-		public :
-		int pid;
-		std::map<int,std::string> pid2name = {
-			{2212,"proton"},
-			{2112, "neutron"},
-			{1000020040,"alpha"},
-			{1000010030,"triton"},
-			{1000010020,"deuteron"},
-			{1000020030,"He3"}
-		};
-};
-
-void ShowMHitContent(MHit* aHit, int hitn);
+		// Decoding
+		std::map<std::string,double> Decode();
+		double Apply_CFD(double CFD_fraction, int CFD_delay); // CFD_delay in index unit
+		double GetMCTime();
+		double GetMCEtot();		
+	};
 
 
 #endif
