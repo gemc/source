@@ -177,15 +177,43 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	writeHit = true;
 	rejectHitConditions = false;
-	
+
+	int pmtType = 12700;
+	// sector 4: mix of H12700 and H8500
+	if(idsector == 4){
+	  pmtType = richc.pmtType[idpmt-1];
+	}
 	double energy = aHit->GetEs()[0]/electronvolt;
 	double qeff = 0;
-	for(int i = 0; i < richc.nQEbins; i++){
-	  if(energy < richc.Ene[i] && energy > richc.Ene[i+1]){
-	    qeff = richc.QE[i];
-	    break;	    	    
+	
+	if(pmtType == 8500){
+	  for(int i = 0; i < richc.nQEbinsH8500; i++){
+	    if(energy < richc.Ene_H8500[i] && energy > richc.Ene_H8500[i+1]){
+	      if( std::abs(energy - richc.Ene_H8500[i]) < std::abs(energy - richc.Ene_H8500[i+1])){
+		qeff = richc.QE_H8500[i];
+	      }
+	      else{
+		qeff = richc.QE_H8500[i+1];
+	      }
+	      break;	    	    
+	    }
 	  }
 	}
+	else if(pmtType == 12700){
+	  for(int i = 0; i < richc.nQEbinsH12700; i++){
+	    if(energy < richc.Ene_H12700[i] && energy > richc.Ene_H12700[i+1]){
+	      if( std::abs(energy - richc.Ene_H12700[i]) < std::abs(energy - richc.Ene_H12700[i+1])){
+		qeff = richc.QE_H12700[i];
+	      }
+	      else{
+		qeff = richc.QE_H12700[i+1];
+	      }
+	      break;	    	    
+	    }
+	  }	  
+	}
+	
+	
 
 	// applying quantum efficiency from thrown random value set in integrateDgt
 	if( identity[2].userInfos[3] > qeff && !aHit->isElectronicNoise) {
@@ -223,8 +251,14 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	G4ThreeVector pixelCenterLocal = getPixelCenter(pixel);
 	G4ThreeVector pixelCenterGlobal = prestep->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(pixelCenterLocal);
 
+	int idsector = yid[0].id;
         int pmt = yid[1].id;
-	RichPixel richPixel(richc.pmtType[pmt-1]);
+        int pmtType = 12700;
+	// sector 4: mix of H8500 and H12700
+        if(idsector==4){ 
+          pmtType = richc.pmtType[pmt-1];
+        }
+	RichPixel richPixel(pmtType);
 	richPixel.Clear();
 	
 	int t1 = -1;

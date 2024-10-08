@@ -17,14 +17,14 @@
 // mlibrary
 #include "frequencySyncSignal.h"
 
-// EVIO
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations" 
-#pragma GCC diagnostic ignored "-Wdeprecated" 
-#include "evioUtil.hxx"
-#include "evioFileChannel.hxx"
-#pragma GCC diagnostic pop
-using namespace evio;
+
+
+
+ 
+
+
+
+
 
 // Hipo
 #include "hipo4/writer.h"
@@ -240,7 +240,7 @@ public:
 	string outFile;
 
 	ofstream        *txtoutput;
-	evioFileChannel *pchan;
+	
 
 	// hipo schema and writer
 	// The schemas have to be added to the writer before openning

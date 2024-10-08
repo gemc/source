@@ -50,7 +50,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	rejectHitConditions = false;
 	writeHit = true;
 
-	int sector    = 0;
+	int sector    = 1;
 	int layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 	int component = identity[2].id;
 
@@ -64,7 +64,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
 		dgtz["component"] = component;
-		dgtz["ADC_order"] = 0;
+		dgtz["ADC_order"] = 1;
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
@@ -75,266 +75,35 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		return dgtz;
 
 	}
-	
-	double doca = 100.0;
 
-	// true information
-	
-	trueInfos tInfos(aHit);
-	
-	vector<int>           stepTrackId = aHit->GetTIds();
-	vector<double>        stepTime    = aHit->GetTime();
-	vector<double>        mgnf        = aHit->GetMgnf();
-	vector<G4double>      Edep        = aHit->GetEdep();
-	vector<G4ThreeVector> pos         = aHit->GetPos(); // local position variable for each step
-	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
-	vector<G4ThreeVector> mom         = aHit->GetMoms();
-	vector<double>        E           = aHit->GetEs();
-	
-	
-//	double signal_t = 0.0;
-	double signal_tTimesEdep = 0.0;
-	
-	
-	double LposX=0.;
-	double LposY=0.;
-	double LposZ=0.;
-	
-	double driftVelocity = 0.026;  // mm/ns // drift velocity is 26 um/ns, taken from DC
-	
-	//vector<double> CellVertex;
-	// double CellVertex = 0.0;
-	
-	double xV0 = 0.0;
-	double yV0 = 0.0;
-	double xV3 = 0.0;
-	double yV3 = 0.0;
-	double xV4 = 0.0;
-	double yV4 = 0.0;
-	double xV7 = 0.0;
-	double yV7 = 0.0;
-	
-	double Y_sigwire_top = 0.0; // z=-150 mm
-	double X_sigwire_top = 0.0;
-	double Z_sigwire_top = -150.0;// Global coordiantes = -22.3 mm // Local coordinates = -150.0 mm!
-	double Y_sigwire_bot = 0.0; // z=+150 mm
-	double X_sigwire_bot = 0.0;
-	double Z_sigwire_bot = 150.0;// Global coordiantes = 277.7 mm // Local coordinates = 150.0 mm!
-	
-	double dim_id_2, dim_id_8;
-	// int subcell = 0; // subcell value = 1 or 2, for one same cell, 1 is to the right of the signal wire, 2 is to the left of the signal wire.
+	ahdcSignal *Signal = new ahdcSignal(aHit,hitn);
+	Signal->SetTmin(0);
+	Signal->SetTmax(6000);
+	//Signal->SetDelay(1000); // ns
+	//Signal->SetSamplingTime(44); // ns
+	Signal->SetElectronYield(100000);
+	Signal->Digitize();
+	std::map<std::string,double> output = Signal->Decode();
 
-	// Vertices #0 and #3 are always the first/last ones to define the top face of G4 generic trapezoide
-	// Vertices #6 and #9 are always the first/last ones to define the bottom face of G4 generic trapezoide
-	
-	//	double SigWireRadiusTop = 0.0;
-	//	double SigWireRadiusBottom = 0.0;
-	// int wirealigned = 0;
-	// double SigWireAlphaTop = 0.0;
-	// double SigWireAlphaBottom = 0.0;
-	// double SigWireDeltaAlpha = 0.0;
-	
-	// this is to find the distance from the hit to the signal wire and that is perpendicular to the wire! mm!
-	double L_ab, L_ah, L_bh, H_abh; // for a triangle abh with: a = top sig. wire coordinates, b = bottom sig. wire coordinates, h = hit coordinates (mm);
-	
-	// this is for additional calculations for check
-	// double HitRadius;
-	//, AlphaHit;
-	
-	// this is for energy deposit calculation
-	double E_wire = 0.0;
-	double E_tot_wire = 0.0;
-	double attenuation = 10.0; // mm!!!
-	double adc_energy = 0.0;
-	double EYld = 10.0;
-	
-	double totEdepMC = 0.0;
-	
-//	for(int p=0; p<17; p++)
-//	{
-//		CellVertex = aHit->GetDetector().dimensions[p]; // G4 Generic Trapezoide dimensions G4 Generic Trapezoide dimensions
-//		cout << "Hitted cell parameter" << p << " value = " << CellVertex << endl;
-//	}
-	
-	//	dim_id_1 = aHit->GetDetector().dimensions[1];
-	
-	 dim_id_2 = aHit->GetDetector().dimensions[2];
-	 dim_id_8 = aHit->GetDetector().dimensions[8];
-	
-	yV3 = aHit->GetDetector().dimensions[8];
-	xV3 = aHit->GetDetector().dimensions[7];
-	yV0 = aHit->GetDetector().dimensions[2];
-	xV0 = aHit->GetDetector().dimensions[1];
-	
-	yV7 = aHit->GetDetector().dimensions[16];
-	xV7 = aHit->GetDetector().dimensions[15];
-	yV4 = aHit->GetDetector().dimensions[10];
-	xV4 = aHit->GetDetector().dimensions[9];
-
-
-	if ( abs(dim_id_2) > abs(dim_id_8)) {
-		// subcell = 1;
-
-		X_sigwire_top = xV3 + (xV0 - xV3)/2;
-		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
-		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
-		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
-
-	} else {
-		// subcell = 2;
-
-		X_sigwire_top = xV0 + (xV3 - xV0)/2;
-		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
-		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
-		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
-	}
-
-
-	//cout << " shared side defined by points: (" << dim_id_1 << "," <<dim_id_2 << ") and ("  << "," <<dim_id_8 << ") for the 1rst face; " << endl;
-	//cout << " and  by points: (" << xV4 << "," << yV4 << ") and (" << xV7 << "," << yV7 << ") for the 2nd face; all in mm!!!" << endl;
-	//cout << "sub-cell number = "  << "; hitted cell wire coord.: top face = (" << X_sigwire_top << ", " << Y_sigwire_top << "); bottom face = (" << X_sigwire_bot << ", " << Y_sigwire_bot << ");" << endl;
-	
-	//	SigWireRadiusTop = sqrt(pow(X_sigwire_top,2) + pow(Y_sigwire_top,2)); // mm!
-	//	SigWireRadiusBottom = sqrt(pow(X_sigwire_bot,2) + pow(Y_sigwire_bot,2)); // mm!
-	// SigWireAlphaTop = acos(X_sigwire_top/SigWireRadiusTop); // * 180.0 / PI to pass into degrees, acos() gives the value in radians:
-	// SigWireAlphaBottom = acos(X_sigwire_bot/SigWireRadiusBottom); // * 180.0 / PI;
-	// SigWireDeltaAlpha = SigWireAlphaTop - SigWireAlphaBottom;
-	
-	// Plan ZX for a cell, signal wire orientation
-	
-	
-	//	if ( SigWireRadiusTop == SigWireRadiusBottom )
-	//	{
-	//		wirealigned = 1;
-	//	}
-	
-	//cout << " Signal wire radius (top face) = " << SigWireRadiusTop << "; Signal wire radius (bottom face) = " << SigWireRadiusBottom << "; sig. wire aligned = " << wirealigned << endl;
-	//cout << " Signal wire alpha (top face) degrees = " << (SigWireAlphaTop * 180.0 / PI)  << "; Signal wire alpha (bottom face) degrees = " << (SigWireAlphaBottom * 180.0 / PI) << "; sig. wire Delta Alpha (top - bot.) = " << (SigWireDeltaAlpha * 180.0 / PI) << endl;
-	
-	// cout << " ************** Hit started! **************** " << endl;
-	//cout << "First loop on steps begins" << endl;
-	
-	L_ab = sqrt( pow((X_sigwire_bot - X_sigwire_top),2) + pow((Y_sigwire_bot - Y_sigwire_top),2) + pow((Z_sigwire_bot - Z_sigwire_top),2) );
-	// int local = 0;
-	for(unsigned int s=0; s<tInfos.nsteps; s++)
-	{
-		LposX = Lpos[s].x();
-		LposY = Lpos[s].y();
-		LposZ = Lpos[s].z();
-		
-//		if (LposZ>150.0) cout << " ######### Global coordinate is seen in Z!!! ########## " << endl;
-//		if (LposZ<-22.3)
-//		{
-//			cout << " ######### Local coordinate is seen in Z!!! ########## " << endl;
-//			local = local + 1;
-//		}
-		
-		// HitRadius = sqrt(pow(LposX,2) + pow(LposY,2)); // mm!
-		// AlphaHit = acos(LposX/HitRadius); // radians! and for a precize Z_hit = LposZ (mm)
-		
-		// Calculation of distance from hit to signal wire and perpendicular to the wire!
-		L_ah = sqrt( pow((X_sigwire_top - LposX),2) + pow((Y_sigwire_top - LposY),2) + pow((Z_sigwire_top - LposZ), 2) );
-		L_bh = sqrt( pow((X_sigwire_bot - LposX),2) + pow((Y_sigwire_bot - LposY),2) + pow((Z_sigwire_bot - LposZ), 2) );
-		H_abh = L_ah * sqrt( 1 - pow(((L_ah*L_ah + L_ab*L_ab - L_bh*L_bh)/(2*L_ab*L_ah)), 2) );
-		
-		// variables check for doca calculation
-//		cout << "Hit (X,Y,Z) location (mm) (" << LposX << ", " << LposY << ", " <<  LposZ << ")" << endl;
-//		cout << "Signal wire length (mm) = " << L_ab << endl;
-//		cout << "distance hit->signal wire &perpendicular to wire (mm) = " << H_abh << endl;
-//		cout << "Hit radius (mm) and alpha (deg.) = (" << HitRadius << ", " << (AlphaHit) * 180.0 / PI << ")" << endl;
-		
-		if ( H_abh <= doca ) {
-			doca = H_abh; // mm!!!
-		}
-		
-		// energy deposit calculation
-		E_wire = Edep[s] *exp(-H_abh/attenuation);
-		E_tot_wire = E_tot_wire + E_wire;
-		
-		totEdepMC = totEdepMC+Edep[s];
-		
-		// time calculation
-		// signal_t = stepTime[s] + (H_abh/driftVelocity);
-		// cout << "signal_t: " << signal_t << ", stepTime: " << stepTime[s] << endl;
-            
-                // docasig is a fit to sigma vs distance plot. A second order pol used for the fit (p0+p1*x+p2*x*x).
-                // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is derived from the fit (1/(dt/dx)).
-                // both sig vs dist and t vs dist plots are taken from  Lucien Causse's PhD thesis ("Development of a stereo drift chamber for the Jefferson Laboratory ALERT Experiment."). 
-                // plots were digitized and then fitted to a pol2. 
-
-                double driftP1=-16.17;
-                double driftP2=24.81;
-                double docasig = 337.3-210.3*doca+34.7*pow(doca,2);
-                std::default_random_engine dseed(time(0)); //seed
-                std::normal_distribution<double> ddist(doca, docasig); //a resuolution affect is added to doca.
-                double doca_r =ddist(dseed);
-	        driftVelocity = 1./(driftP1+2.*driftP2*doca_r);  // mm/ns // drift velocity as a function of distance. pol2 fitted to t vs x plot and drift velocity is then extracted from dx/dt, d/dt(p0+p1*x+p2*x^2)=p1+2*p2*x.
-		signal_tTimesEdep = signal_tTimesEdep + (stepTime[s] + H_abh/driftVelocity) * E_wire;
-		// cout << "signal_tTimesEdep: " << signal_tTimesEdep << endl;
-		
-		//time = stepTime[s]++;
-		//adc = Edep[s]++;
-		
-	}
-	//cout << "First loop on steps ends" << endl;
-	
-	// energy adc value
-	adc_energy = E_tot_wire * EYld;
-	
-	// Just to test, time is linear with doca
-	double a = 5.0;
-	double b = 5.0;
-	//double time = a*doca+b + signal_tTimesEdep/E_tot_wire;
-	double time = signal_tTimesEdep/E_tot_wire;
-//	double signal = 0.0;
-//	signal = signal_tTimesEdep/E_tot_wire;
-	
-	
-	// Here are the dgtz varibles that we want to calculate using MC true info of a hit
-	// They are visible in the gemc simulation output: integrated digitized bank (2302,0)
-//	dgtz["superlayer"]  = identity[0].id;	//(2302,1)
-//	dgtz["layer"]       = identity[1].id;		//(2302,2)
-//	dgtz["wire"]        = identity[2].id;	//(2302,3)
-//	dgtz["doca"]        = doca;		//(2302,4)
-//	dgtz["adc_energy"]  = adc_energy;		//(2302,5)
-//	dgtz["wire_energy"] = E_tot_wire;		//(2302,5)
-//	dgtz["totEdep_MC"]  = totEdepMC;
-//	dgtz["signal"]      = signal;
-//	dgtz["time"]        = time;		//(2302,6)
-//	dgtz["hitn"]        = hitn;		//(2302,99)
-	
-	//cout << " start of the AHDC hit " << endl;
-	//cout << " value in identity[0].id = superlayer var: " << identity[0].id << endl;
-	//cout << " value in identity[1].id = layer var: " << identity[1].id << endl;
-	//cout << " value in identity[2].id = wire var: " << identity[2].id << endl;
-	//cout << " value in identity[3].id var: " << identity[3].id << endl;
-	//cout << " doca value = dist. hit->sig.wire & perpendicular to signal wire) (mm!!!): " << doca << endl;
-	//cout << " value in doca output: " << doca << endl;
-	//cout << " value in MC totEdep: " << totEdepMC << endl;
-	//cout << " value in wire energy deposit: " << E_tot_wire << endl;
-	//cout << " value in adc energy deposit: " << adc_energy << endl;
-	//cout << " value in signal var: " << signal << endl;
-	//cout << " value in time var: " << time << endl;
-	//cout << " value in hitn var: " << hitn << endl;
-	//cout << " if local <> 0 than hit in local reference; local = " << local << endl;
-	// cout << " ************** Hit ended! **************** " << endl;
-	
-	//cout << " value in superlayer var: " << identity[0].id << endl;
-	//cout << " value in layer var: " << identity[1].id << endl;
-	//cout << " value in wireNum var: " << identity[2].id << endl;
-	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
-	dgtz["ADC_order"] = 0;
-	dgtz["ADC_ADC"]   = (int) 100000*adc_energy;
-	dgtz["ADC_time"]  = time;
-	dgtz["ADC_ped"]   = doca*1000;
-	
-	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = time;
+	dgtz["ADC_order"] = 1;
+	dgtz["ADC_ADC"]   = (int) output["max_value"]; // adc
+	dgtz["ADC_time"]  = output["t_ovr"]; // ns
+	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
+	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
+	dgtz["ADC_timestamp"] = output["t_start"]; // ns
+	dgtz["ADC_t_cfd"] = output["t_cfd"]; // ns
+	dgtz["ADC_mctime"] = Signal->GetMCTime(); // ns
+	dgtz["ADC_nsteps"] = Signal->Get_nsteps();
+	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); // keV
 
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = output["t_start"];
+	
+	delete Signal;
 	
 	// define conditions to reject hit
 	if (rejectHitConditions) {
@@ -408,5 +177,279 @@ void ahdc_HitProcess::initWithRunNumber(int runno)
 ahdcConstants ahdc_HitProcess::atc = initializeAHDCConstants(-1);
 
 
+// -------------
+// ahdcSignal
+// -------------
+
+void ahdcSignal::ComputeDocaAndTime(MHit * aHit){
+	vector<G4ThreeVector> Lpos        = aHit->GetLPos();
+	int nsteps = Lpos.size();
+	double LposX, LposY, LposZ;
+	
+	// ALERT geometry
+	double X_sigwire_top = 0; // [mm]
+	double Y_sigwire_top = 0;
+	double Z_sigwire_top = -150; 
+	double X_sigwire_bot = 0; // [mm]
+	double Y_sigwire_bot = 0;
+	double Z_sigwire_bot = 150;
+	
+	// Compute Y_sigwire_top, Z_sigwire_top, Y_sigwire_bot, Z_sigwire_bot
+	double xV0 = 0.0;
+	double yV0 = 0.0;
+	double xV3 = 0.0;
+	double yV3 = 0.0;
+	double xV4 = 0.0;
+	double yV4 = 0.0;
+	double xV7 = 0.0;
+	double yV7 = 0.0;
+	double dim_id_2, dim_id_8;
+	
+	dim_id_2 = aHit->GetDetector().dimensions[2];
+	dim_id_8 = aHit->GetDetector().dimensions[8];
+
+	yV3 = aHit->GetDetector().dimensions[8];
+	xV3 = aHit->GetDetector().dimensions[7];
+	yV0 = aHit->GetDetector().dimensions[2];
+	xV0 = aHit->GetDetector().dimensions[1];
+
+	yV7 = aHit->GetDetector().dimensions[16];
+	xV7 = aHit->GetDetector().dimensions[15];
+	yV4 = aHit->GetDetector().dimensions[10];
+	xV4 = aHit->GetDetector().dimensions[9];
+
+	if ( abs(dim_id_2) > abs(dim_id_8)) {
+		// subcell = 1;
+		X_sigwire_top = xV3 + (xV0 - xV3)/2;
+		Y_sigwire_top = yV3 + (yV0 - yV3)/2; // z=-150 mm
+		X_sigwire_bot = xV7 + (xV4 - xV7)/2;
+		Y_sigwire_bot = yV7 + (yV4 - yV7)/2; // z=+150 mm
+	}
+	else {
+		// subcell = 2;
+		X_sigwire_top = xV0 + (xV3 - xV0)/2;
+		Y_sigwire_top = yV0 + (yV3 - yV0)/2; // z=-150 mm
+		X_sigwire_bot = xV4 + (xV7 - xV4)/2;
+		Y_sigwire_bot = yV4 + (yV7 - yV4)/2; // z=+150 mm
+	}
+
+	// Triangle abh
+	// a (sigwire_top), b (sigwire_bot), h (hit position)
+	// H_abh is the distance between hit and the wire and perpendicular to the wire
+	double L_ab, L_ah, L_bh, H_abh;
+	// Compute the distance between top and bottom of the wire
+	L_ab = sqrt(pow(X_sigwire_top-X_sigwire_bot,2) + pow(Y_sigwire_top-Y_sigwire_bot,2) + pow(Z_sigwire_top-Z_sigwire_bot,2));
+	for (int s=0;s<nsteps;s++) {
+		// Load current hit positions
+		LposX = Lpos[s].x();
+		LposY = Lpos[s].y();
+		LposZ = Lpos[s].z();
+		// Compute distance
+		L_ah = sqrt(pow(X_sigwire_top-LposX,2) + pow(Y_sigwire_top-LposY,2) + pow(Z_sigwire_top-LposZ,2));
+		L_bh = sqrt(pow(X_sigwire_bot-LposX,2) + pow(Y_sigwire_bot-LposY,2) + pow(Z_sigwire_bot-LposZ,2));
+		// Compute the height of a triangular (see documentation for the demonstration of the formula)
+		H_abh = L_ah*sqrt(1 - pow((L_ah*L_ah + L_ab*L_ab - L_bh*L_bh)/(2*L_ah*L_ab),2)); // this is the d.o.c.a of a given hit (!= MHit)
+		Doca.push_back(H_abh);
+		// Add a resolution on doca
+		double docasig = 337.3-210.3*H_abh+34.7*pow(H_abh,2); // um // fit sigma vs distance // Fig 4.14 (right), L. Causse's thesis
+		docasig = docasig/1000; // mm
+		std::default_random_engine dseed(time(0)); //seed
+		std::normal_distribution<double> docadist(H_abh, docasig);
+		// Compute time
+		double driftTime = 7*H_abh + 7*pow(H_abh,2) + 4*pow(H_abh,3); // fit t vs distance //  Fig 4.12 (right), L. Causse's thesis
+		DriftTime.push_back(driftTime);
+	}
+}
+
+void ahdcSignal::GenerateNoise(double mean, double stdev){
+	int Npts = (int) floor( (tmax-tmin)/samplingTime );
+	std::random_device rd;      // Create a random device to seed the generator
+	std::mt19937 gen(rd());     // Create a random number engine (e.g., Mersenne Twister)
+	for (int i=0;i<Npts;i++){
+		std::normal_distribution<double> draw(mean,stdev);
+		double value = draw(gen);
+		if (value < 0) value = 0;
+		Noise.push_back(value);
+	}
+}
+
+void ahdcSignal::Digitize(){
+	this->GenerateNoise(300,30);
+	int Npts = (int) floor( (tmax-tmin)/samplingTime );
+	for (int i=0;i<Npts;i++) {
+		double value = this->operator()(tmin + i*samplingTime); //in keV/ns
+		value = (int) floor(electronYield*value + Noise.at(i)); //convert in ADC +  noise
+		int adc = (value < adc_max) ? value : adc_max; // saturation effect 
+		Dgtz.push_back(adc);
+	}
+}
+
+std::map<std::string,double> ahdcSignal::Decode(){
+
+	double t_start, t_ovr, t_max_value, max_value, integral;
+	max_value = Dgtz.at(0);
+	integral = 0;
+	int Npts = Dgtz.size();
+	int i_max = 0;
+	
+	// compute max_value
+	for (int i=0;i<Npts;i++){
+		if (max_value < Dgtz.at(i)) {
+			max_value = Dgtz.at(i);
+			i_max = i; // useful
+		}
+	}
+	if (max_value == adc_max) { // there is a  plateau (saturation)
+		int i_max2 = i_max;
+		while (i_max2 < Npts-1){
+			if (Dgtz.at(i_max2) == adc_max) {
+				i_max2++;
+			} 
+			else {break;}
+		}
+		i_max = (int) (i_max+i_max2-1)/2;
+	}
+	else {  // normal case
+		// averaging of max_value
+		if ((i_max > 2) and (i_max < Npts-2)){
+			max_value = 0;
+			for (int i=-2;i<=2;i++){ max_value += Dgtz.at(i_max+i);}
+			max_value = max_value/5; // done
+		}
+	}
+	t_max_value = i_max*samplingTime; // done
+	
+	// define noise and threshold
+	double noise = 0;
+	for (int i=0;i<5;i++){ noise += Noise.at(i);} 
+	noise = noise/5; 
+	double threshold = (max_value+noise)/2.0;
+	
+	// compute t_start
+	int i_start = 0;
+	for (int i=0;i<i_max;i++){
+		if (Dgtz.at(i) < threshold) {
+			i_start = i; // last pass below threshold and before max_value
+		}
+	}	// at this stage : i_start < t_start/samplingTime < i_start+1
+	int i1 = i_start; // 1 index below 
+	int i2 = i_start+1; // 1 index above
+	if (i1 < 0) {i1 = 0; } 
+	if (i2 >= Npts) {i2 = Npts-1;}
+	double slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2); 
+	t_start = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope); // done
+	
+	// compute t_ovr
+	int i_ovr = i_max;
+	while (i_ovr < Npts-1) {
+		if (Dgtz.at(i_ovr) > threshold){
+			i_ovr++; // first pass below threshold starting from max_value
+		}
+		else { break;}
+	}      // at this stage : i_ovr-1 < t_ovr/samplingTime < i_ovr
+	if (i_ovr < Npts-2) {
+		i1 = i_ovr-1; 
+		i2 = i_ovr;
+		if (i1 < 1) {i1 = 0; }
+		slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2);
+		t_ovr = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope) - t_start; // done // it's a time interval
+	}
+	else { t_ovr = samplingTime*i_ovr;}
+
+	// compute integral
+	double i_inf = t_start/samplingTime;
+	double i_sup = (t_start+t_ovr)/samplingTime;
+	integral = 0;
+	for (int i=0;i<Npts;i++){
+		if ((i >= i_inf) and (i <= i_sup)){
+			integral += (Dgtz.at(i)-threshold);
+		}
+	}
+	integral = integral/1; // done // adc per 44 ns
+	// constant fraction discriminator 
+	double t_cfd = this->Apply_CFD(0.3,5);
+	// output
+	std::map<std::string,double> output;
+	output["t_start"] = t_start;
+	output["t_ovr"] = t_ovr;
+	output["integral"] = integral;
+	output["max_value"] = max_value;
+	output["t_max_value"] = t_max_value;
+	output["threshold"] = threshold;
+	output["noise_level"] = noise;
+	output["t_cfd"] = t_cfd;
+	
+	return output;
+
+}
+
+double ahdcSignal::Apply_CFD(double CFD_fraction, int CFD_delay){
+	int Npts = Dgtz.size();
+	std::vector<double> Data = Dgtz;
+	// Remove noise 
+	double noise = 0;
+	for (int i=0;i<5;i++){
+		noise += Data.at(i);
+	}
+	noise = noise/5;
+	double ymax = 0;
+	for (int i=0;i<Npts;i++){
+		Data[i] = Data.at(i) - noise;
+		if (ymax < Data.at(i)) ymax = Data.at(i);
+	}
+	// Start CFD
+	std::vector<double> signal(Npts,0.0);
+	for (int i=0;i<Npts;i++){
+		signal[i] += (1-CFD_fraction)*Data.at(i);
+		if (i < Npts-CFD_delay){
+			signal[i] += -1*CFD_fraction*Data.at(i+CFD_delay);
+		}
+	}
+	int i_min=0, i_max=0;
+	for (int i=0;i<Npts;i++){
+		if (signal.at(i_max) < signal.at(i)) i_max = i;
+	}
+	for (int i=0;i<i_max;i++){ // add this loop to be sure that i_min < i_max
+		if (signal.at(i_min) > signal.at(i)) i_min = i;
+	}
+	// Deternine t_cfd
+	int i_ref = 0;
+	for (int i=i_min;i<=i_max;i++){
+		if (signal.at(i) < 0){
+			i_ref = i;
+		}
+	} // last pass below zero
+	int i1 = i_ref; // 1 index below
+	int i2 = i_ref+1; // 1 index above
+	if (i1 < 0) {i1 = 0; }
+	if (i2 >= Npts) {i2 = Npts-1;}
+	double slope = (signal.at(i1) - signal.at(i2))/(i1-i2);
+	double i_cfd;
+	i_cfd = i1 + (0-signal.at(i1))/slope; // DONE
+	double t_cfd = tmin + i_cfd*samplingTime; // DONE
+	
+	return t_cfd;
+}
+
+double ahdcSignal::GetMCTime(){
+	if (nsteps == 0){ return 0; }
+	double mctime = 0;
+	double Etot = 0;
+	for (int s=0;s<nsteps;s++){
+		mctime += DriftTime.at(s)*Edep.at(s);
+		Etot += Edep.at(s);
+	}
+	mctime = mctime/Etot;
+	return mctime;
+}
+
+double ahdcSignal::GetMCEtot(){
+	if (nsteps == 0) { return 0;}
+	double mcEtot = 0;
+	for (int s=0;s<nsteps;s++){
+		mcEtot += Edep.at(s);
+	}
+	return mcEtot;
+}
 
 
