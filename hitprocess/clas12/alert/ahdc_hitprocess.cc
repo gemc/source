@@ -50,7 +50,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	rejectHitConditions = false;
 	writeHit = true;
 
-	int sector    = 0;
+	int sector    = 1;
 	int layer     = 10 * identity[0].id + identity[1].id ; // 10*superlayer + layer
 	int component = identity[2].id;
 
@@ -64,7 +64,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["sector"]    = sector;
 		dgtz["layer"]     = layer;
 		dgtz["component"] = component;
-		dgtz["ADC_order"] = 0;
+		dgtz["ADC_order"] = 1;
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
@@ -89,7 +89,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
-	dgtz["ADC_order"] = 0;
+	dgtz["ADC_order"] = 1;
 	dgtz["ADC_ADC"]   = (int) output["max_value"]; // adc
 	dgtz["ADC_time"]  = output["t_ovr"]; // ns
 	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
