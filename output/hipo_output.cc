@@ -631,7 +631,7 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	
 	gBank thisHitBank = getBankFromMap(hitType, banksMap);
 	gBank dgtBank     = getDgtBankFromMap(hitType, banksMap);
-	
+		
 	// perform initializations if necessary
 	initBank(output, thisHitBank, DGTINT_ID);
 	
@@ -645,7 +645,10 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	hipo::schema detectorTDCSchema = output->hipoSchema->getSchema(hitType, 1);
 	hipo::bank detectorADCBank(detectorADCSchema, HO.size());
 	hipo::bank detectorTDCBank(detectorTDCSchema, HO.size());
-	
+	// Specific to AHDC and AHDC::wf136
+	hipo::schema ahdcWF136Schema = (output->hipoSchema)->schemasToLoad["AHDC::wf136"];
+	hipo::bank ahdcWF136Bank(ahdcWF136Schema, HO.size());
+
 	// check if there is at least one adc or tdc var
 	// and if the schema is valid
 	for(auto &bankName : dgtBank.orderedNames ) {
@@ -703,8 +706,10 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 							// sector, layers are "Bytes"
 							if(bname == "sector" || bname == "layer") {
 								detectorADCBank.putByte(bname.c_str(), nh, thisVar.second);
+								if (hitType == "ahdc") {ahdcWF136Bank.putByte(bname.c_str(), nh, thisVar.second);}
 							} else if(bname == "component") {
 								detectorADCBank.putShort(bname.c_str(), nh, thisVar.second);
+								if (hitType == "ahdc") {ahdcWF136Bank.putShort(bname.c_str(), nh, thisVar.second);}
 							} else {
 								// all other ADC vars must begin with "ADC_"
 								if(bname.find("ADC_") == 0) {
@@ -713,6 +718,13 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 										detectorADCBank.putInt(adcName.c_str(), nh, thisVar.second);
 									} else if(varType == "d") {
 										detectorADCBank.putFloat(adcName.c_str(), nh, thisVar.second);
+									}
+								} else if(bname.find("wf136_") == 0) { // actually this prefix only appears in AHDC
+									if (hitType == "ahdc") {
+										string wf136Name = bname.substr(6);
+										if (varType == "i"){
+											ahdcWF136Bank.putInt(wf136Name.c_str(), nh, thisVar.second);
+										}
 									}
 								}
 							}
@@ -775,6 +787,9 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 			detectorADCBank.show();
 		}
 		outEvent->addStructure(detectorADCBank);
+		if (hitType == "ahdc") {
+			outEvent->addStructure(ahdcWF136Bank);
+		}
 	}
 	if(hasTDCBank) {
 		if(verbosity > 2) {

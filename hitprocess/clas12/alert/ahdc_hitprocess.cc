@@ -100,9 +100,14 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_nsteps"] = Signal->Get_nsteps();
 	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); // keV
 
-	dgtz["TDC_order"] = 0;
-	dgtz["TDC_TDC"]   = output["t_start"];
-	
+	//dgtz["TDC_order"] = 0;
+	//dgtz["TDC_TDC"]   = output["t_start"];
+	std::vector<double> SDgtz = Signal->GetDgtz();
+	for (int itr=1;itr<=136;itr++){
+		std::ostringstream sEntry;
+		sEntry << "wf136_s" << itr;
+		dgtz[sEntry.str()] = (int) SDgtz.at(itr-1);
+	}
 	delete Signal;
 	
 	// define conditions to reject hit
