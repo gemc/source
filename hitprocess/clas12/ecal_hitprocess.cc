@@ -33,7 +33,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		ecc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
 	}
 	
-	ecc.ADC_GeV_to_evio     = 1./10000.; // MIP based calibration is nominally 10 channels/MeV
+	ecc.ADC_GeV_to_evio     = 1./10000.; // MIP calibration: 10(15) ch/MeV for ECAL(PCAL) 50 for ECAL Sector 5
 	ecc.pmtQE               = 0.27    ;
 	ecc.pmtDynodeGain       = 4.0     ;
 	
@@ -43,9 +43,10 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	
 	ecc.pmtFactor           = sqrt(1 + 1/(ecc.pmtDynodeGain-1));	
 	
-	// The callibration data will be filled in this vector data
+	// The calibration data will be filled in this vector data
 	vector<vector<double> > data;
 	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(ecc.connection));
+
 	
 	// ======== Initialization of EC gains ===========
 	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/gain:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
@@ -58,7 +59,7 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	}
 	
 	// ========= Initializations of attenuation lengths ========
-	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/attenuation:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/atten:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
 	
 	for(unsigned row = 0; row < data.size(); row++)
@@ -67,36 +68,142 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 		ecc.attlen[isec-1][ilay-1][0].push_back(data[row][3]);
 		ecc.attlen[isec-1][ilay-1][1].push_back(data[row][5]);
 		ecc.attlen[isec-1][ilay-1][2].push_back(data[row][7]);
+		ecc.attlen[isec-1][ilay-1][3].push_back(data[row][9]);
+		ecc.attlen[isec-1][ilay-1][4].push_back(data[row][11]);
 	}
 	
 	// ========== Initialization of timings ===========
-	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/timing:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/ftime:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data,ecc.database);
-	
+
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		isec = data[row][0]; ilay = data[row][1];
-		ecc.timing[isec-1][ilay-1][0].push_back(data[row][3]);
-		ecc.timing[isec-1][ilay-1][1].push_back(data[row][4]);
-		ecc.timing[isec-1][ilay-1][2].push_back(data[row][5]);
-		ecc.timing[isec-1][ilay-1][3].push_back(data[row][6]);
-		ecc.timing[isec-1][ilay-1][4].push_back(data[row][7]);
+		ecc.ftime[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.ftime[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.ftime[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.ftime[isec-1][ilay-1][3].push_back(data[row][6]);
+		ecc.ftime[isec-1][ilay-1][4].push_back(data[row][7]);
+		ecc.ftime[isec-1][ilay-1][5].push_back(data[row][8]);
+		ecc.ftime[isec-1][ilay-1][6].push_back(data[row][9]);
 	}
 	
-	// ========== Initialization of timing offset ===========
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/dtime:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.dtime[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.dtime[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.dtime[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.dtime[isec-1][ilay-1][3].push_back(data[row][6]);
+		ecc.dtime[isec-1][ilay-1][4].push_back(data[row][7]);
+		ecc.dtime[isec-1][ilay-1][5].push_back(data[row][8]);
+		ecc.dtime[isec-1][ilay-1][6].push_back(data[row][9]);
+		ecc.dtime[isec-1][ilay-1][7].push_back(data[row][10]);
+		ecc.dtime[isec-1][ilay-1][8].push_back(data[row][11]);
+	}
+	
+        //========== Initialization of timing offsets and global constants  ===========
 	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/tdc_global_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
 	data.clear(); calib->GetCalib(data, ecc.database);
 	ecc.tdc_global_offset = data[0][3];
-	
-	// ======== Initialization of EC effective velocities ===========
-	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/effective_velocity:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
-	data.clear(); calib->GetCalib(data,ecc.database);
-	
+
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/fadc_global_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data, ecc.database);
+	ecc.fadc_global_offset = data[0][3];
+		
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/global_time_walk:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data, ecc.database);
 	for(unsigned row = 0; row < data.size(); row++)
 	{
 		isec = data[row][0]; ilay = data[row][1];
-		ecc.veff[isec-1][ilay-1].push_back(data[row][3]);
+		ecc.global_time_walk[isec-1][ilay-1].push_back(data[row][3]);
 	}
+	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/fadc_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data, ecc.database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.fadc_offset[isec-1][ilay-1].push_back(data[row][3]);
+	}
+
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/tmf_offset:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data, ecc.database);
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.tmf_offset[isec-1][ilay-1].push_back(data[row][3]);
+	}
+	
+	// ======== Initialization of EC effective velocities ===========
+	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/fveff:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.fveff[isec-1][ilay-1].push_back(data[row][3]);
+	}
+	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/dveff:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.dveff[isec-1][ilay-1].push_back(data[row][3]);
+	}
+
+	// ======== Initialization of EC DSC/TDC efficiency vs FADC parameters ===========	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/deff:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.deff[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.deff[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.deff[isec-1][ilay-1][2].push_back(data[row][5]);
+	}
+
+	// ======== Initialization of FADC thresholds ===========	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/fthr:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.fthr[isec-1][ilay-1].push_back(data[row][3]);
+	}
+
+	// ======== Initialization of timing resolution vs FADC parameters ===========	
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/ftres:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.ftres[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.ftres[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.ftres[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.ftres[isec-1][ilay-1][3].push_back(data[row][6]);
+	}
+
+	snprintf(ecc.database, sizeof(ecc.database), "/calibration/ec/dtres:%d:%s%s", ecc.runNo, digiVariation.c_str(), timestamp.c_str());
+	data.clear(); calib->GetCalib(data,ecc.database);
+
+	for(unsigned row = 0; row < data.size(); row++)
+	{
+		isec = data[row][0]; ilay = data[row][1];
+		ecc.dtres[isec-1][ilay-1][0].push_back(data[row][3]);
+		ecc.dtres[isec-1][ilay-1][1].push_back(data[row][4]);
+		ecc.dtres[isec-1][ilay-1][2].push_back(data[row][5]);
+		ecc.dtres[isec-1][ilay-1][3].push_back(data[row][6]);
+	}	
 	
 	// ======== Initialization of EC status  ===========
 	if(accountForHardwareStatus) {
@@ -159,7 +266,6 @@ static ecConstants initializeECConstants(int runno, string digiVariation = "defa
 	return ecc;
 }
 
-
 // Process the ID and hit for the EC using EC scintillator slab geometry instead of individual strips.
 map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 {
@@ -175,9 +281,6 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	int view   = layer;
 	
 	bool isPCAL = layer < 4 ;
-	
-	double time_in_ns = 0;
-
 	
 	// layer = 1, 2 stays the same
 	// subtract 3 from ec inner
@@ -195,11 +298,10 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Different for EC and PCAL
 	double pmtPEYld = 3.5 ;
 	if (isPCAL) {
-		// pcal
 		pmtPEYld  = 11.5 ;
 	}
 
-	double a1   = ecc.timing[sector-1][layer-1][1][strip-1]; // tdc conversion
+	double a1   = ecc.ftime[sector-1][layer-1][1][strip-1]; // tdc conversion
 
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -233,9 +335,17 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	// Get scintillator volume x dimension (mm)
 	double pDx2 = aHit->GetDetector().dimensions[5];  ///< G4Trap Semilength.
 	
+	// initialize ADC and TDC
+	double ADC = 0;		
+        double ftime_in_ns = 0;
+	double dtime_in_ns = 0;
+	double ftime_in_ns_res = 0;
+	double dtime_in_ns_res = 0;
+	
 	// Get Total Energy deposited
 	double Etota = 0;
-	double Ttota = 0;
+	double FTtota = 0;
+	double DTtota = 0;
 	double latt  = 0;
 	
 	double att;
@@ -243,37 +353,79 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	double A    = ecc.attlen[sector-1][layer-1][0][strip-1];
 	double B    = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
 	double C    = ecc.attlen[sector-1][layer-1][2][strip-1];
+	double D    = ecc.attlen[sector-1][layer-1][3][strip-1];
+	double E    = ecc.attlen[sector-1][layer-1][4][strip-1]*10.;
+	
 	double G    = ecc.gain[sector-1][layer-1][strip-1];
-	double a0   = ecc.timing[sector-1][layer-1][0][strip-1];
-	double a2   = ecc.timing[sector-1][layer-1][2][strip-1];
-	double veff = ecc.veff[sector-1][layer-1][strip-1]*10;
 	
+	double tmf  = ecc.tmf_offset[sector-1][layer-1][strip-1];
+	double fo   = ecc.fadc_offset[sector-1][layer-1][0];
+	double gtw  = ecc.global_time_walk[sector-1][layer-1][0];
+	
+	double FTOFFSET = ecc.fadc_global_offset;	
+	double tgo      = ecc.tdc_global_offset;
+	
+	double fa0   = ecc.ftime[sector-1][layer-1][0][strip-1]; 
+	double fa2   = ecc.ftime[sector-1][layer-1][2][strip-1];
+	double fa3   = ecc.ftime[sector-1][layer-1][3][strip-1];
+	double fa4   = ecc.ftime[sector-1][layer-1][4][strip-1];
+	double fa5   = ecc.ftime[sector-1][layer-1][5][strip-1];
+	double fa6   = ecc.ftime[sector-1][layer-1][6][strip-1];
+	
+	double da0   = ecc.dtime[sector-1][layer-1][0][strip-1];
+	double da1   = ecc.dtime[sector-1][layer-1][1][strip-1];
+	double da2   = ecc.dtime[sector-1][layer-1][2][strip-1];
+	double da3   = ecc.dtime[sector-1][layer-1][3][strip-1];
+	double da4   = ecc.dtime[sector-1][layer-1][4][strip-1];
+	double da5   = ecc.dtime[sector-1][layer-1][5][strip-1];
+	double da6   = ecc.dtime[sector-1][layer-1][6][strip-1];
+	double da7   = ecc.dtime[sector-1][layer-1][7][strip-1];
+	double da8   = ecc.dtime[sector-1][layer-1][8][strip-1];
+	;
+	double fveff = ecc.fveff[sector-1][layer-1][strip-1]*10;
+	double dveff = ecc.dveff[sector-1][layer-1][strip-1]*10;
+
+	double fthr  = ecc.fthr[sector-1][layer-1][strip-1];
+
+	double  def0 = ecc.deff[sector-1][layer-1][0][strip-1];
+	double  def1 = ecc.deff[sector-1][layer-1][1][strip-1];
+	double  def2 = ecc.deff[sector-1][layer-1][2][strip-1];
+
+		
+	double ftres0  = ecc.ftres[sector-1][layer-1][0][0];
+       	double ftres1  = ecc.ftres[sector-1][layer-1][1][0];
+	double ftres2  = ecc.ftres[sector-1][layer-1][2][0];
+	double ftres3  = ecc.ftres[sector-1][layer-1][3][0];
+	
+	double dtres0  = ecc.dtres[sector-1][layer-1][0][0];
+	double dtres1  = ecc.dtres[sector-1][layer-1][1][0];
+	double dtres2  = ecc.dtres[sector-1][layer-1][2][0];
+	double dtres3  = ecc.dtres[sector-1][layer-1][3][0];
+
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
-		if(B>0) {
-			double xlocal = Lpos[s].x();
-			if(view==1) latt = pDx2 + xlocal;
-			if(view==2) latt = pDx2 + xlocal;
-			if(view==3) {
-				if(layer > 3) {
-					// for ec, it's a minus sign
-					latt = pDx2-xlocal;
-				} else {
-					// for pcal, it's a plus sign
-					latt = pDx2+xlocal;
-				}
-			}
-			att   = A*exp(-latt/B)+C;
-			Etota = Etota + Edep[s]*att;
-			Ttota = Ttota + latt/veff;
-		} else {
-			Etota = Etota + Edep[s];
+		double xlocal = Lpos[s].x();
+		if(view==1) latt = pDx2 + xlocal;
+		if(view==2) latt = pDx2 + xlocal;
+		if(view==3) {
+			if(layer > 3) {
+			// for ec, it's a minus sign
+			latt = pDx2-xlocal;
+			} else {
+			// for pcal, it's a plus sign
+			latt = pDx2+xlocal;
+			}	
 		}
+		att   = A*(exp(-latt/B) + D*exp(-latt/E)) + C; //pass2 parameterization
+		Etota =  Etota + Edep[s]*att; //reported in MeV
+		FTtota = FTtota + latt/fveff; //FADC based timing
+		DTtota = DTtota + latt/dveff; //DSC/TDC based timing	
 	}
-	
-	// initialize ADC and TDC
-	double ADC = 0;
-	
-	// simulate the adc value.
+
+	//Used if ecc.outputRAW > 0 (no digitization, effieiency or resolution smearing)
+	double   ADC_raw = Etota/1000/ecc.ADC_GeV_to_evio/G;
+	double FTIME_raw = tInfos.time+FTtota/tInfos.nsteps;
+	double DTIME_raw = tInfos.time+DTtota/tInfos.nsteps;
+		
 	if (Etota > 0) {
 		double EC_npe = G4Poisson(Etota*pmtPEYld); //number of photoelectrons
 		if (EC_npe>0) {
@@ -281,24 +433,33 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 			double EC_GeV = G4RandGauss::shoot(EC_npe,sigma)/1000./ecc.ADC_GeV_to_evio/G/pmtPEYld;
 			if (EC_GeV>0) {
 				ADC = EC_GeV;
-				time_in_ns = (tInfos.time+Ttota/tInfos.nsteps) + a0 + a2/sqrt(ADC) + ecc.tdc_global_offset;
+				double radc = sqrt(ADC);
+				double ftim =  (fa4==0||fa6==0)         ? 0 : fa0 +           fa2+exp(-(radc-fa3)/fa4)+1-exp( (radc-fa5)/fa6);
+				double dtim =  (da4==0||da6==0||da7==0) ? 0 : da0 + gtw/radc +da2+exp(-(radc-da3)/da4)+1-exp(-(da5-radc)/da6)-exp(-(radc-da3*0.95)/da7)*pow(radc,da8);
+				ftime_in_ns = FTIME_raw + ftim + tgo - FTOFFSET - tmf - fo;
+				dtime_in_ns = DTIME_raw + dtim + tgo;
+				ftime_in_ns_res = G4RandGauss::shoot(ftime_in_ns,getTRES(ADC,ftres0,ftres2,ftres3,ftres1));
+				dtime_in_ns_res = G4RandGauss::shoot(dtime_in_ns,getTRES(ADC,dtres0,dtres2,dtres3,dtres1));
 			}
 		}
 	}
-	
+
+	dtime_in_ns = ecc.outputRAW>0 ? DTIME_raw : dtime_in_ns_res;
+	ftime_in_ns = ecc.outputRAW>0 ? FTIME_raw : ftime_in_ns_res;
+
 	// Status flags
 	if(accountForHardwareStatus) {
 		switch (ecc.status[sector-1][layer-1][strip-1]) {
 			case 0:
 				break;
 			case 1:
-				ADC = 0;
+				ADC = ADC_raw = ftime_in_ns = 0;
 				break;
 			case 2:
-				time_in_ns = 0;
+				dtime_in_ns = dtime_in_ns = 0;
 				break;
 			case 3:
-				ADC = time_in_ns = 0;
+				ADC = ADC_raw = ftime_in_ns = dtime_in_ns = 0;
 				break;
 				
 			case 5:
@@ -308,26 +469,27 @@ map<string, double> ecal_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 				cout << " > Unknown EC status: " << ecc.status[sector-1][layer-1][strip-1] << " for sector " << sector << ",  layer " << layer << ", strip " << strip << endl;
 		}		
 	}
-	
+
+	if (ecc.outputRAW==0 && def0>0 && dtime_in_ns > 0 && G4UniformRand() > 1/pow(1+exp(-def0*(ADC/10-def1)),def2)) dtime_in_ns = 0; // DSC/TDC threshold	
+	if (ecc.outputRAW==0 && ADC/10 < fthr) rejectHitConditions = true; // FADC threshold
+
 	// EVIO banks record time with offset determined by position of data in capture window.  On forward carriage this is currently
 	// around 7.9 us.  This offset is omitted in the simulation.  Also EVIO TDC time is relative to the trigger time, which is not
 	// simulated at present.
 	
-	double fadc_time = convert_to_precision(time_in_ns);
-	int tdc = time_in_ns/a1;
+	double fadc_time = convert_to_precision(ftime_in_ns);
+	int tdc = dtime_in_ns/da1;
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;
 	dgtz["ADC_order"] = 0;
-	dgtz["ADC_ADC"]   = ADC;
+	dgtz["ADC_ADC"]   = ecc.outputRAW==1 ? ADC_raw : ADC;
 	dgtz["ADC_time"]  = fadc_time;
 	dgtz["ADC_ped"]   = 0;
 	dgtz["TDC_order"] = 2;
 	dgtz["TDC_TDC"]   = tdc;
-	
-	// cout << "sector = " << sector << " layer = " << view << " strip = " << strip << " ADC = " << ADC << " TDC = " << TDC << endl;
 	
 	// define conditions to reject hit
 	if(rejectHitConditions) {
@@ -445,11 +607,14 @@ map< int, vector <double> > ecal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 	vector<G4double> Edep = aHit->GetEdep();
 	vector<G4double> time = aHit->GetTime();
 	
-	double A  = ecc.attlen[sector-1][layer-1][0][strip-1];
-	double B  = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
-	double C  = ecc.attlen[sector-1][layer-1][2][strip-1];
-	double G  = ecc.gain[sector-1][layer-1][strip-1];
-	double veff  = ecc.veff[sector-1][layer-1][strip-1]*10;
+	double A    = ecc.attlen[sector-1][layer-1][0][strip-1];
+	double B    = ecc.attlen[sector-1][layer-1][1][strip-1]*10.;
+	double C    = ecc.attlen[sector-1][layer-1][2][strip-1];
+	double D    = ecc.attlen[sector-1][layer-1][3][strip-1];
+	double E    = ecc.attlen[sector-1][layer-1][4][strip-1]*10.;
+
+	double G      = ecc.gain[sector-1][layer-1][strip-1];
+	double fveff  = ecc.fveff[sector-1][layer-1][strip-1]*10;
 	
 	for(unsigned int s=0; s<tInfos.nsteps; s++) {
 		if(B>0) {
@@ -463,14 +628,15 @@ map< int, vector <double> > ecal_HitProcess :: chargeTime(MHit* aHit, int hitn)
 					// for ecal, it's a minus sign
 					latt = pDx2-xlocal;
 				} else {
-					// for ecal, it's a plus sign
+					// for pcal, it's a plus sign
 					latt = pDx2+xlocal;
 				}
 			}
-			double att   = A*exp(-latt/B)+C;
+
+			double att   = A*(exp(-latt/B) + D*exp(-latt/E)) + C; //pass2 parameterization
 			
 			double stepE = Edep[s]*att;
-			double stepTime = time[s] + latt/veff;
+			double stepTime = time[s] + latt/fveff;
 			
 			// cout<<"time[s] = "<<time[s]<<endl;
 			// cout<<"att time  = "<<latt/ecc.veff<<endl;
