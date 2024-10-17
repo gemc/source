@@ -14,6 +14,7 @@ public:
 	string date;
 	string connection;
 	char   database[80];
+        int    outputRAW=0;  //bypass calibration, resolution and efficiency 
 	
 	static const int nsect  = 6;  // Number of sectors
 	static const int nlayer = 9;  // layer=1-3 (PCAL) 4-6 (ECinner) 7-9 (ECouter)
@@ -23,17 +24,35 @@ public:
 	// Array [6][9][3] -> sector,layer,view sector=1-6 layer=1-3 (PCAL) 4-6 (ECinner) 7-9 (ECouter) view=1-3 (U,V,W)
 	
 	//attlen: attenuation length
-	vector<double> attlen[nsect][nlayer][nview];
+	vector<double> attlen[nsect][nlayer][10];
 	
 	//gain: pmt gain
 	vector<double> gain[nsect][nlayer];
 	
 	//timing: TDC calibration constants
-	vector<double> timing[nsect][nlayer][5];
-	double tdc_global_offset;
+	vector<double>  dtime[nsect][nlayer][9];
+	vector<double>  ftime[nsect][nlayer][7];
+  
+	vector<double>  fadc_offset[nsect][nlayer];
+	vector<double>   tmf_offset[nsect][nlayer];
+        vector<double>  global_time_walk[nsect][nlayer];
+  
+  	double  tdc_global_offset;
+	double fadc_global_offset;
 	
 	//veff: effective velocity (cm/ns)
-	vector<double> veff[nsect][nlayer];
+	vector<double> dveff[nsect][nlayer];
+	vector<double> fveff[nsect][nlayer];
+
+        // DSC/TSC efficiency
+        vector<double> deff[nsect][nlayer][3];
+
+        // FADC threshold
+        vector<double> fthr[nsect][nlayer];
+  
+        // Timiing resolution
+        vector<double> dtres[nsect][nlayer][4];
+        vector<double> ftres[nsect][nlayer][4];
 	
 	// status:
 	//	0 - fully functioning
@@ -47,8 +66,8 @@ public:
 	double pedestal[nsect][nlayer][nview] = {};
 	double pedestal_sigm[nsect][nlayer][nview] = {};
 	
-	double TDC_time_to_evio;    // Conversion from time (ns) to EVIO TDC format
-	double ADC_GeV_to_evio;     // Conversion from energy (GeV) to EVIO FADC250 format
+  //	double TDC_time_to_evio;    // Conversion from time (ns) to TDC format
+  	double ADC_GeV_to_evio;     // Conversion from energy (GeV) to FADC250 format
 	double pmtQE;               // Quantum efficiency of PMT
 	double pmtDynodeGain;       // PMT dynode gain
 	double pmtDynodeK;          // PMT dynode secondary emission statistics factor: K=0 (Poisson) K=1 (exponential)
@@ -102,8 +121,10 @@ private:
 	double convert_to_precision(double time) {
 		return (int( time / fadc_precision ) * fadc_precision);
 	}
-	
-
+  
+        double getTRES(double x, double p0, double p1, double p2, double p3) {
+	  return (p0*exp(pow(x,p3)/120000) + p1/x + p2/pow(x,0.5));
+        }
 	
 };
 
