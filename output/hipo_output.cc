@@ -645,8 +645,8 @@ void hipo_output :: writeG4DgtIntegrated(outputContainer* output, vector<hitOutp
 	hipo::schema detectorTDCSchema = output->hipoSchema->getSchema(hitType, 1);
 	hipo::bank detectorADCBank(detectorADCSchema, HO.size());
 	hipo::bank detectorTDCBank(detectorTDCSchema, HO.size());
-	// Specific to AHDC and AHDC::wf136
-	hipo::schema ahdcWF136Schema = (output->hipoSchema)->schemasToLoad["AHDC::wf136"];
+	// Specific to AHDC and AHDC::wf:136
+	hipo::schema ahdcWF136Schema = (output->hipoSchema)->schemasToLoad["AHDC::wf:136"];
 	hipo::bank ahdcWF136Bank(ahdcWF136Schema, HO.size());
 
 	// check if there is at least one adc or tdc var

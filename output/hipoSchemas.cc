@@ -34,7 +34,7 @@ HipoSchema :: HipoSchema()
 	// detectors
 	//alertAhdcADCchema = hipo::schema("ALRTDC::adc",  22400, 11);
 	//alertAtofADCchema = hipo::schema("ALRTTOF::adc", 22500, 11);
-	alertAhdcWF136chema = hipo::schema("AHDC::wf136",22400, 13);
+	alertAhdcWF136chema = hipo::schema("AHDC::wf:136",22400, 13);
 	alertAhdcTDCchema = hipo::schema("AHDC::tdc",	 22400, 12);
 	alertAhdcADCchema = hipo::schema("AHDC::adc",	 22400, 11);
 	alertAtofADCchema = hipo::schema("ATOF::adc",	 22500, 11);
@@ -171,7 +171,7 @@ HipoSchema :: HipoSchema()
 	// The names corresponds to the hit process routine names, capitalized
 	//schemasToLoad["ALRTDC::adc"]  = alertAhdcADCchema;
 	//schemasToLoad["ALRTTOF::adc"] = alertAtofADCchema;
-	schemasToLoad["AHDC::wf136"] = alertAhdcWF136chema;
+	schemasToLoad["AHDC::wf:136"] = alertAhdcWF136chema;
 	schemasToLoad["AHDC::adc"]  = alertAhdcADCchema;
 	schemasToLoad["AHDC::tdc"]  = alertAhdcTDCchema;
 	schemasToLoad["ATOF::adc"] = alertAtofADCchema;
