@@ -94,7 +94,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_time"]  = output["t_ovr"]; // ns
 	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
 	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
-	dgtz["ADC_timestamp"] = output["t_start"]; // ns
+	dgtz["ADC_timestamp"] = 0;
+	dgtz["ADC_t_start"] = output["t_start"]; // ns
 	dgtz["ADC_t_cfd"] = output["t_cfd"]; // ns
 	dgtz["ADC_mctime"] = Signal->GetMCTime(); // ns
 	dgtz["ADC_nsteps"] = Signal->Get_nsteps();
@@ -102,6 +103,8 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	//dgtz["TDC_order"] = 0;
 	//dgtz["TDC_TDC"]   = output["t_start"];
+	dgtz["wf136_order"] = 1;
+	dgtz["wf136_timestamp"] = 0;
 	std::vector<double> SDgtz = Signal->GetDgtz();
 	for (int itr=1;itr<=136;itr++){
 		std::ostringstream sEntry;
