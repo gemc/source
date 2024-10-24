@@ -420,6 +420,7 @@ void PhysicsList::ConstructParticle()
 		G4MuonPlus::MuonPlusDefinition()->SetDecayTable(MuonPlusDecayTable);
 		G4MuonMinus::MuonMinusDefinition()->SetDecayTable(MuonMinusDecayTable);
 	}
+
 }
 
 
