@@ -163,9 +163,9 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	double duration = -1;
 	if(richPixel.GenerateTDC(1, 0)){
 	  // generating TDC
-	  t1 = richPixel.get_T1();
-	  t2 = richPixel.get_T2();
-	  duration = richPixel.duration;
+	  t1 = richPixel.get_DigiT1();
+	  t2 = richPixel.get_DigiT2();
+	  duration = richPixel.get_Duration();
 	}
 	
 	for(int i = 0; i < 3; i++){
@@ -383,248 +383,291 @@ G4ThreeVector rich_HitProcess::getPixelCenter(int pixel) {
 }
 
 /* ---------------------------------------------------*/
-RichPixel::RichPixel(int t) {
+RichPixel::RichPixel(int t)
+{
 
-    if ((t == 8500) || (t == 12700) || (t == 12701)) {
-        InitPmt(t);
-    } else {
-        printf("ERROR: pmt type %d not known\n", t);
-        return;
-    }
-
-
-    InitMaroc();
-
-    Clear();
-
+  if ( (t == 8500) || (t == 12700) ) {
+    InitPmt(t);
+  }
+  else {
+    printf("ERROR: pmt type %d not known\n", t);
     return;
+  }
+
+
+  InitMaroc();
+
+  if (t == 8500) {
+    TimeResol = TimeResol_H8500;
+  }
+  else if (t == 12700) {
+    TimeResol = TimeResol_H12700;
+  }
+
+
+  Clear();
+
+  return;
 }
-
 /* ---------------------------------------------------*/
-void RichPixel::InitPmt(int t, double g) {
+void RichPixel::InitPmt(int t, double g)
+{
 
-    PmtType = t;
-    Gain = g;
+  PmtType = t;
+  Gain = g;
 
-    if (t == 8500) {
-        nStages = 12;
-        d1Ratio = 1;
-    } else if ((t == 12700) || (t == 12701)) {
-        nStages = 10;
-        d1Ratio = 2;
-    } else {
-        printf("ERROR: pmt type %d not known\n", t);
-        return;
-    }
-
-
-    GN = pow((Gain / d1Ratio), 1. / nStages);
-    G1 = d1Ratio * GN;
-
-    /* old calculation, wrong */
-    if (t == 12701) {
-        GN = pow(Gain, 1. / (nStages + d1Ratio - 1));
-        G1 = pow(GN, d1Ratio);
-    }
-
-
+  if (t == 8500) {
+    nStages = 12;
+    d1Ratio = 1;
+  }
+  else if (t == 12700) {
+    nStages = 10;
+    d1Ratio = 2;
+  }
+  else {
+    printf("ERROR: pmt type %d not known\n", t);
     return;
-}
+  }
 
+
+  GN = pow( (Gain/d1Ratio), 1./nStages);
+  G1 = d1Ratio * GN;
+
+
+
+  return;
+}
 /* ---------------------------------------------------*/
-void RichPixel::InitMaroc(double g, double th) {
+void RichPixel::InitMaroc(double g, double th)
+{
 
-    MarocG = g;
-    MarocThrF = th;
+  MarocG = g;
+  MarocThrF = th;
 
-    ThresholdScale = 5;
+  ThresholdScale = 5;
 
-    MarocThrCharge = ThresholdScale * (MarocThrF - 1) * StdTrhesholdDAC * DAC;
-
-
-
-    /* charge to time conversion, saturated region */
-    q0_t = 230;
-    /* Values from Ctest data analysis
-      p_t[0] = 118.3;
-    p_t[1] = -0.3134;
-    p_t[2] = 0.002787;
-    p_t[3] = -1.382e-5;
-    p_t[4] = 2.531e-8;
-    */
-
-    p_t[0] = 7.32 + 4;
-    p_t[1] = -0.08027;
-    p_t[2] = 0.0001407;
-    p_t[3] = 0;
-    p_t[4] = 0;
+  MarocThrCharge = ThresholdScale * (MarocThrF - 1) * StdTrhesholdDAC * DAC;
 
 
-    /* charge to time conversion, linear region */
-    //m_t = -0.00307; //value from CTest data analysis
-    m_t = -0.00207;
-    q_t = -m_t * q0_t;
-    for (int i = 0; i < 5; i++) {
-        q_t = q_t + p_t[i] * pow(q0_t, i);
-    }
+
+  /* charge to time conversion, saturated region */
+  q0_t = 230;
+  /* Values from Ctest data analysis                                                                                                                                                                            
+    p_t[0] = 118.3;                                                                                                                                                                                             
+  p_t[1] = -0.3134;                                                                                                                                                                                             
+  p_t[2] = 0.002787;                                                                                                                                                                                            
+  p_t[3] = -1.382e-5;                                                                                                                                                                                           
+  p_t[4] = 2.531e-8;                                                                                                                                                                                            
+  */
+
+  p_t[0] = 7.32 + 4;
+  p_t[1] = -0.08027;
+  p_t[2] = 0.0001407;
+  p_t[3] = 0;
+  p_t[4] = 0;
 
 
-    /* from charge to duration */
-
-    //p0_d = 80; //from CTest data
-    //p1_d = 170.1;  //from CTest data
-
-    p0_d = 68.19;
-    p1_d = 60.1;
-
-    /* parameter to shift doen the duration per 1 unit of MarocThrF */
-    alphaD = 0.1;
+  /* charge to time conversion, linear region */
+  //m_t = -0.00307; //value from CTest data analysis                                                                                                                                                            
+  m_t = -0.00207;
+  q_t = -m_t * q0_t;
+  for (int i=0; i<5; i++) {
+    q_t = q_t + p_t[i] * pow(q0_t, i);
+  }
 
 
-    return;
+  /* from charge to duration */
+
+  //p0_d = 80; //from CTest data                                                                                                                                                                                
+  //p1_d = 170.1;  //from CTest data                                                                                                                                                                            
+
+  p0_d = 68.19;
+  p1_d = 60.1;
+
+  /* parameter to shift doen the duration per 1 unit of MarocThrF */
+  alphaD = 0.1;
+
+
+
+  return;
 }
-
 /* ---------------------------------------------------*/
-void RichPixel::InitReadout(int pmttype, double pmtgain, double marocgain, double marocthr) {
-    InitPmt(pmttype, pmtgain);
-    InitMaroc(marocgain, marocthr);
+void RichPixel::InitReadout(int pmttype, double pmtgain, double marocgain, double marocthr)
+{
+  InitPmt(pmttype, pmtgain);
+  InitMaroc(marocgain, marocthr);
 
-    return;
+  return;
 }
-
 /* ---------------------------------------------------*/
-void RichPixel::Clear() {
-    npe = 0;
+void RichPixel::Clear()
+{
+  npe = 0;
 
-    qadc = 0;
-    ADC = 0;
+  qadc = 0;
+  ADC = 0;
 
-    qtdc = 0;
-    start_time = 0;
-    true_t1 = 0;
-    t1 = 0;
-    t2 = 0;
-    duration = 0;
+  qtdc = 0;
+  pmt_time = 0;
+  t1 = 0;
+  t2 = 0;
+  duration = 0;
+  maroc_time = 0;
+  hit_time = 0;
 
-
-    return;
+  return;
 }
-
-/* ---------------------------------------------------*/
-int RichPixel::GenerateADC(int n0) {
-
-  GenerateNpe(n0);
-  
-  qadc = npe*Qe;
-  ADC = Pedestal + (int)(DAC*qadc);
-
-    return 0;
-}
-
 /* ---------------------------------------------------*/
 bool RichPixel::GenerateTDC(int n0, double t0)
 {
-  GenerateNpe(n0);  
+
+  hit_time = t0;
+
+  GenerateNpe(n0);
+
+  /* Applying the discriminator threshold */
   qtdc = npe * Qe * MarocG;
   if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
-
   if (qtdc < MarocThrCharge) return false;
-  
-  start_time = t0;
+
+  /* generating the leading edge */
   ChargeToTime();
+
+  /* generating the trailing edge */
   ChargeToDuration();
-  t2 = t1 + duration;
-  
+
   return true;
 }
-
 /* ---------------------------------------------------*/
-bool RichPixel::GenerateTDCfromADC(double qadc, double t0) {
+bool RichPixel::GenerateADC(int n0, double t0)
+{
 
-    qtdc = qadc * MarocG;
-    if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
+  hit_time = t0;
 
-    if (qtdc < MarocThrCharge) return false;
+  GenerateNpe(n0);
 
-    start_time = t0;
-    ChargeToTime();
-    ChargeToDuration();
-    t2 = t1 + duration;
+  /* Converting into ADC signal */
+  qadc = npe*Qe * MarocG;
+  if (qadc > MarocMaxQ) qadc = MarocMaxQ;
 
+  ADC = Pedestal + (int)(DAC*qadc);
 
-    return true;
+  /* Generating the TDC */
+  GenerateTDCfromADC( qadc, t0);
+
+  return true;
 }
-
 /* -------------------------------- */
-void RichPixel::GenerateNpe(int n0) {
-    int nEle = n0;
-    for (int n = 0; n < nStages; n++) {
-        double g = GN;
-        if (n == 0) g = G1;
+void RichPixel::GenerateNpe(int n0)
+{
+  int nEle = n0;
+  for (int n=0; n<nStages; n++) {
+    double g = GN;
+    if (n == 0) g = G1;
 
-        int nIn = nEle;
-        double nAve = g * nIn;
-        nEle = G4Poisson(nAve);
-        if (nEle == 0) nEle = n0;
+    int nIn = nEle;
+    double nAve = g * nIn;
+    nEle = G4Poisson(nAve);
+    if (nEle == 0) nEle = n0;
+  }
+  npe = nEle;
+
+
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::ChargeToTime()
+{
+
+  /* PMT time response */
+  pmt_time = G4RandGauss::shoot(hit_time, TimeResol);
+
+
+  /* MAROC time response */
+  double qeff = qtdc / MarocThrF;
+  double time = 0;
+  if (qeff < q0_t) {
+    for (int i=0; i<5; i++) {
+      time = time + p_t[i] * pow(qeff, i);
     }
-    npe = nEle;
+  }
+  else {
+    time = q_t + m_t * qeff;
+  }
+  maroc_time = time;
 
 
-    return;
+  t1 = pmt_time + maroc_time;
+
+
+  return;
 }
-
 /* -------------------------------------------------- */
-void RichPixel::ChargeToTime() {
-    double qeff = qtdc / MarocThrF;
-    double time = 0;
-    if (qeff < q0_t) {
-        for (int i = 0; i < 5; i++) {
-            time = time + p_t[i] * pow(qeff, i);
-        }
-    } else {
-        time = q_t + m_t * qeff;
-    }
+void RichPixel::ChargeToDuration()
+{
 
-  true_t1 = time + TimeOffset + start_time;
-  
-  /* gaussian smearing of t1 */
-  double dt = G4RandGauss::shoot(TimeOffset, TimeResol);
+  double qeff = qtdc;
+  double p0_eff = p0_d;
+  if (MarocThrF > 1) {
+    p0_eff = p0_d * (1. - (MarocThrF-1)*alphaD);
+  }
+  else if (MarocThrF < 1) {
+    p0_eff = p0_d * (1. - (1./MarocThrF-1)*alphaD);
+  }
 
-    t1 = time + dt + start_time;
+  duration = p0_eff * (1. - exp( -sqrt(qeff/p1_d) ) );
+  t2 = t1 + duration;
 
-    return;
+  return;
 }
+/* ---------------------------------------------------*/
+bool RichPixel::GenerateTDCfromADC(double qadc, double t0)
+{
 
-/* -------------------------------------------------- */
-void RichPixel::ChargeToDuration() {
-    //double qeff = qtdc / MarocThrF;
-    double qeff = qtdc;
-    double p0_eff = p0_d;
-    if (MarocThrF > 1) {
-        p0_eff = p0_d * (1. - (MarocThrF - 1) * alphaD);
-    } else if (MarocThrF < 1) {
-        p0_eff = p0_d * (1. - (1. / MarocThrF - 1) * alphaD);
-    }
+  /* PMT time response */
+  pmt_time = G4RandGauss::shoot(hit_time, TimeResol);
 
-    duration = p0_eff * (1. - exp(-sqrt(qeff / p1_d)));
+  /* Applying the discriminator threshold */
+  qtdc = qadc * MarocG;
+  if (qtdc > MarocMaxQ) qtdc = MarocMaxQ;
+  if (qtdc < MarocThrCharge) return false;
 
-    return;
+  /* generating the leading edge */
+  ChargeToTime();
+
+  /* generating the trailing edge */
+  ChargeToDuration();
+
+
+  return true;
 }
+void RichPixel::PrintPmt()
+{
 
-/* -------------------------------------------------- */
-void RichPixel::PrintPmt() {
+  printf("MAPMT H%d\n", PmtType);
+  printf("  G=%f    nStages=%d   g1=%f   gN=%f\n", Gain, nStages, G1, GN);
 
-    printf("MAPMT H%d\n", PmtType);
-    printf("  G=%f    nStages=%d   g1=%f   gN=%f\n", Gain, nStages, G1, GN);
-
-    return;
+  return;
 }
-
 /* -------------------------------------------------- */
-void RichPixel::PrintMaroc() {
+void RichPixel::PrintMaroc()
+{
 
-    printf("MAROC setting\n");
-    printf("  gain=%f   RelThreshold=%f   threshold=%f fC\n", MarocG, MarocThrF, MarocThrCharge);
+  printf("MAROC setting\n");
+  printf("  gain=%f   RelThreshold=%f   threshold=%f fC\n", MarocG, MarocThrF, MarocThrCharge);
 
-    return;
+  return;
+}
+/* -------------------------------------------------- */
+void RichPixel::PrintEvent()
+{
+
+  printf("--------------------------------------------\n");
+  printf("  hitT=%8.3f   \n", hit_time);
+  printf("  pmtT=%8.3f  marocTime=%8.3f\n", pmt_time, maroc_time);
+  printf("  Gene times:  T1=%8.3f  T2=%8.3f  D=%8.3f  \n", t1, t2, duration);
+  printf("  Digi times:  T1=%4d      T2=%4d      D=%4d  \n", (int)get_T1(),(int) get_T2(), (int)get_Duration());
+
+
+  return;
 }
