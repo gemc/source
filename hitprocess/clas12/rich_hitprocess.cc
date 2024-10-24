@@ -40,68 +40,6 @@ initializeRICHConstants(int runno, string digiVariation = "default", string digi
   richc.variation  = "main";
   unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
   
-  vector<vector<double>> data;
-  // MODULE 1
-  data.clear();
-  // read timewalk correction
-  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-  calib->GetCalib(data,richc.database);
-  
-  for(unsigned int row = 0; row<data.size(); row++){	  
-    int ipmt = data[row][1];
-    richc.timewalkCorr_D0[0][ipmt-1] = data[row][3];
-    richc.timewalkCorr_m1[0][ipmt-1]	= data[row][5];
-    richc.timewalkCorr_m2[0][ipmt-1]	= data[row][6];
-    richc.timewalkCorr_T0[0][ipmt-1]	= data[row][4];
-    if(ipmt == 1){
-      //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
-      //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
-      //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
-      //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
-    }
-  }	
-  
-  data.clear();
-  
-  // read time offset
-  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-  calib->GetCalib(data,richc.database);
-  
-  for(unsigned int row = 0; row<data.size(); row++){
-    int ipmt = data[row][1];
-    int ianode = data[row][2];
-    richc.timeOffsetCorr[0][(ipmt-1)*64+(ianode-1)] = data[row][3];
-    
-  }
-  
-  // MODULE 2
-  data.clear();
-  // read timewalk correction                                                                                                                                                                        
-  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module2/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-  calib->GetCalib(data,richc.database);
-  
-  for(unsigned int row = 0; row<data.size(); row++){
-    int ipmt = data[row][1];
-    richc.timewalkCorr_D0[1][ipmt-1] = data[row][3];
-    richc.timewalkCorr_m1[1][ipmt-1]      = data[row][5];
-    richc.timewalkCorr_m2[1][ipmt-1]      = data[row][6];
-    richc.timewalkCorr_T0[1][ipmt-1]      = data[row][4];
-  }
-  
-  data.clear();
-  
-  // read time offset
-  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-  calib->GetCalib(data,richc.database);
-  
-  for(unsigned int row = 0; row<data.size(); row++){
-    int ipmt = data[row][1];
-    int ianode = data[row][2];
-    richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
-    
-  }	
-  data.clear();
-  
   return richc;
 }
 
