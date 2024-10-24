@@ -364,9 +364,6 @@ private:
         int getPixelNumber(G4ThreeVector  Lxyz);
         G4ThreeVector getPixelCenter(int pixel);
 
-        // testing ccdb time paramters vs PMT simulation class
-        bool ccdbTiming = false;
-
         // just converting double tdc to int for 1ns tdc precision
 	double tdc_precision = 1.; 
         int convert_to_precision(double time) {

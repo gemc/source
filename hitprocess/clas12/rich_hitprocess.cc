@@ -19,90 +19,90 @@ using namespace CLHEP;
 
 static richConstants
 initializeRICHConstants(int runno, string digiVariation = "default", string digiSnapshotTime = "no", bool accountForHardwareStatus = false) {
-    // TODO: with TDC simulation class from Marco M., time calibration information maybe not necessary
-    richConstants richc;
-    if (runno == -1) return richc;
-
-        string timestamp = "";
-        if(digiSnapshotTime != "no") {
-                timestamp = ":"+digiSnapshotTime;
-        }
-	
-	// database
-	richc.runNo = runno;
-	
-	//	richc.date       = "2016-03-15";
-	if(getenv ("CCDB_CONNECTION") != nullptr)
-	  richc.connection = (string) getenv("CCDB_CONNECTION");
-	else
-	  richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
-	
-        richc.variation  = "main";
-	unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
-
-	vector<vector<double>> data;
-	// MODULE 1
-	data.clear();
-	// read timewalk correction
-	snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-	calib->GetCalib(data,richc.database);
-	
-	for(unsigned int row = 0; row<data.size(); row++){	  
-	  int ipmt = data[row][1];
-	  richc.timewalkCorr_D0[0][ipmt-1] = data[row][3];
-	  richc.timewalkCorr_m1[0][ipmt-1]	= data[row][5];
-	  richc.timewalkCorr_m2[0][ipmt-1]	= data[row][6];
-	  richc.timewalkCorr_T0[0][ipmt-1]	= data[row][4];
-	  if(ipmt == 1){
-	    //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
-	    //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
-	    //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
-	    //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
-	  }
-	}	
-
-	data.clear();
-	
-        // read time offset
-        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-        calib->GetCalib(data,richc.database);
-
-        for(unsigned int row = 0; row<data.size(); row++){
-          int ipmt = data[row][1];
-	  int ianode = data[row][2];
-          richc.timeOffsetCorr[0][(ipmt-1)*64+(ianode-1)] = data[row][3];
-	  
-        }
-
-	// MODULE 2
-        data.clear();
-        // read timewalk correction                                                                                                                                                                        
-        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module2/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-        calib->GetCalib(data,richc.database);
-
-        for(unsigned int row = 0; row<data.size(); row++){
-          int ipmt = data[row][1];
-          richc.timewalkCorr_D0[1][ipmt-1] = data[row][3];
-          richc.timewalkCorr_m1[1][ipmt-1]      = data[row][5];
-          richc.timewalkCorr_m2[1][ipmt-1]      = data[row][6];
-          richc.timewalkCorr_T0[1][ipmt-1]      = data[row][4];
-        }
-
-        data.clear();
-
-        // read time offset
-        snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
-        calib->GetCalib(data,richc.database);
-	
-        for(unsigned int row = 0; row<data.size(); row++){
-          int ipmt = data[row][1];
-          int ianode = data[row][2];
-          richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
-
-        }	
-	data.clear();
-
-	return richc;
+  // TODO: with TDC simulation class from Marco M., time calibration information maybe not necessary
+  richConstants richc;
+  if (runno == -1) return richc;
+  
+  string timestamp = "";
+  if(digiSnapshotTime != "no") {
+    timestamp = ":"+digiSnapshotTime;
+  }
+  
+  // database
+  richc.runNo = runno;
+  
+  //	richc.date       = "2016-03-15";
+  if(getenv ("CCDB_CONNECTION") != nullptr)
+    richc.connection = (string) getenv("CCDB_CONNECTION");
+  else
+    richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
+  
+  richc.variation  = "main";
+  unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
+  
+  vector<vector<double>> data;
+  // MODULE 1
+  data.clear();
+  // read timewalk correction
+  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+  calib->GetCalib(data,richc.database);
+  
+  for(unsigned int row = 0; row<data.size(); row++){	  
+    int ipmt = data[row][1];
+    richc.timewalkCorr_D0[0][ipmt-1] = data[row][3];
+    richc.timewalkCorr_m1[0][ipmt-1]	= data[row][5];
+    richc.timewalkCorr_m2[0][ipmt-1]	= data[row][6];
+    richc.timewalkCorr_T0[0][ipmt-1]	= data[row][4];
+    if(ipmt == 1){
+      //cout << "D0 pmt " << ipmt << " : " << richc.timewalkCorr_D0[ipmt-1] << endl;
+      //cout << "m1 pmt " << ipmt << " : " << richc.timewalkCorr_m1[ipmt-1] << endl;
+      //cout << "m2 pmt " << ipmt << " : " << richc.timewalkCorr_m2[ipmt-1] << endl;
+      //cout << "T0 pmt " << ipmt << " : " << richc.timewalkCorr_T0[ipmt-1] << endl;	    
+    }
+  }	
+  
+  data.clear();
+  
+  // read time offset
+  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+  calib->GetCalib(data,richc.database);
+  
+  for(unsigned int row = 0; row<data.size(); row++){
+    int ipmt = data[row][1];
+    int ianode = data[row][2];
+    richc.timeOffsetCorr[0][(ipmt-1)*64+(ianode-1)] = data[row][3];
+    
+  }
+  
+  // MODULE 2
+  data.clear();
+  // read timewalk correction                                                                                                                                                                        
+  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module2/time_walk:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+  calib->GetCalib(data,richc.database);
+  
+  for(unsigned int row = 0; row<data.size(); row++){
+    int ipmt = data[row][1];
+    richc.timewalkCorr_D0[1][ipmt-1] = data[row][3];
+    richc.timewalkCorr_m1[1][ipmt-1]      = data[row][5];
+    richc.timewalkCorr_m2[1][ipmt-1]      = data[row][6];
+    richc.timewalkCorr_T0[1][ipmt-1]      = data[row][4];
+  }
+  
+  data.clear();
+  
+  // read time offset
+  snprintf(richc.database, sizeof(richc.database), "/calibration/rich/module1/time_offset:%d:%s%s", richc.runNo, digiVariation.c_str(), timestamp.c_str());
+  calib->GetCalib(data,richc.database);
+  
+  for(unsigned int row = 0; row<data.size(); row++){
+    int ipmt = data[row][1];
+    int ianode = data[row][2];
+    richc.timeOffsetCorr[1][(ipmt-1)*64+(ianode-1)] = data[row][3];
+    
+  }	
+  data.clear();
+  
+  return richc;
 }
 
 
@@ -118,10 +118,6 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
         vector<identifier> identity = aHit->GetId();
 	vector<double> time = aHit->GetTime();
         int idsector = identity[0].id;
-	int sectorindex = 0;
-	if(idsector==1){
-	  sectorindex = 1;
-	}
 	
 	// tdc bank expects tile number
 	int idpmt = identity[1].id;
@@ -135,45 +131,8 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	int order = identity[2].userInfos[0];
 	
-	// timing: from ccdb or PMT simulation
-	double tdc;
-	if(ccdbTiming){
-	  // PMT sim throws reasonable duration dist., so using it to determine
-	  // timing region. Then shifting duration as it enters into parameterization
-	  // of time walk effects.
-	  double duration = identity[2].userInfos[1];
-	  double durationScaled = duration;
-	  // shift duration based on D0 of PMT from ccdb
-	  if(richc.timewalkCorr_D0[sectorindex][idpmt-1] != 0){
-	    durationScaled += (richc.timewalkCorr_D0[sectorindex][idpmt-1] - richc.D0pmtSim);
-	  }
-	  
-	  double offset = G4RandGauss::shoot(richc.timeOffsetCorr[sectorindex][(idpmt-1)*64 + (idpixel-1)], 1.); // 1ns time offset resol. smearing
-	  // trailing edge:
-	  if(order==0){ 
-	    tdc = time[0] + durationScaled + offset;
-	  }
-	  // leading edge
-	  if(order==1){	    
-	    double f1 = richc.timewalkCorr_m1[sectorindex][idpmt-1] * durationScaled + richc.timewalkCorr_T0[sectorindex][idpmt-1];
-	    double f1T = richc.timewalkCorr_m1[sectorindex][idpmt-1] * richc.timewalkCorr_D0[sectorindex][idpmt-1] + richc.timewalkCorr_T0[sectorindex][idpmt-1];	    
-	    double f2 = richc.timewalkCorr_m2[sectorindex][idpmt-1] * (durationScaled - richc.timewalkCorr_D0[sectorindex][idpmt-1]) + f1T;
-
-	    if(duration < richc.D0pmtSim){
-	      tdc = time[0]
-		+ offset
-		+ f1;
-	    }
-	    else{
-	      tdc = time[0]
-		+ offset
-		+ f2;
-	    }
-	  }         
-	}
-	else{
-	  tdc = identity[2].userInfos[1] + time[0];
-	}
+	// tdc: timing from PMT simulation (in proccessID) + hit time
+	double tdc = identity[2].userInfos[1] + time[0];
 	
 	writeHit = true;
 	rejectHitConditions = false;
@@ -286,24 +245,16 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[2].id = pixel;	  
 	yid[2].userInfos.clear();
 	yid[2].userInfos.push_back(double(1)); // TDC_order
-	if(ccdbTiming){
-	  yid[2].userInfos.push_back(duration); // for time walk parameters from ccdb
-	}
-	else{
-	  yid[2].userInfos.push_back(double(t1)); // TDC_tdc
-	}
+	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
+
 	yid[2].userInfos.push_back(double(pixel)); // pixel
 	yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
 	
 	yid[5].id = pixel;
 	yid[5].userInfos.clear();
 	yid[5].userInfos.push_back(double(0));
-	if(ccdbTiming){
-	  yid[5].userInfos.push_back(duration);	// for time walk parameters from ccdb
-        }
-	else{
-          yid[5].userInfos.push_back(double(t2)); // TDC_tdc
-        }
+	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
+	
 	yid[5].userInfos.push_back(double(pixel));
 	yid[5].userInfos.push_back(QEthrow); 
 	
