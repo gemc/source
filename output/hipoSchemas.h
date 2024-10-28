@@ -20,6 +20,7 @@ public:
 	hipo::schema fluxADCSchema;
 
 	// detectors
+	hipo::schema alertAhdcWF136chema;
 	hipo::schema alertAhdcADCchema;
 	hipo::schema alertAhdcTDCchema;
 	hipo::schema alertAtofADCchema;
