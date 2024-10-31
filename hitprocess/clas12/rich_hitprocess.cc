@@ -71,7 +71,6 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// tdc: timing from PMT simulation (in proccessID) + hit time
 	double tdc = identity[2].userInfos[1] + time[0];
-	
 	writeHit = true;
 	rejectHitConditions = false;
 
@@ -111,11 +110,10 @@ map<string, double> rich_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	}
 	
 	
-
 	// applying quantum efficiency from thrown random value set in integrateDgt
 	if( identity[2].userInfos[3] > qeff && !aHit->isElectronicNoise) {
 	  writeHit = false;
-	}	
+	}
 	dgtz["hitn"]   = hitn;
 	dgtz["sector"] = idsector; 
 	dgtz["layer"] = tile;
@@ -158,14 +156,12 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	RichPixel richPixel(pmtType);
 	richPixel.Clear();
 	
-	int t1 = -1;
-	int t2 = -1;
-	double duration = -1;
+	double t1 = -1;
+	double t2 = -1;
 	if(richPixel.GenerateTDC(1, 0)){
 	  // generating TDC
-	  t1 = richPixel.get_DigiT1();
-	  t2 = richPixel.get_DigiT2();
-	  duration = richPixel.get_Duration();
+	  t1 = richPixel.get_T1();
+	  t2 = richPixel.get_T2();	  
 	}
 	
 	for(int i = 0; i < 3; i++){
@@ -184,7 +180,6 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[2].userInfos.clear();
 	yid[2].userInfos.push_back(double(1)); // TDC_order
 	yid[2].userInfos.push_back(double(t1)); // TDC_tdc
-
 	yid[2].userInfos.push_back(double(pixel)); // pixel
 	yid[2].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
 	
@@ -192,9 +187,8 @@ vector<identifier> rich_HitProcess :: processID(vector<identifier> id, G4Step* a
 	yid[5].userInfos.clear();
 	yid[5].userInfos.push_back(double(0));
 	yid[5].userInfos.push_back(double(t2)); // TDC_tdc
-	
 	yid[5].userInfos.push_back(double(pixel));
-	yid[5].userInfos.push_back(QEthrow); 
+	yid[5].userInfos.push_back(QEthrow); // thrown random value for quantum eff.
 	
 	yid[2].id_sharing = .5;
 	yid[5].id_sharing = .5;
