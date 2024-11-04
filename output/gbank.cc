@@ -24,6 +24,7 @@
 
 // The second char:
 // i for integers
+// l for long
 // d for doubles
 // s for strings
 
@@ -415,6 +416,7 @@ int gBank::getVarId(string bank) {
 string gBank::getVarType(string var) {
     for (unsigned int i = 0; i < name.size(); i++) {
         if (name[i] == var && type[i].length() == 2) {
+            if (type[i].find("l") == 1) return "l";
             if (type[i].find("i") == 1) return "i";
             if (type[i].find("d") == 1) return "d";
         }

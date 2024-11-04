@@ -20,9 +20,10 @@ public:
 	hipo::schema fluxADCSchema;
 
 	// detectors
-	hipo::schema alertAhdcADCchema;
-	hipo::schema alertAhdcTDCchema;
-	hipo::schema alertAtofADCchema;
+	hipo::schema alertAhdcADCSchema;
+	hipo::schema alertAhdcTDCSchema;
+	hipo::schema alertAhdcWF10Schema;
+	hipo::schema alertAtofADCSchema;
 	hipo::schema bandADCSchema;
 	hipo::schema bandTDCSchema;
 	hipo::schema bmtADCSchema;
@@ -67,7 +68,7 @@ public:
 	// type: 0 = adc, 1 = tdc
 	hipo::schema getSchema(string schemaName, int type) ;
 	
-	
+	bool non_registered_detectors(string schemaName, int type);
 };
 
 

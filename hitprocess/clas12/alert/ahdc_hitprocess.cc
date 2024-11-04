@@ -327,13 +327,25 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
+
+	// adc
 	dgtz["ADC_order"] = 0;
 	dgtz["ADC_ADC"]   = (int) 100000*adc_energy;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = doca*1000;
-	
+
+	// tdc
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = time;
+
+	// wf:10
+	dgtz["WF10_timestamp"] = time;
+
+	for(unsigned t=0; t<10; t++) {
+		string dname = "WF10_s" + to_string(t+1);
+		dgtz[dname] = t+1;
+	}
+
 
 	
 	// define conditions to reject hit
@@ -406,7 +418,3 @@ void ahdc_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 ahdcConstants ahdc_HitProcess::atc = initializeAHDCConstants(-1);
-
-
-
-
