@@ -76,11 +76,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	}
 
-	ahdcSignal *Signal = new ahdcSignal(aHit,hitn);
-	Signal->SetTmin(0);
-	Signal->SetTmax(6000);
-	//Signal->SetDelay(1000); // ns
-	//Signal->SetSamplingTime(44); // ns
+	ahdcSignal *Signal = new ahdcSignal(aHit,hitn,0,6000,1000,44,240);
 	Signal->SetElectronYield(100000);
 	Signal->Digitize();
 	std::map<std::string,double> output = Signal->Decode();
@@ -98,7 +94,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_t_start"] = output["t_start"]; // ns
 	dgtz["ADC_t_cfd"] = output["t_cfd"]; // ns
 	dgtz["ADC_mctime"] = Signal->GetMCTime(); // ns
-	dgtz["ADC_nsteps"] = Signal->Get_nsteps();
+	dgtz["ADC_nsteps"] = Signal->nsteps;
 	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); // keV
 
 	//dgtz["TDC_order"] = 0;
@@ -287,7 +283,7 @@ void ahdcSignal::Digitize(){
 	for (int i=0;i<Npts;i++) {
 		double value = this->operator()(tmin + i*samplingTime); //in keV/ns
 		value = (int) floor(electronYield*value + Noise.at(i)); //convert in ADC +  noise
-		int adc = (value < adc_max) ? value : adc_max; // saturation effect 
+		int adc = (value < ADC_LIMIT) ? value : ADC_LIMIT; // saturation effect 
 		Dgtz.push_back(adc);
 	}
 }
@@ -307,10 +303,10 @@ std::map<std::string,double> ahdcSignal::Decode(){
 			i_max = i; // useful
 		}
 	}
-	if (max_value == adc_max) { // there is a  plateau (saturation)
+	if (max_value == ADC_LIMIT) { // there is a  plateau (saturation)
 		int i_max2 = i_max;
 		while (i_max2 < Npts-1){
-			if (Dgtz.at(i_max2) == adc_max) {
+			if (Dgtz.at(i_max2) == ADC_LIMIT) {
 				i_max2++;
 			} 
 			else {break;}
