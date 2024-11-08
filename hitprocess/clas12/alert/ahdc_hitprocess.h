@@ -122,8 +122,8 @@ class ahdcSignal {
 		 * @param aHit an object derived from Geant4 "G4VHit" class
 		 */
 		void ComputeDocaAndTime(MHit * aHit);
-		std::vector<double> Dgtz; ///< Array containing the samples of the simulated signal
-		std::vector<double> Noise; ///< Array containing the samples of the simulated noise
+		std::vector<short> Dgtz; ///< Array containing the samples of the simulated signal
+		std::vector<short> Noise; ///< Array containing the samples of the simulated noise
 	// setting parameters for digitization
 	private : 
 		const double tmin; ///< lower limit of the simulated time window
@@ -174,10 +174,10 @@ class ahdcSignal {
 		std::vector<double>                     GetDriftTime()		{return DriftTime;}
 		
 		/** @brief Return the content of the attribut `Noise` */
-		std::vector<double>                     GetNoise()              {return Noise;}
+		std::vector<short>                     GetNoise()              {return Noise;}
 		
 		/** @brief Return the content of the attribut `Dgtz` */
-		std::vector<double> 			GetDgtz()		{return Dgtz;}
+		std::vector<short> 			GetDgtz()		{return Dgtz;}
 		
 		/**
 		 * @brief Set the electron yield. 
@@ -228,7 +228,14 @@ class ahdcSignal {
 		std::map<std::string,double> Decode();
 		double Apply_CFD(double CFD_fraction, int CFD_delay); // CFD_delay in index unit
 		double GetMCTime();
-		double GetMCEtot();		
+		double GetMCEtot();
+
+		std::map<std::string,double> Extract();
+		/*std::map<std::string,double> Extract(){
+			ahdcExtractor T(samplingTime,0.5f,5,0.3f);
+			T.adcOffset = (short) (Dgtz[0] + Dgtz[1] + Dgtz[2] + Dgtz[3] + Dgtz[4])/5;
+			return T.extract(Dgtz);
+		}*/
 };
 
 
@@ -238,12 +245,12 @@ class ahdcSignal {
  * @author Felix Touchte Codjo
  */
 class ahdcExtractor {
-	private :
-		float samplingTime;
-		int sparseSample;
-		short adcOffset;
-		long timeStamp;
-		float fineTimeStampResolution;
+	public :
+		float samplingTime; ///< time between two ADC bins
+		int sparseSample = 0; ///< used to defined binOffset
+		short adcOffset = 0; ///< pedestal or noise level
+		long timeStamp = 0; 
+		float fineTimeStampResolution = 0;
 		static const short ADC_LIMIT = 4095; // 2^12-1
 		float amplitudeFractionCFA;
 		int binDelayCFD;
@@ -264,11 +271,86 @@ class ahdcExtractor {
                 float timeOverThresholdCFA; ///< is equal to (timeFallCFA - timeRiseCFA)
                 float timeCFD; ///< time extracted using the Constant Fraction Discriminator (CFD) algorithm (fitted)
 
+		/** @brief Default constructor */
 		ahdcExtractor() = default;
 
+		/** @brief Constructor */
+		ahdcExtractor(float _samplingTime,float _amplitudeFractionCFA, int _binDelayCFD, float _fractionCFD) :
+			samplingTime(_samplingTime), amplitudeFractionCFA(_amplitudeFractionCFA), binDelayCFD(_binDelayCFD), fractionCFD(_fractionCFD) {}
+		
+		/** @brief Destructor */
 		~ahdcExtractor(){;}
 		
-		void extract(std::vector<short> samples);
+		/**
+		 * This method extracts relevant informations from the digitized signal
+		 * (the samples) and store them in a Pulse
+		 *
+		 * @param samples ADC samples
+		 */
+		
+		std::map<std::string,double> extract(const std::vector<short> samples);
+
+	private :
+		/**
+		* This method subtracts the pedestal (noise) from samples and stores it in : samplesCorr
+		* It also computes a first value for : adcMax, binMax, timeMax and integral
+		* This code is inspired by the one of MVTFitter.java
+		* @param samples ADC samples
+		* @param adcOffset pedestal or noise level
+		* @param samplingTime time between two adc bins
+		* @param sparseSample used to define binOffset
+		*/
+		void waveformCorrection();
+		//void waveformCorrection(std::vector<short> samples, short adcOffset, float samplingTime, int sparseSample);
+
+		/**
+		 * This method gives a more precise value of the max of the waveform by computing the average of five points around the binMax
+		 * It is an alternative to fitParabolic()
+		 * The suitability of one of these fits can be the subject of a study
+		 * Remark : This method updates adcMax but doesn't change timeMax
+		 * @param samplingTime time between 2 ADC bins
+		 */
+		void fitAverage();
+
+		/**
+		 * @brief Alternative to `fitAverage`
+		 *
+		 * Attribute dependency : `samplingTime`
+		 */
+		void fitParabolic();
+		//void fitParabolic(float samplingTime);
+		
+		/**
+		 * From MVTFitter.java
+		 * Make fine timestamp correction (using dream (=electronic chip) clock)
+		 * @param timeStamp timing informations (used to make fine corrections)
+		 * @param fineTimeStampResolution precision of dream clock (usually 8)
+		 */
+		void fineTimeStampCorrection();
+		//void fineTimeStampCorrection (long timeStamp, float fineTimeStampResolution);
+
+		/**
+		 * This method determines the moment when the signal reaches a Constant Fraction of its Amplitude (i.e fraction*adcMax)
+		 * It fills the attributs : timeRiseCFA, timeFallCFA, timeOverThresholdCFA
+		 * @param samplingTime time between 2 ADC bins
+		 * @param amplitudeFraction amplitude fraction between 0 and 1
+		 */
+		void computeTimeAtConstantFractionAmplitude();
+		//void computeTimeAtConstantFractionAmplitude(float samplingTime, float amplitudeFractionCFA);
+
+		/**
+		 * This methods extracts a time using the Constant Fraction Discriminator (CFD) algorithm
+		 * It fills the attribut : timeCFD
+		 * @param samplingTime time between 2 ADC bins
+		 * @param fractionCFD CFD fraction parameter between 0 and 1
+		 * @param binDelayCFD CFD delay parameter
+		 */
+		void computeTimeUsingConstantFractionDiscriminator();
+		//void computeTimeUsingConstantFractionDiscriminator(float samplingTime, float fractionCFD, int binDelayCFD);
+	public:		
+		void Show(const char * filename);
+		std::vector<float> samplesCFD; // tmp
+		void ShowCFD(const char * filename);
 };
 
 #endif

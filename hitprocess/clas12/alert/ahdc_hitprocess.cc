@@ -97,11 +97,21 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_nsteps"] = Signal->nsteps;
 	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); // keV
 
+	std::map<std::string,double> output2 = Signal->Extract();
+	if (Signal->nsteps > 10){
+		std::cout << "======> Test ahdcExtractor" << std::endl;
+		std::cout << "    noise_level=" << output["noise_level"] << ", adcOffset=" << output2["adcOffset"] << std::endl;
+		std::cout << "    max_value=" << output["max_value"] - output["noise_level"] << ", adcMax=" << output2["adcMax"] << std::endl;
+		std::cout << "    t_start=" << output["t_start"] << ", timeRiseCFA=" << output2["timeRiseCFA"] << std::endl;
+		std::cout << "    t_ovr_end=" << output["t_start"] + output["t_ovr"] << ", timeFallCFA=" << output2["timeFallCFA"] << std::endl;
+		std::cout << "    t_cfd=" << output["t_cfd"] << ", timeCFD=" << output2["timeCFD"] << std::endl;
+		std::cout << "    t_ovr=" << output["t_ovr"] << ", timeOverThresholdCFA=" << output2["timeOverThresholdCFA"] << std::endl;
+	}
 	//dgtz["TDC_order"] = 0;
 	//dgtz["TDC_TDC"]   = output["t_start"];
 	dgtz["wf136_order"] = 1;
 	dgtz["wf136_timestamp"] = 0;
-	std::vector<double> SDgtz = Signal->GetDgtz();
+	std::vector<short> SDgtz = Signal->GetDgtz();
 	for (int itr=1;itr<=136;itr++){
 		std::ostringstream sEntry;
 		sEntry << "wf136_s" << itr;
@@ -283,7 +293,7 @@ void ahdcSignal::Digitize(){
 	for (int i=0;i<Npts;i++) {
 		double value = this->operator()(tmin + i*samplingTime); //in keV/ns
 		value = (int) floor(electronYield*value + Noise.at(i)); //convert in ADC +  noise
-		int adc = (value < ADC_LIMIT) ? value : ADC_LIMIT; // saturation effect 
+		short adc = (value < ADC_LIMIT) ? value : ADC_LIMIT; // saturation effect 
 		Dgtz.push_back(adc);
 	}
 }
@@ -326,7 +336,7 @@ std::map<std::string,double> ahdcSignal::Decode(){
 	// define noise and threshold
 	double noise = 0;
 	for (int i=0;i<5;i++){ noise += Noise.at(i);} 
-	noise = noise/5; 
+	noise = noise/5;
 	double threshold = (max_value+noise)/2.0;
 	
 	// compute t_start
@@ -351,6 +361,7 @@ std::map<std::string,double> ahdcSignal::Decode(){
 		}
 		else { break;}
 	}      // at this stage : i_ovr-1 < t_ovr/samplingTime < i_ovr
+	
 	if (i_ovr < Npts-2) {
 		i1 = i_ovr-1; 
 		i2 = i_ovr;
@@ -389,13 +400,13 @@ std::map<std::string,double> ahdcSignal::Decode(){
 
 double ahdcSignal::Apply_CFD(double CFD_fraction, int CFD_delay){
 	int Npts = Dgtz.size();
-	std::vector<double> Data = Dgtz;
+	std::vector<short> Data =  Dgtz;
 	// Remove noise 
-	double noise = 0;
+	short noise = 0;
 	for (int i=0;i<5;i++){
 		noise += Data.at(i);
 	}
-	noise = noise/5;
+	noise = (short) noise/5;
 	double ymax = 0;
 	for (int i=0;i<Npts;i++){
 		Data[i] = Data.at(i) - noise;
@@ -456,4 +467,297 @@ double ahdcSignal::GetMCEtot(){
 	return mcEtot;
 }
 
+#include <TString.h>
+std::map<std::string,double> ahdcSignal::Extract(){
+	ahdcExtractor T(samplingTime,0.5f,5,0.3f);
+	T.adcOffset = (short) (Dgtz[0] + Dgtz[1] + Dgtz[2] + Dgtz[3] + Dgtz[4])/5;
+	std::map<std::string,double> output = T.extract(Dgtz);
+	if (nsteps > 10){
+		T.Show(TString::Format("./output/SignalDecoded_%d_%d_%d_%d.pdf",hitn,sector,layer,component).Data());
+		T.ShowCFD(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component).Data());
+	}
+	return output;
+}
 
+std::map<std::string,double> ahdcExtractor::extract(const std::vector<short> samples){
+	samplesCorr = samples;
+	this->waveformCorrection();
+	this->fitAverage();
+	this->fitParabolic();
+	this->computeTimeAtConstantFractionAmplitude();
+	this->computeTimeUsingConstantFractionDiscriminator();
+	//this->fineTimeStampCorrection();
+	std::map<std::string,double> output;
+	output["binMax"] = binMax;
+	output["binOffset"] = binOffset;
+	output["adcMax"] = adcMax;
+	output["timeMax"] = timeMax;
+	output["integral"] = integral;
+	output["timeRiseCFA"] = timeRiseCFA;
+	output["timeFallCFA"] = timeFallCFA;
+	output["timeOverThresholdCFA"] = timeOverThresholdCFA;
+	output["timeCFD"] = timeCFD;
+	output["adcOffset"] = adcOffset;
+	return output;
+
+}
+
+void ahdcExtractor::waveformCorrection(){
+	binNumber = samplesCorr.size();
+	binMax = 0;
+	adcMax = (short) (samplesCorr[0] - adcOffset);
+	integral = 0;
+	for (int bin = 0; bin < binNumber; bin++){
+		samplesCorr[bin] = (short) (samplesCorr[bin] - adcOffset);
+		if (adcMax < samplesCorr[bin]){
+			adcMax = samplesCorr[bin];
+			binMax = bin;
+		}
+		integral += samplesCorr[bin];
+	}
+	/*
+	 * If adcMax + adcOffset == ADC_LIMIT, that means there is saturation
+	 * In that case, binMax is the middle of the first plateau
+	 * This convention can be changed
+	 */
+	if ((short) adcMax + adcOffset == ADC_LIMIT) {
+		int binMax2 = binMax;
+		for (int bin = binMax; bin < binNumber; bin++){
+			if (samplesCorr[bin] + adcOffset == ADC_LIMIT) {
+				binMax2 = bin;
+			}
+			else {
+				break;
+			}
+		}
+		binMax = (binMax + binMax2)/2;
+	}
+	binOffset = sparseSample*binMax;
+	timeMax = (binMax + binOffset)*samplingTime;
+}
+
+
+void ahdcExtractor::fitAverage(){
+	if ((binMax - 2 >= 0) && (binMax + 2 <= binNumber - 1)){
+		adcMax = 0;
+		for (int bin = binMax - 2; bin <= binMax + 2; bin++){
+			adcMax += samplesCorr[bin];
+		}
+		adcMax = adcMax/5;
+	}
+}
+
+void ahdcExtractor::fitParabolic(){}
+
+void ahdcExtractor::fineTimeStampCorrection(){}
+
+void ahdcExtractor::computeTimeAtConstantFractionAmplitude(){
+	float threshold = amplitudeFractionCFA*adcMax;
+	// timeRiseCFA
+	int binRise = 0;
+	for (int bin = 0; bin < binMax; bin++){
+		if (samplesCorr[bin] < threshold)
+			binRise = bin;  // last pass below threshold and before adcMax
+	} // at this stage : binRise < timeRiseCFA/samplingTime <= binRise + 1 // timeRiseCFA is determined by assuming a linear fit between binRise and binRise + 1
+	float slopeRise = 0;
+	if (binRise + 1 <= binNumber-1)
+		slopeRise = samplesCorr[binRise+1] - samplesCorr[binRise];
+	float fittedBinRise = (slopeRise == 0) ? binRise : binRise + (threshold - samplesCorr[binRise])/slopeRise;
+	timeRiseCFA = (fittedBinRise + binOffset)*samplingTime; // binOffset is determined in wavefromCorrection() // must be the same for all time ? // or must be defined using fittedBinRise*sparseSample
+
+	// timeFallCFA
+	int binFall = binMax;
+	for (int bin = binMax; bin < binNumber; bin++){
+		if (samplesCorr[bin] > threshold){
+				binFall = bin;
+		}
+		else {
+				binFall = bin;
+				break; // first pass below the threshold
+		}
+	} // at this stage : binFall - 1 <= timeRiseCFA/samplingTime < binFall // timeFallCFA is determined by assuming a linear fit between binFall - 1 and binFall
+	float slopeFall = 0;
+	if (binFall - 1 >= 0)
+		slopeFall = samplesCorr[binFall] - samplesCorr[binFall-1];
+	float fittedBinFall = (slopeFall == 0) ? binFall : binFall-1 + (threshold - samplesCorr[binFall-1])/slopeFall;
+	timeFallCFA = (fittedBinFall + binOffset)*samplingTime;
+	
+	// timeOverThreshold
+	timeOverThresholdCFA = timeFallCFA - timeRiseCFA;
+}
+
+void ahdcExtractor::computeTimeUsingConstantFractionDiscriminator(){
+	std::vector<float> signal(binNumber,0.0);
+	// signal generation
+	for (int bin = 0; bin < binNumber; bin++){
+		signal[bin] = (1 - fractionCFD)*samplesCorr[bin]; // we fill it with a fraction of the original signal
+		if (bin < binNumber - binDelayCFD)
+			signal[bin] += -1*fractionCFD*samplesCorr[bin + binDelayCFD]; // we advance and invert a complementary fraction of the original signal and superimpose it to the previous signal
+	}
+	// determine the two humps
+	int binHumpSup = 0;
+	int binHumpInf = 0;
+	for (int bin = 0; bin < binNumber; bin++){
+		if (signal[bin] > signal[binHumpSup])
+			binHumpSup = bin;
+	}
+	for (int bin = 0; bin < binHumpSup; bin++){ // this loop has been added to be sure : binHumpInf < binHumpSup
+		if (signal[bin] < signal[binHumpInf])
+			binHumpInf = bin;
+	}
+	// research for zero
+	int binZero = 0;
+	for (int bin = binHumpInf; bin <= binHumpSup; bin++){
+		if (signal[bin] < 0)
+			binZero = bin; // last pass below zero
+	} // at this stage : binZero < timeCFD/samplingTime <= binZero + 1 // timeCFD is determined by assuming a linear fit between binZero and binZero + 1
+	float slopeCFD = 0;
+	if (binZero + 1 <= binNumber)
+		slopeCFD = signal[binZero+1] - signal[binZero];
+	float fittedBinZero = (slopeCFD == 0) ? binZero : binZero + (0 - signal[binZero])/slopeCFD;
+	timeCFD = (fittedBinZero + binOffset)*samplingTime;
+	//
+	samplesCFD = signal;
+}
+
+#include "TCanvas.h"
+#include "TGraph.h"
+#include "TAxis.h"
+#include "TStyle.h"
+#include "TString.h"
+#include "TH1.h"
+#include "TGraphPolar.h"
+#include "TGaxis.h"
+#include <time.h>
+#include "TLine.h"
+#include "TGaxis.h"
+#include "TLatex.h"
+#include "TLegend.h"
+#include "TArrow.h"
+#include <fstream>
+
+void ahdcExtractor::Show(const char * filename){
+	double tmin = 0;
+	double tmax = 6000;
+        double threshold = adcOffset + amplitudeFractionCFA*adcMax;
+
+        // Main graph
+        double ymax = 0;
+        TGraph* gr1 = new TGraph(binNumber);
+        for (int i=0;i<binNumber;i++){
+                int adc = samplesCorr.at(i) + adcOffset;
+                if (ymax < adc) ymax = adc;
+                gr1->SetPoint(i,tmin + i*samplingTime,adc);
+        }
+        // Graph for filling
+	int binNumberOVR = 0; // binNumberOverthresholdCFA
+	for (int bin=0; bin< binNumber;bin++){
+		if ((bin*samplingTime > timeRiseCFA) && (bin*samplingTime < timeFallCFA))
+			binNumberOVR++;
+	}
+        TGraph* gr2 = new TGraph(binNumberOVR+2);
+        gr2->SetPoint(0,timeRiseCFA,threshold);
+        gr2->SetPoint(binNumberOVR+1,timeFallCFA, threshold);
+	int binRiseCFA = (int) timeRiseCFA/samplingTime;
+        for (int i=1;i<=binNumberOVR;i++){
+                gr2->SetPoint(i,tmin+samplingTime*(binRiseCFA+i),samplesCorr.at(binRiseCFA+i)+adcOffset);
+        }
+
+        // Plot graph
+        TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+        gr1->SetTitle("");
+        //gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
+        gr1->GetXaxis()->SetTitle("Time (ns)");
+        gr1->GetXaxis()->SetTitleSize(0.05);
+        gr1->GetYaxis()->SetTitle("Charge (adc)");
+        gr1->GetYaxis()->SetTitleSize(0.05);
+        gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
+        gr1->SetMarkerColor(kBlack);
+        gr1->SetMarkerSize(5);
+        gr1->SetLineColor(kBlue);
+        gr1->Draw("APL");
+        gr2->SetFillColorAlpha(kGreen, 1.0);
+        gr2->Draw("F");
+
+        // View decoding
+        TLine* line1 = new TLine(timeRiseCFA,0,timeRiseCFA,threshold); line1->SetLineWidth(1); line1->SetLineColor(kRed); line1->SetLineStyle(2); line1->Draw(); // timeRiseCFA
+        TLine* line2 = new TLine(0,threshold,timeRiseCFA,threshold); line2->SetLineWidth(1); line2->SetLineColor(kRed); line2->SetLineStyle(2); line2->Draw(); // timeRiseCFA
+        TLine* line3 = new TLine(timeFallCFA,0,timeFallCFA,threshold); line3->SetLineWidth(1); line3->SetLineColor(kRed); line3->SetLineStyle(2); line3->Draw(); // timeFallCFA
+        TArrow* arrow1 = new TArrow(timeRiseCFA,threshold,timeFallCFA,threshold,0.02,"<>"); arrow1->SetLineWidth(1); arrow1->SetLineColor(kRed); arrow1->Draw(); // timeOverThresholdCFA
+        TLine* line4 = new TLine(tmin,adcOffset,tmax,adcOffset); line4->SetLineWidth(1); line4->SetLineColor(kRed); line4->SetLineStyle(2); line4->Draw(); // adcOffset
+        TLine* line5 = new TLine(0,adcMax+adcOffset,timeMax,adcMax+adcOffset); line5->SetLineWidth(1); line5->SetLineColor(kRed); line5->SetLineStyle(2); line5->Draw(); // adcMax+adcOffset
+        TLine* line6 = new TLine(timeMax,0,timeMax,adcMax+adcOffset); line6->SetLineWidth(1); line6->SetLineColor(kRed); line6->SetLineStyle(2); line6->Draw(); // adcMax+adcOffset
+
+        TLatex data;
+        data.SetTextSize(0.03);
+        data.SetTextAlign(13);
+        data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{timeRiseCFA} =  %.2lf ns}",timeRiseCFA).Data());
+        data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{timeOverThresholdCFA} =  %.2lf ns}",timeOverThresholdCFA).Data());
+        data.DrawLatexNDC(0.5,0.8-0.05*2,TString::Format("#bf{#bf{adcMax+adcOffset} =  %.0lf adc }",adcMax+adcOffset).Data());
+        data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc per 44 ns}",integral).Data());
+        data.DrawLatexNDC(0.5,0.8-0.05*4,TString::Format("#bf{#bf{adcOffset} =  %d adc}",adcOffset).Data());
+        data.DrawLatexNDC(0.5,0.8-0.05*5,"#bf{1 adc =  10^{-5} keV/ns }");
+        data.DrawLatexNDC(0.5,0.8-0.05*6,TString::Format("#bf{#bf{timeCFD} = %.2lf ns}",timeCFD));
+        data.SetTextAlign(11);
+        data.DrawLatex(timeRiseCFA,0+(adcMax+adcOffset)*0.02,"timeRiseCFA");
+        data.DrawLatex(timeMax,(adcMax+adcOffset)+(adcMax+adcOffset)*0.02,"adcMax+adcOffset");
+        data.DrawLatex(timeMax,threshold,"timeOverThresholdCFA");
+        data.DrawLatex(0+tmax*0.02,threshold,"threshold");
+        data.DrawLatex(tmax, adcOffset+(adcMax+adcOffset)*0.02,"adcOffset");
+
+        canvas1->Print(filename);
+        delete line1; delete line2; delete line3; delete line5;
+        delete gr1; delete gr2; delete arrow1;
+        delete canvas1;
+}
+
+void ahdcExtractor::ShowCFD(const char * filename){
+	double tmin = 0;
+	double tmax = 6000;
+	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
+	TGraph* gr1 = new TGraph(binNumber);
+	TGraph* gr2 = new TGraph(binNumber);
+	for (int i=0;i<binNumber;i++){
+		gr1->SetPoint(i,tmin + i*samplingTime,samplesCorr.at(i)+adcOffset);
+		gr2->SetPoint(i,tmin + i*samplingTime,samplesCFD.at(i));
+	}
+	gr2->SetTitle(TString::Format("#bf{CFD},  fraction = %.1lf, delay = %d index units",fractionCFD,binDelayCFD));
+        gr2->GetXaxis()->SetTitle("Time (ns)");
+        gr2->GetXaxis()->SetTitleSize(0.05);
+        gr2->GetYaxis()->SetTitle("Charge (adc)");
+        gr2->GetYaxis()->SetTitleSize(0.05);
+        //gr2->SetLineStyle(1);
+        gr2->SetLineColor(kRed);
+        gr2->SetMarkerColor(kRed);
+        gr2->SetMarkerSize(5);
+        gr2->GetYaxis()->SetRangeUser(-fractionCFD*adcMax-0.1*adcMax,adcOffset+adcMax+0.1*adcMax);
+        gr2->Draw("ALP");
+
+        gr1->SetMarkerColor(kBlue);
+        gr1->SetMarkerSize(5);
+        gr1->SetLineColor(kBlue);
+        //gr1->SetLineStyle(2);
+        gr1->Draw("PL");
+
+        TGaxis* axis1 = new TGaxis(tmin,0,tmax,0,tmin,tmax,510,"");
+        axis1->SetLineColor(kGreen);
+        axis1->SetLabelColor(kGreen);
+        //axis1->SetTitle("index units");
+        axis1->Draw();
+
+        TLegend* legend = new TLegend(0.7,0.8,0.9,0.9);
+        legend->AddEntry(gr1,"Digitized signal","l");
+        legend->AddEntry(gr2,"CFD signal","l");
+        legend->Draw();
+
+        TLatex data;
+        data.SetTextSize(0.04);
+        data.SetTextAlign(13);
+        data.DrawLatexNDC(0.7,0.6,TString::Format("#bf{#bf{timeCFD} =  %.2lf ns}",timeCFD).Data());
+
+
+        //canvas1->Print(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
+	canvas1->Print(filename);
+        delete gr1; delete gr2; delete canvas1;
+        delete axis1; delete legend;
+}
