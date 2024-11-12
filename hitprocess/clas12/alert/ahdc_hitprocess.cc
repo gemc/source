@@ -79,36 +79,28 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	ahdcSignal *Signal = new ahdcSignal(aHit,hitn,0,6000,1000,44,240);
 	Signal->SetElectronYield(100000);
 	Signal->Digitize();
-	std::map<std::string,double> output = Signal->Decode();
+	std::map<std::string,double> output = Signal->Extract();
 
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
 	dgtz["ADC_order"] = 1;
-	dgtz["ADC_ADC"]   = (int) output["max_value"]; // adc
-	dgtz["ADC_time"]  = output["t_ovr"]; // ns
-	dgtz["ADC_ped"]   = (int) output["noise_level"]; // adc
-	dgtz["ADC_integral"] = (int) output["integral"]; // adc per 44 ns
+	dgtz["ADC_ADC"]   = (int) output["adcMax"]; 
+	dgtz["ADC_time"]  = output["timeMax"];
+	dgtz["ADC_ped"]   = (int) output["adcOffset"]; 
+	dgtz["ADC_integral"] = (int) output["integral"]; 
 	dgtz["ADC_timestamp"] = 0;
-	dgtz["ADC_t_start"] = output["t_start"]; // ns
-	dgtz["ADC_t_cfd"] = output["t_cfd"]; // ns
-	dgtz["ADC_mctime"] = Signal->GetMCTime(); // ns
+	dgtz["ADC_timeRiseCFA"] = output["timeRiseCFA"]; 
+	dgtz["ADC_timeCFD"] = output["timeCFD"]; 
+	dgtz["ADC_timeOVR"] = output["timeOverThresholdCFA"];
+	dgtz["ADC_mctime"] = Signal->GetMCTime(); 
 	dgtz["ADC_nsteps"] = Signal->nsteps;
-	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); // keV
+	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); 
 
-	std::map<std::string,double> output2 = Signal->Extract();
-	if (Signal->nsteps > 10){
-		std::cout << "======> Test ahdcExtractor" << std::endl;
-		std::cout << "    noise_level=" << output["noise_level"] << ", adcOffset=" << output2["adcOffset"] << std::endl;
-		std::cout << "    max_value=" << output["max_value"] - output["noise_level"] << ", adcMax=" << output2["adcMax"] << std::endl;
-		std::cout << "    t_start=" << output["t_start"] << ", timeRiseCFA=" << output2["timeRiseCFA"] << std::endl;
-		std::cout << "    t_ovr_end=" << output["t_start"] + output["t_ovr"] << ", timeFallCFA=" << output2["timeFallCFA"] << std::endl;
-		std::cout << "    t_cfd=" << output["t_cfd"] << ", timeCFD=" << output2["timeCFD"] << std::endl;
-		std::cout << "    t_ovr=" << output["t_ovr"] << ", timeOverThresholdCFA=" << output2["timeOverThresholdCFA"] << std::endl;
-	}
 	//dgtz["TDC_order"] = 0;
 	//dgtz["TDC_TDC"]   = output["t_start"];
+	
 	dgtz["wf136_order"] = 1;
 	dgtz["wf136_timestamp"] = 0;
 	std::vector<short> SDgtz = Signal->GetDgtz();
@@ -296,154 +288,6 @@ void ahdcSignal::Digitize(){
 		short adc = (value < ADC_LIMIT) ? value : ADC_LIMIT; // saturation effect 
 		Dgtz.push_back(adc);
 	}
-}
-
-std::map<std::string,double> ahdcSignal::Decode(){
-
-	double t_start, t_ovr, t_max_value, max_value, integral;
-	max_value = Dgtz.at(0);
-	integral = 0;
-	int Npts = Dgtz.size();
-	int i_max = 0;
-	
-	// compute max_value
-	for (int i=0;i<Npts;i++){
-		if (max_value < Dgtz.at(i)) {
-			max_value = Dgtz.at(i);
-			i_max = i; // useful
-		}
-	}
-	if (max_value == ADC_LIMIT) { // there is a  plateau (saturation)
-		int i_max2 = i_max;
-		while (i_max2 < Npts-1){
-			if (Dgtz.at(i_max2) == ADC_LIMIT) {
-				i_max2++;
-			} 
-			else {break;}
-		}
-		i_max = (int) (i_max+i_max2-1)/2;
-	}
-	else {  // normal case
-		// averaging of max_value
-		if ((i_max > 2) and (i_max < Npts-2)){
-			max_value = 0;
-			for (int i=-2;i<=2;i++){ max_value += Dgtz.at(i_max+i);}
-			max_value = max_value/5; // done
-		}
-	}
-	t_max_value = i_max*samplingTime; // done
-	
-	// define noise and threshold
-	double noise = 0;
-	for (int i=0;i<5;i++){ noise += Noise.at(i);} 
-	noise = noise/5;
-	double threshold = (max_value+noise)/2.0;
-	
-	// compute t_start
-	int i_start = 0;
-	for (int i=0;i<i_max;i++){
-		if (Dgtz.at(i) < threshold) {
-			i_start = i; // last pass below threshold and before max_value
-		}
-	}	// at this stage : i_start < t_start/samplingTime < i_start+1
-	int i1 = i_start; // 1 index below 
-	int i2 = i_start+1; // 1 index above
-	if (i1 < 0) {i1 = 0; } 
-	if (i2 >= Npts) {i2 = Npts-1;}
-	double slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2); 
-	t_start = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope); // done
-	
-	// compute t_ovr
-	int i_ovr = i_max;
-	while (i_ovr < Npts-1) {
-		if (Dgtz.at(i_ovr) > threshold){
-			i_ovr++; // first pass below threshold starting from max_value
-		}
-		else { break;}
-	}      // at this stage : i_ovr-1 < t_ovr/samplingTime < i_ovr
-	
-	if (i_ovr < Npts-2) {
-		i1 = i_ovr-1; 
-		i2 = i_ovr;
-		if (i1 < 1) {i1 = 0; }
-		slope = (Dgtz.at(i1) - Dgtz.at(i2))/(i1-i2);
-		t_ovr = tmin + samplingTime*(i1 + (threshold-Dgtz.at(i1))/slope) - t_start; // done // it's a time interval
-	}
-	else { t_ovr = samplingTime*i_ovr;}
-
-	// compute integral
-	double i_inf = t_start/samplingTime;
-	double i_sup = (t_start+t_ovr)/samplingTime;
-	integral = 0;
-	for (int i=0;i<Npts;i++){
-		if ((i >= i_inf) and (i <= i_sup)){
-			integral += (Dgtz.at(i)-threshold);
-		}
-	}
-	integral = integral/1; // done // adc per 44 ns
-	// constant fraction discriminator 
-	double t_cfd = this->Apply_CFD(0.3,5);
-	// output
-	std::map<std::string,double> output;
-	output["t_start"] = t_start;
-	output["t_ovr"] = t_ovr;
-	output["integral"] = integral;
-	output["max_value"] = max_value;
-	output["t_max_value"] = t_max_value;
-	output["threshold"] = threshold;
-	output["noise_level"] = noise;
-	output["t_cfd"] = t_cfd;
-	
-	return output;
-
-}
-
-double ahdcSignal::Apply_CFD(double CFD_fraction, int CFD_delay){
-	int Npts = Dgtz.size();
-	std::vector<short> Data =  Dgtz;
-	// Remove noise 
-	short noise = 0;
-	for (int i=0;i<5;i++){
-		noise += Data.at(i);
-	}
-	noise = (short) noise/5;
-	double ymax = 0;
-	for (int i=0;i<Npts;i++){
-		Data[i] = Data.at(i) - noise;
-		if (ymax < Data.at(i)) ymax = Data.at(i);
-	}
-	// Start CFD
-	std::vector<double> signal(Npts,0.0);
-	for (int i=0;i<Npts;i++){
-		signal[i] += (1-CFD_fraction)*Data.at(i);
-		if (i < Npts-CFD_delay){
-			signal[i] += -1*CFD_fraction*Data.at(i+CFD_delay);
-		}
-	}
-	int i_min=0, i_max=0;
-	for (int i=0;i<Npts;i++){
-		if (signal.at(i_max) < signal.at(i)) i_max = i;
-	}
-	for (int i=0;i<i_max;i++){ // add this loop to be sure that i_min < i_max
-		if (signal.at(i_min) > signal.at(i)) i_min = i;
-	}
-	// Deternine t_cfd
-	int i_ref = 0;
-	for (int i=i_min;i<=i_max;i++){
-		if (signal.at(i) < 0){
-			i_ref = i;
-		}
-	} // last pass below zero
-	int i1 = i_ref; // 1 index below
-	int i2 = i_ref+1; // 1 index above
-	if (i1 < 0) {i1 = 0; }
-	if (i2 >= Npts) {i2 = Npts-1;}
-	double slope = (signal.at(i1) - signal.at(i2))/(i1-i2);
-	double i_cfd;
-	i_cfd = i1 + (0-signal.at(i1))/slope; // DONE
-	double t_cfd = tmin + i_cfd*samplingTime; // DONE
-	
-	return t_cfd;
 }
 
 double ahdcSignal::GetMCTime(){
