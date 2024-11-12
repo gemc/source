@@ -342,8 +342,6 @@ class ahdcExtractor {
 		void computeTimeUsingConstantFractionDiscriminator();
 	public:	
 		std::vector<float> samplesCFD; ///< samples corresponding to the CFD signal
-		void Show(const char * filename);
-		void ShowCFD(const char * filename);
 };
 
 #endif

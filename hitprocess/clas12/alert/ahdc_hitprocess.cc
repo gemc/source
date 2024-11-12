@@ -77,7 +77,7 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 
 	ahdcSignal *Signal = new ahdcSignal(aHit,hitn,0,6000,1000,44,240);
-	Signal->SetElectronYield(100000);
+	Signal->SetElectronYield(50000);
 	Signal->Digitize();
 	std::map<std::string,double> output = Signal->Extract();
 
@@ -311,15 +311,10 @@ double ahdcSignal::GetMCEtot(){
 	return mcEtot;
 }
 
-#include <TString.h>
 std::map<std::string,double> ahdcSignal::Extract(){
 	ahdcExtractor T(samplingTime,0.5f,5,0.3f);
 	T.adcOffset = (short) (Dgtz[0] + Dgtz[1] + Dgtz[2] + Dgtz[3] + Dgtz[4])/5;
 	std::map<std::string,double> output = T.extract(Dgtz);
-	if (nsteps > 10){
-		T.Show(TString::Format("./output/SignalDecoded_%d_%d_%d_%d.pdf",hitn,sector,layer,component).Data());
-		T.ShowCFD(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component).Data());
-	}
 	return output;
 }
 
@@ -464,144 +459,3 @@ void ahdcExtractor::computeTimeUsingConstantFractionDiscriminator(){
 	samplesCFD = signal;
 }
 
-#include "TCanvas.h"
-#include "TGraph.h"
-#include "TAxis.h"
-#include "TStyle.h"
-#include "TString.h"
-#include "TH1.h"
-#include "TGraphPolar.h"
-#include "TGaxis.h"
-#include <time.h>
-#include "TLine.h"
-#include "TGaxis.h"
-#include "TLatex.h"
-#include "TLegend.h"
-#include "TArrow.h"
-#include <fstream>
-
-void ahdcExtractor::Show(const char * filename){
-	double tmin = 0;
-	double tmax = 6000;
-        double threshold = adcOffset + amplitudeFractionCFA*adcMax;
-
-        // Main graph
-        double ymax = 0;
-        TGraph* gr1 = new TGraph(binNumber);
-        for (int i=0;i<binNumber;i++){
-                int adc = samplesCorr.at(i) + adcOffset;
-                if (ymax < adc) ymax = adc;
-                gr1->SetPoint(i,tmin + i*samplingTime,adc);
-        }
-        // Graph for filling
-	int binNumberOVR = 0; // binNumberOverthresholdCFA
-	for (int bin=0; bin< binNumber;bin++){
-		if ((bin*samplingTime > timeRiseCFA) && (bin*samplingTime < timeFallCFA))
-			binNumberOVR++;
-	}
-        TGraph* gr2 = new TGraph(binNumberOVR+2);
-        gr2->SetPoint(0,timeRiseCFA,threshold);
-        gr2->SetPoint(binNumberOVR+1,timeFallCFA, threshold);
-	int binRiseCFA = (int) timeRiseCFA/samplingTime;
-        for (int i=1;i<=binNumberOVR;i++){
-                gr2->SetPoint(i,tmin+samplingTime*(binRiseCFA+i),samplesCorr.at(binRiseCFA+i)+adcOffset);
-        }
-
-        // Plot graph
-        TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
-        gr1->SetTitle("");
-        //gr1->SetTitle(TString::Format("%s : p = #Box MeV, #theta = #Box deg, #phi = #Box deg",pid2name[pid].data()));
-        gr1->GetXaxis()->SetTitle("Time (ns)");
-        gr1->GetXaxis()->SetTitleSize(0.05);
-        gr1->GetYaxis()->SetTitle("Charge (adc)");
-        gr1->GetYaxis()->SetTitleSize(0.05);
-        gr1->GetYaxis()->SetRangeUser(0,ymax+0.05*ymax);
-        gr1->SetMarkerColor(kBlack);
-        gr1->SetMarkerSize(5);
-        gr1->SetLineColor(kBlue);
-        gr1->Draw("APL");
-        gr2->SetFillColorAlpha(kGreen, 1.0);
-        gr2->Draw("F");
-
-        // View decoding
-        TLine* line1 = new TLine(timeRiseCFA,0,timeRiseCFA,threshold); line1->SetLineWidth(1); line1->SetLineColor(kRed); line1->SetLineStyle(2); line1->Draw(); // timeRiseCFA
-        TLine* line2 = new TLine(0,threshold,timeRiseCFA,threshold); line2->SetLineWidth(1); line2->SetLineColor(kRed); line2->SetLineStyle(2); line2->Draw(); // timeRiseCFA
-        TLine* line3 = new TLine(timeFallCFA,0,timeFallCFA,threshold); line3->SetLineWidth(1); line3->SetLineColor(kRed); line3->SetLineStyle(2); line3->Draw(); // timeFallCFA
-        TArrow* arrow1 = new TArrow(timeRiseCFA,threshold,timeFallCFA,threshold,0.02,"<>"); arrow1->SetLineWidth(1); arrow1->SetLineColor(kRed); arrow1->Draw(); // timeOverThresholdCFA
-        TLine* line4 = new TLine(tmin,adcOffset,tmax,adcOffset); line4->SetLineWidth(1); line4->SetLineColor(kRed); line4->SetLineStyle(2); line4->Draw(); // adcOffset
-        TLine* line5 = new TLine(0,adcMax+adcOffset,timeMax,adcMax+adcOffset); line5->SetLineWidth(1); line5->SetLineColor(kRed); line5->SetLineStyle(2); line5->Draw(); // adcMax+adcOffset
-        TLine* line6 = new TLine(timeMax,0,timeMax,adcMax+adcOffset); line6->SetLineWidth(1); line6->SetLineColor(kRed); line6->SetLineStyle(2); line6->Draw(); // adcMax+adcOffset
-
-        TLatex data;
-        data.SetTextSize(0.03);
-        data.SetTextAlign(13);
-        data.DrawLatexNDC(0.5,0.8,TString::Format("#bf{#bf{timeRiseCFA} =  %.2lf ns}",timeRiseCFA).Data());
-        data.DrawLatexNDC(0.5,0.8-0.05,TString::Format("#bf{#bf{timeOverThresholdCFA} =  %.2lf ns}",timeOverThresholdCFA).Data());
-        data.DrawLatexNDC(0.5,0.8-0.05*2,TString::Format("#bf{#bf{adcMax+adcOffset} =  %.0lf adc }",adcMax+adcOffset).Data());
-        data.DrawLatexNDC(0.5,0.8-0.05*3,TString::Format("#bf{#bf{integral} =  %.0lf adc per 44 ns}",integral).Data());
-        data.DrawLatexNDC(0.5,0.8-0.05*4,TString::Format("#bf{#bf{adcOffset} =  %d adc}",adcOffset).Data());
-        data.DrawLatexNDC(0.5,0.8-0.05*5,"#bf{1 adc =  10^{-5} keV/ns }");
-        data.DrawLatexNDC(0.5,0.8-0.05*6,TString::Format("#bf{#bf{timeCFD} = %.2lf ns}",timeCFD));
-        data.SetTextAlign(11);
-        data.DrawLatex(timeRiseCFA,0+(adcMax+adcOffset)*0.02,"timeRiseCFA");
-        data.DrawLatex(timeMax,(adcMax+adcOffset)+(adcMax+adcOffset)*0.02,"adcMax+adcOffset");
-        data.DrawLatex(timeMax,threshold,"timeOverThresholdCFA");
-        data.DrawLatex(0+tmax*0.02,threshold,"threshold");
-        data.DrawLatex(tmax, adcOffset+(adcMax+adcOffset)*0.02,"adcOffset");
-
-        canvas1->Print(filename);
-        delete line1; delete line2; delete line3; delete line5;
-        delete gr1; delete gr2; delete arrow1;
-        delete canvas1;
-}
-
-void ahdcExtractor::ShowCFD(const char * filename){
-	double tmin = 0;
-	double tmax = 6000;
-	TCanvas* canvas1 = new TCanvas("c1","c1 title",1366,768);
-	TGraph* gr1 = new TGraph(binNumber);
-	TGraph* gr2 = new TGraph(binNumber);
-	for (int i=0;i<binNumber;i++){
-		gr1->SetPoint(i,tmin + i*samplingTime,samplesCorr.at(i)+adcOffset);
-		gr2->SetPoint(i,tmin + i*samplingTime,samplesCFD.at(i));
-	}
-	gr2->SetTitle(TString::Format("#bf{CFD},  fraction = %.1lf, delay = %d index units",fractionCFD,binDelayCFD));
-        gr2->GetXaxis()->SetTitle("Time (ns)");
-        gr2->GetXaxis()->SetTitleSize(0.05);
-        gr2->GetYaxis()->SetTitle("Charge (adc)");
-        gr2->GetYaxis()->SetTitleSize(0.05);
-        //gr2->SetLineStyle(1);
-        gr2->SetLineColor(kRed);
-        gr2->SetMarkerColor(kRed);
-        gr2->SetMarkerSize(5);
-        gr2->GetYaxis()->SetRangeUser(-fractionCFD*adcMax-0.1*adcMax,adcOffset+adcMax+0.1*adcMax);
-        gr2->Draw("ALP");
-
-        gr1->SetMarkerColor(kBlue);
-        gr1->SetMarkerSize(5);
-        gr1->SetLineColor(kBlue);
-        //gr1->SetLineStyle(2);
-        gr1->Draw("PL");
-
-        TGaxis* axis1 = new TGaxis(tmin,0,tmax,0,tmin,tmax,510,"");
-        axis1->SetLineColor(kGreen);
-        axis1->SetLabelColor(kGreen);
-        //axis1->SetTitle("index units");
-        axis1->Draw();
-
-        TLegend* legend = new TLegend(0.7,0.8,0.9,0.9);
-        legend->AddEntry(gr1,"Digitized signal","l");
-        legend->AddEntry(gr2,"CFD signal","l");
-        legend->Draw();
-
-        TLatex data;
-        data.SetTextSize(0.04);
-        data.SetTextAlign(13);
-        data.DrawLatexNDC(0.7,0.6,TString::Format("#bf{#bf{timeCFD} =  %.2lf ns}",timeCFD).Data());
-
-
-        //canvas1->Print(TString::Format("./output/SignalCFD_%d_%d_%d_%d.pdf",hitn,sector,layer,component));
-	canvas1->Print(filename);
-        delete gr1; delete gr2; delete canvas1;
-        delete axis1; delete legend;
-}
