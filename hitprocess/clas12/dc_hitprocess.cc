@@ -22,7 +22,8 @@ static dcConstants initializeDCConstants(int runno, string digiVariation = "defa
 	dcConstants dcc;
 	
 	// used in process ID so defined here
-	dcc.NWIRES = 113;
+	dcc.NWIRES = 112;
+        dcc.NLAYERS = 6;
 	
 	// do not initialize at the beginning, only after the end of the first event,
 	// with the proper run number coming from options or run table
@@ -183,17 +184,24 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		return dgtz;
 	}
 	
+        if(identity[2].id<1 || identity[2].id>dcc.NLAYERS ||
+           identity[3].id<1 || identity[3].id>dcc.NWIRES) {
+            writeHit = false;
+            return dgtz;
+        }
 	
 	int SECI  = identity[0].id - 1;
 	int SLI   = identity[1].id - 1;
-	int LAY   = identity[2].id - 1;
+	int LAYI  = identity[2].id - 1;
 	int nwire = identity[3].id;
 	
 	// nwire position information
-	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semilength
-	double deltay  = 2.0*ylength/dcc.NWIRES;                ///< Y length of cell
-	double WIRE_Y  = nwire*deltay;                          ///< Center of wire hit
-	if(SLI > 3) WIRE_Y += dcc.miniStagger[LAY];             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
+	double zlength =  aHit->GetDetector().dimensions[0];    ///< G4Trap Semihright
+	double ylength =  aHit->GetDetector().dimensions[3];    ///< G4Trap Semihright
+	double deltaz  = 2.0*zlength/(dcc.NLAYERS+1);           ///< distance between sense wire planes
+	double deltay  = 2.0*ylength/(dcc.NWIRES+1);            ///< distance between wires in the same layer
+        G4ThreeVector wirePos = wireLxyz(LAYI+1, nwire, deltaz, deltay); ///< Center of hit wire in the local frame where y=z=0 is the first guard wires
+	if(SLI > 3) wirePos.setY(wirePos.y()+dcc.miniStagger[LAYI]);             ///< Region 3 (SLI 4 and 5) have mini-stagger for the sense wires
 	
 	vector<int>           stepTrackId = aHit->GetTIds();
 	vector<double>        stepTime    = aHit->GetTime();
@@ -216,7 +224,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	for(unsigned int s=0; s<nsteps; s++)
 	{
-		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z()); // local cylinder
+		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - wirePos.y(), Lpos[s].z() + zlength - wirePos.z()); // local cylinder
 		signal_t = stepTime[s]/ns + DOCA.mag()/(dcc.v0[SECI][SLI]*cm/ns);
 		// cout << "signal_t: " << signal_t << " stepTime: " << stepTime[s] << " DOCA: " << DOCA.mag() << " driftVelocity: " << dcc.driftVelocity[SLI] << " Lposy: " << Lpos[s].y() << " ylength: " << ylength << " WIRE_Y: " << WIRE_Y << " Lposz: " << Lpos[s].z() << " dcc.NWIRES: " << dcc.NWIRES << endl;
 		
@@ -269,8 +277,8 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	G4ThreeVector rotated_vector;
 	
 	for(unsigned int s=0; s<nsteps; s++)
-	{
-		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - WIRE_Y, Lpos[s].z());
+	{   
+		G4ThreeVector DOCA(0, Lpos[s].y() + ylength - wirePos.y(), Lpos[s].z() + zlength - wirePos.z()); // local cylinder
 		if(DOCA.mag() <= doca && stepTrackId[s] == trackIds )
 		{
 			//Get the momentum vector, which shall be rotated:
@@ -323,7 +331,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// distance-dependent fractional inefficiency as a function of doca
 	double ddEff = dcc.iScale[SECI][SLI]*(dcc.P1[SECI][SLI]/pow(X*X + dcc.P2[SECI][SLI], 2) + dcc.P3[SECI][SLI]/pow( (1-X) + dcc.P4[SECI][SLI], 2));
-	double random = G4UniformRand();
+	double random = G4UniformRand(); 
 	
 	// unsmeared time, based on the dist-time-function and alpha;
 	double unsmeared_time = calc_Time(doca/cm,dcc.dmaxsuperlayer[SLI],dcc.tmaxsuperlayer[SECI][SLI],alpha,thisMgnf,SECI,SLI);
@@ -336,7 +344,7 @@ map<string, double> dc_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 	
 	// Now calculate the smeared time:
 	// adding the time of hit from the start of the event (signal_t), which also has the drift velocity into it
-	double smeared_time = unsmeared_time + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAY, nwire);
+	double smeared_time = unsmeared_time + dt_random + hit_signal_t + dcc.get_T0(SECI, SLI, LAYI, nwire);
 	
 	// cout << " DC TIME stime: " << smeared_time << " X: " << X << "  doca: " << doca/cm << "  dmax: " << dcc.dmaxsuperlayer[SLI] << "    tmax: " << dcc.tmaxsuperlayer[SECI][SLI] << "   alpha: " << alpha << "   thisMgnf: " << thisMgnf << " SECI: " << SECI << " SLI: " << SLI << endl;
 	
@@ -374,32 +382,83 @@ vector<identifier>  dc_HitProcess :: processID(vector<identifier> id, G4Step* aS
 	G4ThreeVector   xyz    = poststep->GetPosition();                                        ///< Global Coordinates of interaction
 	G4ThreeVector  Lxyz    = prestep->GetTouchableHandle()->GetHistory()                     ///< Local Coordinates of interaction
 	->GetTopTransform().TransformPoint(xyz);
+
+        double zlength = Detector.dimensions[0];      // superlayer volume half thickess (full thickness include first and last field guard plane)  
+        double deltaz  = 2*zlength/3/(dcc.NLAYERS+1); // distance between wire planes including field, sense, and guard
+        double loc_z   = Lxyz.z() + zlength;          // depth of the hit  
+	int ilayer = floor(loc_z/deltaz);             // first find the layer plane (including guard, sense and field), rane = 0-20
+        double dlayer = 3*deltaz;
+
+	double ylength = Detector.dimensions[3];     ///< G4Trap Semiheight (full height includes first and last guard wires of even layers)
+	double deltay  = 2*ylength/(dcc.NWIRES+1)/2; // half-distance between wires in the plane
+	double loc_y   = Lxyz.y() + ylength;         ///< Distance from bottom of G4Trap. ministaggger does not affect it since the field/guardwires are fixed.	
+	int iwire  = floor(loc_y/deltay);            // range = 0 - 226
+        double dwire = 2*deltay;
 	
-	double ylength = Detector.dimensions[3];  ///< G4Trap Semilength
-	double deltay  = 2.0*ylength/dcc.NWIRES;
-	double loc_y   = Lxyz.y() + ylength;    ///< Distance from bottom of G4Trap. ministaggger does not affect it since the field/guardwires are fixed.
+        // making first guess
+        int nlayer = -1;
+        int nwire = -1;
+
+/*        if(ilayer<=1) {                     //hit is between the first two wire planes
+            nlayer = 1;
+        }
+        else if(ilayer>=3*dcc.NLAYERS+1) {  //hit is between the last two wire planes
+            nlayer = dcc.NLAYERS;
+        }
+        else*/ if(ilayer%3!=1) {              //hit is between the two field wires around the sense wire
+            nlayer = floor(double(ilayer-1)/3) + 1;
+        }
+        else {                              //hit is in the ambiguous area
+            int nlayer1 = ilayer/3;
+            int nwire1  = floor(double(iwire-1-nlayer1%2)/2) + 1;
+            int nlayer2 = ilayer/3 + 1;
+            int nwire2  = floor(double(iwire-1-nlayer2%2)/2) + 1;
+            
+            G4ThreeVector local = G4ThreeVector(0,Lxyz.y()+ylength,Lxyz.z()+zlength);
+            double d1 = doca(local, nlayer1, nwire1, dlayer, dwire);
+            double d2 = doca(local, nlayer2, nwire2, dlayer, dwire);
+
+            if(d1<d2) {
+                nlayer = nlayer1;
+            }
+            else {
+                nlayer = nlayer2;
+            }
+if(ilayer==0)	cout<<"aaa "<< deltay/cm << " " << deltaz/cm << "  " << 2*deltay/cm << " " << 2*sqrt(3)*deltaz/cm<< " " << ilayer << " " << iwire<< " " << d1 << " " << d2 << " " << nlayer << " " << yid[3].id << " " << endl;
+        }
+        if(nlayer>0 && nlayer<dcc.NLAYERS+1)
+            nwire = floor(double(iwire-1-nlayer%2)/2) + 1;
+
+	// resetting ids for extreme cases
+	if(nwire<1 || nwire>dcc.NWIRES)  nwire = -1;
+	if(nlayer<1 || nlayer>dcc.NLAYERS) nlayer = -1;
 	
-	int nwire = (int) floor(loc_y/deltay);
-	
-	// resetting nwire for extreme cases
-	if(nwire <= 0 )  nwire = 1;
-	if(nwire >= 113) nwire = 112;
-	
-	// setting wire number
+	// setting layer and wire number
+	yid[2].id = nlayer;
 	yid[3].id = nwire;
 	
 	// checking that the next wire is not the one closer
-	if(fabs( (nwire+1)*deltay - loc_y ) < fabs( nwire*deltay - loc_y ) && nwire != 112 )
-		yid[3].id = nwire + 1;
+//	if(fabs( (nwire+1)*deltay - loc_y ) < fabs( nwire*deltay - loc_y ) && nwire != 112 )
+//		yid[3].id = nwire + 1;
 	
 	// all energy to this wire (no energy sharing)
+	yid[2].id_sharing = 1;
 	yid[3].id_sharing = 1;
 	
 	return yid;
 }
 
+G4ThreeVector dc_HitProcess::wireLxyz(int layer, int wire, double dlayer, double dwire) {
+    double yw = dwire*(double(wire)+0.5*(layer%2));
+    double zw = dlayer*layer;
+    return G4ThreeVector(0, yw, zw);
+}
 
-
+double dc_HitProcess::doca(G4ThreeVector pos, int layer, int wire, double dlayer, double dwire) {
+    G4ThreeVector wireline = wireLxyz(layer, wire, dlayer, dwire);
+    return sqrt(pow(pos.y()-wireline.y(),2.0)+pow(pos.z()-wireline.z(),2.0));
+}
+ 
 map< string, vector <int> >  dc_HitProcess :: multiDgt(MHit* aHit, int hitn)
 {
 	map< string, vector <int> > MH;
