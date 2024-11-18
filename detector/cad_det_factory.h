@@ -4,26 +4,24 @@
 // gemc headers
 #include "detector_factory.h"
 
-class cad_det_factory : public detectorFactory
-{
+class cad_det_factory : public detectorFactory {
 public:
-	cad_det_factory(){;}
+    cad_det_factory() { ; }
 
-	// load all detectors that matches factorytype
-	map<string, detector> loadDetectors();
+    // load all detectors that matches factorytype
+    map <string, detector> loadDetectors();
 
-	// initialize factorytype, option and runcondition classes
-	void initFactory(goptions, runConditions, string);
+    // initialize factorytype, option and runcondition classes
+    void initFactory(goptions, runConditions, string);
 
-	static detectorFactory *createFactory()
-	{
-		return new cad_det_factory;
-	}
+    static detectorFactory *createFactory() {
+        return new cad_det_factory;
+    }
 
-	// check that file.(allowed extension) exist.
-	// if it does, returns file.ext
-	// otherwise returns "na"
-	string checkFormat(string file);
+    // check that file.(allowed extension) exist.
+    // if it does, returns file.ext
+    // otherwise returns "na"
+    string checkFormat(string file);
 };
 
 
