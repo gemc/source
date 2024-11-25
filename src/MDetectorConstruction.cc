@@ -64,13 +64,9 @@ G4VPhysicalVolume *MDetectorConstruction::Construct() {
 
     if (VERB > 3 || catch_v == "root") cout << hd_msg << "    " << (*hallMap)["root"];
 
-
     cout << hd_msg << " Building Detector from Geometry STL Map..." << endl;
 
-
-    // ########################################################################
     // Resetting Detector Map "scanned". Propagating "exist" to all generations
-    // ########################################################################
     if (VERB > 2) cout << hd_msg << " Mapping Physical Detector..." << endl << endl;
 
     for (map<string, detector>::iterator i = hallMap->begin(); i != hallMap->end(); i++) {
@@ -104,11 +100,8 @@ G4VPhysicalVolume *MDetectorConstruction::Construct() {
     }
 
 
-    // ########################################################################
     // Building Solids, Logical Volumes, Physical Volumes from the detector Map
-    // ########################################################################
     string mom, kid;
-
 
     // CAD imports
     scanCadDetectors(VERB, catch_v);
@@ -481,8 +474,9 @@ void MDetectorConstruction::buildMirrors() {
                         G4double pene[peneSize];
                         G4double var[peneSize];
 
-                        for (unsigned i = 0; i < peneSize; i++)
+                        for (unsigned i = 0; i < peneSize; i++) {
                             pene[i] = photonEnergy[i];
+                        }
 
                         if (indexOfRefraction.size()) {
                             for (unsigned i = 0; i < peneSize; i++) var[i] = indexOfRefraction[i];
@@ -666,13 +660,10 @@ void MDetectorConstruction::assignProductionCuts(vector <string> volumes) {
         // production cut is the last element
         double prodCut = getG4Number(volsProdCuts.back());
 
-
         SePC_Map[regionName]->SetProductionCut(prodCut);
         SeRe_Map[regionName]->SetProductionCuts(SePC_Map[regionName]);
 
-
         cout << " Production cut set to " << prodCut << "mm for volumes: " << volumesForThisRegion << endl;
-
     }
 
 }
@@ -882,6 +873,7 @@ void MDetectorConstruction::scanDetectors(int VERB, string catch_v) {
 void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
     string hd_msg = "  CAD Scanning: ";
     vector <string> relatives;
+
     // building these first in case we want to make copies of these
     for (auto &dd: *hallMap) {
 
@@ -889,7 +881,6 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
         if (dd.second.exist == 0 || dd.second.scanned == 1 || dd.second.factory != "CAD" || dd.first == "root") continue;
 
         string thisDetName = dd.first;
-
 
         // put the volume in relatives to fill it
         // if everything is good, it will be built right away
@@ -914,7 +905,7 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
                 kid.scanned = 1;
 
             } else if (kid.scanned == 0 && mom.scanned == 0) {
-                if (mom.factory == "CAD") {
+                if (mom.factory == "CAD" || mom.factory == "SQLITECAD") {
                     // we can still build this unless the mother is inside remainingCad
                     if (find(remainingCad.begin(), remainingCad.end(), kid.mother) == remainingCad.end()) {
                         relatives.push_back(kid.mother);
@@ -938,7 +929,6 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
                     relatives.pop_back();
                 }
 
-
                 // if this volume was a parent of a native volume, removing it from the list
                 auto cadRelativesOfNativeIT = find(cadRelativesOfNative.begin(), cadRelativesOfNative.end(), kid.name);
                 while (cadRelativesOfNativeIT != cadRelativesOfNative.end()) {
@@ -952,7 +942,6 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
                     remainingCad.erase(remainingCadIT);
                     remainingCadIT = find(remainingCad.begin(), remainingCad.end(), kid.name);
                 }
-
             }
         }
     }

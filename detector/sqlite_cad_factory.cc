@@ -46,11 +46,11 @@ map <string, detector> sqlitecad_det_factory::loadDetectors() {
         }
 
 
-        string dbexecute = "select name, subdir, sensitivity, hit_type, identifiers, " ;
-        dbexecute += "visible, style, position, rotation, mfield, mother, material, color from cad" ;
+        string dbexecute = "select name, cad_subdir, sensitivity, hit_type, identifiers, ";
+        dbexecute += "visible, style, position, rotation, mfield, mother, material, color from cad";
         dbexecute += " where variation ='" + variation + "'";
-        dbexecute += " and run = " + stringify(run_number) ;
-        dbexecute += " and system = '" + dname  + "'";
+        dbexecute += " and run = " + stringify(run_number);
+        dbexecute += " and system = '" + dname + "'";
 
         // executing query - will exit if not successfull.
         QSqlQuery q;
@@ -83,7 +83,6 @@ map <string, detector> sqlitecad_det_factory::loadDetectors() {
             string color = q.value(12).toString().toStdString();
 
             string filename = checkFormat(cad_subdir + "/" + name);
-            cout << " > Parsing 2 CAD volume from " << filename << endl;
 
             gt.add_data(q.value(0));                        // 1 name
             gt.add_data(mother);                            // 2 mother volume
@@ -104,7 +103,7 @@ map <string, detector> sqlitecad_det_factory::loadDetectors() {
             gt.add_data(hit_type);                          // 17 hit_type
             gt.add_data(identifiers);                       // 18 identifiers
             gt.add_data(dname);                             // 19 system is dname (can be a path)
-            gt.add_data((string) "SQLITECAD");              // 20 factory
+            gt.add_data((string) "CAD");                    // 20 factory
             gt.add_data(filename);                          // 21 variation is the full filename
             gt.add_data(stringify(run_number));             // 22 run number
 
@@ -119,170 +118,10 @@ map <string, detector> sqlitecad_det_factory::loadDetectors() {
             if (verbosity > 2) { cout << get_detector(gt, gemcOpt, RC); }
         }
 
-
-//        DIR *thisDir = opendir(cad_subdir.c_str());
-//        if (thisDir == nullptr) {
-//            if (getenv("GEMC_DATA_DIR") != nullptr) {
-//                string maybeHere = (string) getenv("GEMC_DATA_DIR") + "/" + dname + "/" + cad_subdir;
-//                thisDir = opendir(maybeHere.c_str());
-//            }
-//        }
-//
-//        if (thisDir != nullptr) {
-//            struct dirent *thisDirent = readdir(thisDir);
-//            while (thisDirent != nullptr) {
-//
-//                // removing 4 char from filename. Extension must be 3 letters long + period
-//                string thisName = thisDirent->d_name;
-//
-//                // removing extension including .
-//                if (thisName.size() > 4) {
-//                    string thisRootFileName(thisName.begin(), thisName.end() - 4);
-//
-//                    string thisFileName = checkFormat(dname + thisRootFileName);
-//
-//                    if (thisFileName != "na") {
-//                        cadFiles.push_back(thisFileName);
-//                    }
-//                }
-//            }
-//            closedir(thisDir);
-//
-//        } else {
-//            cout << " !! Error: CAD directory <" << cad_subdir
-//                 << "> cannot be read. Did you set GEMC_DATA_DIR to point to the location containing the experiments folder? Exiting." << endl;
-//            exit(1);
-//        }
-
-        // this is a directory, use name directly
-
-//        if (cadFiles.size() == 0) {
-//            cout << " !! Error: SQLITECAD system " << it->first << " subdir " << cad_subdir
-//                 << " is not a directory containing cad files. Exiting." << endl;
-//            exit(1);
-//        }
-
-
-        // looping over all cad files for this system
-//        for (const auto &cf: cadFiles) {
-//            // there is only one solid / cad file
-//            // using gtable to create it
-
-
-
-
-
-
-//
-//
-//
-//                    string volumeName = e.attribute("name").toStdString();
-//                    string mother = e.attribute("mother").toStdString();
-//                    string color = e.attribute("color").toStdString();
-//                    string material = e.attribute("material").toStdString();
-//                    string sensitivity = e.attribute("sensitivity").toStdString();
-//                    string hitType = e.attribute("hitType").toStdString();
-//                    string identifiers = e.attribute("identifiers").toStdString();
-//                    string visible = e.attribute("visible").toStdString();
-//                    string style = e.attribute("style").toStdString();
-//                    string position = e.attribute("position").toStdString();
-//                    string rotation = e.attribute("rotation").toStdString();
-//                    string mfield = e.attribute("mfield").toStdString();
-//                    detector_in_gxml.push_back(volumeName);
-//                    // assigning attributes to volume
-//                    if (dets.find(volumeName) != dets.end()) {
-//
-//                        if (verbosity > 3)
-//                            cout << " Modifying attributes for volume: " << volumeName;
-//
-//                        if (color != "") {
-//                            if (verbosity > 3)
-//                                cout << " color: " << color;
-//
-//                            G4Colour thisCol = gcol(color);
-//                            dets[volumeName].VAtts = G4VisAttributes(thisCol);
-//                        }
-//
-//                        visible == "no" ? dets[volumeName].VAtts.SetVisibility(false) : dets[volumeName].VAtts.SetVisibility(true);
-//                        style == "wireframe" ? dets[volumeName].VAtts.SetForceWireframe(true) : dets[volumeName].VAtts.SetForceSolid(true);
-//
-//                        if (sensitivity != "") {
-//                            if (verbosity > 3)
-//                                cout << " sensitivity: " << sensitivity;
-//
-//                            // setting system as sensitivity, so the hit definitions can be loaded
-//                            // this should be modified later
-//                            dets[volumeName].system = sensitivity;
-//                            dets[volumeName].sensitivity = sensitivity;
-//
-//                            // identifier must be defined
-//                            if (identifiers != "") {
-//                                if (verbosity > 3)
-//                                    cout << " identifiers: " << identifiers;
-//
-//                                dets[volumeName].identity = get_identifiers(identifiers);
-//
-//                            } else {
-//                                cout << " !! Error: volume " << volumeName << " has sensitivity but not identifier. " << endl;
-//                            }
-//                        }
-//
-//                        if (hitType != "") {
-//                            if (verbosity > 3)
-//                                cout << " hitType: " << hitType;
-//                            dets[volumeName].hitType = hitType;
-//                        }
-//
-//                        if (material != "") {
-//                            if (verbosity > 3)
-//                                cout << " material: " << material;
-//                            dets[volumeName].material = material;
-//                        }
-//
-//                        if (position != "") {
-//                            if (verbosity > 3)
-//                                cout << " position: " << position;
-//                            dets[volumeName].pos = calc_position(position);
-//                        }
-//
-//                        if (rotation != "") {
-//                            if (verbosity > 3)
-//                                cout << " rotation: " << rotation;
-//                            dets[volumeName].rot = calc_rotation(rotation, volumeName);
-//                        }
-//
-//                        if (mother != "") {
-//                            if (verbosity > 3)
-//                                cout << " mother: " << mother;
-//                            dets[volumeName].mother = mother;
-//                        }
-//                        if (mfield != "") {
-//                            if (verbosity > 3)
-//                                cout << " mfield: " << mfield;
-//                            dets[volumeName].magfield = mfield;
-//                        }
-//
-//                        if (verbosity > 3)
-//                            cout << endl;
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-
         for (const auto &dd: dets) {
             if (verbosity > 3)
                 cout << dd.second;
         }
-
-        // remove all detectors in dets that are not in the sql DB
-//    for (const auto &dd: dets) {
-//        if (find(detector_in_gxml.begin(), detector_in_gxml.end(), dd.first) == detector_in_gxml.end()) {
-//            cout << " >>  Detector " << dd.first << " not found in gxml file. It will be removed from GEMC." << endl;
-//            dets[dd.first].exist = 0;
-//        }
-//    }
 
     }
     return dets;

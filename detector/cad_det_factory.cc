@@ -108,27 +108,27 @@ map <string, detector> cad_det_factory::loadDetectors() {
             string detN = detPN.substr(detPN.find_last_of("/") + 1);
 
             gt.add_data(detN);                            // 1 name
-            gt.add_data((string) "root");                // 2 mother volume
+            gt.add_data((string) "root");                 // 2 mother volume
             gt.add_data(detN + (string) " cadImported");  // 3 description
-            gt.add_data((string) "0*cm 0*cm 0*cm");      // 4 position
-            gt.add_data((string) "0*deg 0*deg 0*deg");   // 5 rotation
-            gt.add_data((string) "2222aa");              // 6 color
-            gt.add_data((string) "cadImport");           // 7 type
-            gt.add_data((string) "0");                   // 8 dimensions
-            gt.add_data((string) "G4_Al");               // 9 material is aluminum by defaul
-            gt.add_data((string) "no");                  // 10 magnetic field
-            gt.add_data((string) "0");                   // 11 copy number
-            gt.add_data((string) "0");                   // 12 pmany
-            gt.add_data((string) "1");                   // 13 activation flag
-            gt.add_data((string) "1");                   // 14 visibility
-            gt.add_data((string) "1");                   // 15 style
-            gt.add_data((string) "no");                  // 16 sensitivity
-            gt.add_data((string) "no");                  // 17 hit_type
-            gt.add_data((string) "");                    // 18 identifiers
-            gt.add_data(dname);                          // 19 system is dname (can be a path)
-            gt.add_data((string) "CAD");                 // 20 factory
+            gt.add_data((string) "0*cm 0*cm 0*cm");       // 4 position
+            gt.add_data((string) "0*deg 0*deg 0*deg");    // 5 rotation
+            gt.add_data((string) "2222aa");               // 6 color
+            gt.add_data((string) "cadImport");            // 7 type
+            gt.add_data((string) "0");                    // 8 dimensions
+            gt.add_data((string) "G4_Al");                // 9 material is aluminum by defaul
+            gt.add_data((string) "no");                   // 10 magnetic field
+            gt.add_data((string) "0");                    // 11 copy number
+            gt.add_data((string) "0");                    // 12 pmany
+            gt.add_data((string) "1");                    // 13 activation flag
+            gt.add_data((string) "1");                    // 14 visibility
+            gt.add_data((string) "1");                    // 15 style
+            gt.add_data((string) "no");                   // 16 sensitivity
+            gt.add_data((string) "no");                   // 17 hit_type
+            gt.add_data((string) "");                     // 18 identifiers
+            gt.add_data(dname);                           // 19 system is dname (can be a path)
+            gt.add_data((string) "CAD");                  // 20 factory
             gt.add_data(cf);                              // 21 variation is the full filename
-            gt.add_data((string) "1");                   // 22 run number
+            gt.add_data((string) "1");                    // 22 run number
 
             dets[gt.data[0]] = get_detector(gt, gemcOpt, RC);
 
