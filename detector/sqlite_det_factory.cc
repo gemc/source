@@ -15,9 +15,8 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
 
     map <string, detector> dets;
 
-    // first check if there's at least one detector with MYSQL factory
-    if (!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType))
-        return dets;
+    // first check if there's at least one detector with SQLITE factory
+    if (!check_if_factory_is_needed(RC.detectorConditionsMap, factoryType)) { return dets; }
 
     // connection to the DB
     QSqlDatabase db = openGdb(gemcOpt);
@@ -41,10 +40,10 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
             exit(1);
         }
 
-        if (verbosity)
+        if (verbosity) {
             cout << hd_msg << " Importing SQLITE Detector: " << dname << " with <" << factoryType
                  << "> factory, variation \"" << variation << "\", run number requested: " << run << ",  sqlite run number used: " << run_number << endl;
-
+        }
 
         string dbexecute = "select name, mother, description, pos, rot, col, type, ";
         dbexecute += "dimensions, material, magfield, ncopy, pmany, exist, ";
@@ -87,8 +86,7 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
                 dets[gt.data[0]] = get_detector(gt, gemcOpt, RC);
             }
 
-            if (verbosity > 3)
-                cout << get_detector(gt, gemcOpt, RC);
+            if (verbosity > 3) { cout << get_detector(gt, gemcOpt, RC); }
         }
     }
 

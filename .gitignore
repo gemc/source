@@ -1,7 +1,0 @@
-*.o
-moc_*.cc
-lib/
-gemc
-build*
-.sconsign.dblite
-*.a
