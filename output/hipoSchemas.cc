@@ -98,7 +98,7 @@ HipoSchema :: HipoSchema()
 
 	
 	// detectors
-	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L, t_start/F, t_cfd/F, mctime/F, nsteps/I, mcEtot/F");
+	alertAhdcADCchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L, timeRiseCFA/F, timeCFD/F, timeOVR/F, mctime/F, mcEtot/F, nsteps/I");
 	std::ostringstream ListOfAhdcWF136;
 	ListOfAhdcWF136 << "sector/B, layer/B, component/S, order/B, timestamp/L";
 	for (int itr=1;itr<=136;itr++){
