@@ -244,7 +244,7 @@ bool HipoSchema::non_registered_detectors(string schemaName, int type) {
         if (schemaName == "atof" || schemaName == "band" || schemaName == "bmt" || schemaName == "fmt" || schemaName == "ftm"
             || schemaName == "dc" || schemaName == "bst" || schemaName == "cnd" || schemaName == "ctof" || schemaName == "ecal"
             || schemaName == "ftof" || schemaName == "ft_cal" || schemaName == "ft_hodo" || schemaName == "ft_trk"
-            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell") {
+            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell" || schemaName == "flux") {
             return false;
         }
     }
