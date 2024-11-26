@@ -453,7 +453,7 @@ void MDetectorConstruction::buildMirrors() {
                 // use this instead of a new table!
 
                 string maptOptProps = itr->second->maptOptProps;
-                if (maptOptProps != "notDefined" && ((*mats)[maptOptProps])->GetMaterialPropertiesTable()) {
+                if (maptOptProps != "none" && maptOptProps != "notDefined" && ((*mats)[maptOptProps])->GetMaterialPropertiesTable()) {
                     mirrorsMPT.push_back(((*mats)[maptOptProps])->GetMaterialPropertiesTable());
                 } else {
                     mirrorsMPT.push_back(new G4MaterialPropertiesTable());
@@ -905,7 +905,7 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
                 kid.scanned = 1;
 
             } else if (kid.scanned == 0 && mom.scanned == 0) {
-                if (mom.factory == "CAD" || mom.factory == "SQLITECAD") {
+                if (mom.factory == "CAD") {
                     // we can still build this unless the mother is inside remainingCad
                     if (find(remainingCad.begin(), remainingCad.end(), kid.mother) == remainingCad.end()) {
                         relatives.push_back(kid.mother);
