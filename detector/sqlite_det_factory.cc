@@ -7,7 +7,7 @@
 
 map <string, detector> sqlite_det_factory::loadDetectors() {
 
-    string hd_msg =  gemcOpt.optMap["LOG_MSG"].args + "  > SQLITE Detector Factory: >> ";
+    string hd_msg = gemcOpt.optMap["LOG_MSG"].args + "  > SQLITE Detector Factory: >> ";
     double verbosity = gemcOpt.optMap["GEO_VERBOSITY"].arg;
 
     double runno_arg = gemcOpt.optMap["RUNNO"].arg;
@@ -47,10 +47,10 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
 
         string dbexecute = "select name, mother, description, pos, rot, col, type, ";
         dbexecute += "dimensions, material, magfield, ncopy, pmany, exist, ";
-        dbexecute += "visible, style, sensitivity, hitType, identity from geometry" ;
+        dbexecute += "visible, style, sensitivity, hitType, identity from geometry";
         dbexecute += " where variation ='" + variation + "'";
-        dbexecute += " and run = " + stringify(run_number) ;
-        dbexecute += " and system = '" + dname  + "'";
+        dbexecute += " and run = " + stringify(run_number);
+        dbexecute += " and system = '" + dname + "'";
 
         // executing query - will exit if not successfull.
         QSqlQuery q;
@@ -69,8 +69,9 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
             gtable gt;
 
             // there should be 18 values in the MYSQL table
-            for (int i = 0; i < 18; i++)
+            for (int i = 0; i < 18; i++) {
                 gt.add_data(q.value(i));
+            }
 
             // adding additional info: system, factory, variation, run number
             gt.add_data(dname);
@@ -89,7 +90,6 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
             if (verbosity > 3) { cout << get_detector(gt, gemcOpt, RC); }
         }
     }
-
 
     cout << endl;
 

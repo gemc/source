@@ -307,8 +307,9 @@ int main(int argc, char **argv) {
 
     gemc_splash.message(" Executing initial directives...\n");
     vector <string> init_commands = init_dmesg(gemcOpt);
-    for (unsigned int i = 0; i < init_commands.size(); i++)
+    for (unsigned int i = 0; i < init_commands.size(); i++) {
         UImanager->ApplyCommand(init_commands[i].c_str());
+    }
     string exec_macro = "/control/execute " + gemcOpt.optMap["EXEC_MACRO"].args;
 
     clock_t start_events;

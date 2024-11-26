@@ -32,6 +32,7 @@ env.Append(CPPPATH = 'mirrors')
 mirrors_sources = Split("""
 	mirrors/mirrors_factory.cc
 	mirrors/mysql_mirrors.cc
+	mirrors/sqlite_mirrors.cc
 	mirrors/text_mirrors.cc""")
 env.Library(source = mirrors_sources, target = "lib/gmirrors")
 

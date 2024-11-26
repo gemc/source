@@ -15,8 +15,7 @@ runConditions::runConditions(goptions gemcOpt)
 {
 	string hd_msg    = gemcOpt.optMap["LOG_MSG"].args + " gcard: >> " ;
 	int run_number   = gemcOpt.optMap["RUNNO"].arg;
-	
-	
+
 	// adding detector defined with the DF directive Detector/Factory
 	vector<string> dfopt = get_info(gemcOpt.optMap["DF"].args);
 	if(dfopt[0] != "no" && dfopt.size() > 1)
