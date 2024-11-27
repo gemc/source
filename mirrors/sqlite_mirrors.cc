@@ -37,10 +37,9 @@ map<string, mirror *> sqlite_mirrors::initMirrors(runConditions rc, goptions opt
         if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
         int run_number = get_sql_run_number(db, dname, variation, run, "mirrors");
 
-        // if run number is -1, the detector is not in the DB. exit with error
+        // if run number is -1, the detector is not in the DB. Return empty map
         if (run_number == -1) {
-            cout << hd_msg << " !!! Detector \"" << dname << "\" not found in the SQLITE database for run number <" << run_number << ">. Exiting." << endl;
-            exit(1);
+            return mymirs;
         }
 
         if (verbosity) {
