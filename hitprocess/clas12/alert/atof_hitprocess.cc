@@ -45,7 +45,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	int atof_superlayer = identity[1].id; // long paddles: SL = 0; top: SL=1
 	int atof_layer      = identity[2].id;
 	int atof_paddle     = identity[3].id;
-	int atof_order      = identity[4].id; // 0/1 for long front/back. 0 for top
+	int atof_order      = identity[4].id; // 0/1 for long front(upstream)/back(downstream). 0 for top
 	
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -54,10 +54,11 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		double tdc      = stepTime;
 
 		dgtz["hitn"]      = hitn;
-		dgtz["sector"]    = atof_sector;
-		dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-		dgtz["component"] = atof_paddle;
-		dgtz["ADC_order"] = atof_order;
+		dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+		dgtz["layer"]     = atof_paddle - 4*atof_sector - 1; //the layer needed in the bank is the index for the wedge ranging 0 to 3
+		dgtz["component"] = atof_layer; //the component needed in the banks is the slice in z ranging 0 to 9
+		if(atof_superlayer==0) dgtz["component"] = 10; //or 10 if it is the long bar
+		dgtz["ADC_order"] = atof_order; 
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
@@ -318,9 +319,10 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 	
 	dgtz["hitn"]      = hitn;
-	dgtz["sector"]    = atof_sector;
-	dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-	dgtz["component"] = atof_paddle;
+	dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+	dgtz["layer"]     = atof_paddle - 4*atof_sector - 1; //the layer needed in the bank is the index for the wedge ranging 0 to 3
+	dgtz["component"] = atof_layer; //the component needed in the banks is the slice in z ranging 0 to 9
+	if(atof_superlayer==0) dgtz["component"] = 10; //or 10 if it is the long bar
 	dgtz["ADC_order"] = atof_order;
 	
 	dgtz["ADC_ADC"]   = (int)adc*100;
