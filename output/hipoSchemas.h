@@ -55,6 +55,7 @@ public:
 	hipo::schema helFLIPSchema;
 	hipo::schema helONLINESchema;
 	hipo::schema urwellADCSchema;
+        hipo::schema recoilADCSchema;
 	hipo::schema rasterADCSchema;
 	hipo::schema rawADCSchema;
 	hipo::schema rawTDCSchema;
