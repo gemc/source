@@ -250,55 +250,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		tdc_top  = G4RandGauss::shoot(time_top, sigma_time) / tdc_CC_top;
 		
 	}
-	
-	/* // this is for previous simple version
-	 if (energy > 0) {
-	 adc = energy * adc_CC;
-	 
-	 double hit_time = tInfos.time;
-	 //tdc  = G4RandGauss::shoot(hit_time, sqrt(2) * tdc_CC);
-	 time  = hit_time;
-	 
-	 }
-	 */
-	
-//	dgtz["sector"] = identity[0].id;
-//	dgtz["superlayer"] = identity[1].id;
-//	dgtz["layer"] = identity[2].id;
-//	dgtz["paddle"] = identity[3].id;
-//	dgtz["adc_front"] = adc_front;
-//	dgtz["adc_back"] = adc_back;
-//	dgtz["adc_top"] = adc_top;
-//	dgtz["tdc_front"] = tdc_front;
-//	dgtz["tdc_back"] = tdc_back;
-//	dgtz["tdc_top"] = tdc_top;
-//	dgtz["time_front"] = time_front;
-//	dgtz["time_back"] = time_back;
-//	dgtz["time_top"] = time_top;
-//	dgtz["E_tot_Front"] = E_tot_Front;
-//	dgtz["E_tot_Back"] = E_tot_Back;
-//	dgtz["E_tot_Top"] = E_tot_Top;
-//	dgtz["totEdep_MC"] = totEdep;
-//	dgtz["hitn"] = hitn;		//(2202,99)
-	
-//	cout << " start of the ATOF hit " << endl;
-//	cout << " sector = " << identity[0].id << endl;
-//	cout << " superlayer = " << identity[1].id << endl;
-//	cout << " layer = " << identity[2].id << endl;
-//	cout << " paddle = " << identity[3].id << endl;
-//	cout << " order = : " << identity[4].id << endl;
-//	cout << " E_tot_Front energy value = " << E_tot_Front << endl;
-//	cout << " E_tot_Back energy value = " << E_tot_Back << endl;
-//	cout << " E_tot_Top energy value = " << E_tot_Top << endl;
-//	cout << " adc_front = " << adc_front << endl;
-//	cout << " adc_back = " << adc_back << endl;
-//	cout << " adc_top = " << adc_top << endl;
-//	cout << " tdc_front = : " << tdc_front << endl;
-//	cout << " tdc_back = : " << tdc_back << endl;
-//	cout << " tdc_top = : " << tdc_top << endl;
-//	cout << " value in hitn var: " << hitn << endl;
-//	cout << " end of the ATOF hit " << endl << endl;;
-	
+		
 	double adc = 0;
 	double time = 0;
 	
@@ -317,11 +269,9 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	dgtz["hitn"]      = hitn;
 	dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
-	dgtz["layer"]     = atof_paddle - 4*atof_sector - 1; //the layer needed in the bank is the index for the wedge ranging 0 to 3
-	dgtz["component"] = atof_layer; //the component needed in the banks is the slice in z ranging 0 to 9
-	if(atof_superlayer==0) dgtz["component"] = 10; //or 10 if it is the long bar
+	dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
+	dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
 	dgtz["ADC_order"] = atof_order;
-	
 	dgtz["ADC_ADC"]   = (int)adc*100;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
@@ -333,13 +283,6 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	return dgtz;
 }
-
-
-// sector     = identity[0].id;
-// superlayer = identity[1].id;
-// layer      = identity[2].id;
-// paddle     = identity[3].id;
-// order      = identity[4].id;
 
 vector<identifier> atof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 	
