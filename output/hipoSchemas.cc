@@ -66,6 +66,7 @@ HipoSchema::HipoSchema() {
     helFLIPSchema = hipo::schema("HEL::flip", 22000, 12);
     helONLINESchema = hipo::schema("HEL::online", 22000, 13);
     urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
+    recoilADCSchema   = hipo::schema("RECOIL::adc",  22600, 11);
     rawADCSchema = hipo::schema("RAW::adc", 20000, 11);
     rawTDCSchema = hipo::schema("RAW::tdc", 20000, 12);
     rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
@@ -139,7 +140,8 @@ HipoSchema::HipoSchema() {
     helONLINESchema.parse("helicity/B, helicityRaw/B");
 
     urwellADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-
+    recoilADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+    
     rawADCSchema.parse("crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
     rawTDCSchema.parse("crate/B, slot/B, channel/S, order/B, TDC/I");
     rawSCALERSchema.parse("crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
@@ -193,7 +195,8 @@ HipoSchema::HipoSchema() {
     schemasToLoad["HEL::flip"] = helFLIPSchema;
     schemasToLoad["RASTER::adc"] = rasterADCSchema;
     schemasToLoad["URWELL::adc"] = urwellADCSchema;
-
+    schemasToLoad["RECOIL::adc"]  = recoilADCSchema;
+    
     cout << " Done defining Hipo4 schemas." << endl;
 
 }
@@ -237,14 +240,14 @@ bool HipoSchema::non_registered_detectors(string schemaName, int type) {
             return false;
         }
     } else if (type == 1) { // non tdc detectors
-        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "atof" || schemaName == "urwell" || schemaName == "flux") {
+        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "atof" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
             return false;
         }
     } else if (type == 2) { // non wf:10 detectors
         if (schemaName == "atof" || schemaName == "band" || schemaName == "bmt" || schemaName == "fmt" || schemaName == "ftm"
             || schemaName == "dc" || schemaName == "bst" || schemaName == "cnd" || schemaName == "ctof" || schemaName == "ecal"
             || schemaName == "ftof" || schemaName == "ft_cal" || schemaName == "ft_hodo" || schemaName == "ft_trk"
-            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell" || schemaName == "flux") {
+            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
             return false;
         }
     }
