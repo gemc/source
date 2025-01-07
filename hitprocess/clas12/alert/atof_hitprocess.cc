@@ -57,10 +57,9 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
 		dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
 		dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
-		dgtz["ADC_order"] = atof_order; //order for the bar is 0/1 for front(upstream)/back(downstream) and 0 for the wedge
-		dgtz["ADC_ADC"]   = (int) totEdep;
-		dgtz["ADC_time"]  = tdc;
-		dgtz["ADC_ped"]   = 0;
+		dgtz["TDC_order"] = atof_order; //order for the bar is 0/1 for front(upstream)/back(downstream) and 0 for the wedge
+		dgtz["TDC_ToT"]   = (int) totEdep;
+		dgtz["TDC_TDC"]  = tdc;
 		return dgtz;
 	}
 	
@@ -271,11 +270,10 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
 	dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
 	dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
-	dgtz["ADC_order"] = atof_order;
-	dgtz["ADC_ADC"]   = (int)adc*100;
-	dgtz["ADC_time"]  = time;
-	dgtz["ADC_ped"]   = 0;
-		
+	dgtz["TDC_order"] = atof_order;
+	dgtz["TDC_ToT"]   = (int)adc*100;
+	dgtz["TDC_TDC"]  = time;
+			
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;

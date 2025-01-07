@@ -23,7 +23,7 @@ public:
 	hipo::schema alertAhdcADCSchema;
 	hipo::schema alertAhdcTDCSchema;
 	hipo::schema alertAhdcWF10Schema;
-	hipo::schema alertAtofADCSchema;
+	hipo::schema alertAtofTDCSchema;
 	hipo::schema bandADCSchema;
 	hipo::schema bandTDCSchema;
 	hipo::schema bmtADCSchema;
