@@ -120,6 +120,7 @@ public:
 		{"urwell",  23},
 		{"atof",    24},
 		{"ahdc",    25},
+		{"recoil",  26},
 		{"flux",   100}
 	};
 

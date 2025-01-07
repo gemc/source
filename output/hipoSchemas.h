@@ -20,10 +20,10 @@ public:
 	hipo::schema fluxADCSchema;
 
 	// detectors
-	hipo::schema alertAhdcWF136chema;
-	hipo::schema alertAhdcADCchema;
-	hipo::schema alertAhdcTDCchema;
-	hipo::schema alertAtofADCchema;
+	hipo::schema alertAhdcADCSchema;
+	hipo::schema alertAhdcTDCSchema;
+	hipo::schema alertAhdcWF136Schema;
+	hipo::schema alertAtofADCSchema;
 	hipo::schema bandADCSchema;
 	hipo::schema bandTDCSchema;
 	hipo::schema bmtADCSchema;
@@ -55,6 +55,7 @@ public:
 	hipo::schema helFLIPSchema;
 	hipo::schema helONLINESchema;
 	hipo::schema urwellADCSchema;
+        hipo::schema recoilADCSchema;
 	hipo::schema rasterADCSchema;
 	hipo::schema rawADCSchema;
 	hipo::schema rawTDCSchema;
@@ -68,7 +69,7 @@ public:
 	// type: 0 = adc, 1 = tdc
 	hipo::schema getSchema(string schemaName, int type) ;
 	
-	
+	bool non_registered_detectors(string schemaName, int type);
 };
 
 
