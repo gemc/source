@@ -45,13 +45,15 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	int atof_superlayer = identity[1].id; //bar: SL = 0; wedge: SL=1
 	int atof_layer      = identity[2].id;
 	int atof_paddle     = identity[3].id;
-	int atof_order      = identity[4].id; 
+	int atof_order      = identity[4].id;
+
+	double time_to_tdc = 1./0.015625;
 	
 	if(aHit->isBackgroundHit == 1) {
 		
 		double totEdep  = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-		double tdc      = stepTime;
+		double tdc      = stepTime * time_to_tdc;
 
 		dgtz["hitn"]      = hitn;
 		dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
@@ -59,7 +61,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
 		dgtz["TDC_order"] = atof_order; //order for the bar is 0/1 for front(upstream)/back(downstream) and 0 for the wedge
 		dgtz["TDC_ToT"]   = (int) totEdep;
-		dgtz["TDC_TDC"]  = tdc;
+		dgtz["TDC_TDC"]  = tdc; 
 		return dgtz;
 	}
 	
@@ -220,8 +222,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double time_top = 0.00000;
 	double sigma_time = 0.1; // in ns! 100 ps = 0.1 ns
 	
-	
-	///////ALL OF THIS PART WILL NEED TO BE UPDATED WITH ACTUAL CALIBRATION TO ADC and TDC	
+	///////ALL OF THIS PART WILL NEED TO BE UPDATED WITH ACTUAL CALIBRATION	
 	if ((E_tot_Front > 0.0) || (E_tot_Back > 0.0)) 
 	{
 		double nphe_fr = G4Poisson(E_tot_Front*pmtPEYld);
@@ -247,7 +248,6 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		adc_top = energy_top *adc_CC_top *(1/(dEdxMIP*2.0)); // 20 mm sl1 (radial) thickness in XY -> 2.0 cm
 		time_top = EtimesTime_Top/E_tot_Top;
 		tdc_top  = G4RandGauss::shoot(time_top, sigma_time) / tdc_CC_top;
-		
 	}
 		
 	double adc = 0;
@@ -272,8 +272,8 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
 	dgtz["TDC_order"] = atof_order;
 	dgtz["TDC_ToT"]   = (int)adc*100;
-	dgtz["TDC_TDC"]  = time;
-			
+	dgtz["TDC_TDC"]  = time * time_to_tdc;
+	
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;
