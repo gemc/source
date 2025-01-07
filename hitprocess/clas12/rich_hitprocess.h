@@ -14,22 +14,22 @@
 #include "Randomize.hh"
 #include "G4Poisson.hh"
 
-/* From Marco: class to generate the single photon signal of MAPMT and readout electronics 
-   8500 -> Hamamatsu H8500
-   12700 -> Hamamatsu H12700
-   12701 -> Hamamatsu H12700 but with old (and wrong) stage gain calculation 
+/* 
+   RichPixel: Class written by Marco Mirazita to generate 
+   the single photon signal of MAPMT and readout electronics
+   8500 -> Hamamatsu H8500                                                                                                                                                                                      
+   12700 -> Hamamatsu H12700                                                                                                                                                                                    
 */
 
 
 class RichPixel {
 
-public:
+private:
 
   /* charge of the electron in fC */
   const double Qe = 1.602e-4;
-  
-  //TRandom3 rnd;
-  HepRandom rnd;
+
+
   /* ----------------------- */
   /* MAPMT parameters */
   int PmtType = 0;
@@ -45,7 +45,7 @@ public:
   /* MAROC charge saturation (fC) */
   const double MarocMaxQ = 2500;
 
-  
+
   /* ADC conversion factors */
 
   /* conversion from fC to MAROC binary ADC units */
@@ -53,6 +53,7 @@ public:
 
   /* Pedestal in DAC units */
   const int Pedestal = 0;
+
 
 
   /* TDC conversion factors */
@@ -86,24 +87,26 @@ public:
   /* TDC threshold in charge */
   double MarocThrCharge = 0;
 
-  /* Time offset */
-  double TimeOffset = 0;
 
   /* Time sigma resolution for the gaussian smearing */
-  double TimeResol = 1;
+  double TimeResol_H12700 = 0.35;
+  double TimeResol_H8500 = 0.4;
 
+  /* Total Time sigma resolution for the gaussian smearing */
+  double TimeResol = 0;
   /* Output Signal quantities */
   int npe;
 
   double qadc;
   int ADC;
-  
+
   double qtdc;
-  double start_time;
-  double true_t1;
   double t1, t2;
   double duration;
 
+  double pmt_time;
+  double maroc_time;
+  double hit_time;
 
   void GenerateNpe(int n0);
 
@@ -128,19 +131,24 @@ public:
   int get_ADC() { return ADC; }
 
   double get_ChargeTDC() { return qtdc; }
-  double get_TrueT1() { return true_t1; }
-  int get_T1() { return (int)t1; }
-  int get_T2() { return (int)t2; }
+  double get_HitTime() { return hit_time; }
+  double get_PmtTime() { return pmt_time; }
+  double get_MarocTime() { return maroc_time; }
+  int get_DigiT1() { return (int)t1; }
+  int get_DigiT2() { return (int)t2; }
+  double get_T1() { return t1; }
+  double get_T2() { return t2; }
   int get_Duration() { return (int)(t2-t1); }
-
-
-  int GenerateADC(int n0);
-  bool GenerateTDC(int n0, double t0);
+  bool GenerateADC(int n0, double t0=0);
+  bool GenerateTDC(int n0, double t0=0);
   bool GenerateTDCfromADC(double qadc, double t0);
 
   void PrintPmt();
   void PrintMaroc();
+  void PrintEvent();
+
 };
+
 
 // constants to be used in the digitization routine
 class richConstants
@@ -162,19 +170,9 @@ public:
   const static int npmt = 391;
   const static int npixel = 64;
   
-  // ccdb time constants (up to 2 rich sectors)
-  double timewalkCorr_D0[2][npmt];
-  double timewalkCorr_m1[2][npmt];
-  double timewalkCorr_m2[2][npmt];
-  double timewalkCorr_T0[2][npmt];
-  double timeOffsetCorr[2][npmt*npixel];
   int geomSetup[6]; // ccdb table for which sectors contain RICH
   int nRich = 1;
-  
-  // mean D0 (time walk parameter) from sim of PMT with RichPixel class
-  // determined by running time calibration suite over electrons thrown in RICH
-  double D0pmtSim = 57.33;   
-
+    
   // dark hit constants
   double darkRate = 500*hertz;
   double timeWindowDefault = 248.5*ns; // can we access this somehow?
@@ -230,30 +228,30 @@ public:
 		     140};
   // pmt->position on readout board (for maroc channel -> final component number)
   int pmtToTilePosition[397] = {1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1,
-			     2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2,
-			     3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-			     3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-			     3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2,
-			     3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-			     2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-			     2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1,
-			     2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-			     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-			     1, 2, 3, 1, 2, 3};
-
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2,
+    3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+    2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 3,
+    1, 2, 3, 1, 2, 3};
+  
   // quantum efficiency tables
   const static int nQEbinsH8500=87;
   double Ene_H8500[nQEbinsH8500]={6.148,     5.387,
@@ -363,9 +361,6 @@ private:
         // RICH specific functions 
         int getPixelNumber(G4ThreeVector  Lxyz);
         G4ThreeVector getPixelCenter(int pixel);
-
-        // testing ccdb time paramters vs PMT simulation class
-        bool ccdbTiming = false;
 
         // just converting double tdc to int for 1ns tdc precision
 	double tdc_precision = 1.; 
