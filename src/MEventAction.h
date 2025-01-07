@@ -35,24 +35,24 @@
 /// a hit in any detector. If a mother create a hit as well, the daughter won't be kept in the map
 /// If requested by the user, this particles are saved in a LUND format so they can be merged
 /// to a generator - instead of regenerating beam on target
-class BGParts
-{
+class BGParts {
 public:
-	BGParts(){;}
-	BGParts(int partid, double t, G4ThreeVector vtx, G4ThreeVector mom)
-	{
-		pid = partid;
-		v    = vtx;
-		p    = mom;
-		time = t;
-	}
-	~BGParts(){;}
+    BGParts() { ; }
+
+    BGParts(int partid, double t, G4ThreeVector vtx, G4ThreeVector mom) {
+        pid = partid;
+        v = vtx;
+        p = mom;
+        time = t;
+    }
+
+    ~BGParts() { ; }
 
 public:
-	int pid;
-	double time;
-	G4ThreeVector v; // vertex
-	G4ThreeVector p; // momentum
+    int pid;
+    double time;
+    G4ThreeVector v; // vertex
+    G4ThreeVector p; // momentum
 };
 
 
@@ -67,49 +67,52 @@ public:
 /// A = np + nn and Z = np.\n
 /// I gives the isomer level, with I = 0 corresponding \n
 /// to the ground state and I >0 to excitations \n
-class TInfos
-{
+class TInfos {
 public:
-	TInfos(){;}
-	TInfos(int MTID)
-	{
-		mtid = MTID;
-		mpid = 0;
-		mv   = G4ThreeVector(0.,0.,0.);
-	}
-	~TInfos(){;}
+    TInfos() { ; }
+
+    TInfos(int MTID) {
+        mtid = MTID;
+        mpid = 0;
+        mv = G4ThreeVector(0., 0., 0.);
+    }
+
+    ~TInfos() { ; }
 
 public:
-	int mtid;  // mother track id
-	int mpid;  // mother PID
+    int mtid;  // mother track id
+    int mpid;  // mother PID
 
-	G4ThreeVector mv;
+    G4ThreeVector mv;
 };
 
-vector<int> vector_mtids(  map<int, TInfos> tinfos, vector<int> tids);
-vector<int> vector_mpids(  map<int, TInfos> tinfos, vector<int> tids);
-vector<G4ThreeVector> vector_mvert(  map<int, TInfos> tinfos, vector<int> tids);
-vector<int>           vector_zint(  int size);  ///< provides a vector of 0
-vector<G4ThreeVector> vector_zthre( int size);  ///< provides a vector of (0,0,0)
+vector<int> vector_mtids(map<int, TInfos> tinfos, vector<int> tids);
+
+vector<int> vector_mpids(map<int, TInfos> tinfos, vector<int> tids);
+
+vector <G4ThreeVector> vector_mvert(map<int, TInfos> tinfos, vector<int> tids);
+
+vector<int> vector_zint(int size);  ///< provides a vector of 0
+vector <G4ThreeVector> vector_zthre(int size);  ///< provides a vector of (0,0,0)
 
 /// \class saveEventParams
 /// <b> saveEventParams </b>\n\n
 /// Holds parameters from the SAVE_SELECTED option
-class saveEventParams
-{
- public:
-  saveEventParams () {;}
-  ~saveEventParams() {;}
+class saveEventParams {
+public:
+    saveEventParams() { ; }
 
-  bool enabled;
-  string targetId;
-  unsigned tIdsize;
-  int targetPid;
-  double lowLim;
-  double hiLim;
-  string variable;
-  string dir;
-  bool decision;
+    ~saveEventParams() { ; }
+
+    bool enabled;
+    string targetId;
+    unsigned tIdsize;
+    int targetPid;
+    double lowLim;
+    double hiLim;
+    string variable;
+    string dir;
+    bool decision;
 };
 
 
@@ -123,89 +126,87 @@ class saveEventParams
 /// and at the end of each event.\n
 /// In EndOfEventAction the output is written out
 /// (if the output option is selected)
-class MEventAction : public G4UserEventAction
-{
+class MEventAction : public G4UserEventAction {
 public:
-	MEventAction(goptions, map<string, double>);       ///< Constructor copies gemc options
-	~MEventAction();                                   ///< Destructor
+    MEventAction(goptions, map<string, double>);       ///< Constructor copies gemc options
+    ~MEventAction();                                   ///< Destructor
 
-	goptions gemcOpt;                                  ///< gemc options
+    goptions gemcOpt;                                  ///< gemc options
 
-	outputContainer                  *outContainer;     ///< outputContainer class - contains the output format.
-	map<string, outputFactoryInMap>  *outputFactoryMap; ///< outputFactory map
-	map<string, sensitiveDetector*>  SeDe_Map;          ///< Sensitive detector Map
-	map<string, HitProcess_Factory>  *hitProcessMap;    ///< Hit Process Routine Factory Map
-	map<string, gBank>               *banksMap;         ///< Bank Map
-	map<string, double>               gPars;            ///< Parameters Map
-	MPrimaryGeneratorAction          *gen_action;       ///< Generator Action
+    outputContainer *outContainer;     ///< outputContainer class - contains the output format.
+    map <string, outputFactoryInMap> *outputFactoryMap; ///< outputFactory map
+    map<string, sensitiveDetector *> SeDe_Map;          ///< Sensitive detector Map
+    map <string, HitProcess_Factory> *hitProcessMap;    ///< Hit Process Routine Factory Map
+    map <string, gBank> *banksMap;         ///< Bank Map
+    map<string, double> gPars;            ///< Parameters Map
+    MPrimaryGeneratorAction *gen_action;       ///< Generator Action
 
-	map<int, int> hierarchy;                     ///< Hierarchy map
-	map<int, int> momDaughter;                   ///< mom - daughter relationship
-	vector<int> vector_otids(vector<int> tids);  ///< return original track id of a vector of tid
-
-
-	int    evtN;            ///< Event Number
-	string hd_msg;          ///< Event Action Message
-	int    Modulo;          ///< Print Log Event every Modulo
-	double VERB;            ///< Event Verbosity
-	string catch_v;         ///< Print Log for volume
-	int SAVE_ALL_MOTHERS;   ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
-	int SAVE_ALL_ANCESTORS; ///< Outputs info on all ancestors of tracks with hits
-	int MAXP;               ///< Max number of generated particles to save on output stream
-	int FILTER_HITS;        ///< If set to 1, do not write any output unless there is a hit somewhere
-	int FILTER_HADRONS;     ///< If set to 1, do not write any output unless there is a hadron somewhere
-	int FILTER_HIGHMOM;     ///< If set to non-0, do not write any output unless there is high mom hit
-	int SKIPREJECTEDHITS;   ///< Skips hits that are rejected by digitization. Default: yes
-	string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
-	string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
-	string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
-	string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
-	string RFSETUP;         ///< Parameters for RF setup
-	string RFSTART;         ///< Parameters of RF model
-	int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
-	long int requestedNevents;
-	int ntoskip;                      ///< Number of events to skip
-	vector<string> rfvalue_strings; ///< values from
-
-	// sampling time of electronics (typically FADC)
-	// and number of samplings
-	double tsampling, nsamplings;
+    map<int, int> hierarchy;                     ///< Hierarchy map
+    map<int, int> momDaughter;                   ///< mom - daughter relationship
+    vector<int> vector_otids(vector<int> tids);  ///< return original track id of a vector of tid
 
 
-	// save particles that produced a hit onto LUND format
-	void saveBGPartsToLund();
-	ofstream *lundOutput;
-	map<int, BGParts> bgMap;
+    int evtN;            ///< Event Number
+    string hd_msg;          ///< Event Action Message
+    int Modulo;          ///< Print Log Event every Modulo
+    double VERB;            ///< Event Verbosity
+    string catch_v;         ///< Print Log for volume
+    int SAVE_ALL_MOTHERS;   ///< >= 1: Loops over the stored trajectories to store mother vertex and pid in the output. >=2: Also saves all particles that produced a hit onto LUND format
+    int SAVE_ALL_ANCESTORS; ///< Outputs info on all ancestors of tracks with hits
+    int MAXP;               ///< Max number of generated particles to save on output stream
+    int FILTER_HITS;        ///< If set to 1, do not write any output unless there is a hit somewhere
+    int FILTER_HADRONS;     ///< If set to 1, do not write any output unless there is a hadron somewhere
+    int FILTER_HIGHMOM;     ///< If set to non-0, do not write any output unless there is high mom hit
+    int SKIPREJECTEDHITS;   ///< Skips hits that are rejected by digitization. Default: yes
+    string WRITE_ALLRAW;    ///< List of detectors for which geant4 all raw info need to be saved
+    string WRITE_INTRAW;    ///< List of detectors for which geant4 raw integrated info need to be saved
+    string WRITE_INTDGT;    ///< List of detectors for which digitized integrated info need to be NOT saved
+    string SIGNALVT;        ///< List of detectors for which voltage versus time need to be saved
+    string RFSETUP;         ///< Parameters for RF setup
+    string RFSTART;         ///< Parameters of RF model
+    int fastMCMode;         ///< In fast MC mode, the particle smeared/unsmeared momenta are saved
+    long int requestedNevents;
+    int ntoskip;                      ///< Number of events to skip
+    vector <string> rfvalue_strings; ///< values from
 
-	// SAVE_SELECTED parameters
-	saveEventParams ssp;
+    // sampling time of electronics (typically FADC)
+    // and number of samplings
+    double tsampling, nsamplings;
+
+
+    // save particles that produced a hit onto LUND format
+    void saveBGPartsToLund();
+
+    ofstream *lundOutput;
+    map<int, BGParts> bgMap;
+
+    // SAVE_SELECTED parameters
+    saveEventParams ssp;
 
 private:
-	// background hits, key is event number
-	// background hits
-	string BGFILE;           ///< filename containing background hits
-	GBackgroundHits *backgroundHits;
+    // background hits, key is event number
+    // background hits
+    string BGFILE;           ///< filename containing background hits
+    GBackgroundHits *backgroundHits;
 
-	// bookkeeping of background events for each system
-	map<string, int> backgroundEventNumber;
+    // bookkeeping of background events for each system
+    map<string, int> backgroundEventNumber;
 
-	vector<BackgroundHit*> getNextBackgroundEvent(string forSystem);
+    vector<BackgroundHit *> getNextBackgroundEvent(string forSystem);
 
-	int last_runno;
-	void setup_clas12_RF(int runno);
-	void set_and_show_rf_setup();
+    int last_runno;
+
+    void setup_clas12_RF(int runno);
+
+    void set_and_show_rf_setup();
 
 public:
-	void BeginOfEventAction(const G4Event*);            ///< Routine at the start of each event
-	void EndOfEventAction(const G4Event*);              ///< Routine at the end of each event
-	void SetEvtNumber(int N){evtN = N;}                 ///< Sets Event Number
+    void BeginOfEventAction(const G4Event *);            ///< Routine at the start of each event
+    void EndOfEventAction(const G4Event *);              ///< Routine at the end of each event
+    void SetEvtNumber(int N) { evtN = N; }                 ///< Sets Event Number
 
-	runWeights rw;
+    runWeights rw;
 
 };
 
 #endif
-
-
-
-

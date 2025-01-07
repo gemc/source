@@ -85,10 +85,12 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = component;
+
+	// adc
 	dgtz["ADC_order"] = 1;
-	dgtz["ADC_ADC"]   = (int) output["adcMax"]; 
+	dgtz["ADC_ADC"]   = (int) output["adcMax"];
 	dgtz["ADC_time"]  = output["timeMax"];
-	dgtz["ADC_ped"]   = (int) output["adcOffset"]; 
+	dgtz["ADC_ped"]   = (int) output["adcOffset"];
 	dgtz["ADC_integral"] = (int) output["integral"]; 
 	dgtz["ADC_timestamp"] = 0;
 	dgtz["ADC_timeRiseCFA"] = output["timeRiseCFA"]; 
@@ -98,18 +100,19 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_nsteps"] = Signal->nsteps;
 	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); 
 
-	//dgtz["TDC_order"] = 0;
-	//dgtz["TDC_TDC"]   = output["t_start"];
-	
-	dgtz["wf136_order"] = 1;
-	dgtz["wf136_timestamp"] = 0;
-	std::vector<short> SDgtz = Signal->GetDgtz();
-	for (int itr=1;itr<=136;itr++){
-		std::ostringstream sEntry;
-		sEntry << "wf136_s" << itr;
-		dgtz[sEntry.str()] = (int) SDgtz.at(itr-1);
+	// tdc
+	dgtz["TDC_order"] = 0;
+	dgtz["TDC_TDC"]   = 0;
+
+	// WF:136
+	dgtz["WF10_timestamp"] = 0;
+
+	for(unsigned t=0; t<136; t++) {
+		string dname = "WF136_s" + to_string(t+1);
+		dgtz[dname] = Signal->GetDgtz().at(t);
 	}
 	delete Signal;
+
 	
 	// define conditions to reject hit
 	if (rejectHitConditions) {

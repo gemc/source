@@ -42,10 +42,10 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	
 	int atof_sector     = identity[0].id;
-	int atof_superlayer = identity[1].id; // long paddles: SL = 0; top: SL=1
+	int atof_superlayer = identity[1].id; //bar: SL = 0; wedge: SL=1
 	int atof_layer      = identity[2].id;
 	int atof_paddle     = identity[3].id;
-	int atof_order      = identity[4].id; // 0/1 for long front/back. 0 for top
+	int atof_order      = identity[4].id; 
 	
 	if(aHit->isBackgroundHit == 1) {
 		
@@ -54,15 +54,13 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		double tdc      = stepTime;
 
 		dgtz["hitn"]      = hitn;
-		dgtz["sector"]    = atof_sector;
-		dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-		dgtz["component"] = atof_paddle;
-		dgtz["ADC_order"] = atof_order;
+		dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+		dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
+		dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
+		dgtz["ADC_order"] = atof_order; //order for the bar is 0/1 for front(upstream)/back(downstream) and 0 for the wedge
 		dgtz["ADC_ADC"]   = (int) totEdep;
 		dgtz["ADC_time"]  = tdc;
 		dgtz["ADC_ped"]   = 0;
-
-		
 		return dgtz;
 	}
 	
@@ -224,7 +222,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double sigma_time = 0.1; // in ns! 100 ps = 0.1 ns
 	
 	
-	
+	///////ALL OF THIS PART WILL NEED TO BE UPDATED WITH ACTUAL CALIBRATION TO ADC and TDC	
 	if ((E_tot_Front > 0.0) || (E_tot_Back > 0.0)) 
 	{
 		double nphe_fr = G4Poisson(E_tot_Front*pmtPEYld);
@@ -232,7 +230,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		
 		double nphe_bck = G4Poisson(E_tot_Back*pmtPEYld);
 		double energy_bck = nphe_bck/pmtPEYld;	
-		
+
 		adc_front = energy_fr *adc_CC_front *(1/(dEdxMIP*0.3)); // 3 mm sl0 (radial) thickness in XY -> 0.3 cm
 		adc_back = energy_bck *adc_CC_back *(1/(dEdxMIP*0.3));
 		
@@ -318,16 +316,16 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 	
 	dgtz["hitn"]      = hitn;
-	dgtz["sector"]    = atof_sector;
-	dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-	dgtz["component"] = atof_paddle;
+	dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+	dgtz["layer"]     = atof_paddle - 4*atof_sector - 1; //the layer needed in the bank is the index for the wedge ranging 0 to 3
+	dgtz["component"] = atof_layer; //the component needed in the banks is the slice in z ranging 0 to 9
+	if(atof_superlayer==0) dgtz["component"] = 10; //or 10 if it is the long bar
 	dgtz["ADC_order"] = atof_order;
 	
 	dgtz["ADC_ADC"]   = (int)adc*100;
 	dgtz["ADC_time"]  = time;
 	dgtz["ADC_ped"]   = 0;
-
-
+		
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;

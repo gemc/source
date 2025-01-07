@@ -108,8 +108,7 @@ map<string, double> bst_HitProcess :: integrateDgt(MHit* aHit, int hitn)
 		cout <<  log_msg << " layer: " << layer << "  sector: " << sector << "  Card: " << card <<  "  Strip: " << strip
 		<< " x=" << tInfos.x << " y=" << tInfos.y << " z=" << tInfos.z << endl;
 	}
-	
-	
+
 	dgtz["sector"]    = sector;
 	dgtz["layer"]     = layer;
 	dgtz["component"] = strip;  // strip number
@@ -327,13 +326,3 @@ void bst_HitProcess::initWithRunNumber(int runno)
 
 // this static function will be loaded first thing by the executable
 bstConstants bst_HitProcess::bstc = initializeBSTConstants(-1);
-
-
-
-
-
-
-
-
-
-

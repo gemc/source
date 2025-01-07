@@ -81,9 +81,10 @@ G4VPhysicalVolume *MDetectorConstruction::Construct() {
 
         while (mother.name != "akasha" && mother.name != "notfound") {
             if (mother.exist == 0) {
-                if (VERB > 2)
+                if (VERB > 2) {
                     cout << hd_msg << "\t" << i->second.mother << " is not activated. Its child " << i->second.name
                          << " will be disactivated as well." << endl;
+                }
                 i->second.exist = 0;
             }
             mother = findDetector(mother.mother);
@@ -115,7 +116,7 @@ G4VPhysicalVolume *MDetectorConstruction::Construct() {
 
     while (nativeRelativesOfCad.size() > 0 || cadRelativesOfNative.size() > 0 || remainingCad.size() > 0 || remainingNative.size() > 0) {
 
-        if (VERB > 10) {
+        if (VERB >= 10) {
 
             cout << " native size " << nativeRelativesOfCad.size() << " cad size  " << cadRelativesOfNative.size()
                  << " remaining cad size " << remainingCad.size() << " remaining native size " << remainingNative.size() << endl;
@@ -221,7 +222,6 @@ G4VPhysicalVolume *MDetectorConstruction::Construct() {
     for (auto &dd: *hallMap) {
         if (geo_verb > 3 || dd.second.name.find(catch_v) != string::npos)
             cout << dd.second;
-
     }
 
     return (*hallMap)["root"].GetPhysical();
@@ -270,8 +270,7 @@ void MDetectorConstruction::isSensitive(detector detect) {
 
 void MDetectorConstruction::buildCADDetector(string dname, string filename, int VERB) {
     // filename has been already verified to exist?
-    if (VERB > 1)
-        cout << "  > Parsing CAD volume from " << filename << endl;
+    if (VERB > 1) { cout << "  > Parsing CAD volume from " << filename << endl; }
 
     CADMesh *mesh = new CADMesh((char *) filename.c_str());
     mesh->SetScale(mm);
@@ -889,7 +888,6 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
         // don't build anything if the exist flag is not set
         if (dd.second.exist == 0 || dd.second.scanned == 1 || dd.second.factory != "CAD" || dd.first == "root") continue;
 
-
         string thisDetName = dd.first;
 
 
@@ -934,8 +932,7 @@ void MDetectorConstruction::scanCadDetectors(int VERB, string catch_v) {
                 // the kid has been built. Can go down one step in geneaology
             } else if (kid.scanned == 1 && relatives.size()) {
 
-                if (VERB > 3 || kid.name.find(catch_v) != string::npos)
-                    cout << hd_msg << " " << kid.name << " is built." << endl << endl;
+                if (VERB > 3 || kid.name.find(catch_v) != string::npos) { cout << hd_msg << " " << kid.name << " is built." << endl << endl; }
 
                 if (relatives.back() == kid.name) {
                     relatives.pop_back();
