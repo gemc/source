@@ -33,7 +33,7 @@ HipoSchema::HipoSchema() {
     // detectors
     alertAhdcTDCSchema = hipo::schema("AHDC::tdc", 22400, 12);
     alertAhdcADCSchema = hipo::schema("AHDC::adc", 22400, 11);
-    alertAhdcWF10Schema = hipo::schema("AHDC::wf:10", 22400, 13);
+    alertAhdcWF136Schema = hipo::schema("AHDC::wf:136", 22400, 13);
     alertAtofADCSchema = hipo::schema("ATOF::adc", 22500, 11);
     bandADCSchema = hipo::schema("BAND::adc", 22100, 11);
     bandTDCSchema = hipo::schema("BAND::tdc", 22100, 12);
@@ -97,9 +97,15 @@ HipoSchema::HipoSchema() {
 
 
     // detectors
-    alertAhdcADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+    //alertAhdcADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
+    alertAhdcADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L, timeRiseCFA/F, timeCFD/F, timeOVR/F, mctime/F, mcEtot/F, nsteps/I");
     alertAhdcTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
-    alertAhdcWF10Schema.parse("sector/B, layer/B, component/S, order/B, timestamp/F, s1/S, s2/S, s3/S, s4/S, s5/S, s6/S, s7/S, s8/S, s9/S, s10/S");
+    //alertAhdcWF136Schema.parse("sector/B, layer/B, component/S, order/B, timestamp/F, s1/S, s2/S, s3/S, s4/S, s5/S, s6/S, s7/S, s8/S, s9/S, s10/S");
+    std::string wf_string = "sector/B, layer/B, component/S, order/B, timestamp/F";
+    for (int itr=0;itr<136;itr++){
+	wf_string = wf_string + ", s" + std::__cxx11::to_string(itr+1) + "/S";
+    }
+    alertAhdcWF136Schema.parse(wf_string.c_str());
     alertAtofADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
     bandADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
@@ -165,7 +171,7 @@ HipoSchema::HipoSchema() {
 
     // The names corresponds to the hit process routine names, capitalized
     schemasToLoad["AHDC::adc"] = alertAhdcADCSchema;
-    schemasToLoad["AHDC::wf:10"] = alertAhdcWF10Schema;
+    schemasToLoad["AHDC::wf:136"] = alertAhdcWF136Schema;
     schemasToLoad["AHDC::tdc"] = alertAhdcTDCSchema;
     schemasToLoad["ATOF::adc"] = alertAtofADCSchema;
     schemasToLoad["BAND::adc"] = bandADCSchema;
@@ -209,7 +215,7 @@ hipo::schema HipoSchema::getSchema(string schemaName, int type) {
     string schemaType;
     if (type == 0) schemaType = "adc";
     if (type == 1) schemaType = "tdc";
-    if (type == 2) schemaType = "wf:10";
+    if (type == 2) schemaType = "wf:136";
 
     string toUpperS = schemaName;
     transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);

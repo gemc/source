@@ -625,14 +625,14 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
 
     bool hasADCBank = false;
     bool hasTDCBank = false;
-    bool hasWF10Bank = false;
+    bool hasWF136Bank = false;
 
     hipo::schema detectorADCSchema = output->hipoSchema->getSchema(hitType, 0);
     hipo::schema detectorTDCSchema = output->hipoSchema->getSchema(hitType, 1);
-    hipo::schema detectorWF10Schema = output->hipoSchema->getSchema(hitType, 2);
+    hipo::schema detectorWF136Schema = output->hipoSchema->getSchema(hitType, 2);
     hipo::bank detectorADCBank(detectorADCSchema, HO.size());
     hipo::bank detectorTDCBank(detectorTDCSchema, HO.size());
-    hipo::bank detectorWF10Bank(detectorWF10Schema, HO.size());
+    hipo::bank detectorWF136Bank(detectorWF136Schema, HO.size());
 
     // check if there is at least one adc or tdc var
     // and if the schema is valid
@@ -653,11 +653,11 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
             }
         }
 
-        // flag WF10 content if any variable has WF10_ prefix detectorWF10Schema schema exists
-        if (bankName.second.find("WF10_") != string::npos) {
+        // flag WF136 content if any variable has WF136_ prefix detectorWF136Schema schema exists
+        if (bankName.second.find("WF136_") != string::npos) {
 
-            if (detectorWF10Schema.getEntryName(0) != "empty") {
-                hasWF10Bank = true;
+            if (detectorWF136Schema.getEntryName(0) != "empty") {
+                hasWF136Bank = true;
             }
         }
     }
@@ -669,8 +669,8 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
         if (hasTDCBank) {
             cout << hitType << " has TDC bank." << endl;
         }
-        if (hasWF10Bank) {
-            cout << hitType << " has WF10 bank." << endl;
+        if (hasWF136Bank) {
+            cout << hitType << " has WF136 bank." << endl;
         }
     }
 
@@ -770,7 +770,7 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
             }
 
 
-            if (hasWF10Bank) {
+            if (hasWF136Bank) {
                 // looping over the hits
                 for (unsigned int nh = 0; nh < HO.size(); nh++) {
 
@@ -785,18 +785,18 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
                             // sector, layer, component are common in adc/tdc so their names are w/o prefix
                             // sector, layers are "Bytes"
                             if (bname == "sector" || bname == "layer" || bname == "order") {
-                                detectorWF10Bank.putByte(bname.c_str(), nh, thisVar.second);
+                                detectorWF136Bank.putByte(bname.c_str(), nh, thisVar.second);
                             } else if (bname == "component") {
-                                detectorWF10Bank.putShort(bname.c_str(), nh, thisVar.second);
-                            } else if (bname == "WF10_timestamp") {
-                                detectorWF10Bank.putLong("timestamp", nh, thisVar.second);
+                                detectorWF136Bank.putShort(bname.c_str(), nh, thisVar.second);
+                            } else if (bname == "WF136_timestamp") {
+                                detectorWF136Bank.putLong("timestamp", nh, thisVar.second);
                             } else {
                                 // all other ADC vars must begin with "ADC_"
-                                if (bname.find("WF10_s") == 0) {
-                                    // sample number is the string following "WF10_s" converted to int
-                                    int sample_value = stoi(bname.substr(6));
+                                if (bname.find("WF136_s") == 0) {
+                                    // sample number is the string following "WF136_s" converted to int
+                                    int sample_value = stoi(bname.substr(7));
                                     string wfname = "s" + to_string(sample_value);
-                                    detectorWF10Bank.putShort(wfname.c_str(), nh, thisVar.second);
+                                    detectorWF136Bank.putShort(wfname.c_str(), nh, thisVar.second);
                                 }
                             }
 
@@ -822,11 +822,11 @@ void hipo_output::writeG4DgtIntegrated(outputContainer *output, vector <hitOutpu
         }
         outEvent->addStructure(detectorTDCBank);
     }
-    if (hasWF10Bank) {
+    if (hasWF136Bank) {
         if (verbosity > 2) {
-            detectorWF10Bank.show();
+            detectorWF136Bank.show();
         }
-        outEvent->addStructure(detectorWF10Bank);
+        outEvent->addStructure(detectorWF136Bank);
     }
 
 }
