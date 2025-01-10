@@ -271,7 +271,7 @@ class ahdcExtractor {
                 float timeCFD; ///< time extracted using the Constant Fraction Discriminator (CFD) algorithm (fitted)
 
 		/** @brief Default constructor */
-		ahdcExtractor() = default;
+		ahdcExtractor() = delete;
 
 		/** @brief Constructor */
 		ahdcExtractor(float _samplingTime,float _amplitudeFractionCFA, int _binDelayCFD, float _fractionCFD) :
