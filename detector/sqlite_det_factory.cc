@@ -30,6 +30,9 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
 
         string dname = it->first;
         string variation = get_variation(it->second.get_variation());
+        // if variation is 'empty' then skip this iterator
+        if (variation == "empty") continue;
+
         int run = it->second.get_run_number();
         if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
         int run_number = get_sql_run_number(db, dname, variation, run, "geometry");
@@ -52,7 +55,7 @@ map <string, detector> sqlite_det_factory::loadDetectors() {
         dbexecute += " and run = " + stringify(run_number);
         dbexecute += " and system = '" + dname + "'";
 
-        // executing query - will exit if not successfull.
+        // executing query - will exit if not successful.
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
             cout << hd_msg << " !!! Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;

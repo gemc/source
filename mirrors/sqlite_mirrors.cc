@@ -54,7 +54,7 @@ map<string, mirror *> sqlite_mirrors::initMirrors(runConditions rc, goptions opt
         dbexecute += " and run = " + stringify(run_number);
         dbexecute += " and system = '" + dname + "'";
 
-        // executing query - will exit if not successfull.
+        // executing query - will exit if not successful.
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
             cout << hd_msg << "  Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;

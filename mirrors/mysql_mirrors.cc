@@ -45,7 +45,7 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 		string dbexecute = "select name, desc, type, finish, model, border, maptOptProps, photonEnergy, indexOfRefraction, reflectivity, efficiency, specularlobe, specularspike, backscatter from " + tname;
 		dbexecute += " where variation ='" + variation + "'";
 				
-		// executing query - will exit if not successfull.
+		// executing query - will exit if not successful.
 		QSqlQuery q;
 		if(!q.exec(dbexecute.c_str())) {
 			cout << hd_msg << "  Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;

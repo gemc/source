@@ -47,7 +47,7 @@ map<string, double> mysql_parameters::loadParameters(goptions opts, runCondition
         dbexecute += " and rmin <= " + stringify(run) + " and rmax >= " + stringify(run);
         dbexecute += " order by id desc limit 1 ";
 
-        // executing query - will exit if not successfull.
+        // executing query - will exit if not successful.
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
             cout << hd_msg << "  Errror! Failed to execute MYSQL query " << dbexecute << endl;
