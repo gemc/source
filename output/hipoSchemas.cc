@@ -101,8 +101,8 @@ HipoSchema::HipoSchema() {
     alertAhdcTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
     //alertAhdcWF136Schema.parse("sector/B, layer/B, component/S, order/B, timestamp/F, s1/S, s2/S, s3/S, s4/S, s5/S, s6/S, s7/S, s8/S, s9/S, s10/S");
     std::string wf_string = "sector/B, layer/B, component/S, order/B, timestamp/F";
-    for (int itr=0;itr<136;itr++){
-	wf_string = wf_string + ", s" + std::__cxx11::to_string(itr+1) + "/S";
+    for (int itr=0; itr<136; itr++){
+        wf_string = wf_string + ", s" + to_string(itr+1) + "/S";
     }
     alertAhdcWF136Schema.parse(wf_string.c_str());
     alertAtofADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
@@ -146,7 +146,7 @@ HipoSchema::HipoSchema() {
 
     urwellADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
     recoilADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
-    
+
     rawADCSchema.parse("crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
     rawTDCSchema.parse("crate/B, slot/B, channel/S, order/B, TDC/I");
     rawSCALERSchema.parse("crate/B, slot/B, channel/S, helicity/B, quartet/B, value/L");
@@ -201,7 +201,7 @@ HipoSchema::HipoSchema() {
     schemasToLoad["RASTER::adc"] = rasterADCSchema;
     schemasToLoad["URWELL::adc"] = urwellADCSchema;
     schemasToLoad["RECOIL::adc"]  = recoilADCSchema;
-    
+
     cout << " Done defining Hipo4 schemas." << endl;
 
 }
