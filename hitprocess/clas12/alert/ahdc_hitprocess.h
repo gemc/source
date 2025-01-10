@@ -136,7 +136,7 @@ class ahdcSignal {
 	// public methods
 	public :
 		/** @brief Default constructor */
-		ahdcSignal() = default;
+		ahdcSignal() = delete;
 		
 		/** @brief Constructor */
 		ahdcSignal(MHit * aHit, int _hitn, double _tmin, double _tmax, double _timeOffset, double _samplingTime, double _Landau_width) 
@@ -271,7 +271,7 @@ class ahdcExtractor {
                 float timeCFD; ///< time extracted using the Constant Fraction Discriminator (CFD) algorithm (fitted)
 
 		/** @brief Default constructor */
-		ahdcExtractor() = delete;
+		ahdcExtractor() = default;
 
 		/** @brief Constructor */
 		ahdcExtractor(float _samplingTime,float _amplitudeFractionCFA, int _binDelayCFD, float _fractionCFD) :
