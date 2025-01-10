@@ -47,7 +47,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
         string dname = it->first;
         string variation = get_variation(it->second.get_variation());
 
-        // geometry was empty. TODO: this mechanism is a bit clunky 
+        // geometry was empty. TODO: this mechanism is a bit clunky . Solution: add a detector with existence = 0 in the geometry table
         if (variation == "empty") variation = "default";
 
         int run = it->second.get_run_number();
