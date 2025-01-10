@@ -91,21 +91,13 @@ map<string, double> ahdc_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	dgtz["ADC_ADC"]   = (int) output["adcMax"];
 	dgtz["ADC_time"]  = output["timeMax"];
 	dgtz["ADC_ped"]   = (int) output["adcOffset"];
-	dgtz["ADC_integral"] = (int) output["integral"]; 
-	dgtz["ADC_timestamp"] = 0;
-	dgtz["ADC_timeRiseCFA"] = output["timeRiseCFA"]; 
-	dgtz["ADC_timeCFD"] = output["timeCFD"]; 
-	dgtz["ADC_timeOVR"] = output["timeOverThresholdCFA"];
-	dgtz["ADC_mctime"] = Signal->GetMCTime(); 
-	dgtz["ADC_nsteps"] = Signal->nsteps;
-	dgtz["ADC_mcEtot"] = Signal->GetMCEtot(); 
 
 	// tdc
 	dgtz["TDC_order"] = 0;
 	dgtz["TDC_TDC"]   = 0;
 
 	// WF:136
-	dgtz["WF10_timestamp"] = 0;
+	dgtz["WF136_timestamp"] = 0;
 
 	for(unsigned t=0; t<136; t++) {
 		string dname = "WF136_s" + to_string(t+1);
