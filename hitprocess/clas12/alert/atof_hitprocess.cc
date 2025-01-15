@@ -42,27 +42,26 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 
 	
 	int atof_sector     = identity[0].id;
-	int atof_superlayer = identity[1].id; // long paddles: SL = 0; top: SL=1
+	int atof_superlayer = identity[1].id; //bar: SL = 0; wedge: SL=1
 	int atof_layer      = identity[2].id;
 	int atof_paddle     = identity[3].id;
-	int atof_order      = identity[4].id; // 0/1 for long front/back. 0 for top
+	int atof_order      = identity[4].id;
+
+	double time_to_tdc = 1./0.015625;
 	
 	if(aHit->isBackgroundHit == 1) {
 		
 		double totEdep  = aHit->GetEdep()[0];
 		double stepTime = aHit->GetTime()[0];
-		double tdc      = stepTime;
+		double tdc      = stepTime * time_to_tdc;
 
 		dgtz["hitn"]      = hitn;
-		dgtz["sector"]    = atof_sector;
-		dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-		dgtz["component"] = atof_paddle;
-		dgtz["ADC_order"] = atof_order;
-		dgtz["ADC_ADC"]   = (int) totEdep;
-		dgtz["ADC_time"]  = tdc;
-		dgtz["ADC_ped"]   = 0;
-
-		
+		dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+		dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
+		dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
+		dgtz["TDC_order"] = atof_order; //order for the bar is 0/1 for front(upstream)/back(downstream) and 0 for the wedge
+		dgtz["TDC_ToT"]   = (int) totEdep;
+		dgtz["TDC_TDC"]  = tdc; 
 		return dgtz;
 	}
 	
@@ -223,8 +222,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	double time_top = 0.00000;
 	double sigma_time = 0.1; // in ns! 100 ps = 0.1 ns
 	
-	
-	
+	///////ALL OF THIS PART WILL NEED TO BE UPDATED WITH ACTUAL CALIBRATION	
 	if ((E_tot_Front > 0.0) || (E_tot_Back > 0.0)) 
 	{
 		double nphe_fr = G4Poisson(E_tot_Front*pmtPEYld);
@@ -232,7 +230,7 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		
 		double nphe_bck = G4Poisson(E_tot_Back*pmtPEYld);
 		double energy_bck = nphe_bck/pmtPEYld;	
-		
+
 		adc_front = energy_fr *adc_CC_front *(1/(dEdxMIP*0.3)); // 3 mm sl0 (radial) thickness in XY -> 0.3 cm
 		adc_back = energy_bck *adc_CC_back *(1/(dEdxMIP*0.3));
 		
@@ -250,57 +248,8 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 		adc_top = energy_top *adc_CC_top *(1/(dEdxMIP*2.0)); // 20 mm sl1 (radial) thickness in XY -> 2.0 cm
 		time_top = EtimesTime_Top/E_tot_Top;
 		tdc_top  = G4RandGauss::shoot(time_top, sigma_time) / tdc_CC_top;
-		
 	}
-	
-	/* // this is for previous simple version
-	 if (energy > 0) {
-	 adc = energy * adc_CC;
-	 
-	 double hit_time = tInfos.time;
-	 //tdc  = G4RandGauss::shoot(hit_time, sqrt(2) * tdc_CC);
-	 time  = hit_time;
-	 
-	 }
-	 */
-	
-//	dgtz["sector"] = identity[0].id;
-//	dgtz["superlayer"] = identity[1].id;
-//	dgtz["layer"] = identity[2].id;
-//	dgtz["paddle"] = identity[3].id;
-//	dgtz["adc_front"] = adc_front;
-//	dgtz["adc_back"] = adc_back;
-//	dgtz["adc_top"] = adc_top;
-//	dgtz["tdc_front"] = tdc_front;
-//	dgtz["tdc_back"] = tdc_back;
-//	dgtz["tdc_top"] = tdc_top;
-//	dgtz["time_front"] = time_front;
-//	dgtz["time_back"] = time_back;
-//	dgtz["time_top"] = time_top;
-//	dgtz["E_tot_Front"] = E_tot_Front;
-//	dgtz["E_tot_Back"] = E_tot_Back;
-//	dgtz["E_tot_Top"] = E_tot_Top;
-//	dgtz["totEdep_MC"] = totEdep;
-//	dgtz["hitn"] = hitn;		//(2202,99)
-	
-//	cout << " start of the ATOF hit " << endl;
-//	cout << " sector = " << identity[0].id << endl;
-//	cout << " superlayer = " << identity[1].id << endl;
-//	cout << " layer = " << identity[2].id << endl;
-//	cout << " paddle = " << identity[3].id << endl;
-//	cout << " order = : " << identity[4].id << endl;
-//	cout << " E_tot_Front energy value = " << E_tot_Front << endl;
-//	cout << " E_tot_Back energy value = " << E_tot_Back << endl;
-//	cout << " E_tot_Top energy value = " << E_tot_Top << endl;
-//	cout << " adc_front = " << adc_front << endl;
-//	cout << " adc_back = " << adc_back << endl;
-//	cout << " adc_top = " << adc_top << endl;
-//	cout << " tdc_front = : " << tdc_front << endl;
-//	cout << " tdc_back = : " << tdc_back << endl;
-//	cout << " tdc_top = : " << tdc_top << endl;
-//	cout << " value in hitn var: " << hitn << endl;
-//	cout << " end of the ATOF hit " << endl << endl;;
-	
+		
 	double adc = 0;
 	double time = 0;
 	
@@ -318,16 +267,13 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	}
 	
 	dgtz["hitn"]      = hitn;
-	dgtz["sector"]    = atof_sector;
-	dgtz["layer"]     = 10*atof_superlayer + atof_layer;
-	dgtz["component"] = atof_paddle;
-	dgtz["ADC_order"] = atof_order;
+	dgtz["sector"]    = atof_sector; //Sector ranges from 0 to 14 counterclockwise when z is pointing towards us
+	dgtz["layer"]     = atof_layer; //Layer is the index for the wedge+bar (quarter of sector) ranging 0 to 3
+	dgtz["component"] = atof_paddle; //z slice ranging 0 to 9 for the wedge or 10 if it is the long bar
+	dgtz["TDC_order"] = atof_order;
+	dgtz["TDC_ToT"]   = (int)adc*100;
+	dgtz["TDC_TDC"]  = time * time_to_tdc;
 	
-	dgtz["ADC_ADC"]   = (int)adc*100;
-	dgtz["ADC_time"]  = time;
-	dgtz["ADC_ped"]   = 0;
-
-
 	// define conditions to reject hit
 	if (rejectHitConditions) {
 		writeHit = false;
@@ -335,13 +281,6 @@ map<string, double> atof_HitProcess::integrateDgt(MHit* aHit, int hitn) {
 	
 	return dgtz;
 }
-
-
-// sector     = identity[0].id;
-// superlayer = identity[1].id;
-// layer      = identity[2].id;
-// paddle     = identity[3].id;
-// order      = identity[4].id;
 
 vector<identifier> atof_HitProcess::processID(vector<identifier> id, G4Step* aStep, detector Detector) {
 	

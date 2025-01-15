@@ -22,7 +22,7 @@ public:
 	// detectors
 	hipo::schema alertAhdcADCSchema;
 	hipo::schema alertAhdcTDCSchema;
-	hipo::schema alertAhdcWF10Schema;
+	hipo::schema alertAhdcWF136Schema;
 	hipo::schema alertAtofADCSchema;
 	hipo::schema bandADCSchema;
 	hipo::schema bandTDCSchema;
@@ -55,6 +55,7 @@ public:
 	hipo::schema helFLIPSchema;
 	hipo::schema helONLINESchema;
 	hipo::schema urwellADCSchema;
+        hipo::schema recoilADCSchema;
 	hipo::schema rasterADCSchema;
 	hipo::schema rawADCSchema;
 	hipo::schema rawTDCSchema;
