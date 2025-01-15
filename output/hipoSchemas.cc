@@ -34,7 +34,7 @@ HipoSchema::HipoSchema() {
     alertAhdcTDCSchema = hipo::schema("AHDC::tdc", 22400, 12);
     alertAhdcADCSchema = hipo::schema("AHDC::adc", 22400, 11);
     alertAhdcWF136Schema = hipo::schema("AHDC::wf:136", 22400, 13);
-    alertAtofADCSchema = hipo::schema("ATOF::adc", 22500, 12);
+    alertAtofTDCSchema = hipo::schema("ATOF::tdc", 22500, 12);
     bandADCSchema = hipo::schema("BAND::adc", 22100, 11);
     bandTDCSchema = hipo::schema("BAND::tdc", 22100, 12);
     bmtADCSchema = hipo::schema("BMT::adc", 20100, 11);
@@ -105,7 +105,7 @@ HipoSchema::HipoSchema() {
         wf_string = wf_string + ", s" + to_string(itr+1) + "/S";
     }
     alertAhdcWF136Schema.parse(wf_string.c_str());
-    alertAtofADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+    alertAtofTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ToT/I");
 
     bandADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
     bandTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I");
@@ -172,7 +172,7 @@ HipoSchema::HipoSchema() {
     schemasToLoad["AHDC::adc"] = alertAhdcADCSchema;
     schemasToLoad["AHDC::wf:136"] = alertAhdcWF136Schema;
     schemasToLoad["AHDC::tdc"] = alertAhdcTDCSchema;
-    schemasToLoad["ATOF::adc"] = alertAtofADCSchema;
+    schemasToLoad["ATOF::tdc"] = alertAtofTDCSchema;
     schemasToLoad["BAND::adc"] = bandADCSchema;
     schemasToLoad["BAND::tdc"] = bandTDCSchema;
     schemasToLoad["BMT::adc"] = bmtADCSchema;
@@ -241,11 +241,11 @@ bool HipoSchema::non_registered_detectors(string schemaName, int type) {
 
 
     if (type == 0) {  // non adc detectors:
-        if (schemaName == "dc" || schemaName == "rich") {
+        if (schemaName == "dc" || schemaName == "rich" || schemaName == "atof") {
             return false;
         }
     } else if (type == 1) { // non tdc detectors
-        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "atof" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
+        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
             return false;
         }
     } else if (type == 2) { // non wf:10 detectors
