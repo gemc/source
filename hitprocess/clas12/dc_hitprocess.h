@@ -24,6 +24,8 @@ public:
 	int NWIRES = 112;
 	int NLAYERS= 6;
 	double dLayer[6];                              // ~cell size in each superlayer - one of Mac's core parameters
+	int    stbloc[6][6];                           // wire readout side: -1=left, 1=right 
+	double vprop;                                  // signal propagation speed along the wire  
 	
 	// efficiency parameters for each superlayer
 	double P1[6][6], P2[6][6], P3[6][6], P4[6][6], iScale[6][6];
