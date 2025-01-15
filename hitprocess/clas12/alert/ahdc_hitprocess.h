@@ -136,7 +136,7 @@ class ahdcSignal {
 	// public methods
 	public :
 		/** @brief Default constructor */
-		ahdcSignal() = default;
+		ahdcSignal() = delete;
 		
 		/** @brief Constructor */
 		ahdcSignal(MHit * aHit, int _hitn, double _tmin, double _tmax, double _timeOffset, double _samplingTime, double _Landau_width) 
