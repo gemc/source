@@ -230,7 +230,6 @@ sub get_parameters {
         }
     }
 
-    print "\n";
     return %parameters;
 }
 
