@@ -33,8 +33,8 @@ HipoSchema::HipoSchema() {
     // detectors
     alertAhdcTDCSchema = hipo::schema("AHDC::tdc", 22400, 12);
     alertAhdcADCSchema = hipo::schema("AHDC::adc", 22400, 11);
-    alertAhdcWF10Schema = hipo::schema("AHDC::wf:10", 22400, 13);
-    alertAtofADCSchema = hipo::schema("ATOF::adc", 22500, 11);
+    alertAhdcWF136Schema = hipo::schema("AHDC::wf:136", 22400, 13);
+    alertAtofTDCSchema = hipo::schema("ATOF::tdc", 22500, 12);
     bandADCSchema = hipo::schema("BAND::adc", 22100, 11);
     bandTDCSchema = hipo::schema("BAND::tdc", 22100, 12);
     bmtADCSchema = hipo::schema("BMT::adc", 20100, 11);
@@ -66,6 +66,7 @@ HipoSchema::HipoSchema() {
     helFLIPSchema = hipo::schema("HEL::flip", 22000, 12);
     helONLINESchema = hipo::schema("HEL::online", 22000, 13);
     urwellADCSchema = hipo::schema("URWELL::adc", 22300, 11);
+    recoilADCSchema   = hipo::schema("RECOIL::adc",  22600, 11);
     rawADCSchema = hipo::schema("RAW::adc", 20000, 11);
     rawTDCSchema = hipo::schema("RAW::tdc", 20000, 12);
     rawSCALERSchema = hipo::schema("RAW::scaler", 20000, 13);
@@ -98,8 +99,13 @@ HipoSchema::HipoSchema() {
     // detectors
     alertAhdcADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S, integral/I, timestamp/L");
     alertAhdcTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ped/S");
-    alertAhdcWF10Schema.parse("sector/B, layer/B, component/S, order/B, timestamp/F, s1/S, s2/S, s3/S, s4/S, s5/S, s6/S, s7/S, s8/S, s9/S, s10/S");
-    alertAtofADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+    //alertAhdcWF136Schema.parse("sector/B, layer/B, component/S, order/B, timestamp/F, s1/S, s2/S, s3/S, s4/S, s5/S, s6/S, s7/S, s8/S, s9/S, s10/S");
+    std::string wf_string = "sector/B, layer/B, component/S, order/B, timestamp/F";
+    for (int itr=0; itr<136; itr++){
+        wf_string = wf_string + ", s" + to_string(itr+1) + "/S";
+    }
+    alertAhdcWF136Schema.parse(wf_string.c_str());
+    alertAtofTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I, ToT/I");
 
     bandADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, amplitude/I, time/F, ped/S");
     bandTDCSchema.parse("sector/B, layer/B, component/S, order/B, TDC/I");
@@ -139,6 +145,7 @@ HipoSchema::HipoSchema() {
     helONLINESchema.parse("helicity/B, helicityRaw/B");
 
     urwellADCSchema.parse("sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
+    recoilADCSchema.parse(  "sector/B, layer/B, component/S, order/B, ADC/I, time/F, ped/S");
 
     rawADCSchema.parse("crate/B, slot/B, channel/S, order/B, ADC/I, time/F, ped/S");
     rawTDCSchema.parse("crate/B, slot/B, channel/S, order/B, TDC/I");
@@ -163,9 +170,9 @@ HipoSchema::HipoSchema() {
 
     // The names corresponds to the hit process routine names, capitalized
     schemasToLoad["AHDC::adc"] = alertAhdcADCSchema;
-    schemasToLoad["AHDC::wf:10"] = alertAhdcWF10Schema;
+    schemasToLoad["AHDC::wf:136"] = alertAhdcWF136Schema;
     schemasToLoad["AHDC::tdc"] = alertAhdcTDCSchema;
-    schemasToLoad["ATOF::adc"] = alertAtofADCSchema;
+    schemasToLoad["ATOF::tdc"] = alertAtofTDCSchema;
     schemasToLoad["BAND::adc"] = bandADCSchema;
     schemasToLoad["BAND::tdc"] = bandTDCSchema;
     schemasToLoad["BMT::adc"] = bmtADCSchema;
@@ -193,6 +200,7 @@ HipoSchema::HipoSchema() {
     schemasToLoad["HEL::flip"] = helFLIPSchema;
     schemasToLoad["RASTER::adc"] = rasterADCSchema;
     schemasToLoad["URWELL::adc"] = urwellADCSchema;
+    schemasToLoad["RECOIL::adc"]  = recoilADCSchema;
 
     cout << " Done defining Hipo4 schemas." << endl;
 
@@ -206,7 +214,7 @@ hipo::schema HipoSchema::getSchema(string schemaName, int type) {
     string schemaType;
     if (type == 0) schemaType = "adc";
     if (type == 1) schemaType = "tdc";
-    if (type == 2) schemaType = "wf:10";
+    if (type == 2) schemaType = "wf:136";
 
     string toUpperS = schemaName;
     transform(toUpperS.begin(), toUpperS.end(), toUpperS.begin(), ::toupper);
@@ -233,18 +241,18 @@ bool HipoSchema::non_registered_detectors(string schemaName, int type) {
 
 
     if (type == 0) {  // non adc detectors:
-        if (schemaName == "dc" || schemaName == "rich") {
+        if (schemaName == "dc" || schemaName == "rich" || schemaName == "atof") {
             return false;
         }
     } else if (type == 1) { // non tdc detectors
-        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "atof" || schemaName == "urwell" || schemaName == "flux") {
+        if (schemaName == "bmt" || schemaName == "fmt" || schemaName == "rtpc" || schemaName == "bst" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
             return false;
         }
     } else if (type == 2) { // non wf:10 detectors
         if (schemaName == "atof" || schemaName == "band" || schemaName == "bmt" || schemaName == "fmt" || schemaName == "ftm"
             || schemaName == "dc" || schemaName == "bst" || schemaName == "cnd" || schemaName == "ctof" || schemaName == "ecal"
             || schemaName == "ftof" || schemaName == "ft_cal" || schemaName == "ft_hodo" || schemaName == "ft_trk"
-            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell" || schemaName == "flux") {
+            || schemaName == "htcc" || schemaName == "ltcc" || schemaName == "rich" || schemaName == "rtpc" || schemaName == "urwell" || schemaName == "recoil" || schemaName == "flux") {
             return false;
         }
     }
