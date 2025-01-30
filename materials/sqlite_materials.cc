@@ -27,7 +27,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
     map <string, material> mymats;                        // material map
 
-    // first check if there's at least one detector with MYSQL factory
+    // first check if there's at least one detector with SQLITE factory
     if (!check_if_factory_is_needed(rc.detectorConditionsMap, "SQLITE"))
         return materialsFromMap(mymats);
 
@@ -37,7 +37,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
     // Looping over detectorConditionsMap for detector names
     // To each detector is associated a material and (optional) opt properties
     for (map<string, detectorCondition>::iterator it = rc.detectorConditionsMap.begin(); it != rc.detectorConditionsMap.end(); it++) {
-        // building materials belonging to detectors that are tagged with MYSQL factory
+        // building materials belonging to detectors that are tagged with SQLITE factory
         if (it->second.get_factory() != "SQLITE")
             continue;
 
@@ -46,6 +46,10 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
 
         string dname = it->first;
         string variation = get_variation(it->second.get_variation());
+
+        // geometry was empty. TODO: this mechanism is a bit clunky . Solution: add a detector with existence = 0 in the geometry table
+        if (variation == "empty") variation = "default";
+
         int run = it->second.get_run_number();
         if (runno_arg != -1) run = runno_arg; // if RUNNO is set (different from -1), use it
         int run_number = get_sql_run_number(db, dname, variation, run, "materials");
@@ -58,7 +62,7 @@ map<string, G4Material *> sqlite_materials::initMaterials(runConditions rc, gopt
         dbexecute += " and run = " + stringify(run_number);
         dbexecute += " and system = '" + dname + "'";
 
-        // executing query - will exit if not successfull.
+        // executing query - will exit if not successful.
         QSqlQuery q;
         if (!q.exec(dbexecute.c_str())) {
             cout << hd_msg << "  Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;

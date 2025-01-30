@@ -1,12 +1,12 @@
-#ifndef CAD_DET_FACTORY_H
-#define CAD_DET_FACTORY_H 1
+#ifndef SQLITECAD_DET_FACTORY_H
+#define SQLITECAD_DET_FACTORY_H 1
 
 // gemc headers
 #include "detector_factory.h"
 
-class cad_det_factory : public detectorFactory {
+class sqlitecad_det_factory : public detectorFactory {
 public:
-    cad_det_factory() { ; }
+    sqlitecad_det_factory() { ; }
 
     // load all detectors that matches factorytype
     map <string, detector> loadDetectors();
@@ -15,7 +15,7 @@ public:
     void initFactory(goptions, runConditions, string);
 
     static detectorFactory *createFactory() {
-        return new cad_det_factory;
+        return new sqlitecad_det_factory;
     }
 
     // check that file.(allowed extension) exist.

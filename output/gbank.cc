@@ -329,7 +329,7 @@ map <string, gBank> read_banks(goptions gemcOpt, map <string, string> allSystems
             // first select all unique bank_name for this system
             string dbexecute = "select DISTINCT bank_name from banks where system = '" + systemName + "'";
 
-            // executing query - will exit if not successfull.
+            // executing query - will exit if not successful.
             QSqlQuery q;
             if (!q.exec(dbexecute.c_str())) {
                 cout  << " !!! Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;
@@ -350,7 +350,7 @@ map <string, gBank> read_banks(goptions gemcOpt, map <string, string> allSystems
 
                 string dbexecute = "select variable_name, int_id, type, description from banks where bank_name = '" + bname + "'";
 
-                // executing query - will exit if not successfull.
+                // executing query - will exit if not successful.
                 QSqlQuery q;
                 if (!q.exec(dbexecute.c_str())) {
                     cout << " !!! Failed to execute SQLITE query " << dbexecute << ". This is a fatal error. Exiting." << endl;

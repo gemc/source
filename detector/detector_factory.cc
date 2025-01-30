@@ -5,6 +5,7 @@
 #include "text_det_factory.h"
 #include "gdml_det_factory.h"
 #include "cad_det_factory.h"
+#include "sqlite_cad_factory.h"
 #include "clara_det_factory.h"
 
 // mlibrary
@@ -50,8 +51,11 @@ map <string, detectorFactoryInMap> registerDetectorFactory() {
     // gdml factory
     dFactoryMap["GDML"] = &gdml_det_factory::createFactory;
 
-    // gdml factory
+    // CAD factory using GXML files
     dFactoryMap["CAD"] = &cad_det_factory::createFactory;
+
+    // CAD factory using SQLITE
+    dFactoryMap["SQLITECAD"] = &sqlitecad_det_factory::createFactory;
 
     // clara factory
     dFactoryMap["CLARA"] = clara_det_factory::createFactory;
@@ -162,8 +166,9 @@ string check_factory_existance(map <string, detectorFactoryInMap> detectorFactor
     }
 
     // logging present factories
-    for (map<string, detectorFactoryInMap>::iterator it = detectorFactoryMap.begin(); it != detectorFactoryMap.end(); it++)
+    for (map<string, detectorFactoryInMap>::iterator it = detectorFactoryMap.begin(); it != detectorFactoryMap.end(); it++) {
         present.insert(it->first);
+    }
 
     int found_all = 1;
     for (set<string>::iterator it = requested.begin(); it != requested.end(); it++) {

@@ -460,7 +460,7 @@ void MDetectorConstruction::buildMirrors() {
                 // use this instead of a new table!
 
                 string maptOptProps = itr->second->maptOptProps;
-                if (maptOptProps != "none" && ((*mats)[maptOptProps])->GetMaterialPropertiesTable()) {
+                if (maptOptProps != "none" && maptOptProps != "notDefined" && ((*mats)[maptOptProps])->GetMaterialPropertiesTable()) {
                     mirrorsMPT.push_back(((*mats)[maptOptProps])->GetMaterialPropertiesTable());
                 } else {
                     mirrorsMPT.push_back(new G4MaterialPropertiesTable());
@@ -531,7 +531,6 @@ void MDetectorConstruction::buildMirrors() {
                 if (surfaceFinish == "ground") mirrorSurfaces.back()->SetFinish(ground);                // rough surface
                 if (surfaceFinish == "groundfrontpainted") mirrorSurfaces.back()->SetFinish(groundfrontpainted);    // rough top-layer (front) paint
                 if (surfaceFinish == "groundbackpainted") mirrorSurfaces.back()->SetFinish(groundbackpainted);     // same as 'ground' but with a back-paint
-
 
                 if (surfaceFinish == "polishedlumirrorair")
                     mirrorSurfaces.back()->SetFinish(polishedlumirrorair);   // mechanically polished surface, with lumirror

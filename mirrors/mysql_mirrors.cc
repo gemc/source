@@ -13,15 +13,13 @@ using namespace gstring;
 
 map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 {
-	
 	string hd_msg    = opts.optMap["LOG_MSG"].args + " MYSQL mirrors Factory: >> ";
 	double verbosity = opts.optMap["MIRROR_VERBOSITY"].arg;
 	
 	map<string, mirror*> mymirs;  // mirror map
 	
 	// first check if there's at least one detector with MYSQL factory
-	if(!check_if_factory_is_needed(rc.detectorConditionsMap, "MYSQL"))
-		return mymirs;
+	if(!check_if_factory_is_needed(rc.detectorConditionsMap, "MYSQL")) { return mymirs; }
 
 	// connection to the DB
 	QSqlDatabase db = openGdb(opts);
@@ -47,7 +45,7 @@ map<string, mirror*> mysql_mirrors::initMirrors(runConditions rc, goptions opts)
 		string dbexecute = "select name, desc, type, finish, model, border, maptOptProps, photonEnergy, indexOfRefraction, reflectivity, efficiency, specularlobe, specularspike, backscatter from " + tname;
 		dbexecute += " where variation ='" + variation + "'";
 				
-		// executing query - will exit if not successfull.
+		// executing query - will exit if not successful.
 		QSqlQuery q;
 		if(!q.exec(dbexecute.c_str())) {
 			cout << hd_msg << "  Failed to execute MYSQL query " << dbexecute <<  ". This is a fatal error. Exiting." << endl;

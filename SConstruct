@@ -32,6 +32,7 @@ env.Append(CPPPATH = 'mirrors')
 mirrors_sources = Split("""
 	mirrors/mirrors_factory.cc
 	mirrors/mysql_mirrors.cc
+	mirrors/sqlite_mirrors.cc
 	mirrors/text_mirrors.cc""")
 env.Library(source = mirrors_sources, target = "lib/gmirrors")
 
@@ -65,6 +66,7 @@ det_sources = Split("""
 	detector/sqlite_det_factory.cc
 	detector/gdml_det_factory.cc
 	detector/cad_det_factory.cc
+	detector/sqlite_cad_factory.cc
 	detector/clara_det_factory.cc
 	detector/text_det_factory.cc""")
 env.Library(source = det_sources, target = "lib/gdetector")

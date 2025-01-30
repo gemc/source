@@ -11,7 +11,6 @@ using namespace gstring;
 
 map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 {
-	
 	string hd_msg    = opts.optMap["LOG_MSG"].args + " TEXT Mirrors Factory: >> ";
 	double verbosity = opts.optMap["MIRROR_VERBOSITY"].arg;
 	
@@ -109,7 +108,3 @@ map<string, mirror*> text_mirrors::initMirrors(runConditions rc, goptions opts)
 
 	return mymirs;
 }
-
-
-
-

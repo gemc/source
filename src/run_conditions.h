@@ -44,7 +44,7 @@ class detectorCondition
 		int is_present;        // by default set to 1. Can be set to 0 to remove a detector from the simulation
 		string system;         // detector system
 		string factory;        // factory that builds the detector
-		string variation;      // variation of the detector. Default is "main"
+		string variation;      // variation of the detector. Default is "default"
 		int    run_number;     // Run Number selected for this detector
 		
 	public:
@@ -53,7 +53,7 @@ class detectorCondition
 		{
 			factory    = f;
 			is_present = 0;
-			variation  = "main";
+			variation  = "default";
 			run_number = -1;
 			presentFlag = false;
 		}
