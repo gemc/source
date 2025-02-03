@@ -269,14 +269,17 @@ map <string, detector> cad_det_factory::loadDetectors() {
     }
 
     for (const auto &dd: dets) {
-        if (verbosity > 3)
-            cout << dd.second;
+        if (verbosity > 3) {
+        	cout << dd.second;
+        }
     }
 
     // remove all detectors in dets that are not in the gxml file
     for (const auto &dd: dets) {
         if (find(detector_in_gxml.begin(), detector_in_gxml.end(), dd.first) == detector_in_gxml.end()) {
-            cout << " >>  Detector " << dd.first << " not found in gxml file. It will be removed from GEMC." << endl;
+        if (verbosity > 3){
+        	cout << " >>  Detector " << dd.first << " not found in gxml file. It will be removed from GEMC." << endl;
+        }
             dets[dd.first].exist = 0;
         }
     }

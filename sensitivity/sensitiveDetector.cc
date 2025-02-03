@@ -409,6 +409,7 @@ int sensitiveDetector::processID(string procName)
 	if(procName == "kaon0LInelastic")       return 73;
 	if(procName == "kaon0SInelastic")       return 74;
 	if(procName == "alphaInelastic")        return 80;
+	if(procName == "He3Inelastic")          return 81;
 	if(procName == "lambdaInelastic")       return 90;
 	if(procName == "sigma-Inelastic")       return 100;
 	if(procName == "dInelastic")            return 110;

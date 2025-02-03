@@ -37,7 +37,6 @@ initializeRICHConstants(int runno, string digiVariation = "default", string digi
   else
     richc.connection = "mysql://clas12reader@clasdb.jlab.org/clas12";
   
-  richc.variation  = "main";
   unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(richc.connection));
   
   return richc;
